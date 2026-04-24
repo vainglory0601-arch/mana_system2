@@ -76,22 +76,26 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # ✅ DATABASE - FIXED (No connect_timeout for SQLite)
-DATABASES = {
-    "default": dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600 if not DEBUG else 0,  # Only persistent connections in production
-        ssl_require=False,
-    )
-}
-
-# PostgreSQL specific options (Production only)
-if not DEBUG:
-    db_engine = DATABASES["default"].get("ENGINE", "")
-    if "postgresql" in db_engine:
+_db_url = os.getenv("DATABASE_URL", "")
+if _db_url:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            _db_url,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+    if "postgresql" in DATABASES["default"].get("ENGINE", ""):
         DATABASES["default"].setdefault("OPTIONS", {})
         DATABASES["default"]["OPTIONS"]["connect_timeout"] = 10
-        # Connection pooling for PostgreSQL
         DATABASES["default"]["OPTIONS"]["options"] = "-c statement_timeout=30000"
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 # ✅ CACHES - SIMPLE (No complex options)
 CACHES = {
@@ -124,7 +128,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 STORAGES = {
     "default": {"BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage"},
-    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
 }
 
 # ✅ CSRF & UPLOAD
