@@ -19,12 +19,12 @@ SECRET_KEY = os.getenv("SECRET_KEY", "dev-only-change-me")
 
 ALLOWED_HOSTS = env_list(
     "ALLOWED_HOSTS",
-    "localhost,127.0.0.1,primephlending.com,www.primephlending.com,loving-tenderness-production-2c60.up.railway.app"
+    "localhost,127.0.0.1,web-production-0c691.up.railway.app"
 )
 
 CSRF_TRUSTED_ORIGINS = env_list(
     "CSRF_TRUSTED_ORIGINS",
-    "https://primephlending.com,https://www.primephlending.com,https://loving-tenderness-production-2c60.up.railway.app"
+    "https://web-production-0c691.up.railway.app"
 )
 
 INSTALLED_APPS = [
