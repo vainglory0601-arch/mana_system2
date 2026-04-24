@@ -1,0 +1,220 @@
+{% extends "view/base.html" %}
+{% block content %}
+<style>
+/* ===============================
+   USERS TABLE (MATCH WITHDRAWALS STYLE)
+   =============================== */
+
+.users-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+.users-head .h1{
+  font-weight:950;
+  font-size:18px;
+  color:#004182;
+}
+.users-head .muted{
+  color:rgba(0,65,130,.75);
+  font-weight:700;
+}
+
+/* ✅ input style like withdrawals top bar */
+.users-head input{
+  height:42px;
+  width:260px;
+  padding:0 14px;
+  border-radius:14px;
+  border:1px solid rgba(0,0,0,.18);
+  background:#fff;
+  outline:none;
+}
+/* ✅ Search button same as Save style */
+.users-head .filterbtn{
+  height:42px;
+  padding:0 18px;
+  border-radius:14px;
+  border:0;
+  cursor:pointer;
+  font-weight:900;
+  color:#fff;
+  background: linear-gradient(180deg,#16a34a,#0f7a3a);
+  box-shadow: 0 10px 22px rgba(0,0,0,.18);
+}
+
+.users-head .filterbtn:active{
+  transform: scale(.98);
+}
+/* ✅ pager fix (bottom right, clean, same style) */
+.pager{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:12px;
+  padding: 14px 6px 0;
+  margin-top: 8px;
+}
+
+.pager .muted{
+  color:#004182 !important;
+  font-weight:900 !important;
+  font-size:14px;
+  white-space:nowrap;
+}
+
+/* buttons same green */
+.pager a{
+  height:40px;
+  min-width:92px;
+  padding:0 18px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:14px;
+  border:0;
+  cursor:pointer;
+  font-weight:900;
+  color:#fff;
+  text-decoration:none;
+  background: linear-gradient(180deg,#16a34a,#0f7a3a);
+  box-shadow: 0 10px 22px rgba(0,0,0,.18);
+}
+
+.pager a:active{ transform: scale(.98); }
+
+/* ✅ mobile: keep pager visible nice */
+@media (max-width: 520px){
+  .pager{
+    justify-content:space-between;
+    gap:10px;
+  }
+  .pager a{
+    min-width:86px;
+    padding:0 14px;
+  }
+}
+
+/* table */
+#usersTable{
+  width:100%;
+  table-layout:auto;
+  border-collapse: separate;
+  border-spacing:0;
+}
+
+/* vertical lines + center */
+#usersTable th,
+#usersTable td{
+  border-right: 3px solid rgba(184,184,184,.87);
+  text-align:center;
+  vertical-align:middle;
+  padding:10px;
+}
+#usersTable th:last-child,
+#usersTable td:last-child{
+  border-right:0;
+}
+
+/* row shading */
+#usersTable tbody tr:nth-child(even){
+  background: rgba(0,65,130,.03);
+}
+#usersTable tbody tr:hover{
+  background: rgba(0,65,130,.06);
+}
+
+/* phone blue bold like other pages */
+#usersTable td:nth-child(2){
+  color:#004182 !important;
+  font-weight:900 !important;
+  white-space:nowrap;
+}
+
+/* name column keep 1 line */
+#usersTable td:nth-child(1){
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:220px;
+}
+
+
+.pager .muted{
+  color:#004182;
+  font-weight:900;
+}
+.phone-link{
+  color:#004182;
+  font-weight:950;
+  text-decoration:none;
+}
+.phone-link:hover{
+  text-decoration:underline;
+}
+</style>
+
+<div class="users-head">
+  <div>
+    <div class="h1">Users</div>
+    <div class="muted">All Users</div>
+  </div>
+
+  <form method="get" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:flex-end;">
+    <input type="text" name="q" value="{{ q }}" placeholder="Search phone or name...">
+    <button type="submit" class="filterbtn">Search</button>
+  </form>
+</div>
+
+<div class="table-wrap">
+  <table id="usersTable">
+    <thead>
+      <tr>
+        <th style="width:220px;">NAME</th>
+        <th style="width:180px;">PHONE</th>
+        <th style="width:140px;">BALANCE</th>
+        <th style="width:160px;">REGISTER IP</th>
+        <th style="width:140px;">COUNTRY</th>
+        <th style="width:140px;">CITY</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      {% for u in page.object_list %}
+        <tr>
+          <td>{{ u.display_name|default:"-" }}</td>
+          <td>
+         <a class="phone-link" href="{% url 'view_user_detail' u.id %}">
+    {{ u.phone }}
+  </a>
+</td>
+          <td>{{ u.balance|default:"0.00" }}</td>
+          <td>{{ u.register_ip|default:"-" }}</td>
+          <td>{{ u.register_country|default:"-" }}</td>
+          <td>{{ u.register_city|default:"-" }}</td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="6" style="padding:16px;color:#004182;font-weight:900;">No users found.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="pager">
+  {% if page.has_previous %}
+    <a href="?q={{ q }}&page={{ page.previous_page_number }}">Prev</a>
+  {% endif %}
+
+  <span class="muted">Page {{ page.number }} / {{ page.paginator.num_pages }}</span>
+
+  {% if page.has_next %}
+    <a href="?q={{ q }}&page={{ page.next_page_number }}">Next</a>
+  {% endif %}
+</div>
+
+{% endblock %}

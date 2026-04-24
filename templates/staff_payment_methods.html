@@ -1,0 +1,203 @@
+{% extends "staff_base.html" %}
+{% block content %}
+  <div class="card-h">
+    <div>
+      <div class="h1">Payment Methods</div>
+      <div class="muted">Edit wallet/bank/paypal + lock</div>
+    </div>
+    <form method="get" style="display:flex;gap:10px;align-items:center;">
+      <input name="q" value="{{ q }}" placeholder="Search phone..." style="width:260px;">
+      <button class="savebtn" type="submit">Search</button>
+    </form>
+  </div>
+
+  <div class="content">
+  <div class="table-wrap">
+
+    <style>
+      /* ===============================
+         PAYMENT METHODS (CLEAN + FIT)
+         keep your staff style + responsive
+         =============================== */
+
+      #pmTable{
+        width: 100% !important;
+        table-layout: auto !important;            /* ✅ responsive */
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+      }
+
+      /* vertical lines + center */
+      #pmTable th,
+      #pmTable td{
+        border-right: 3px solid rgba(184,184,184,.87) !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+        padding: 10px !important;
+
+        /* ✅ allow wrap in long texts */
+        white-space: normal !important;
+        overflow-wrap: anywhere !important;
+        word-break: break-word !important;
+      }
+
+      #pmTable th:last-child,
+      #pmTable td:last-child{
+        border-right: 0 !important;
+      }
+
+      /* row shading like your other pages */
+      #pmTable tbody tr:nth-child(even){
+        background: rgba(0,65,130,.03) !important;
+      }
+      #pmTable tbody tr:hover{
+        background: rgba(0,65,130,.06) !important;
+      }
+
+      /* ✅ multi cells (wallet/bank) can show 2 inputs */
+      #pmTable td.multi{
+        white-space: normal !important;
+      }
+
+      /* ✅ Inputs fit inside cell (IMPORTANT for phone) */
+      #pmTable td.multi input,
+      #pmTable td input{
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        display: block !important;
+
+        /* keep clean underline style from staff_base */
+        text-align: center !important;
+      }
+
+      /* ✅ give spacing between 2 inputs inside Wallet/Bank */
+      #pmTable .gap-8{ height: 8px; }
+
+      /* ✅ Locked select keep centered */
+      #pmTable select{
+        width: 100% !important;
+        box-sizing: border-box !important;
+        text-align: center !important;
+        text-align-last: center !important;
+      }
+
+      /* ✅ Save cell keep nice */
+      #pmTable td.save-cell{
+        text-align: center !important;
+        white-space: nowrap !important;
+        min-width: 90px;
+      }
+
+      /* ✅ Phone column: do NOT break numbers */
+      #pmTable td:nth-child(2){
+        white-space: nowrap !important;
+      }
+
+      /* ✅ Make table usable on small screens (horizontal scroll, no breaking layout) */
+      @media (max-width: 900px){
+        #pmTable th, #pmTable td{
+          padding: 8px !important;
+          font-size: 12px !important;
+        }
+
+        /* keep inputs compact on phone */
+        #pmTable input, #pmTable select{
+          padding: 8px 6px !important;
+          font-size: 12px !important;
+        }
+
+        /* prevent columns from becoming TOO small -> allow scroll */
+        #pmTable{
+          min-width: 920px;  /* ✅ forces horizontal scroll instead of squishing */
+        }
+      }
+      /* ===============================
+   PAYMENT METHODS: PHONE STYLE
+   =============================== */
+
+/* ✅ Payment Methods: PHONE = same as balance/users (blue) */
+#pmTable td:nth-child(2){
+  white-space: nowrap !important;
+  color: #004182 !important;
+  font-weight: 900 !important;
+}
+#pmTable td:nth-child(2) a{ color:#004182 !important; }
+/* optional hover effect (like users/loans) */
+#pmTable td:nth-child(2):hover{
+  opacity: .85;
+}
+    </style>
+
+    <table id="pmTable">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Wallet</th>
+          <th>Bank</th>
+          <th>PayPal</th>
+          <th>Locked</th>
+          <th>Save</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for pm in page.object_list %}
+
+        <form id="pmForm{{ pm.id }}" method="post" action="{% url 'staff_payment_method_update' pm.id %}">
+          {% csrf_token %}
+        </form>
+
+        <tr>
+          <td class="user-font">{{ pm.display_name|default:"-" }}</td>
+          <td class="user-font">{{ pm.user.phone }}</td>
+
+          <td class="multi">
+            <input name="wallet_name" value="{{ pm.wallet_name }}" form="pmForm{{ pm.id }}">
+            <div class="gap-8"></div>
+            <input name="wallet_phone" value="{{ pm.wallet_phone }}" form="pmForm{{ pm.id }}">
+          </td>
+
+          <td class="multi">
+            <input name="bank_name" value="{{ pm.bank_name }}" form="pmForm{{ pm.id }}">
+            <div class="gap-8"></div>
+            <input name="bank_account" value="{{ pm.bank_account }}" form="pmForm{{ pm.id }}">
+          </td>
+
+          <td>
+            <input name="paypal_email" value="{{ pm.paypal_email }}" form="pmForm{{ pm.id }}">
+          </td>
+
+          <td>
+            <select name="locked" form="pmForm{{ pm.id }}">
+              <option value="False" {% if not pm.locked %}selected{% endif %}>Off</option>
+              <option value="True"  {% if pm.locked %}selected{% endif %}>On</option>
+            </select>
+          </td>
+
+          <td class="save-cell">
+            <button class="savebtn" type="submit" form="pmForm{{ pm.id }}">Save</button>
+          </td>
+        </tr>
+
+        {% empty %}
+        <tr><td colspan="7" class="muted">No payment methods</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="pager">
+      {% if page.has_previous %}
+        <a href="?q={{ q }}&page={{ page.previous_page_number }}">← Prev</a>
+      {% endif %}
+      <span class="muted">Page {{ page.number }} / {{ page.paginator.num_pages }}</span>
+      {% if page.has_next %}
+        <a href="?q={{ q }}&page={{ page.next_page_number }}">Next →</a>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+  </div>
+{% endblock %}

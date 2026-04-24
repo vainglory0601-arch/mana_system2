@@ -1,0 +1,1236 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Loan Application - ManaLoan{% endblock %}
+
+{% block content %}
+<style>
+/* ===== ManaLoan Loan Application — Dark Glass Theme ===== */
+
+html, body { width: 100%; overflow-x: hidden; }
+
+body{
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Ovelion", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color: #e6edf7;
+  background:
+    radial-gradient(600px 400px at 10% 10%, rgba(59,130,246,.35), transparent 60%),
+    radial-gradient(500px 500px at 90% 20%, rgba(139,92,246,.28), transparent 60%),
+    radial-gradient(700px 500px at 50% 90%, rgba(56,189,248,.22), transparent 60%),
+    radial-gradient(400px 400px at 80% 80%, rgba(16,185,129,.18), transparent 60%),
+    #070b16 !important;
+  background-attachment: fixed !important;
+}
+
+.wrap{ padding-top: 0 !important; align-items: flex-start; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 10px 30px rgba(59,130,246,.35), 0 0 0 1px rgba(59,130,246,.25) inset; }
+  50%      { box-shadow: 0 14px 40px rgba(59,130,246,.55), 0 0 0 1px rgba(96,165,250,.45) inset; }
+}
+
+.page{
+  width: min(520px, 94vw);
+  margin: 0 auto;
+  padding: 22px 14px 40px;
+  box-sizing: border-box;
+}
+
+/* ===== Top row ===== */
+.top-row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: fadeInUp .5s ease-out .05s forwards;
+}
+.page-title{
+  color: #fff;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -.2px;
+}
+.page-title small{
+  display: block;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .02em;
+  margin-top: 2px;
+}
+.back-btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  background: rgba(30,41,59,.55);
+  border: 1px solid rgba(56,189,248,.30);
+  color: #93c5fd;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  letter-spacing: .04em;
+  box-shadow: 0 0 14px rgba(56,189,248,.08);
+  transition: all .22s ease;
+}
+.back-btn:hover{
+  color: #fff;
+  border-color: rgba(56,189,248,.60);
+  background: rgba(56,189,248,.12);
+  box-shadow: 0 0 20px rgba(56,189,248,.22);
+}
+.back-btn svg{ width: 14px; height: 14px; }
+
+/* ===== Glass card ===== */
+.apply-card{
+  position: relative;
+  padding: 22px;
+  margin-bottom: 16px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(15,23,42,.55) 0%, rgba(10,16,32,.45) 100%);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid rgba(56,189,248,.45);
+  box-shadow:
+    0 0 0 1px rgba(56,189,248,.08),
+    0 0 24px rgba(56,189,248,.18),
+    0 20px 60px rgba(2,6,23,.55),
+    inset 0 1px 0 rgba(255,255,255,.08);
+  overflow: visible;
+  opacity: 0;
+  animation: fadeInUp .55s ease-out .18s forwards;
+}
+.apply-card::before, .apply-card::after { display: none; }
+
+/* ===== Section header inside card ===== */
+.sec-head{
+  margin-bottom: 6px;
+}
+.sec-head h3{
+  color: #fff;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: -.2px;
+}
+.sec-head p{
+  color: #94a3b8;
+  font-size: 13px;
+  margin-top: 3px;
+  line-height: 1.5;
+}
+
+.section-title{
+  color: #67e8f9;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(56,189,248,.25);
+  margin-bottom: 14px;
+}
+
+/* ===== Form fields ===== */
+.field{ margin-bottom: 12px; }
+label{
+  display: block;
+  color: #67e8f9;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="tel"],
+input[type="email"],
+input[type="password"],
+textarea{
+  width: 100%;
+  height: 44px;
+  min-height: 44px;
+  max-height: 44px;
+  background: rgba(30,41,59,.45);
+  border: 1px solid rgba(56,189,248,.25);
+  border-radius: 12px;
+  color: #fff;
+  padding: 12px 14px;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+  outline: none;
+  resize: none;
+  caret-color: #38bdf8;
+  box-shadow:
+    0 0 12px rgba(56,189,248,.06),
+    inset 0 1px 0 rgba(255,255,255,.04);
+  transition: border-color .2s, box-shadow .2s, background .2s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+textarea{
+  height: 44px;
+  overflow: hidden;
+}
+
+input[type="text"]::placeholder,
+input[type="number"]::placeholder,
+input[type="tel"]::placeholder,
+input[type="email"]::placeholder,
+textarea::placeholder{
+  color: #64748b;
+}
+
+input:focus,
+textarea:focus{
+  outline: none;
+  border-color: rgba(56,189,248,.75);
+  background: rgba(30,41,59,.60);
+  box-shadow:
+    0 0 20px rgba(56,189,248,.22),
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+input[readonly],
+textarea[readonly]{
+  opacity: .85;
+  cursor: default;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus{
+  -webkit-text-fill-color: #fff !important;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(30,41,59,.80) inset !important;
+  caret-color: #38bdf8 !important;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button{ -webkit-appearance: none; margin: 0; }
+input[type="number"]{ -moz-appearance: textfield; }
+
+/* ===== 2-column grid ===== */
+.grid-2{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 520px){
+  .grid-2{ grid-template-columns: 1fr; }
+}
+@media (min-width: 900px){
+  #sigBox{
+    grid-column: 1 / span 2;
+    height: auto;
+    padding: 14px;
+  }
+  #sigBox .sig-canvas{ height: 260px; }
+  .sig-clear-wrap{
+    grid-column: 1 / span 2;
+    justify-content: flex-end;
+    margin-top: 10px;
+  }
+}
+
+/* ===== Term grid ===== */
+.term-grid{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+@media (max-width: 520px){
+  .term-grid{ grid-template-columns: repeat(4, 1fr); }
+}
+.term-btn{
+  padding: 12px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(56,189,248,.30);
+  background: rgba(30,41,59,.45);
+  color: #93c5fd;
+  font-weight: 900;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow:
+    0 0 12px rgba(56,189,248,.06),
+    inset 0 1px 0 rgba(255,255,255,.04);
+  transition: all .22s ease;
+}
+.term-btn:hover{
+  color: #fff;
+  border-color: rgba(56,189,248,.60);
+  background: rgba(56,189,248,.10);
+  box-shadow: 0 0 18px rgba(56,189,248,.18);
+}
+.term-btn:active{ transform: scale(.97); }
+.term-btn.active{
+  color: #fff;
+  background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 60%, #6366f1 100%);
+  border-color: rgba(56,189,248,.85);
+  box-shadow:
+    0 6px 18px rgba(59,130,246,.40),
+    inset 0 1px 0 rgba(255,255,255,.20);
+}
+
+/* ===== Loan type/purpose cards (image 2 style) ===== */
+.type-grid{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+.type-card{
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(56,189,248,.25);
+  background: rgba(30,41,59,.45);
+  box-shadow:
+    0 0 14px rgba(56,189,248,.06),
+    inset 0 1px 0 rgba(255,255,255,.04);
+  cursor: pointer;
+  user-select: none;
+  transition: all .22s ease;
+  position: relative;
+}
+.type-card:hover{
+  border-color: rgba(56,189,248,.55);
+  background: rgba(56,189,248,.06);
+  box-shadow: 0 0 20px rgba(56,189,248,.18);
+}
+.type-card input{ display: none; }
+.type-icon{
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  background: rgba(56,189,248,.12);
+  border: 1px solid rgba(56,189,248,.30);
+  display: flex; align-items: center; justify-content: center;
+  flex: 0 0 auto;
+  transition: all .22s ease;
+}
+.type-icon svg{ width: 20px; height: 20px; stroke: #38bdf8; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.type-body{ flex: 1 1 auto; min-width: 0; }
+.type-name{
+  color: #fff;
+  font-weight: 900;
+  font-size: 14px;
+  margin-bottom: 2px;
+}
+.type-desc{
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.35;
+}
+.type-check{
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(56,189,248,.35);
+  background: rgba(30,41,59,.60);
+  flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .22s ease;
+}
+.type-check svg{ width: 12px; height: 12px; stroke: #fff; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transition: opacity .18s ease; }
+
+.type-card:has(input:checked){
+  border-color: rgba(56,189,248,.80);
+  background: rgba(56,189,248,.10);
+  box-shadow:
+    0 0 24px rgba(56,189,248,.30),
+    inset 0 1px 0 rgba(255,255,255,.10);
+}
+.type-card:has(input:checked) .type-icon{
+  background: linear-gradient(135deg, #38bdf8, #3b82f6);
+  border-color: rgba(56,189,248,.80);
+  box-shadow: 0 0 14px rgba(56,189,248,.40);
+}
+.type-card:has(input:checked) .type-icon svg{ stroke: #fff; }
+.type-card:has(input:checked) .type-check{
+  background: linear-gradient(135deg, #38bdf8, #3b82f6);
+  border-color: rgba(56,189,248,.80);
+  box-shadow: 0 0 10px rgba(56,189,248,.40);
+}
+.type-card:has(input:checked) .type-check svg{ opacity: 1; }
+
+/* ===== Summary ===== */
+.summary{
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(56,189,248,.22);
+  display: grid; gap: 0;
+  font-size: 13px;
+}
+.summary .row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid rgba(56,189,248,.12);
+  padding: 11px 0;
+}
+.summary .row:last-child{
+  border-bottom: none;
+  border-top: 2px solid rgba(56,189,248,.35);
+  margin-top: 4px;
+  padding-top: 14px;
+  font-size: 15px;
+}
+.summary .k{ color: #94a3b8; font-weight: 600; }
+.summary .v{ color: #fff; font-weight: 900; }
+.summary .row:last-child .v{
+  background: linear-gradient(135deg, #38bdf8, #818cf8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ===== Submit button ===== */
+.cta{ margin-top: 16px; width: 100%; }
+.btn.btn-primary{
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 50%, #6366f1 100%);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-weight: 950;
+  font-size: 15px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-family: inherit;
+  cursor: pointer;
+  animation: glowPulse 2.6s ease-in-out infinite;
+  transition: transform .2s;
+}
+.btn.btn-primary:hover{ transform: translateY(-2px); }
+.btn.btn-primary:active{ transform: translateY(0); }
+.btn.btn-primary:disabled{
+  opacity: .55;
+  cursor: not-allowed;
+  transform: none;
+  animation: none;
+  background: rgba(30,41,59,.60);
+  color: #64748b;
+}
+
+/* ===== HR divider ===== */
+hr{
+  border: 0;
+  border-top: 1px solid rgba(56,189,248,.22);
+  margin: 18px 0;
+}
+
+/* ===== ID upload ===== */
+.id-grid{
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  align-items: stretch;
+  width: 100%;
+  margin-top: 10px;
+}
+.id-grid .idbox.selfie-box{ grid-column: 1 / -1; }
+@media (max-width: 520px){
+  .id-grid{ grid-template-columns: 1fr; }
+  .id-grid .idbox.selfie-box{ grid-column: auto; }
+}
+
+.idbox{
+  height: 180px;
+  padding: 14px 10px;
+  border-radius: 14px;
+  border: 1.5px dashed rgba(56,189,248,.40);
+  background: rgba(30,41,59,.35);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 8px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .2s, background .2s, box-shadow .2s;
+  color: #94a3b8;
+}
+.idbox.selfie-box{ height: 150px; }
+.idbox:hover{
+  border-color: rgba(56,189,248,.75);
+  background: rgba(56,189,248,.08);
+  box-shadow: 0 0 18px rgba(56,189,248,.18);
+}
+.idbox small{ color: #94a3b8; font-weight: 700; font-size: 12px; }
+.idbox strong{ color: #fff; font-weight: 900; letter-spacing: .02em; }
+.id-text strong{ color: #fff; font-weight: 900; letter-spacing: .02em; }
+.id-text small{ color: #94a3b8; }
+.id-ico{ color: #38bdf8; font-size: 26px; }
+
+.id-guide{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 10px;
+  box-sizing: border-box;
+  background: transparent;
+  border: none;
+}
+.id-guide .id-art{
+  width: 44px;
+  height: 44px;
+  display: block;
+  color: #38bdf8;
+}
+.idbox.selfie-box .id-guide .id-art{ width: 48px; height: 40px; }
+.id-guide .id-caption{
+  text-align: center;
+  line-height: 1.3;
+}
+.id-guide .id-caption strong{
+  color: #e6edf7;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  display: block;
+}
+.id-preview{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  z-index: 2;
+  display: none;
+}
+.idbox.has-img{
+  border-style: solid;
+  border-color: rgba(56,189,248,.65);
+  box-shadow: 0 0 18px rgba(56,189,248,.20);
+}
+.idbox.has-img .id-preview{ display: block; }
+.idbox.has-img .id-guide{ display: none; }
+.idbox.has-img .id-text{ display: none; }
+
+/* ===== Signature box ===== */
+#sigBox{
+  height: 220px;
+  padding: 12px;
+  justify-content: flex-start !important;
+  align-items: stretch !important;
+  text-align: left !important;
+  gap: 10px !important;
+}
+.sig-canvas{
+  width: 100%;
+  height: 150px;
+  border-radius: 12px;
+  border: 1.5px dashed rgba(56,189,248,.40);
+  background: rgba(15,23,42,.55);
+  box-sizing: border-box;
+  display: block;
+  position: relative;
+  z-index: 1;
+  cursor: crosshair;
+}
+#sigBox{ position: relative; }
+#sigBox .sig-canvas{ position: relative; z-index: 2; }
+#sigBox img#sigPreviewImg{ background: rgba(15,23,42,.70); }
+
+.sig-clear-wrap{
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+.sig-clear-wrap .sig-btn{
+  padding: 8px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(56,189,248,.30);
+  background: rgba(30,41,59,.55);
+  color: #93c5fd;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .2s ease;
+}
+.sig-clear-wrap .sig-btn:hover{
+  background: rgba(239,68,68,.12);
+  color: #fca5a5;
+  border-color: rgba(239,68,68,.40);
+}
+.sig-clear-wrap .sig-btn:active{ transform: scale(.97); }
+
+/* ===== Muted ===== */
+.muted{ color: #94a3b8; font-size: 13px; }
+.hint{ margin-top: 8px; color: #94a3b8; font-size: 12px; font-weight: 600; }
+
+/* ===== Mobile fallback ===== */
+@media (max-width: 768px){
+  .apply-card, .top-row{
+    opacity: 1 !important;
+    animation: none !important;
+  }
+  .apply-card{
+    background: rgba(10,16,32,.92) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  input, textarea, .term-btn, .type-card, .idbox{
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+</style>
+
+<div class="page">
+
+  <!-- Top row -->
+  <div class="top-row">
+    <div class="page-title">
+      Loan Application
+      <small>Complete simple steps</small>
+    </div>
+    <a class="back-btn" href="{% url 'quick_loan' %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Back
+    </a>
+  </div>
+
+  <div class="apply-card">
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      <!-- ===== Section: Choose Loan Purpose ===== -->
+      <div class="sec-head">
+        <h3>Choose Loan Purpose</h3>
+        <p>Select the type of loan that best fits your need.</p>
+      </div>
+
+      <div class="type-grid">
+        <label class="type-card">
+          <input type="checkbox" name="loan_purposes" value="Personal Loan"
+            {% if loan and "Personal Loan" in loan.loan_purposes %}checked{% endif %}
+            {% if locked %}disabled{% endif %}>
+          <div class="type-icon">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="type-body">
+            <div class="type-name">Personal Loan</div>
+            <div class="type-desc">Daily expenses, travel, medical</div>
+          </div>
+          <span class="type-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+        </label>
+
+        <label class="type-card">
+          <input type="checkbox" name="loan_purposes" value="Business"
+            {% if loan and "Business" in loan.loan_purposes %}checked{% endif %}
+            {% if locked %}disabled{% endif %}>
+          <div class="type-icon">
+            <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+          </div>
+          <div class="type-body">
+            <div class="type-name">Business</div>
+            <div class="type-desc">Expand or fund operations</div>
+          </div>
+          <span class="type-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+        </label>
+
+        <label class="type-card">
+          <input type="checkbox" name="loan_purposes" value="Medical"
+            {% if loan and "Medical" in loan.loan_purposes %}checked{% endif %}
+            {% if locked %}disabled{% endif %}>
+          <div class="type-icon">
+            <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <div class="type-body">
+            <div class="type-name">Medical</div>
+            <div class="type-desc">Healthcare expenses</div>
+          </div>
+          <span class="type-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+        </label>
+
+        <label class="type-card">
+          <input type="checkbox" name="loan_purposes" value="Education"
+            {% if loan and "Education" in loan.loan_purposes %}checked{% endif %}
+            {% if locked %}disabled{% endif %}>
+          <div class="type-icon">
+            <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          </div>
+          <div class="type-body">
+            <div class="type-name">Education</div>
+            <div class="type-desc">Tuition and learning</div>
+          </div>
+          <span class="type-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+        </label>
+
+        <label class="type-card">
+          <input type="checkbox" name="loan_purposes" value="Home repair"
+            {% if loan and "Home repair" in loan.loan_purposes %}checked{% endif %}
+            {% if locked %}disabled{% endif %}>
+          <div class="type-icon">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          </div>
+          <div class="type-body">
+            <div class="type-name">Home repair</div>
+            <div class="type-desc">Property purchase or renovation</div>
+          </div>
+          <span class="type-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+        </label>
+
+        <label class="type-card">
+          <input type="checkbox" name="loan_purposes" value="Debt consolidation"
+            {% if loan and "Debt consolidation" in loan.loan_purposes %}checked{% endif %}
+            {% if locked %}disabled{% endif %}>
+          <div class="type-icon">
+            <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <div class="type-body">
+            <div class="type-name">Debt consolidation</div>
+            <div class="type-desc">Combine multiple debts</div>
+          </div>
+          <span class="type-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+        </label>
+
+        <label class="type-card">
+          <input type="checkbox" name="loan_purposes" value="Emergency"
+            {% if loan and "Emergency" in loan.loan_purposes %}checked{% endif %}
+            {% if locked %}disabled{% endif %}>
+          <div class="type-icon">
+            <svg viewBox="0 0 24 24"><path d="M12 2L3 6v6c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V6L12 2z"/></svg>
+          </div>
+          <div class="type-body">
+            <div class="type-name">Emergency</div>
+            <div class="type-desc">Urgent financial needs</div>
+          </div>
+          <span class="type-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+        </label>
+
+        <label class="type-card">
+          <input type="checkbox" name="loan_purposes" value="Other"
+            {% if loan and "Other" in loan.loan_purposes %}checked{% endif %}
+            {% if locked %}disabled{% endif %}>
+          <div class="type-icon">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+          </div>
+          <div class="type-body">
+            <div class="type-name">Other</div>
+            <div class="type-desc">Other purposes</div>
+          </div>
+          <span class="type-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+        </label>
+      </div>
+
+      <div class="hint">Choose one option</div>
+
+      <hr>
+
+      <!-- ===== Section: Personal Details ===== -->
+      <div class="section-title">Personal Details</div>
+
+      <div class="grid-2">
+        <div class="field">
+          <label>Full name</label>
+          <input type="text" name="full_name" id="fullName"
+            value="{{ loan.full_name|default:'' }}"
+            {% if locked %}readonly{% endif %}
+            required
+            pattern="[A-Za-z ]+"
+            title="Letters and spaces only">
+        </div>
+        <div class="field">
+          <label>Age</label>
+          <input type="number" name="age" min="18" max="90"
+            value="{{ loan.age|default:'' }}"
+            {% if locked %}readonly{% endif %}
+            required>
+        </div>
+
+        <div class="field">
+          <label>Current living</label>
+          <textarea name="current_living" id="currentLiving" rows="2"
+            required {% if locked %}readonly{% endif %}
+            pattern="[A-Za-z0-9 ]+"
+            title="Letters, numbers and spaces only">{{ loan.current_living|default:'' }}</textarea>
+        </div>
+        <div class="field">
+          <label>Hometown</label>
+          <textarea name="hometown" rows="2"
+            required {% if locked %}readonly{% endif %}>{{ loan.hometown|default:'' }}</textarea>
+        </div>
+
+        <div class="field">
+          <label>Income (optional)</label>
+          <input type="text" name="income" id="incomeInput"
+            inputmode="numeric" pattern="[0-9]*"
+            value="{{ loan.income|default:'' }}"
+            {% if locked %}readonly{% endif %}>
+        </div>
+
+        <div class="field">
+          <label>Monthly expenses</label>
+          <input type="text" name="monthly_expenses" id="expensesInput"
+            inputmode="numeric" pattern="[0-9]*"
+            value="{{ loan.monthly_expenses|default:'' }}"
+            {% if locked %}readonly{% endif %}
+            required>
+        </div>
+
+        <div class="field">
+          <label>Identify name</label>
+          <input type="text" name="identity_name" id="identityName"
+            value="{{ loan.identity_name|default:'' }}"
+            placeholder="Identify Name"
+            {% if locked %}readonly{% endif %}
+            required
+            pattern="[A-Za-z0-9 ]+"
+            title="Letters, numbers and spaces only">
+        </div>
+
+        <div class="field">
+          <label>Identify numbers</label>
+          <input type="text" name="identity_number" id="identityNumber"
+            value="{{ loan.identity_number|default:'' }}"
+            placeholder="Identify Number"
+            inputmode="numeric" pattern="[0-9]*"
+            {% if locked %}readonly{% endif %}
+            required>
+        </div>
+      </div>
+
+      <hr>
+
+      <!-- ===== Section: ID Required ===== -->
+      <div class="section-title">ID Required (Upload)</div>
+
+      <div class="id-grid">
+
+        <!-- FRONT -->
+        <label class="idbox {% if loan and loan.id_front %}has-img{% endif %}" id="boxFront">
+          <img class="id-preview" id="prevFront"
+            {% if loan and loan.id_front %}src="{{ loan.id_front.url }}"{% endif %}
+            alt="ID Front preview">
+          <div class="id-guide" aria-hidden="true">
+            <svg class="id-art" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2.5" y="4" width="27" height="16" rx="2.5"/>
+              <rect x="5.5" y="8" width="6" height="8" rx="1"/>
+              <line x1="14" y1="9" x2="26" y2="9"/>
+              <line x1="14" y1="13" x2="23" y2="13"/>
+              <line x1="14" y1="16" x2="25" y2="16"/>
+            </svg>
+            <div class="id-caption">
+              <strong>ID Card Front</strong>
+            </div>
+          </div>
+          <input type="file" name="id_front" accept="image/*"
+            class="compress-img"
+            {% if not locked %}required{% endif %}
+            {% if locked %}disabled{% endif %}
+            hidden>
+        </label>
+
+        <!-- BACK -->
+        <label class="idbox {% if loan and loan.id_back %}has-img{% endif %}" id="boxBack">
+          <img class="id-preview" id="prevBack"
+            {% if loan and loan.id_back %}src="{{ loan.id_back.url }}"{% endif %}
+            alt="ID Back preview">
+          <div class="id-guide" aria-hidden="true">
+            <svg class="id-art" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2.5" y="4" width="27" height="16" rx="2.5"/>
+              <line x1="2.5" y1="9" x2="29.5" y2="9"/>
+              <line x1="6" y1="14" x2="26" y2="14"/>
+              <line x1="6" y1="17" x2="20" y2="17"/>
+            </svg>
+            <div class="id-caption">
+              <strong>ID Card Back</strong>
+            </div>
+          </div>
+          <input type="file" name="id_back" accept="image/*"
+            class="compress-img"
+            {% if not locked %}required{% endif %}
+            {% if locked %}disabled{% endif %}
+            hidden>
+        </label>
+
+        <!-- SELFIE -->
+        <label class="idbox selfie-box {% if loan and loan.selfie_with_id %}has-img{% endif %}" id="boxSelfie">
+          <img class="id-preview" id="prevSelfie"
+            {% if loan and loan.selfie_with_id %}src="{{ loan.selfie_with_id.url }}"{% endif %}
+            alt="Selfie preview">
+          <div class="id-guide" aria-hidden="true">
+            <svg class="id-art" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 6 L12.5 3.5 H19.5 L22 6 H27 A2 2 0 0 1 29 8 V18 A2 2 0 0 1 27 20 H5 A2 2 0 0 1 3 18 V8 A2 2 0 0 1 5 6 Z"/>
+              <circle cx="16" cy="13" r="4"/>
+            </svg>
+            <div class="id-caption">
+              <strong>Selfie Holding Your ID Card</strong>
+            </div>
+          </div>
+          <input type="file" name="selfie_with_id" accept="image/*"
+            class="compress-img"
+            {% if not locked %}required{% endif %}
+            {% if locked %}disabled{% endif %}
+            hidden>
+        </label>
+
+      </div>
+
+      <!-- SIGNATURE -->
+      <div style="margin-top:14px;">
+        <div class="idbox" id="sigBox">
+          <div class="id-text" style="position:relative; z-index:2;">
+            <div class="id-ico">✍️</div>
+            <strong>Signature</strong>
+            <small>Draw your signature</small>
+          </div>
+
+          <canvas id="sigCanvas" class="sig-canvas"></canvas>
+          {% if loan and loan.signature_image %}
+            <img id="sigPreviewImg" src="{{ loan.signature_image.url }}"
+              style="width:100%;height:100%;object-fit:contain;border-radius:14px;position:absolute;inset:0;z-index:3;">
+          {% else %}
+            <img id="sigPreviewImg" style="display:none;">
+          {% endif %}
+
+          <input type="hidden" name="signature_data" id="signatureData" value=""
+            {% if locked %}disabled{% endif %}>
+        </div>
+        <div class="sig-clear-wrap">
+          <button type="button" class="sig-btn" id="sigClear"
+            {% if locked %}disabled{% endif %}>Clear</button>
+        </div>
+      </div>
+
+      <hr>
+
+      <!-- ===== Section: Apply Loan ===== -->
+      <div class="section-title">Apply Loan</div>
+
+      <div class="field">
+        <label>Loan amount (Min 80,000 · Max 5,000,000)</label>
+        <input type="number" name="loan_amount" id="loanAmount" min="80000" max="5000000" required>
+      </div>
+
+      <div class="field">
+        <label>Loan terms</label>
+        <input type="hidden" name="loan_terms" id="loanTerms" required>
+        <div class="term-grid">
+          <button type="button" class="term-btn" data-term="6">6</button>
+          <button type="button" class="term-btn" data-term="12">12</button>
+          <button type="button" class="term-btn" data-term="24">24</button>
+          <button type="button" class="term-btn" data-term="36">36</button>
+        </div>
+        <div class="hint" id="termHint">Choose months</div>
+      </div>
+
+      <div class="summary" aria-live="polite">
+        <div class="row"><div class="k">Amount of loan</div><div class="v" id="sumAmount">—</div></div>
+        <div class="row"><div class="k">Interest rate</div><div class="v">0.5%</div></div>
+        <div class="row"><div class="k">Loan period</div><div class="v" id="sumTerm">—</div></div>
+        <div class="row"><div class="k">Monthly repayment</div><div class="v" id="sumMonthly">—</div></div>
+      </div>
+
+      {% if locked %}
+        <button class="btn btn-primary cta" type="button" disabled>
+          Submitted · Waiting for review
+        </button>
+      {% else %}
+        <button class="btn btn-primary cta" type="submit" name="action" value="apply_loan">
+          Confirm Apply
+        </button>
+      {% endif %}
+
+    </form>
+  </div>
+</div>
+
+<script>
+  // Preview images inside the 3 ID upload cards
+  function bindPreview(boxId, inputName, prevId){
+    const box = document.getElementById(boxId);
+    if(!box) return;
+    const input = box.querySelector(`input[name="${inputName}"]`);
+    const prev = document.getElementById(prevId);
+    if(!input || !prev) return;
+
+    input.addEventListener('change', () => {
+      const f = input.files && input.files[0];
+      if(!f) return;
+      const url = URL.createObjectURL(f);
+      prev.src = url;
+      box.classList.add('has-img');
+    });
+  }
+  bindPreview('boxFront', 'id_front', 'prevFront');
+  bindPreview('boxBack', 'id_back', 'prevBack');
+  bindPreview('boxSelfie', 'selfie_with_id', 'prevSelfie');
+
+  // Loan term buttons
+  (function(){
+    const hidden = document.getElementById("loanTerms");
+    const hint = document.getElementById("termHint");
+    const btns = document.querySelectorAll(".term-btn");
+
+    btns.forEach(b=>{
+      b.addEventListener("click", ()=>{
+        btns.forEach(x=>x.classList.remove("active"));
+        b.classList.add("active");
+        hidden.value = b.dataset.term;
+        if(hint) hint.textContent = b.dataset.term + " months";
+        if(window.updateSummary) window.updateSummary();
+      });
+    });
+  })();
+
+  // Live summary calculator
+  function updateSummary(){
+    const amountEl = document.getElementById("loanAmount");
+    const termEl   = document.getElementById("loanTerms");
+
+    const outAmount = document.getElementById("sumAmount");
+    const outTerm   = document.getElementById("sumTerm");
+    const outMonthly= document.getElementById("sumMonthly");
+
+    if(!amountEl || !termEl || !outAmount || !outTerm || !outMonthly) return;
+
+    const amount = Number(amountEl.value || 0);
+    const term   = Number(termEl.value || 0);
+
+    outAmount.textContent = amount ? amount.toLocaleString() : "—";
+    outTerm.textContent   = term ? (term + " months") : "—";
+
+    const rate = 0.005;
+    if(amount > 0 && term > 0){
+      const total = amount + (amount * rate * term);
+      const monthly = total / term;
+      outMonthly.textContent = Math.round(monthly).toLocaleString();
+    }else{
+      outMonthly.textContent = "—";
+    }
+  }
+
+  document.addEventListener("input", (e)=>{
+    if(e.target && e.target.id === "loanAmount") updateSummary();
+  });
+
+  document.addEventListener("DOMContentLoaded", updateSummary);
+
+  // Auto-fill from query string
+  (function(){
+    const qs = new URLSearchParams(window.location.search);
+    const a = qs.get("amount");
+    const t = qs.get("term");
+
+    const amountEl = document.getElementById("loanAmount");
+    const termHidden = document.getElementById("loanTerms");
+    const hint = document.getElementById("termHint");
+    const btns = document.querySelectorAll(".term-btn");
+
+    if(a && amountEl) amountEl.value = a;
+
+    if(t && termHidden){
+      termHidden.value = t;
+
+      btns.forEach(b=>{
+        if(b.dataset.term === String(t)){
+          btns.forEach(x=>x.classList.remove("active"));
+          b.classList.add("active");
+        }
+      });
+
+      if(hint) hint.textContent = t + " months";
+    }
+
+    if(window.updateSummary) window.updateSummary();
+  })();
+
+  // Letters-only for full name
+  (function(){
+    const full = document.getElementById("fullName");
+    if(!full) return;
+    full.addEventListener("input", function(){
+      this.value = this.value.replace(/[^A-Za-z ]+/g, "");
+    });
+  })();
+
+  // Letters+numbers for identity name
+  (function(){
+    const el = document.getElementById("identityName");
+    if(!el) return;
+    el.addEventListener("input", function(){
+      this.value = this.value.replace(/[^A-Za-z0-9 ]+/g, "");
+    });
+  })();
+
+  // Numbers only for identity number
+  (function(){
+    const el = document.getElementById("identityNumber");
+    if(!el) return;
+    el.addEventListener("input", function(){
+      this.value = this.value.replace(/[^0-9]/g, "");
+    });
+  })();
+
+  // Letters+numbers for current living
+  (function(){
+    const living = document.getElementById("currentLiving");
+    if(!living) return;
+    living.addEventListener("input", function(){
+      this.value = this.value.replace(/[^A-Za-z0-9 ]+/g, "");
+    });
+  })();
+
+  // Numbers only for income/expenses
+  (function(){
+    function onlyNumber(el){
+      if(!el) return;
+      el.addEventListener("input", function(){
+        this.value = this.value.replace(/[^0-9]/g, "");
+      });
+    }
+    onlyNumber(document.getElementById("incomeInput"));
+    onlyNumber(document.getElementById("expensesInput"));
+  })();
+
+  // Signature canvas
+  (function(){
+    const canvas = document.getElementById("sigCanvas");
+    const hidden = document.getElementById("signatureData");
+    const clearBtn = document.getElementById("sigClear");
+    const form = document.querySelector("form");
+
+    if(!canvas || !hidden) return;
+
+    const ctx = canvas.getContext("2d");
+
+    function resizeCanvas(){
+      const rect = canvas.getBoundingClientRect();
+      const ratio = window.devicePixelRatio || 1;
+      canvas.width  = Math.floor(rect.width * ratio);
+      canvas.height = Math.floor(rect.height * ratio);
+      ctx.setTransform(ratio,0,0,ratio,0,0);
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.strokeStyle = "#38bdf8";
+    }
+
+    let drawing = false;
+    let hasInk = false;
+    let lastX = 0, lastY = 0;
+
+    function getPos(e){
+      const rect = canvas.getBoundingClientRect();
+      const touch = e.touches && e.touches[0];
+      const clientX = touch ? touch.clientX : e.clientX;
+      const clientY = touch ? touch.clientY : e.clientY;
+      return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+
+    function start(e){
+      if(canvas.hasAttribute("disabled")) return;
+      drawing = true;
+      const p = getPos(e);
+      lastX = p.x; lastY = p.y;
+      e.preventDefault();
+    }
+
+    function move(e){
+      if(!drawing) return;
+      const p = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(p.x, p.y);
+      ctx.stroke();
+      lastX = p.x; lastY = p.y;
+      hasInk = true;
+      e.preventDefault();
+    }
+
+    function end(){
+      if(!drawing) return;
+      drawing = false;
+      if(hasInk){
+        hidden.value = canvas.toDataURL("image/png");
+      }
+    }
+
+    function clear(){
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      hidden.value = "";
+      hasInk = false;
+    }
+
+    clearBtn && clearBtn.addEventListener("click", clear);
+
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    canvas.addEventListener("mousedown", start);
+    canvas.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", end);
+
+    canvas.addEventListener("touchstart", start, {passive:false});
+    canvas.addEventListener("touchmove", move, {passive:false});
+    canvas.addEventListener("touchend", end);
+
+    form && form.addEventListener("submit", (e)=>{
+      if(hidden.disabled) return;
+      if(!hidden.value){
+        e.preventDefault();
+        alert("Please draw your signature first.");
+      }
+    });
+  })();
+
+  (function(){
+    const locked = "{{ locked|yesno:'1,0' }}";
+    if(locked !== "1") return;
+
+    const canvas = document.getElementById("sigCanvas");
+    const img = document.getElementById("sigPreviewImg");
+    const clearBtn = document.getElementById("sigClear") || document.querySelector(".sig-btn");
+
+    if(img && img.getAttribute("src")){
+      if(canvas) canvas.style.display = "none";
+      if(clearBtn) clearBtn.style.display = "none";
+    }
+  })();
+
+  // Exclusive selection for loan_purposes (only 1 at a time)
+  document.querySelectorAll('input[name="loan_purposes"]').forEach(cb => {
+    cb.addEventListener('change', function () {
+      if (this.checked) {
+        document.querySelectorAll('input[name="loan_purposes"]').forEach(other => {
+          if (other !== this) other.checked = false;
+        });
+      }
+    });
+  });
+</script>
+{% endblock %}

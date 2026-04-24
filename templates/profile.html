@@ -1,0 +1,748 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<style>
+  /* ===== ManaLoan Profile — Dark Glass Theme ===== */
+
+  body, body * {
+    font-family: "Ovelion", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+  }
+
+  html, body { width: 100%; overflow-x: hidden; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    color: #e6edf7;
+    background:
+      radial-gradient(600px 400px at 10% 10%, rgba(59,130,246,.35), transparent 60%),
+      radial-gradient(500px 500px at 90% 20%, rgba(139,92,246,.28), transparent 60%),
+      radial-gradient(700px 500px at 50% 90%, rgba(56,189,248,.22), transparent 60%),
+      radial-gradient(400px 400px at 80% 80%, rgba(16,185,129,.18), transparent 60%),
+      #070b16 !important;
+    background-attachment: fixed !important;
+  }
+
+  .wrap{ padding-top: 0 !important; }
+
+  /* ── Animations ── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes avatarGlow {
+    0%, 100% { box-shadow: 0 0 24px rgba(56,189,248,.40), 0 0 0 1px rgba(56,189,248,.50) inset; }
+    50%      { box-shadow: 0 0 36px rgba(56,189,248,.60), 0 0 0 1px rgba(129,140,248,.65) inset; }
+  }
+
+  /* ── Wrapper ── */
+  .p-wrap {
+    width: min(520px, 94vw);
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 18px 14px 40px;
+    box-sizing: border-box;
+  }
+
+  /* ── Top row (title + back) ── */
+  .p-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    opacity: 0;
+    animation: fadeInUp .5s ease-out .05s forwards;
+  }
+  .p-pagetitle {
+    font-size: 22px;
+    font-weight: 950;
+    color: #fff;
+    letter-spacing: -.2px;
+  }
+  .p-pagetitle small {
+    display: block;
+    color: #94a3b8;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: .02em;
+    margin-top: 2px;
+  }
+
+  /* ── Status alert banner ── */
+  .status-alert {
+    width: 100%;
+    margin: 0 0 12px;
+    padding: 12px 16px;
+    border-radius: 14px;
+    text-align: center;
+    font-weight: 900;
+    letter-spacing: .4px;
+    box-sizing: border-box;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .status-danger  { background: rgba(239,68,68,.15); color: #fca5a5; border: 1px solid rgba(239,68,68,.40); }
+  .status-success { background: rgba(16,185,129,.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,.40); }
+  .status-warn    { background: rgba(234,179,8,.15);  color: #fde68a; border: 1px solid rgba(234,179,8,.40); }
+
+  /* ── Hero card (avatar + name + account + badge) ── */
+  .cardx.p-hero {
+    position: relative;
+    padding: 26px 20px 22px !important;
+    border-radius: 22px !important;
+    background: linear-gradient(180deg, rgba(15,23,42,.55) 0%, rgba(10,16,32,.45) 100%) !important;
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    border: 1px solid rgba(56,189,248,.45) !important;
+    box-shadow:
+      0 0 0 1px rgba(56,189,248,.08),
+      0 0 24px rgba(56,189,248,.18),
+      0 20px 60px rgba(2,6,23,.55),
+      inset 0 1px 0 rgba(255,255,255,.08) !important;
+    color: #e6edf7 !important;
+    margin: 0 0 14px;
+    overflow: hidden;
+    text-align: center;
+    animation: fadeInUp .55s ease-out .1s both;
+  }
+  .cardx.p-hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(120deg, transparent 0%, rgba(56,189,248,.10) 50%, transparent 100%);
+    transform: translateX(-120%);
+    animation: heroShine 4s ease-in-out infinite;
+  }
+  @keyframes heroShine {
+    0%, 55% { transform: translateX(-120%); }
+    100%    { transform: translateX(120%); }
+  }
+  .cardx.p-hero > * { position: relative; z-index: 2; }
+
+  /* Avatar ring */
+  .avatar-ring {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    margin: 2px auto 14px;
+    background: linear-gradient(135deg, #38bdf8, #6366f1);
+    padding: 3px;
+    animation: avatarGlow 2.6s ease-in-out infinite;
+  }
+  .avatar-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(180deg, rgba(15,23,42,.95) 0%, rgba(10,16,32,.95) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .avatar-inner svg {
+    width: 44px;
+    height: 44px;
+    fill: #38bdf8;
+  }
+  .avatar-inner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Name + account */
+  .p-name {
+    font-size: 22px;
+    font-weight: 950;
+    color: #ffffff;
+    letter-spacing: .01em;
+    margin-bottom: 4px;
+  }
+  .p-account {
+    font-size: 13px;
+    color: #94a3b8;
+    letter-spacing: .02em;
+    margin-bottom: 12px;
+  }
+
+  /* Status badge (Identity Verified style) */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 7px 16px;
+    border-radius: 999px;
+    font-weight: 900;
+    font-size: 12px;
+    letter-spacing: .04em;
+    white-space: nowrap;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  .status-badge svg { width: 13px; height: 13px; flex: 0 0 auto; }
+  .status-active  { background: rgba(16,185,129,.15); color: #6ee7b7 !important; border: 1px solid rgba(16,185,129,.55); box-shadow: 0 0 14px rgba(16,185,129,.22); }
+  .status-warn    { background: rgba(234,179,8,.15);  color: #fde68a !important; border: 1px solid rgba(234,179,8,.55);  box-shadow: 0 0 14px rgba(234,179,8,.22); }
+  .status-danger  { background: rgba(239,68,68,.15);  color: #fca5a5 !important; border: 1px solid rgba(239,68,68,.55);  box-shadow: 0 0 14px rgba(239,68,68,.22); }
+
+  /* ── Stats card (2 columns) ── */
+  .p-stats {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: stretch;
+    gap: 0;
+    padding: 16px 18px !important;
+    border-radius: 18px !important;
+    background: linear-gradient(180deg, rgba(15,23,42,.55) 0%, rgba(10,16,32,.45) 100%) !important;
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid rgba(56,189,248,.35) !important;
+    box-shadow:
+      0 0 0 1px rgba(56,189,248,.05),
+      0 10px 30px rgba(2,6,23,.45) !important;
+    margin: 0 0 20px;
+    opacity: 0;
+    animation: fadeInUp .5s ease-out .18s forwards;
+  }
+  .stat { display: flex; flex-direction: column; min-width: 0; }
+  .stat.stat-right { align-items: flex-end; text-align: right; }
+  .stat-label {
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .stat-value {
+    font-size: 22px;
+    font-weight: 950;
+    color: #ffffff;
+    letter-spacing: .01em;
+    line-height: 1.05;
+    margin-bottom: 4px;
+    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-value .peso {
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-value [data-balance] {
+    -webkit-text-fill-color: #fff;
+    color: #fff;
+  }
+  .stat-sub {
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 700;
+    letter-spacing: .02em;
+  }
+  .stat-sub.ok { color: #6ee7b7; }
+  .stat-divider {
+    width: 1px;
+    background: linear-gradient(180deg, transparent 0%, rgba(56,189,248,.45) 50%, transparent 100%);
+    margin: 0 14px;
+  }
+
+  /* ── Section label ── */
+  .menu-label {
+    color: #64748b;
+    font-weight: 900;
+    font-size: 11px;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    margin: 18px 4px 10px;
+    opacity: 0;
+    animation: fadeInUp .45s ease-out .24s forwards;
+  }
+  .menu-label.late { animation-delay: .5s; }
+  .menu-label.late2 { animation-delay: .76s; }
+
+  /* ── Menu grid ── */
+  .menu { display: grid; gap: 10px; }
+
+  /* ── Menu buttons (glass) ── */
+  .p-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    text-decoration: none;
+    background: linear-gradient(180deg, rgba(15,23,42,.55) 0%, rgba(10,16,32,.45) 100%);
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    border-radius: 16px;
+    border: 1px solid rgba(56,189,248,.28);
+    box-shadow:
+      0 0 0 1px rgba(56,189,248,.04),
+      0 8px 24px rgba(2,6,23,.35),
+      inset 0 1px 0 rgba(255,255,255,.05);
+    color: #e6edf7;
+    cursor: pointer;
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeInUp .45s ease-out forwards;
+    transition: border-color .22s ease, background .22s ease, box-shadow .22s ease, transform .08s ease;
+  }
+  .menu .p-btn:nth-child(1){ animation-delay: .28s; }
+  .menu .p-btn:nth-child(2){ animation-delay: .32s; }
+  .menu .p-btn:nth-child(3){ animation-delay: .36s; }
+  .menu .p-btn:nth-child(4){ animation-delay: .40s; }
+
+  .p-btn:hover {
+    border-color: rgba(56,189,248,.60);
+    background: linear-gradient(180deg, rgba(30,41,59,.65) 0%, rgba(15,23,42,.55) 100%);
+    box-shadow:
+      0 0 0 1px rgba(56,189,248,.10),
+      0 0 22px rgba(56,189,248,.20),
+      0 10px 28px rgba(2,6,23,.45);
+  }
+  .p-btn:active { transform: scale(.99); }
+
+  /* Logout row accent */
+  #logoutBtn {
+    border-color: rgba(239,68,68,.30);
+  }
+  #logoutBtn:hover {
+    border-color: rgba(239,68,68,.60);
+    box-shadow:
+      0 0 0 1px rgba(239,68,68,.10),
+      0 0 22px rgba(239,68,68,.20),
+      0 10px 28px rgba(2,6,23,.45);
+  }
+  #logoutBtn .ico {
+    background: rgba(239,68,68,.14);
+    border-color: rgba(239,68,68,.40);
+  }
+  #logoutBtn .ico svg { fill: #fca5a5; }
+  #logoutBtn .chev {
+    background: rgba(239,68,68,.10);
+    border-color: rgba(239,68,68,.30);
+  }
+  #logoutBtn .chev svg { stroke: #fca5a5; }
+
+  /* ── Left cluster ── */
+  .left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+
+  /* ── Icon container ── */
+  .ico {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    background: rgba(56,189,248,.14);
+    border: 1px solid rgba(56,189,248,.40);
+    display: flex; align-items: center; justify-content: center;
+    flex: 0 0 auto;
+  }
+  .ico svg { width: 20px; height: 20px; fill: #38bdf8; }
+
+  /* ── Text block ── */
+  .txt { min-width: 0; }
+  .t1 {
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: .02em;
+    color: #ffffff;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .t2 {
+    font-size: 12px;
+    color: #94a3b8;
+    margin-top: 3px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  /* ── Chevron ── */
+  .chev {
+    width: 28px; height: 28px;
+    border-radius: 999px;
+    background: rgba(56,189,248,.10);
+    border: 1px solid rgba(56,189,248,.30);
+    display: flex; align-items: center; justify-content: center;
+    flex: 0 0 auto;
+  }
+  .chev svg {
+    width: 16px; height: 16px;
+    fill: none; stroke: #38bdf8;
+    stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+  }
+
+  /* ── Back button ── */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 40px;
+    padding: 0 14px;
+    border-radius: 12px;
+    background: rgba(30,41,59,.55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #93c5fd !important;
+    border: 1px solid rgba(56,189,248,.30);
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: .04em;
+    text-decoration: none;
+    box-shadow: 0 0 14px rgba(56,189,248,.08);
+    transition: all .22s ease;
+  }
+  .back-btn svg { width: 14px; height: 14px; }
+  .back-btn:hover {
+    color: #fff !important;
+    background: rgba(56,189,248,.12);
+    border-color: rgba(56,189,248,.60);
+    box-shadow: 0 0 20px rgba(56,189,248,.22);
+  }
+
+  /* ── Mobile override (base.html disables .cardx animation on mobile) ── */
+  @media (max-width: 768px) {
+    .cardx.p-hero,
+    .p-stats {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      background: linear-gradient(180deg, rgba(15,23,42,.92) 0%, rgba(10,16,32,.88) 100%) !important;
+      animation: none !important;
+      opacity: 1 !important;
+    }
+    .cardx.p-hero::after { animation: none !important; }
+  }
+
+  /* ── Logout modal overlay ── */
+  .logout-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(2,6,23,.70);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 9999;
+    padding: 18px 14px;
+    box-sizing: border-box;
+  }
+  .logout-modal.show { display: flex; }
+
+  .logout-box {
+    width: min(420px, 92vw);
+    background: linear-gradient(180deg, rgba(15,23,42,.92) 0%, rgba(10,16,32,.90) 100%);
+    backdrop-filter: blur(24px) saturate(140%);
+    -webkit-backdrop-filter: blur(24px) saturate(140%);
+    border: 1px solid rgba(56,189,248,.45);
+    border-radius: 22px;
+    box-shadow:
+      0 0 0 1px rgba(56,189,248,.08),
+      0 0 30px rgba(56,189,248,.18),
+      0 24px 60px rgba(2,6,23,.65),
+      inset 0 1px 0 rgba(255,255,255,.08);
+    overflow: hidden;
+    padding: 28px;
+    text-align: center;
+    animation: fadeInUp .3s ease-out;
+  }
+  .logout-title {
+    font-weight: 900;
+    font-size: 18px;
+    color: #ffffff !important;
+    margin-bottom: 8px;
+    letter-spacing: .2px;
+  }
+  .logout-text {
+    font-size: 14px;
+    color: #94a3b8 !important;
+    line-height: 1.5;
+    margin-bottom: 22px;
+  }
+  .logout-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  .btn-cancel {
+    height: 44px;
+    padding: 0 24px;
+    border-radius: 999px;
+    border: 1px solid rgba(56,189,248,.35);
+    background: rgba(30,41,59,.55);
+    color: #93c5fd !important;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: .04em;
+    cursor: pointer;
+    transition: all .18s ease;
+  }
+  .btn-cancel:hover {
+    background: rgba(56,189,248,.12);
+    color: #fff !important;
+    border-color: rgba(56,189,248,.60);
+  }
+  .btn-confirm {
+    height: 44px;
+    padding: 0 24px;
+    border-radius: 999px;
+    border: 1px solid rgba(239,68,68,.55);
+    background: linear-gradient(135deg, rgba(239,68,68,.25), rgba(185,28,28,.30));
+    color: #fecaca !important;
+    font-weight: 900;
+    font-size: 13px;
+    letter-spacing: .04em;
+    cursor: pointer;
+    box-shadow: 0 0 18px rgba(239,68,68,.25);
+    transition: all .18s ease;
+  }
+  .btn-confirm:hover {
+    color: #fff !important;
+    background: linear-gradient(135deg, rgba(239,68,68,.45), rgba(185,28,28,.50));
+    box-shadow: 0 0 24px rgba(239,68,68,.40);
+  }
+  .btn-confirm:active { transform: scale(.98); }
+</style>
+
+<div class="p-wrap">
+
+  <!-- Top row: title + back -->
+  <div class="p-top">
+    <div class="p-pagetitle">
+      My Profile
+      <small>Manage your account</small>
+    </div>
+    <a class="back-btn" href="{% url 'dashboard' %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Back
+    </a>
+  </div>
+
+  <!-- Status banner -->
+  <div id="statusAlert"
+     class="status-alert"
+     style="display:none;"
+     data-msg="{{ request.user.status_message|default:''|escapejs }}"
+     {% if request.user.status_message %}data-lock="1"{% endif %}></div>
+
+  <!-- Hero: avatar + name + account + status -->
+  <div class="cardx p-hero" id="profile-currency-section">
+    <div class="avatar-ring">
+      <div class="avatar-inner">
+        {% if selfie_url %}
+          <img src="{{ selfie_url }}" alt="Profile">
+        {% else %}
+          <svg viewBox="0 0 24 24">
+            <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.42 0-8 2-8 4.5V21h16v-2.5C20 16 16.42 14 12 14z"/>
+          </svg>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="p-name">{{ request.user.phone }}</div>
+    <div class="p-account">Account · {{ request.user.phone }}</div>
+
+    {% with color_key=request.user.account_status|default:"ACTIVE"|upper display_text=request.user.dashboard_status_label|default:request.user.account_status|default:"ACTIVE" %}
+      <span id="accStatusBadge"
+        class="status-badge
+        {% if color_key == 'ACTIVE' or color_key == 'APPROVED' or color_key == 'LOAN_PAID' or color_key == 'WITHDRAWAL_SUCCESSFUL' or color_key == 'ACCOUNT_UPDATED' %}status-active
+        {% elif color_key == 'APP_MAINTENANCE' or color_key == 'INVALID_DETAIL' or color_key == 'RENEW_DOCUMENT_REQUIRED' %}status-warn
+        {% else %}status-danger{% endif %}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        {{ display_text }}
+      </span>
+    {% endwith %}
+  </div>
+
+  <!-- Stats: Balance + Loan Limit -->
+  <div class="p-stats">
+    <div class="stat">
+      <div class="stat-label">Balance</div>
+      <div class="stat-value"><span class="peso">₱</span> <span data-balance>{{ request.user.balance|default:"0.00" }}</span></div>
+      <div class="stat-sub ok">Available</div>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat stat-right">
+      <div class="stat-label">Loan Limit</div>
+      <div class="stat-value">₱5,000,000</div>
+      <div class="stat-sub">Max eligible</div>
+    </div>
+  </div>
+
+  <!-- ACCOUNT -->
+  <div class="menu-label">Account</div>
+  <div class="menu">
+    <a class="p-btn" href="/credit-score/">
+      <div class="left">
+        <div class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M4 19h16v2H4zM6 17V7h3v10H6zm5 0V4h3v13h-3zm5 0v-9h3v9h-3z"/></svg>
+        </div>
+        <div class="txt">
+          <div class="t1">Credit Score</div>
+          <div class="t2">View your score & level</div>
+        </div>
+      </div>
+      <div class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+    </a>
+
+    <a class="p-btn" href="/loan-apply/">
+      <div class="left">
+        <div class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M6 2h9l3 3v17H6V2zm9 1.5V6h2.5L15 3.5zM8 9h8v2H8V9zm0 4h8v2H8v-2zm0 4h6v2H8v-2z"/></svg>
+        </div>
+        <div class="txt">
+          <div class="t1">Loan Application</div>
+          <div class="t2">Apply & track your status</div>
+        </div>
+      </div>
+      <div class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+    </a>
+
+    <a class="p-btn" href="/transactions/">
+      <div class="left">
+        <div class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M7 7h14v4H7V7zM3 6h3v6H3V6zm4 9h14v4H7v-4zM3 14h3v6H3v-6z"/></svg>
+        </div>
+        <div class="txt">
+          <div class="t1">Transactions</div>
+          <div class="t2">History of deposits & withdrawals</div>
+        </div>
+      </div>
+      <div class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+    </a>
+
+    <a class="p-btn" href="{% url 'payment_method' %}">
+      <div class="left">
+        <div class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M3 7h18v10H3V7zm2 2v2h14V9H5zm0 4v2h6v-2H5z"/></svg>
+        </div>
+        <div class="txt">
+          <div class="t1">Payment Method</div>
+          <div class="t2">Add payout details</div>
+        </div>
+      </div>
+      <div class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+    </a>
+  </div>
+
+  <!-- LEGAL & SCHEDULE -->
+  <div class="menu-label late">Legal & Schedule</div>
+  <div class="menu">
+    <a class="p-btn" href="{% url 'agreement' %}">
+      <div class="left">
+        <div class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M6 2h9l3 3v17H6V2zm9 1.5V6h2.5L15 3.5zM8 9h8v2H8V9zm0 4h8v2H8v-2zm0 4h6v2H8v-2z"/></svg>
+        </div>
+        <div class="txt">
+          <div class="t1">Agreement</div>
+          <div class="t2">Terms, conditions & disclosures</div>
+        </div>
+      </div>
+      <div class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+    </a>
+
+    <a class="p-btn" href="/payment-schedule/">
+      <div class="left">
+        <div class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M7 2v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm14 8H3V8h18v2z"/></svg>
+        </div>
+        <div class="txt">
+          <div class="t1">Payment Schedule</div>
+          <div class="t2">Installments & due dates</div>
+        </div>
+      </div>
+      <div class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+    </a>
+  </div>
+
+  <!-- SESSION -->
+  <div class="menu-label late2">Session</div>
+  <div class="menu">
+    <a class="p-btn" href="#" id="logoutBtn" aria-label="Logout">
+      <div class="left">
+        <div class="ico" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M10 17l1.4-1.4-2.6-2.6H20v-2H8.8l2.6-2.6L10 7l-7 7 7 7zM4 4h7V2H4a2 2 0 0 0-2 2v6h2V4zm0 18h7v-2H4v-6H2v6a2 2 0 0 0 2 2z"/></svg>
+        </div>
+        <div class="txt">
+          <div class="t1">Logout</div>
+          <div class="t2">Securely exit your account</div>
+        </div>
+      </div>
+      <div class="chev" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
+    </a>
+  </div>
+
+  <!-- Logout Confirm Modal -->
+  <div id="logoutModal" class="logout-modal" aria-hidden="true">
+    <div class="logout-box" role="dialog" aria-modal="true" aria-label="Confirm Logout">
+      <div class="logout-title">Confirm Logout</div>
+      <div class="logout-text">Are you sure you want to logout?</div>
+      <div class="logout-actions">
+        <button type="button" class="btn-cancel" id="logoutCancel">Cancel</button>
+        <form method="post" action="/logout/" style="margin:0;">
+          {% csrf_token %}
+          <button type="submit" class="btn-confirm" id="logoutConfirm">Logout</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const btn = document.getElementById("logoutBtn");
+    const modal = document.getElementById("logoutModal");
+    const cancel = document.getElementById("logoutCancel");
+    if(!btn || !modal) return;
+
+    function openModal(e){
+      if(e) e.preventDefault();
+      modal.classList.add("show");
+      modal.setAttribute("aria-hidden","false");
+    }
+    function closeModal(){
+      modal.classList.remove("show");
+      modal.setAttribute("aria-hidden","true");
+    }
+
+    btn.addEventListener("click", openModal);
+    if(cancel) cancel.addEventListener("click", closeModal);
+
+    modal.addEventListener("click", (e) => {
+      if(e.target === modal) closeModal();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if(e.key === "Escape") closeModal();
+    });
+  })();
+</script>
+<script>
+(function(){
+  const el = document.getElementById("statusAlert");
+  if(!el) return;
+
+  const msg = (el.dataset.msg || "").trim();
+  if(!msg) return;
+
+  el.textContent = msg;
+  el.style.display = "block";
+
+  el.classList.remove("status-danger","status-success","status-warn");
+
+  const m = msg.toLowerCase();
+  const isGreen  = m.includes("approved") || m.includes("success") || m.includes("active");
+  const isYellow = m.includes("maintenance") || m.includes("invalid") || m.includes("warning");
+
+  if(isGreen) el.classList.add("status-success");
+  else if(isYellow) el.classList.add("status-warn");
+  else el.classList.add("status-danger");
+})();
+</script>
+{% endblock %}

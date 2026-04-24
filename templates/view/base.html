@@ -1,0 +1,286 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>View all Users only</title>
+<style>
+@font-face{
+  font-family:"Ovelion";
+  src:url("{% static 'fonts/Ovelion-Regular.ttf' %}") format("truetype");
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+</style>
+  <style>
+    /* ✅ COPY style from staff_base.html (KEEP SAME LOOK) */
+    :root{
+      --bg1:#061a10; --bg2:#02130a;
+      --card:rgba(213, 233, 218, 0.582);
+      --stroke:rgba(255,255,255,.10);
+      --txt:rgba(255,255,255,.98);
+      --muted:rgba(255,255,255,.84);
+    }
+    html, body{ height:auto !important; }
+    body{
+      margin:0;
+      background:
+        linear-gradient(rgba(6,26,16,.55), rgba(2,19,10,.75)),
+        url("{% static 'img/staff-bg.webp' %}");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      overflow-y:auto !important;
+      overflow-x:hidden !important;
+      min-height:100vh;
+      font-family: "Ovelion", sans-serif !important;
+    }
+    html, body, *{
+  font-family:"Ovelion", sans-serif !important;
+}
+
+    .wrap{ width: calc(100vw - 20px); margin:10px auto; min-height: calc(100vh - 20px); }
+    .topbar{
+  border-radius:18px;
+  padding:10px 14px;
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:16px;
+
+  /* ✅ CULTURE MIX (NO ANIMATION) */
+  background: linear-gradient(120deg, #c9a33aaf, #0B2B57 af);
+
+  border:2px solid rgba(201,163,58,.65);
+  box-shadow: 0 0 10px rgba(201,163,58,.18), 0 14px 10px rgba(0,0,0,.18);
+  backdrop-filter: blur(10px);
+}
+    .pill{
+      display:inline-flex; gap:10px; align-items:center;
+      padding:10px 14px; border-radius:14px;
+      background:rgba(0,0,0,.35); border:1px solid var(--stroke);
+      backdrop-filter:blur(14px);
+      color:var(--txt);
+    }
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:10px 14px; border-radius:14px;
+      color:var(--txt); text-decoration:none; font-weight:800;
+      border:1px solid var(--stroke);
+      background:rgba(0,0,0,.45);
+    }
+
+    .grid{ display:grid; gap:12px; height:auto; align-items:stretch; }
+    @media(min-width:900px){ .grid{ grid-template-columns: 300px 1fr; } }
+
+    .card{
+  background: linear-gradient(135deg, rgba(11,43,87,.78), rgba(201,163,58,.22));
+  border:2px solid rgba(201,163,58,.55);
+  border-radius:20px;
+  box-shadow: 0 18px 50px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.18);
+  backdrop-filter: blur(18px);
+  overflow:hidden;
+}
+    .card-h{
+  padding:16px 18px;
+  display:flex; align-items:center; justify-content:space-between;
+
+  /* gold divider like culture */
+  border-bottom:1px solid rgba(201,163,58,.55);
+  background: linear-gradient(90deg, rgba(11,43,87,.35), rgba(201,163,58,.10));
+}
+    .h1{ font-weight:900; font-size:18px; }
+    .dot{ width:10px;height:10px;border-radius:999px;background:rgba(34,197,94,.9); box-shadow:0 0 16px rgba(34,197,94,.55); }
+
+    .menu-item{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 14px; border-radius:14px;
+      text-decoration:none; color:var(--txt);
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(0,0,0,.22);
+      margin:10px 12px;
+      font-weight:800;
+    }
+    .menu-item.active{
+  background: linear-gradient(135deg, #0A3D78, #C9A33A);
+  color:#fff;
+  border:1px solid rgba(242,210,122,.75);
+}
+
+    /* ✅ RIGHT CONTENT = WHITE BIG CARD (same as your staff) */
+    .dashboard-card{
+      background: #ffffffe8 !important;
+      border: 1px solid #e5e7eb !important;
+      box-shadow: 0 10px 30px rgba(0,0,0,.08) !important;
+      backdrop-filter: none !important;
+    }
+    .content{ padding:14px; }
+
+    /* ✅ CARD FORM (stats card) */
+    .stats-grid{
+      display:grid;
+      gap:14px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    @media (max-width: 1100px){ .stats-grid{ grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 560px){ .stats-grid{ grid-template-columns: 1fr; } }
+
+    .stat-card{
+      border-radius:20px;
+      padding:16px;
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow:0 18px 50px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.35);
+      color:#fff;
+      overflow:hidden;
+    }
+    .stat-top{ display:flex; justify-content:space-between; gap:10px; }
+    .stat-title{ font-weight:950; font-size:14px; }
+    .stat-num{ font-size:34px; font-weight:950; margin-top:10px; }
+    .stat-btn{
+      margin-top:12px;
+      display:inline-flex;
+      padding:10px 14px;
+      border-radius:14px;
+      text-decoration:none;
+      font-weight:900;
+      color:#fff;
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(0,0,0,.18);
+    }
+    .stat-teal{ background: linear-gradient(135deg, rgba(16,185,129,.85), rgba(2,132,199,.75)); }
+    .stat-orange{ background: linear-gradient(135deg, rgba(249,115,22,.9), rgba(245,158,11,.75)); }
+    .stat-purple{ background: linear-gradient(135deg, rgba(168,85,247,.9), rgba(236,72,153,.75)); }
+    /* ===== Table style (same idea as staff) ===== */
+.table-wrap{
+  width:100%;
+  overflow-x:auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+table{
+  width:100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+thead th{
+  background:#004182;
+  color:#fff !important;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  font-size:12px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding:12px 10px;
+}
+
+thead th:first-child{ border-top-left-radius:10px; border-bottom-left-radius:10px; }
+thead th:last-child{ border-top-right-radius:10px; border-bottom-right-radius:10px; }
+
+tbody td{
+  padding:12px 10px;
+  border-bottom:1px solid rgba(0,0,0,.10);
+  color:#004182;
+  font-weight:800;
+}
+/* =====================================
+   FORCE OVELION EVERYWHERE (ABSOLUTE)
+   ===================================== */
+
+@font-face{
+  font-family: "Ovelion";
+  src: url("{% static 'fonts/Ovelion-Regular.ttf' %}") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* FORCE OVELION EVERYWHERE */
+html, body{
+  font-family: "Ovelion", sans-serif !important;
+}
+
+*,
+*::before,
+*::after,
+button,
+input,
+select,
+textarea,
+option,
+th,
+td,
+a,
+span,
+div,
+p,
+label,
+h1,h2,h3,h4,h5,h6{
+  font-family: "Ovelion", sans-serif !important;
+}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="topbar">
+
+  <!-- LEFT: login info -->
+  <div class="pill">
+    <div style="font-weight:900;">View Site / Log in by</div>
+    <div style="opacity:.9;">({{ request.user.phone }})</div>
+  </div>
+
+  <!-- RIGHT: dashboard (left) + logout (right) NOT stuck -->
+  <div style="display:flex; align-items:center; gap:18px;">
+    <a class="btn" href="/view/">Dashboard</a>
+
+    <form id="logoutForm" method="post" action="{% url 'logout' %}" style="margin:0;">
+      {% csrf_token %}
+      <button type="button" class="btn" id="logoutBtn">Logout</button>
+    </form>
+  </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const btn = document.getElementById("logoutBtn");
+  const form = document.getElementById("logoutForm");
+  if (!btn || !form) return;
+
+  btn.addEventListener("click", function () {
+    if (confirm("Are you sure you want to logout?")) {
+      form.submit();
+    }
+  });
+});
+</script>
+
+    <div class="grid">
+      <!-- LEFT MENU (3 only) -->
+      <div class="card">
+        <div class="card-h">
+          <div class="h1">Menu</div>
+          <span class="dot"></span>
+        </div>
+
+        <a href="/view/users/" class="menu-item {% if request.path == '/view/users/' %}active{% endif %}">Users <span>→</span></a>
+<a href="/view/loans/" class="menu-item {% if request.path == '/view/loans/' %}active{% endif %}">Loans <span>→</span></a>
+<a href="/view/withdrawals/" class="menu-item {% if request.path == '/view/withdrawals/' %}active{% endif %}">Withdrawals <span>→</span></a>
+      </div>
+
+      <!-- RIGHT CONTENT -->
+      <div class="card dashboard-card">
+        <div class="content">
+          {% block content %}{% endblock %}
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

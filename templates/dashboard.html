@@ -1,0 +1,1087 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Dashboard - ManaLoan{% endblock %}
+
+{% block content %}
+<style>
+/* ===== ManaLoan Dashboard — Loan-first UI ===== */
+
+html, body { width: 100%; overflow-x: hidden; }
+
+body{
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Ovelion", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color: #e6edf7;
+  background:
+    radial-gradient(600px 400px at 10% 10%, rgba(59,130,246,.35), transparent 60%),
+    radial-gradient(500px 500px at 90% 20%, rgba(139,92,246,.28), transparent 60%),
+    radial-gradient(700px 500px at 50% 90%, rgba(56,189,248,.22), transparent 60%),
+    radial-gradient(400px 400px at 80% 80%, rgba(16,185,129,.18), transparent 60%),
+    #070b16 !important;
+  background-attachment: fixed !important;
+}
+
+.wrap{ padding-top: 0 !important; }
+
+.dash-wrap{
+  width: min(520px, 94vw);
+  margin: 0 auto;
+  padding: 22px 14px 40px;
+  box-sizing: border-box;
+}
+
+/* ===== Animations ===== */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes shineSweep {
+  0%   { transform: translateX(-120%); }
+  55%  { transform: translateX(-120%); }
+  100% { transform: translateX(120%); }
+}
+@keyframes notifPulse{
+  0%   { box-shadow: 0 0 0 0 rgba(239,68,68,.45); }
+  70%  { box-shadow: 0 0 0 10px rgba(239,68,68,0); }
+  100% { box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+}
+
+/* ===== Top row (greeting + bell) ===== */
+.top-row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  opacity: 0;
+  animation: fadeInUp .5s ease-out .05s forwards;
+}
+.greeting .hi{
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: .02em;
+}
+.greeting .name{
+  color: #fff;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -.2px;
+  margin-top: 2px;
+}
+
+.bell-btn{
+  width: 42px; height: 42px;
+  border-radius: 14px;
+  background: rgba(30,41,59,.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(56,189,248,.30);
+  display: flex; align-items: center; justify-content: center;
+  text-decoration: none;
+  position: relative;
+  box-shadow: 0 0 14px rgba(56,189,248,.10);
+  transition: all .2s ease;
+}
+.bell-btn:hover{
+  border-color: rgba(56,189,248,.60);
+  box-shadow: 0 0 20px rgba(56,189,248,.25);
+}
+.bell-btn svg{ width: 18px; height: 18px; color: #38bdf8; fill: none; stroke: #38bdf8; stroke-width: 2; }
+.bell-btn.has-unread{ animation: notifPulse 1.35s ease-in-out infinite; }
+.notify-badge{
+  position: absolute;
+  top: -5px; right: -5px;
+  min-width: 18px; height: 18px;
+  padding: 0 6px;
+  border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 950; color: #fff;
+  background: #ef4444;
+  box-shadow: 0 0 12px rgba(239,68,68,.55);
+  border: 2px solid #070b16;
+}
+.notify-badge.dot{
+  min-width: 10px; width: 10px; height: 10px;
+  padding: 0; font-size: 0; line-height: 0;
+  top: -3px; right: -3px;
+}
+
+/* ===== Glass card base ===== */
+.glass{
+  position: relative;
+  background: linear-gradient(180deg, rgba(15,23,42,.55) 0%, rgba(10,16,32,.45) 100%);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid rgba(56,189,248,.45);
+  box-shadow:
+    0 0 0 1px rgba(56,189,248,.08),
+    0 0 24px rgba(56,189,248,.18),
+    0 20px 60px rgba(2,6,23,.55),
+    inset 0 1px 0 rgba(255,255,255,.08);
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+/* ===== Outstanding Balance card ===== */
+.balance-card{
+  position: relative;
+  padding: 20px 20px 18px;
+  margin-bottom: 22px;
+  opacity: 0;
+  animation: fadeInUp .55s ease-out .12s forwards;
+}
+
+/* ── User avatar (top-right, selfie if submitted) ── */
+.balance-avatar{
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  box-shadow:
+    0 0 18px rgba(56,189,248,.45),
+    0 0 0 1px rgba(56,189,248,.55) inset;
+  z-index: 3;
+  animation: avatarBalGlow 2.8s ease-in-out infinite;
+}
+@keyframes avatarBalGlow {
+  0%, 100% { box-shadow: 0 0 18px rgba(56,189,248,.40), 0 0 0 1px rgba(56,189,248,.55) inset; }
+  50%      { box-shadow: 0 0 28px rgba(56,189,248,.65), 0 0 0 1px rgba(129,140,248,.70) inset; }
+}
+.balance-avatar-inner{
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(15,23,42,.95) 0%, rgba(10,16,32,.95) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.balance-avatar-inner img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.balance-avatar-verified{
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #34d399, #10b981);
+  border: 2px solid #070b16;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 10px rgba(16,185,129,.55);
+}
+.balance-avatar-verified svg{
+  width: 10px;
+  height: 10px;
+  fill: none;
+  stroke: #fff;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.balance-card.has-avatar .balance-label,
+.balance-card.has-avatar .balance-amount,
+.balance-card.has-avatar .balance-sub{
+  padding-right: 72px;
+}
+
+.balance-label{
+  color: #67e8f9;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .20em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.balance-amount{
+  font-size: 42px;
+  font-weight: 950;
+  line-height: 1;
+  color: #fff;
+  letter-spacing: -1px;
+  display: flex;
+  align-items: flex-start;
+  gap: 2px;
+}
+.balance-amount .sym{
+  background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-size: 26px;
+  font-weight: 900;
+  margin-top: 4px;
+  margin-right: 2px;
+}
+.balance-sub{
+  color: #94a3b8;
+  font-size: 12px;
+  margin-top: 10px;
+  letter-spacing: .02em;
+}
+
+.balance-grid{
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr 1px 1fr;
+  align-items: center;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(56,189,248,.18);
+}
+.balance-grid .divider{
+  width: 1px; height: 34px;
+  background: rgba(56,189,248,.18);
+}
+.bg-item .lbl{
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.bg-item .val{
+  color: #fff;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -.2px;
+}
+.bg-item .val.rate small{ color: #94a3b8; font-weight: 600; font-size: 11px; letter-spacing: .02em; }
+.bg-item .val.status{
+  color: #6ee7b7;
+  text-shadow: 0 0 10px rgba(16,185,129,.35);
+}
+
+/* Progress bar */
+.progress-wrap{
+  margin-top: 16px;
+}
+.progress-bar{
+  height: 6px;
+  background: rgba(30,41,59,.70);
+  border-radius: 999px;
+  overflow: hidden;
+  border: 1px solid rgba(56,189,248,.15);
+}
+.progress-fill{
+  height: 100%;
+  background: linear-gradient(90deg, #38bdf8 0%, #818cf8 50%, #a78bfa 100%);
+  border-radius: 999px;
+  box-shadow: 0 0 12px rgba(56,189,248,.55);
+  width: 68%;
+}
+.progress-meta{
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 11px;
+}
+.progress-meta .done{ color: #67e8f9; font-weight: 800; }
+.progress-meta .total{ color: #94a3b8; font-weight: 700; }
+
+/* ===== Circular quick actions (4 buttons) ===== */
+.quick-actions{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeInUp .55s ease-out .18s forwards;
+}
+.qa-item{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+.qa-circle{
+  width: 56px; height: 56px;
+  border-radius: 18px;
+  background: rgba(30,41,59,.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(56,189,248,.30);
+  box-shadow:
+    0 0 14px rgba(56,189,248,.10),
+    inset 0 1px 0 rgba(255,255,255,.06);
+  display: flex; align-items: center; justify-content: center;
+  transition: all .22s ease;
+}
+.qa-item:hover .qa-circle{
+  transform: translateY(-3px);
+  border-color: rgba(56,189,248,.70);
+  background: rgba(56,189,248,.12);
+  box-shadow:
+    0 0 24px rgba(56,189,248,.30),
+    inset 0 1px 0 rgba(255,255,255,.10);
+}
+.qa-circle svg{ width: 22px; height: 22px; color: #38bdf8; stroke: #38bdf8; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.qa-label{
+  color: #94a3b8;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.qa-item:hover .qa-label{ color: #fff; }
+
+/* ===== Section header ===== */
+.section-head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 6px 2px 12px;
+  opacity: 0;
+  animation: fadeInUp .55s ease-out .22s forwards;
+}
+.section-head h2{
+  color: #fff;
+  font-size: 17px;
+  font-weight: 900;
+  letter-spacing: -.2px;
+}
+.section-head a{
+  color: #38bdf8;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  letter-spacing: .02em;
+}
+.section-head a:hover{ color: #67e8f9; }
+
+/* ===== Featured Loan card ===== */
+.loan-card{
+  padding: 20px;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: fadeInUp .55s ease-out .24s forwards;
+}
+.popular-pill{
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: rgba(56,189,248,.12);
+  border: 1px solid rgba(56,189,248,.45);
+  color: #67e8f9;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  box-shadow: 0 0 14px rgba(56,189,248,.15);
+}
+.popular-pill::before{
+  content: ""; width: 5px; height: 5px; border-radius: 999px;
+  background: #38bdf8; box-shadow: 0 0 8px #38bdf8;
+}
+.loan-title{
+  font-size: 22px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -.3px;
+  margin-bottom: 4px;
+}
+.loan-title span{ color: #38bdf8; }
+.loan-sub{
+  color: #94a3b8;
+  font-size: 12px;
+  margin-bottom: 16px;
+  letter-spacing: .02em;
+}
+
+.loan-stats{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.ls-item{
+  padding: 12px 8px;
+  border-radius: 12px;
+  background: rgba(30,41,59,.45);
+  border: 1px solid rgba(56,189,248,.22);
+  text-align: center;
+}
+.ls-item .v{
+  color: #38bdf8;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: -.2px;
+}
+.ls-item .l{
+  color: #94a3b8;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+.loan-features{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 14px;
+  margin-bottom: 18px;
+}
+.lf-item{
+  display: flex; align-items: center; gap: 8px;
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 600;
+}
+.lf-check{
+  width: 18px; height: 18px;
+  border-radius: 6px;
+  background: rgba(56,189,248,.15);
+  border: 1px solid rgba(56,189,248,.45);
+  display: flex; align-items: center; justify-content: center;
+  flex: 0 0 auto;
+}
+.lf-check svg{ width: 11px; height: 11px; color: #38bdf8; stroke: #38bdf8; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+
+.loan-foot{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(56,189,248,.18);
+}
+.loan-note .t{
+  color: #fff;
+  font-weight: 800;
+  font-size: 13px;
+}
+.loan-note .s{
+  color: #94a3b8;
+  font-size: 11px;
+  margin-top: 2px;
+}
+.apply-btn{
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 60%, #6366f1 100%);
+  color: #fff;
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: .04em;
+  text-decoration: none;
+  box-shadow: 0 8px 22px rgba(59,130,246,.45), inset 0 1px 0 rgba(255,255,255,.25);
+  transition: transform .22s ease;
+}
+.apply-btn:hover{ transform: translateY(-2px); }
+.apply-btn svg{ width: 13px; height: 13px; stroke: #fff; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ===== Currency table (compact) ===== */
+.currency-card{
+  padding: 18px;
+  margin-top: 8px;
+  opacity: 0;
+  animation: fadeInUp .55s ease-out .30s forwards;
+}
+.currency-title{
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 0 0 14px;
+}
+.currency-title h3{
+  color: #fff;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: -.2px;
+}
+.currency-title .auto{
+  color: #38bdf8;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+.fx-scroll{
+  max-height: 260px;
+  overflow-y: auto; overflow-x: hidden;
+  padding-right: 2px;
+}
+.fx-scroll::-webkit-scrollbar{ width: 6px; }
+.fx-scroll::-webkit-scrollbar-thumb{ background: rgba(56,189,248,.30); border-radius: 99px; }
+.fx-table{ width: 100%; border-collapse: collapse; }
+.fx-table thead th{
+  position: sticky; top: 0;
+  background: rgba(10,16,32,.90) !important;
+  color: #67e8f9;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  padding: 10px 8px;
+  border-bottom: 1px solid rgba(56,189,248,.25);
+  z-index: 2;
+  text-align: left;
+}
+.fx-table td{
+  padding: 12px 8px;
+  border-top: 1px solid rgba(56,189,248,.12);
+  color: #e6edf7;
+  font-size: 13px;
+}
+.fx-left{ display: flex; align-items: center; gap: 10px; min-width: 0; }
+.fx-flag{
+  width: 22px; height: 16px;
+  object-fit: cover;
+  border-radius: 3px;
+  box-shadow: 0 0 0 1px rgba(56,189,248,.25);
+  flex: 0 0 auto;
+}
+.fx-code{ font-weight: 900; color: #fff; }
+.fx-country{ font-size: 11px; color: #94a3b8; }
+.fx-meta{
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 10px; padding-top: 10px;
+  border-top: 1px solid rgba(56,189,248,.18);
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* Android no-blur fallback */
+.android-no-blur .glass,
+.android-no-blur .bell-btn,
+.android-no-blur .qa-circle{
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.android-no-blur .glass{ background: rgba(10,16,32,.92) !important; }
+
+/* ===== Live ticker (full-width top bar, fixed at viewport top) ===== */
+.live-ticker{
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 90;
+  margin: 0;
+  padding: 9px 14px 9px 0;
+  border-radius: 0;
+  background: linear-gradient(180deg, rgba(10,16,32,.92) 0%, rgba(7,11,22,.88) 100%);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  border: 0;
+  border-bottom: 1px solid rgba(56,189,248,.28);
+  box-shadow: 0 6px 18px rgba(2,6,23,.55);
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeInUp .55s ease-out .04s forwards;
+}
+/* Push page content down to make room for the fixed ticker */
+.dash-wrap{ padding-top: 62px !important; }
+.live-ticker::before{
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(56,189,248,.55), transparent);
+}
+.live-ticker::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg,
+    rgba(7,11,22,.95) 0%,
+    rgba(7,11,22,.55) 4%,
+    transparent 10%,
+    transparent 90%,
+    rgba(7,11,22,.55) 96%,
+    rgba(7,11,22,.95) 100%);
+  z-index: 2;
+}
+.lt-tag{
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(239,68,68,.15);
+  border: 1px solid rgba(239,68,68,.55);
+  color: #fca5a5;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  box-shadow: 0 0 12px rgba(239,68,68,.25);
+}
+.lt-tag .pulse{
+  width: 7px; height: 7px;
+  border-radius: 999px;
+  background: #ef4444;
+  box-shadow: 0 0 8px #ef4444, 0 0 2px #fff;
+  animation: ltPulse 1.3s ease-in-out infinite;
+}
+@keyframes ltPulse { 50% { opacity: .35; transform: scale(.85); } }
+
+.lt-viewport{
+  overflow: hidden;
+  position: relative;
+  padding-left: 72px;
+  z-index: 1;
+}
+.lt-track{
+  display: flex;
+  gap: 10px;
+  width: max-content;
+  animation: ltScroll 60s linear infinite;
+}
+.live-ticker:hover .lt-track{ animation-play-state: paused; }
+@keyframes ltScroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.lt-item{
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 8px;
+  border-radius: 999px;
+  background: rgba(30,41,59,.70);
+  border: 1px solid rgba(56,189,248,.22);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #cbd5e1;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.lt-item .check{
+  width: 18px; height: 18px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #34d399, #10b981);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 8px rgba(16,185,129,.55);
+  flex: 0 0 auto;
+}
+.lt-item .check svg{
+  width: 9px; height: 9px;
+  stroke: #fff; stroke-width: 3.5; fill: none;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.lt-item .phone{ color: #fff; font-weight: 900; letter-spacing: .06em; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.lt-item .sep{ color: rgba(56,189,248,.40); font-weight: 900; }
+.lt-item .amt{
+  color: #6ee7b7;
+  font-weight: 900;
+  letter-spacing: -.01em;
+}
+.lt-item .time{ color: #64748b; font-size: 10.5px; letter-spacing: .02em; }
+
+/* ===== Footer strip (thin banner) ===== */
+.dash-footer{
+  margin-top: 22px;
+  padding: 12px 6px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  letter-spacing: .05em;
+  border-top: 1px solid rgba(56,189,248,.18);
+  opacity: 0;
+  animation: fadeInUp .55s ease-out .42s forwards;
+}
+.dash-footer .df-brand{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #cbd5e1;
+  font-weight: 900;
+  letter-spacing: .04em;
+}
+.dash-footer .df-brand .dot{
+  width: 6px; height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  box-shadow: 0 0 8px rgba(56,189,248,.65);
+}
+.dash-footer .sep{
+  color: rgba(56,189,248,.35);
+  font-weight: 900;
+}
+.dash-footer .v{
+  color: #67e8f9;
+  font-weight: 800;
+}
+
+@media (max-width: 380px){
+  .dash-footer{ font-size: 10.5px; gap: 8px; }
+}
+</style>
+
+<div class="dash-wrap">
+
+  <!-- ===== Live customer ticker ===== -->
+  <div class="live-ticker" aria-label="Live withdrawals">
+    <span class="lt-tag"><span class="pulse"></span> Live</span>
+    <div class="lt-viewport">
+      <div class="lt-track">
+        {% comment %}15 items, duplicated for seamless loop{% endcomment %}
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0917-**-78547</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱500,000</span><span class="sep">·</span><span class="time">2m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0906-**-42315</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱250,000</span><span class="sep">·</span><span class="time">5m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0920-**-91023</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱1,200,000</span><span class="sep">·</span><span class="time">8m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0927-**-68251</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱750,000</span><span class="sep">·</span><span class="time">12m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0935-**-30729</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱350,000</span><span class="sep">·</span><span class="time">15m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0998-**-82901</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱2,000,000</span><span class="sep">·</span><span class="time">18m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0918-**-54083</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱180,000</span><span class="sep">·</span><span class="time">22m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0905-**-73502</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱950,000</span><span class="sep">·</span><span class="time">25m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0949-**-26918</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱620,000</span><span class="sep">·</span><span class="time">30m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0977-**-29384</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱150,000</span><span class="sep">·</span><span class="time">35m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0922-**-71562</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱1,500,000</span><span class="sep">·</span><span class="time">40m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0963-**-58291</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱450,000</span><span class="sep">·</span><span class="time">45m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0939-**-83174</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱800,000</span><span class="sep">·</span><span class="time">50m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0908-**-64308</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱320,000</span><span class="sep">·</span><span class="time">55m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0989-**-95847</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱2,500,000</span><span class="sep">·</span><span class="time">1h ago</span></div>
+
+        {% comment %}duplicate for seamless loop{% endcomment %}
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0917-**-78547</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱500,000</span><span class="sep">·</span><span class="time">2m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0906-**-42315</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱250,000</span><span class="sep">·</span><span class="time">5m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0920-**-91023</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱1,200,000</span><span class="sep">·</span><span class="time">8m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0927-**-68251</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱750,000</span><span class="sep">·</span><span class="time">12m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0935-**-30729</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱350,000</span><span class="sep">·</span><span class="time">15m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0998-**-82901</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱2,000,000</span><span class="sep">·</span><span class="time">18m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0918-**-54083</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱180,000</span><span class="sep">·</span><span class="time">22m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0905-**-73502</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱950,000</span><span class="sep">·</span><span class="time">25m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0949-**-26918</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱620,000</span><span class="sep">·</span><span class="time">30m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0977-**-29384</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱150,000</span><span class="sep">·</span><span class="time">35m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0922-**-71562</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱1,500,000</span><span class="sep">·</span><span class="time">40m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0963-**-58291</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱450,000</span><span class="sep">·</span><span class="time">45m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0939-**-83174</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱800,000</span><span class="sep">·</span><span class="time">50m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0908-**-64308</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱320,000</span><span class="sep">·</span><span class="time">55m ago</span></div>
+        <div class="lt-item"><span class="check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span><span class="phone">0989-**-95847</span><span class="sep">·</span><span>Withdrew</span><span class="amt">₱2,500,000</span><span class="sep">·</span><span class="time">1h ago</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top row: greeting + bell -->
+  <div class="top-row">
+    <div class="greeting">
+      <div class="hi">Welcome back,</div>
+      <div class="name">{{ request.user.phone }}</div>
+    </div>
+
+    <a class="bell-btn {% if notif_count|default:0|add:0 > 0 %}has-unread{% endif %}"
+       href="{% url 'notifications' %}"
+       aria-label="Notifications">
+      {% if notif_count|default:0|add:0 > 0 %}
+        <span class="notify-badge dot"></span>
+      {% endif %}
+      <svg viewBox="0 0 24 24">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+    </a>
+  </div>
+
+  <!-- Outstanding Balance card -->
+  <div class="glass balance-card {% if selfie_url %}has-avatar{% endif %}">
+
+    {% if selfie_url %}
+      <div class="balance-avatar" aria-hidden="true">
+        <div class="balance-avatar-inner">
+          <img src="{{ selfie_url }}" alt="Profile">
+        </div>
+        <div class="balance-avatar-verified" title="Verified">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="balance-label">Outstanding Balance</div>
+    <div class="balance-amount">
+      <span class="sym">₱</span><span data-balance>{{ request.user.balance|default:"0" }}</span>
+    </div>
+    <div class="balance-sub">
+      {% with color_key=request.user.account_status|default:"ACTIVE"|upper display_text=request.user.dashboard_status_label|default:request.user.account_status|default:"ACTIVE" %}
+        Account #ML-{{ request.user.id|default:"00000" }} · {{ display_text }}
+      {% endwith %}
+    </div>
+
+    <div class="balance-grid">
+      <div class="bg-item">
+        <div class="lbl">Monthly Payment</div>
+        <div class="val">₱0 / mo</div>
+      </div>
+      <div class="divider"></div>
+      <div class="bg-item">
+        <div class="lbl">Rate</div>
+        <div class="val rate">2.8% <small>p.a.</small></div>
+      </div>
+      <div class="divider"></div>
+      <div class="bg-item">
+        <div class="lbl">Status</div>
+        {% with color_key=request.user.account_status|default:"ACTIVE"|upper %}
+          <div class="val status">
+            {% if color_key == 'ACTIVE' or color_key == 'APPROVED' or color_key == 'LOAN_PAID' or color_key == 'WITHDRAWAL_SUCCESSFUL' or color_key == 'ACCOUNT_UPDATED' %}
+              Active
+            {% elif color_key == 'APP_MAINTENANCE' or color_key == 'INVALID_DETAIL' or color_key == 'RENEW_DOCUMENT_REQUIRED' %}
+              Pending
+            {% else %}
+              Frozen
+            {% endif %}
+          </div>
+        {% endwith %}
+      </div>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+      <div class="progress-meta">
+        <span class="done">0% paid</span>
+        <span class="total">₱5,000,000 max</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick actions (4 circular buttons) -->
+  <div class="quick-actions">
+    <a class="qa-item" href="{% url 'quick_loan' %}">
+      <div class="qa-circle">
+        <svg viewBox="0 0 24 24">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </div>
+      <div class="qa-label">New Loan</div>
+    </a>
+
+    <a class="qa-item" href="/wallet/">
+      <div class="qa-circle">
+        <svg viewBox="0 0 24 24">
+          <path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/>
+          <path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/>
+          <path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"/>
+        </svg>
+      </div>
+      <div class="qa-label">My Wallet</div>
+    </a>
+
+    <a class="qa-item" href="{% url 'contact' %}">
+      <div class="qa-circle">
+        <svg viewBox="0 0 24 24">
+          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+        </svg>
+      </div>
+      <div class="qa-label">Contact Us</div>
+    </a>
+
+    <a class="qa-item" href="/profile/">
+      <div class="qa-circle">
+        <svg viewBox="0 0 24 24">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <div class="qa-label">Profile</div>
+    </a>
+  </div>
+
+  <!-- Available Loans section -->
+  <div class="section-head">
+    <h2>Available Loans</h2>
+  </div>
+
+  <!-- Featured Loan card -->
+  <div class="glass loan-card">
+    <div class="popular-pill">Most Popular</div>
+    <div class="loan-title">Personal <span>Loan</span></div>
+    <div class="loan-sub">No collateral · Fast disbursement</div>
+
+    <div class="loan-stats">
+      <div class="ls-item">
+        <div class="v">2.8%</div>
+        <div class="l">p.a. Rate</div>
+      </div>
+      <div class="ls-item">
+        <div class="v">₱5M</div>
+        <div class="l">Max Amount</div>
+      </div>
+      <div class="ls-item">
+        <div class="v">84mo</div>
+        <div class="l">Max Term</div>
+      </div>
+    </div>
+
+    <div class="loan-features">
+      <div class="lf-item">
+        <span class="lf-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+        Instant decision
+      </div>
+      <div class="lf-item">
+        <span class="lf-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+        No hidden fees
+      </div>
+      <div class="lf-item">
+        <span class="lf-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+        Flexible terms
+      </div>
+      <div class="lf-item">
+        <span class="lf-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+        Early repay OK
+      </div>
+    </div>
+
+    <div class="loan-foot">
+      <div class="loan-note">
+        <div class="t">Same-day funding</div>
+        <div class="s">Once approved &amp; verified</div>
+      </div>
+      <a href="{% url 'quick_loan' %}" class="apply-btn">
+        Apply
+        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Currency table -->
+  <div class="glass currency-card">
+    <div class="currency-title">
+      <h3>Exchange Rates</h3>
+      <span class="auto">Auto daily</span>
+    </div>
+    <div class="fx-scroll" aria-label="Exchange rates list">
+      <table class="fx-table">
+        <thead>
+          <tr>
+            <th>Currency</th>
+            <th>USD</th>
+            <th style="text-align:right;">Convert</th>
+          </tr>
+        </thead>
+        <tbody id="fxRows"></tbody>
+      </table>
+    </div>
+    <div class="fx-meta">
+      <div id="fxUpdated">Updated: —</div>
+    </div>
+  </div>
+
+  <!-- ===== Footer strip ===== -->
+  <div class="dash-footer">
+    <span class="df-brand"><span class="dot"></span> ManaLoan</span>
+    <span class="sep">·</span>
+    <span class="v">v1.0.0</span>
+    <span class="sep">·</span>
+    <span>© 2026 All rights reserved</span>
+    <span class="sep">·</span>
+    <span>Updated Apr 2026</span>
+  </div>
+
+</div>
+
+<script>
+  (function () {
+    const rowsEl = document.getElementById("fxRows");
+    const updatedEl = document.getElementById("fxUpdated");
+    if (!rowsEl || !updatedEl) return;
+
+    const currencies = [
+      { code:"PHP", country:"Philippines", flag:"{% static 'img/flags/philippines.png' %}" },
+      { code:"SAR", country:"Saudi",       flag:"{% static 'img/flags/saudi arabian.png' %}" },
+      { code:"MYR", country:"Malaysia",    flag:"{% static 'img/flags/malaysia.png' %}" },
+      { code:"IDR", country:"Indonesia",   flag:"{% static 'img/flags/indonesia.png' %}" },
+      { code:"INR", country:"India",       flag:"{% static 'img/flags/india.png' %}" },
+      { code:"AFN", country:"Afghanistan", flag:"{% static 'img/flags/afghanistan.png' %}" },
+      { code:"KES", country:"Kenya",       flag:"{% static 'img/flags/kenyan.png' %}" },
+      { code:"OMR", country:"Oman",        flag:"{% static 'img/flags/oman.png' %}" },
+      { code:"PKR", country:"Pakistan",    flag:"{% static 'img/flags/pakistan.png' %}" },
+      { code:"VND", country:"Vietnam",     flag:"{% static 'img/flags/vietnam.png' %}" },
+    ];
+
+    function fmtRate(x){
+      if (!Number.isFinite(x)) return "—";
+      return new Intl.NumberFormat(undefined, {
+        maximumFractionDigits: 2,
+        minimumFractionDigits: 0,
+      }).format(x);
+    }
+
+    function render(rates, updatedText){
+      rowsEl.innerHTML = "";
+      currencies.forEach(c => {
+        const raw = rates && Object.prototype.hasOwnProperty.call(rates, c.code) ? rates[c.code] : null;
+        const rate = (raw === null || raw === undefined) ? NaN : Number(raw);
+
+        const tr = document.createElement("tr");
+
+        const td1 = document.createElement("td");
+        td1.innerHTML =
+          '<div class="fx-left">' +
+            '<img class="fx-flag" src="'+c.flag+'" alt="'+c.country+'">' +
+            '<div style="min-width:0">' +
+              '<div class="fx-code">'+c.code+'</div>' +
+              '<div class="fx-country">'+c.country+'</div>' +
+            '</div>' +
+          '</div>';
+
+        const td2 = document.createElement("td");
+        td2.textContent = "1 USD";
+
+        const td3 = document.createElement("td");
+        td3.style.textAlign = "right";
+        td3.textContent = Number.isFinite(rate) ? (fmtRate(rate) + " " + c.code) : ("— " + c.code);
+
+        tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
+        rowsEl.appendChild(tr);
+      });
+
+      updatedEl.textContent = "Updated: " + (updatedText || new Date().toLocaleString());
+    }
+
+    fetch("/api/fx/", { cache: "no-store" })
+      .then(r => r.ok ? r.json() : Promise.reject(r))
+      .then(data => render(data.rates || {}, data.updated))
+      .catch(() => render(null, null));
+  })();
+</script>
+
+<script>
+  /* Auto-clear badge on notification click */
+  (function(){
+    const a = document.querySelector('.bell-btn');
+    if(!a) return;
+    a.addEventListener('click', function(){
+      a.classList.remove('has-unread');
+      const b = a.querySelector('.notify-badge');
+      if(b) b.style.display = 'none';
+    }, {passive:true});
+  })();
+</script>
+
+<script>
+  /* Detect Android and add class */
+  (function(){
+    var ua = (navigator.userAgent || "").toLowerCase();
+    if(ua.includes("android")){
+      document.documentElement.classList.add("android-no-blur");
+    }
+  })();
+</script>
+{% endblock %}

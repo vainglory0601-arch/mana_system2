@@ -1,0 +1,1483 @@
+{% extends "staff_base.html" %}
+{% load humanize %}
+
+{% block content %}
+  <div class="card-h">
+    <div>
+      <div class="h1">Users</div>
+      <div class="muted">Edit status, OTP, messages</div>
+    </div>
+
+    <form method="get" style="display:flex;gap:10px;align-items:center;">
+      <input name="q" value="{{ q }}" placeholder="Search phone or name..." placeholder="Search phone..." style="width:260px;" autocomplete="off">
+      <button class="savebtn" type="submit">Search</button>
+    </form>
+  </div>
+
+  <div class="content">
+  <div class="table-wrap">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Phone</th>
+          <th>Password</th>
+      
+          <th>Balance</th>
+      
+          <th>Register IP</th>
+          <th>Country</th>
+          <th>City</th>
+      
+          <th class="col-active">On/Off User</th>
+          <th>Status</th>
+          <th>Delete User</th>
+          <th>Save Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for u in page.object_list %}
+
+          {# ✅ Create ONE unique form per user (NO wrapping <tr>) #}
+            <tr>
+              <!-- ✅ 1) NAME (first column) -->
+              <td class="user-font">
+                {{ u.display_name|default:"-" }}
+              </td>
+            
+              <!-- ✅ 2) PHONE (second column) -->
+              <td class="phone">
+                <form id="uform-{{ u.id }}" method="post" action="{% url 'staff_user_update' u.id %}" autocomplete="off">
+                  {% csrf_token %}
+                </form>
+                <a class="u-link" href="{% url 'staff_user_detail' u.id %}">{{ u.phone }}</a>
+              </td>
+              <td>
+                <button type="button" class="pw-btn"onclick="openPwModal({{ u.id }},
+                '{{ u.phone|escapejs }}')">Password</button>
+              </td>
+            
+              <!-- 4) BALANCE -->
+              <td class="balance-cell">
+  <input name="balance"
+       value="{{ u.balance|floatformat:2 }}"
+       form="uform-{{ u.id }}"
+       class="balance-input"
+       autocomplete="off">
+</td>
+
+<!-- ✅ NEW REGISTER INFO (readonly display) -->
+<td>{{ u.register_ip|default:"-" }}</td>
+<td>{{ u.register_country|default:"-" }}</td>
+<td>{{ u.register_city|default:"-" }}</td>
+
+<!-- 5) Active -->
+<td class="col-active">
+  <select name="is_active" form="uform-{{ u.id }}" class="active-select">
+    <option value="True" {% if u.is_active %}selected{% endif %}>ON</option>
+    <option value="False" {% if not u.is_active %}selected{% endif %}>OFF</option>
+  </select>
+</td>
+
+<!-- ✅ STATUS CELL (REPLACE THIS WHOLE TD) -->
+<td class="status-cell">
+
+  <input type="hidden"
+       name="dashboard_status_label"
+       form="uform-{{ u.id }}"
+       id="dashLabelHidden-{{ u.id }}"
+       value="{{ u.dashboard_status_label|default:''|escape }}">
+
+  <!-- hidden input that will be submitted with the form -->
+  <input type="hidden"
+         name="account_status"
+         form="uform-{{ u.id }}"
+         class="status-hidden"
+         id="stHidden-{{ u.id }}"
+         value="{{ u.account_status|default:'' }}">
+
+  <!-- ✅ NEW: hidden success + alert message fields (submitted with Save) -->
+  <input type="hidden"
+       name="success_message"
+       form="uform-{{ u.id }}"
+       id="successHidden-{{ u.id }}"
+       value="{{ u.success_message|default:''|escape }}">
+
+<input type="hidden"
+       name="notification_message"
+       form="uform-{{ u.id }}"
+       id="alertHidden-{{ u.id }}"
+       value="{{ u.notification_message|default:''|escape }}">
+<input type="hidden"
+       name="status_message"
+       form="uform-{{ u.id }}"
+       id="statusMsgHidden-{{ u.id }}"
+       value="{{ u.status_message|default:''|escape }}">       
+
+  <!-- Button trigger -->
+  <button type="button"
+          class="st-btn"
+          id="stBtn-{{ u.id }}"
+          data-user-id="{{ u.id }}"
+          data-current="{{ u.account_status|default:''|escapejs }}"
+          onclick="openStatusModal(this)">
+    <span class="st-label" id="stLabel-{{ u.id }}">
+  {{ u.dashboard_status_label|default:u.account_status|default:"Active" }}
+</span>
+    <span class="st-ico" aria-hidden="true">›</span>
+  </button>
+</td>
+
+<td>
+  <button type="button"
+        class="del-user-btn"
+        onclick="openUserDeleteModal({{ u.id }}, '{{ u.phone|escapejs }}')">
+  Delete
+</button>
+</td>
+<!-- 6) Save -->
+<td class="row-actions">
+  <button class="savebtn" type="submit" form="uform-{{ u.id }}">Save</button>
+</td>
+
+
+            </tr>
+
+        {% empty %}
+        <tr><td colspan="11" class="muted">No users</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="pager">
+      {% if page.has_previous %}
+        <a href="?q={{ q }}&page={{ page.previous_page_number }}">← Prev</a>
+      {% endif %}
+      <span class="muted">Page {{ page.number }} / {{ page.paginator.num_pages }}</span>
+      {% if page.has_next %}
+        <a href="?q={{ q }}&page={{ page.next_page_number }}">Next →</a>
+      {% endif %}
+    </div>
+  </div>
+
+
+  
+
+<style>
+
+  /* ✅ Make ACTIVE column narrow */
+th.col-active, td.col-active{
+  width: 78px;
+  min-width: 78px;
+  max-width: 78px;
+  text-align: center;
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+
+td.col-active .active-select{
+  width: 62px;
+  min-width: 62px;
+  padding: 6px 8px;
+  border-radius: 10px;
+}
+  /* ✅ make Active column smaller */
+  th.active-col, td.active-col { width: 80px; }
+
+  /* Password button */
+  .pw-btn{
+  height: 38px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 0;
+  background: linear-gradient(90deg, #004182, #054585d0);
+  color: #fff;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(0,0,0,.35);
+  transition: transform .08s ease, opacity .2s ease;
+}
+
+.pw-btn:active{
+  transform: scale(.98);
+}
+
+.pw-btn:hover{
+  opacity: .92;
+}
+  .pw-btn:active{ transform: scale(.99); }
+
+  /* Modal */
+  .pw-modal{
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 16px;
+  }
+  .pw-box{
+    width: min(520px, 92vw);
+    background: #f7f7f7;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,.45);
+    overflow: hidden;
+  }
+  .pw-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid rgba(0,0,0,.08);
+  }
+  .pw-title{ font-weight: 950; font-size: 18px; color:#111; }
+  .pw-x{
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    border: 0;
+    background: rgba(0,0,0,.06);
+    font-size: 20px;
+    cursor: pointer;
+  }
+  .pw-body{ padding: 16px; }
+  .pw-label{ font-weight: 900; color:#111; margin-bottom: 6px; }
+  .pw-input{
+    width: 100%;
+    height: 42px;
+    padding: 0 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,.18);
+    outline: none;
+  }
+  .pw-err{
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    background: rgba(239,68,68,.15);
+    border: 1px solid rgba(239,68,68,.35);
+    color: #b91c1c;
+    font-weight: 900;
+    font-size: 12px;
+  }
+  .pw-actions{
+    padding: 14px 16px;
+    display:flex;
+    justify-content:flex-end;
+    gap: 10px;
+    border-top: 1px solid rgba(0,0,0,.08);
+  }
+  .pw-save{
+    height: 40px;
+    padding: 0 18px;
+    border-radius: 8px;
+    border: 0;
+    background: #2563eb;
+    color:#fff;
+    font-weight: 950;
+    cursor:pointer;
+  }
+  .pw-close{
+    height: 40px;
+    padding: 0 18px;
+    border-radius: 8px;
+    border: 0;
+    background: #dc2626;
+    color:#fff;
+    font-weight: 950;
+    cursor:pointer;
+  }
+
+  .del-user-btn{
+  height:38px;
+  padding:0 16px;
+  border-radius:12px;
+  border:0;
+  background:#dc2626;
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+  box-shadow:0 8px 18px rgba(0,0,0,.35);
+  transition:opacity .2s ease;
+
+  margin-left: 6px !important;   /* ✅ រំកិល Delete ទៅស្ដាំ 6px */
+}
+.del-user-btn:hover{
+  opacity:.9;
+}
+
+/* ✅ Vertical lines (Name → Active only) */
+.users-table{
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+/* Reset first */
+.users-table th,
+.users-table td{
+  border-right: 0 !important;
+}
+
+/* Apply vertical line style (col 1 → 9) */
+.users-table th:nth-child(-n+9),
+.users-table td:nth-child(-n+9){
+  border-right: 3px solid rgba(184, 184, 184, 0.87) !important;
+}
+
+/* Ensure NO line inside Delete / Save columns */
+.users-table th:nth-child(10),
+.users-table td:nth-child(10),
+.users-table th:nth-child(11),
+.users-table td:nth-child(11){
+  border-right: 0 !important;
+}
+
+/* ✅ CENTER EVERYTHING inside yellow box (col 1 → 9 only) */
+.users-table th:nth-child(-n+9),
+.users-table td:nth-child(-n+9){
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+/* ✅ make links take full cell width so center looks perfect */
+.users-table td:nth-child(2) a.u-link{
+  display: inline-block !important;
+  width: 100% !important;
+  text-align: center !important;
+}
+
+/* ✅ center inputs/selects inside yellow box */
+.users-table td:nth-child(-n+9) input,
+.users-table td:nth-child(-n+9) select{
+  text-align: center !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* ✅ make select arrow + text look centered */
+.users-table td:nth-child(-n+9) select{
+  text-align-last: center !important;
+}
+
+/* ✅ Password button in center (optional but nice) */
+.users-table td:nth-child(3) .pw-btn{
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+/* ✅ DO NOT affect Delete / Save columns */
+.users-table td:nth-child(10),
+.users-table td:nth-child(11){
+  text-align: left !important; /* ឬ center បើបងចង់ */
+}
+
+/* ✅ BALANCE column: allow fit long numbers */
+.users-table th:nth-child(4),
+.users-table td:nth-child(4){
+  width: auto !important;
+  min-width: 160px !important;   /* បងអាចដាក់ 150/180 */
+  max-width: none !important;
+}
+
+/* ✅ BALANCE BIGGER FONT (same level as register IP) */
+.users-table td.balance-cell{
+  font-size: 15px !important;
+  font-weight: 900 !important;
+}
+
+.users-table td.balance-cell input.balance-input{
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 6px 6px !important;
+  text-align: center !important;
+
+  font-size: 16px !important;        /* ✅ តូចបន្តិច ដើម្បី fit */
+  font-weight: 900 !important;
+  color: #0b3b66 !important;
+
+  white-space: nowrap !important;     /* ✅ មិនឲ្យចុះបន្ទាត់ */
+  overflow: visible !important;       /* ✅ មិនកាត់ចុង */
+  text-overflow: clip !important;     /* ✅ មិន ... */
+}
+
+/* ✅ STATUS column (9th) wider */
+.users-table th:nth-child(9),
+.users-table td:nth-child(9){
+  width: 180px !important;
+  min-width: 180px !important;
+  max-width: 180px !important;
+  padding-left: 10px !important;
+  padding-right: 10px !important;
+}
+
+/* ✅ Status select fill + show long text */
+.users-table td:nth-child(9) select.status-select{
+  width: 100% !important;
+  min-width: 100% !important;
+  box-sizing: border-box !important;
+  font-size: 12px;
+  padding: 8px 10px;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ===========================
+   USERS PAGE: PHONE = RED ONLY
+   (no background, no box)
+   =========================== */
+
+/* ===== USERS PHONE COLUMN ===== */
+
+.users-table td.phone a.u-link{
+  color: #004182  !important;
+  font-weight:900 !important;
+}
+
+/* optional hover */
+.users-table td.phone a.u-link:hover{
+  opacity:.85;
+}
+
+.dashboard-card table.users-table tbody td.phone a.u-link:hover{
+  text-decoration: underline !important;
+}
+
+/* ===== Status Button ===== */
+.status-cell{ text-align:center; }
+
+.st-btn{
+  width: 100%;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 3px solid rgba(255,255,255,.9);
+  cursor: pointer;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+
+  font-weight: 950;
+  letter-spacing: .04em;
+
+  box-shadow: 0 10px 22px rgba(0,0,0,.28);
+  transition: transform .08s ease, filter .2s ease, opacity .2s ease;
+}
+/* ✅ DEFAULT (fallback) */
+.st-btn{
+  background: linear-gradient(90deg, #dc2626, #991b1b);
+}
+
+/* ✅ GREEN */
+.st-btn.st-green{
+  background: linear-gradient(90deg, #0E5F2F, #1E8E3E) !important;
+}
+
+/* ✅ YELLOW */
+.st-btn.st-yellow{
+  background: linear-gradient(90deg, #f59e0b, #eab308) !important;
+}
+
+/* ✅ RED */
+.st-btn.st-red{
+  background: linear-gradient(90deg, #dc2626, #991b1b) !important;
+}
+
+.st-btn:active{ transform: scale(.99); }
+.st-btn:hover{ filter: brightness(1.03); }
+/* ✅ make status text white (better contrast) */
+.st-btn,
+.st-btn .st-label{
+  color: #fff !important;
+}
+/* =========================================
+   FIX STATUS BUTTON COLOR (NO JS)
+   uses: <button class="st-btn" data-current="ACTIVE">
+   ========================================= */
+
+/* default fallback = RED */
+.st-btn{ background: linear-gradient(90deg, #dc2626, #991b1b) !important; }
+
+/* GREEN codes */
+.st-btn[data-current="APPROVED"],
+.st-btn[data-current="ACTIVE"],
+.st-btn[data-current="ACCOUNT_UPDATED"],
+.st-btn[data-current="LOAN_PAID"],
+.st-btn[data-current="WITHDRAWAL_SUCCESSFUL"]{
+  background: linear-gradient(90deg, #0E5F2F, #1E8E3E) !important;
+}
+
+/* YELLOW codes */
+.st-btn[data-current="APP_MAINTENANCE"],
+.st-btn[data-current="INVALID_DETAIL"]{
+  background: linear-gradient(90deg, #f59e0b, #eab308) !important;
+}
+
+/* RED codes (optional explicit, but keeps stable) */
+.st-btn[data-current="RENEW_DOCUMENT_REQUIRED"],
+.st-btn[data-current="RENEW_OTP_CODE"],
+.st-btn[data-current="LOCKED"],
+.st-btn[data-current="BANNED"],
+.st-btn[data-current="FROZEN"],
+.st-btn[data-current="LOW_CREDIT"],
+.st-btn[data-current="RENEW_DOCUMENT_AND_OTP"],
+.st-btn[data-current="OVERDUE_RECORD"],
+.st-btn[data-current="REPAYMENT_ABILITY"],
+.st-btn[data-current="VIP_CHANNEL"],
+.st-btn[data-current="PURCHASE_LIFE_INSURANCE"],
+.st-btn[data-current="TAX_VERIFICATION"],
+.st-btn[data-current="PLATFORM_FEE"],
+.st-btn[data-current="AMLC_WARNING"]{
+  background: linear-gradient(90deg, #dc2626, #991b1b) !important;
+}
+/* ✅ make popup(modal) background brighter + clearer */
+.st-box{
+  background: linear-gradient(180deg, #004182 0%, #42464bfb 100%) !important;
+  border: 2px solid rgba(255,255,255,.55) !important;
+  box-shadow: 0 26px 90px rgba(0,0,0,.65), 0 0 0 1px rgba(255,255,255,.08) inset !important;
+}
+
+/* ✅ make the header/footer a bit brighter too */
+.st-head, .st-foot{
+  background: rgba(255,255,255,.10) !important;
+  border-color: rgba(255,255,255,.18) !important;
+}
+.st-label{
+  overflow:hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.st-ico{
+  width:28px;height:28px;
+  border-radius:999px;
+  display:flex;align-items:center;justify-content:center;
+  background: rgba(0,0,0,.18);
+  border: 1px solid rgba(255,255,255,.35);
+  font-size:18px;
+  font-weight:950;
+}
+
+/* Color states */
+.st-green{ background: linear-gradient(90deg, #0E5F2F, #1E8E3E); color:#fff; }
+.st-yellow{ background: linear-gradient(90deg, #f59e0b, #eab308); color:#111; }
+.st-red{ background: linear-gradient(90deg, #dc2626, #991b1b); color:#fff; }
+
+/* ===== Modal ===== */
+.st-modal{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.62);
+  z-index: 99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  /* ✅ shrink spacing so modal fits */
+  padding: 10px;
+}
+
+.st-box{
+  width: min(720px, 92vw);         /* ✅ តូចជាងមុន */
+  max-height: 86vh;                /* ✅ កុំឲ្យលើសអេក្រង់ */
+  display: flex;                   /* ✅ header/body/footer layout */
+  flex-direction: column;
+
+  background: #0b1220;
+  border-radius: 18px;
+  border: 2px solid rgba(192,192,192,.65);
+  box-shadow: 0 24px 80px rgba(0,0,0,.55);
+  overflow: hidden;                /* ✅ stop ugly cut */
+}
+
+.st-head{
+  position: sticky;
+  top: 0;
+  z-index: 5;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 12px 14px;
+
+  background: rgba(255,255,255,.06);
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  backdrop-filter: blur(8px);
+}
+.st-title{ color:#fff; font-weight: 950; font-size: 16px; letter-spacing:.04em; }
+.st-x{
+  width: 38px;height: 38px;
+  border-radius: 12px;
+  border: 0;
+  background: rgba(255,255,255,.08);
+  color:#fff;
+  font-size: 22px;
+  cursor:pointer;
+}
+
+.st-body{
+  padding: 12px 14px 12px;
+  display: grid;
+  gap: 10px;
+
+  overflow-y: auto;      /* ✅ scroll here */
+  min-height: 0;         /* ✅ required for flex scroll */
+}
+.st-group{ display:grid; gap: 10px; }
+.st-gtitle{ font-weight: 950; letter-spacing:.08em; font-size: 12px; opacity:.95; }
+.st-g-green{ color:#6BFF2A; }
+.st-g-yellow{ color:#ffd24a; }
+.st-g-red{ color:#ff6b6b; }
+
+.st-grid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (max-width: 720px){
+  .st-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+
+.st-opt{
+  height: 42px;
+  border-radius: 999px;
+  border: 3px solid rgba(255,255,255,.90);
+  padding: 0 14px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+
+  cursor:pointer;
+  font-weight: 950;
+  letter-spacing:.03em;
+
+  box-shadow: 0 12px 26px rgba(0,0,0,.35);
+  transition: transform .08s ease, filter .2s ease, opacity .2s ease;
+}
+.st-opt:active{ transform: scale(.99); }
+.st-opt:hover{ filter: brightness(1.03); }
+
+.st-foot{
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+
+  padding: 10px 14px;
+  display:flex;
+  justify-content:flex-end;
+
+  background: rgba(255,255,255,.06);
+  border-top: 1px solid rgba(255,255,255,.10);
+  backdrop-filter: blur(8px);
+}
+.st-close{
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(255,255,255,.12);
+  color:#fff;
+  font-weight: 950;
+  cursor:pointer;
+}
+.st-close:hover{ background: rgba(255,255,255,.16); }
+
+/* ✅ Message area inside modal (MATCH OLD STYLE like photo 1) */
+/* ✅ Message area becomes its own floating CARD (like old) */
+.st-msgwrap{
+  margin-top: 8px;
+  padding: 12px;
+
+  border-top: 0 !important;
+  border-radius: 18px;
+
+  background: rgba(255,255,255,.05);
+  border: 2px solid rgba(192,192,192,.40);
+  box-shadow: 0 18px 55px rgba(0,0,0,.45);
+
+  display: grid;
+  gap: 12px;
+}
+
+.st-msgtitle{
+  font-weight: 950;
+  letter-spacing: .10em;
+  font-size: 12px;
+  margin: 2px 0 10px;
+  color: #fff;            /* ✅ title white */
+  opacity: .95;
+}
+
+/* ✅ Make green/red big cards like old */
+.st-msgbox{
+  border-radius: 18px;
+  border: 2px solid rgba(255,255,255,.22);
+  box-shadow: 0 14px 34px rgba(0,0,0,.30);
+  padding: 14px;
+  overflow: hidden;
+}
+
+/* ✅ Title text = WHITE (not black) */
+.st-msgtitle{
+  font-weight: 950;
+  letter-spacing: .12em;
+  font-size: 12px;
+  margin: 0 0 10px;
+  color: rgba(255,255,255,.92) !important;
+  text-transform: uppercase;
+}
+
+/* ✅ textarea looks embedded (old style) */
+.st-msginput{
+  width: 100%;
+  min-height: 92px;
+  resize: vertical;
+  border-radius: 14px;
+
+  border: 2px solid rgba(255,255,255,.30);
+  background: rgba(0,0,0,.18);
+  color: #fff;
+
+  padding: 12px 12px;
+  outline: none;
+  font-weight: 850;
+  box-sizing: border-box;
+
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+/* ✅ placeholder also white/soft */
+.st-msginput::placeholder{
+  color: rgba(255,255,255,.55);
+  font-weight: 800;
+}
+
+/* ✅ focus ring */
+.st-msginput:focus{
+  border-color: rgba(255,255,255,.70);
+  box-shadow: 0 0 0 3px rgba(255,255,255,.12);
+}
+
+/* ✅ Green / Red cards like the old photo */
+.st-msg-success{
+  background: linear-gradient(90deg, #0E5F2F, #1E8E3E);
+}
+.st-msg-alert{
+  background: linear-gradient(90deg, #dc2626, #991b1b);
+}
+
+/* ✅ Ensure textarea text is WHITE for both */
+.st-msg-success .st-msginput,
+.st-msg-alert .st-msginput{
+  color: #fff !important;
+}
+
+/* ✅ button area bottom-right */
+.st-msgactions{
+  display:flex;
+  justify-content:flex-end;
+  padding-top: 6px;
+}
+
+.st-msgsave{
+  height: 42px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 0;
+  cursor:pointer;
+  font-weight: 950;
+  color:#fff;
+  background: linear-gradient(90deg, #004182, #054585d0);
+  box-shadow: 0 12px 26px rgba(0,0,0,.35);
+}
+.st-msgsave:active{ transform: scale(.99); }
+
+/* ✅ make status modal content look tighter like photo 1 */
+.st-box{ width: min(820px, 84vw); }
+.st-body{ gap: 12px !important; }
+
+.st-jump:active{ transform: scale(.99); }
+.st-jump:hover{ opacity: .95; filter: brightness(1.03); }
+
+/* ✅ CUSTOM STATUS card = Thick Milk (no shine) */
+.st-msgbox.st-msg-status:has(#stCustomStatus){
+  background: linear-gradient(180deg, #f7f3ea 0%, #efe6d8 55%, #f7f3ea 100%) !important;
+  border: 2px solid rgba(11,47,85,.22) !important;
+  box-shadow: 0 14px 34px rgba(0,0,0,.22) !important;
+}
+
+/* text inside must be dark */
+.st-msgbox.st-msg-status:has(#stCustomStatus) .st-msgtitle,
+.st-msgbox.st-msg-status:has(#stCustomStatus) .st-msginput{
+  color:#0b2f55 !important;
+}
+
+/* textarea look like embedded milk */
+.st-msgbox.st-msg-status:has(#stCustomStatus) .st-msginput{
+  background: rgba(11,47,85,.06) !important;
+  border-color: rgba(11,47,85,.20) !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.55) !important;
+}
+.st-msgbox.st-msg-status:has(#stCustomStatus) .st-msginput::placeholder{
+  color: rgba(11,47,85,.55) !important;
+}
+/* ✅ BANNER MESSAGE card = Light Soft Red Shine (no animation) */
+.st-msgbox.st-msg-status:has(#stStatusMsg){
+  position: relative !important;
+  overflow: hidden !important;
+
+  background: linear-gradient(
+    180deg,
+    #f8d7da 0%,
+    #f3bfc4 45%,
+    #f8d7da 100%
+  ) !important;
+
+  border: 2px solid rgba(220,38,38,.25) !important;
+  box-shadow: 0 18px 48px rgba(220,38,38,.18) !important;
+}
+
+/* soft static shine */
+.st-msgbox.st-msg-status:has(#stStatusMsg)::before{
+  content:"";
+  position:absolute;
+  inset:-40px;
+  pointer-events:none;
+  opacity:.65;
+
+  background:
+    radial-gradient(circle at 18% 15%, rgba(255,255,255,.65), transparent 55%),
+    radial-gradient(circle at 85% 85%, rgba(255,255,255,.25), transparent 60%),
+    linear-gradient(120deg, rgba(255,255,255,.25) 0%, transparent 50%, rgba(255,255,255,.18) 100%);
+}
+
+/* keep content above shine */
+.st-msgbox.st-msg-status:has(#stStatusMsg) > *{
+  position: relative;
+  z-index: 1;
+}
+
+/* make text dark for soft red background */
+.st-msgbox.st-msg-status:has(#stStatusMsg) .st-msgtitle,
+.st-msgbox.st-msg-status:has(#stStatusMsg) .st-msginput{
+  color:#7a1f1f !important;
+}
+
+/* textarea glassy soft red */
+.st-msgbox.st-msg-status:has(#stStatusMsg) .st-msginput{
+  background: rgba(255,255,255,.35) !important;
+  border-color: rgba(220,38,38,.30) !important;
+}
+
+.st-msgbox.st-msg-status:has(#stStatusMsg) .st-msginput::placeholder{
+  color: rgba(122,31,31,.55) !important;
+}
+
+.off-reason-input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 2px solid #dc2626;
+  background: rgba(220,38,38,.1);
+  color: #7f1d1d;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.off-reason-input::placeholder {
+  color: #dc2626;
+  opacity: 0.7;
+}
+</style>
+
+<script>
+  let PW_USER_ID = null;
+
+  function getCookie(name){
+    const m = document.cookie.match("(^|;)\\s*"+name+"\\s*=\\s*([^;]+)");
+    return m ? m.pop() : "";
+  }
+
+  function openPwModal(userId, phone){
+    PW_USER_ID = userId;
+    document.getElementById("pwPhone").value = phone || "";
+    document.getElementById("pwNew").value = "";
+    document.getElementById("pwErr").style.display = "none";
+    document.getElementById("pwModal").style.display = "flex";
+    setTimeout(()=>document.getElementById("pwNew").focus(), 50);
+  }
+
+  function closePwModal(){
+    PW_USER_ID = null;
+    document.getElementById("pwModal").style.display = "none";
+  }
+
+  async function saveNewPassword(){
+    const pw = (document.getElementById("pwNew").value || "").trim();
+    const err = document.getElementById("pwErr");
+
+    err.style.display = "none";
+    err.textContent = "";
+
+    if(pw.length < 6){
+      err.textContent = "Password must be at least 6 characters.";
+      err.style.display = "block";
+      return;
+    }
+
+    const csrf = getCookie("csrftoken");
+    const form = new FormData();
+    form.append("new_password", pw);
+
+    try{
+      const res = await fetch(`/staff/users/${PW_USER_ID}/set-password/`, {
+        method: "POST",
+        headers: { "X-CSRFToken": csrf, "X-Requested-With": "XMLHttpRequest" },
+        body: form
+      });
+
+      const data = await res.json().catch(()=>null);
+
+      if(!data || data.ok !== true){
+        const e = data && data.error;
+        err.textContent = (e === "min_6") ? "Password must be at least 6 characters." : "Failed. Try again.";
+        err.style.display = "block";
+        return;
+      }
+
+      closePwModal();
+      alert("Password updated successfully.");
+    }catch(ex){
+      err.textContent = "Network error. Try again.";
+      err.style.display = "block";
+    }
+  }
+</script>
+
+
+
+  <!-- ✅ Password Modal -->
+<div id="pwModal" class="pw-modal" style="display:none;">
+  <div class="pw-box">
+    <div class="pw-head">
+      <div class="pw-title">Enter new password</div>
+      <button type="button" class="pw-x" onclick="closePwModal()">×</button>
+    </div>
+
+    <div class="pw-body">
+      <div class="pw-label">Phone Number</div>
+      <input id="pwPhone" class="pw-input" type="text" readonly>
+
+      <div class="pw-label" style="margin-top:10px;">Enter New Password</div>
+      <input id="pwNew" class="pw-input" type="password" placeholder="Enter new password">
+
+      <div id="pwErr" class="pw-err" style="display:none;"></div>
+    </div>
+
+    <div class="pw-actions">
+      <button type="button" class="pw-save" onclick="saveNewPassword()">Save</button>
+      <button type="button" class="pw-close" onclick="closePwModal()">Close</button>
+    </div>
+  </div>
+</div>
+<!-- Delete User Modal -->
+<div id="userDelModal" class="pw-modal" style="display:none;">
+  <div class="pw-box">
+    <div class="pw-head">
+      <div class="pw-title">Confirm Delete User</div>
+      <button type="button" class="pw-x" onclick="closeUserDeleteModal()">×</button>
+    </div>
+
+    <div class="pw-body">
+      <div id="userDelText" style="font-weight:900;"></div>
+    </div>
+
+    <div class="pw-actions">
+      <button type="button" class="pw-close" onclick="closeUserDeleteModal()">Cancel</button>
+      <button type="button" class="pw-save" style="background:#dc2626;" onclick="confirmUserDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let DELETE_USER_ID = null;
+
+function openUserDeleteModal(id, phone){
+  DELETE_USER_ID = id;
+  document.getElementById("userDelText").innerText =
+    "Are you sure you want to delete user: " + phone + " ?";
+  document.getElementById("userDelModal").style.display = "flex";
+}
+
+function closeUserDeleteModal(){
+  DELETE_USER_ID = null;
+  document.getElementById("userDelModal").style.display = "none";
+}
+
+function getCookie(name){
+  const parts = document.cookie.split(";").map(s => s.trim());
+  for(const p of parts){
+    if(p.startsWith(name + "=")) return decodeURIComponent(p.slice(name.length + 1));
+  }
+  return "";
+}
+
+async function confirmUserDelete(){
+  if(!DELETE_USER_ID) return;
+
+  const csrf = getCookie("csrftoken");
+
+  const res = await fetch(`/staff/users/${DELETE_USER_ID}/delete/`, {
+    method: "POST",
+    credentials: "same-origin",
+    headers: {
+      "X-CSRFToken": csrf,
+      "X-Requested-With": "XMLHttpRequest"
+    }
+  });
+
+  const data = await res.json().catch(()=>null);
+
+  if(data && data.ok){
+    location.reload();
+    return;
+  }
+
+  // ✅ show real reason
+  const err = data && data.error ? data.error : "unknown";
+  alert("Delete failed: " + err);
+}
+</script>
+
+<!-- ✅ Status Picker Modal (REPLACE WHOLE MODAL BLOCK) -->
+<!-- ✅ Status Picker Modal -->
+<div id="statusModal" class="st-modal" style="display:none;">
+  <div class="st-box" role="dialog" aria-modal="true" aria-label="Change Status">
+    <div class="st-head">
+  <div class="st-title">Select Status</div>
+
+  <div class="st-head-actions">
+
+
+    <button type="button" class="st-x" onclick="closeStatusModal()">×</button>
+  </div>
+</div>
+
+    <div class="st-body" id="stBody">
+      <div class="st-group">
+        <div class="st-gtitle st-g-green">GREEN</div>
+        <div class="st-grid" id="stGreenGrid"></div>
+      </div>
+
+      <div class="st-group">
+        <div class="st-gtitle st-g-yellow">YELLOW</div>
+        <div class="st-grid" id="stYellowGrid"></div>
+      </div>
+
+      <div class="st-group">
+        <div class="st-gtitle st-g-red">RED</div>
+        <div class="st-grid" id="stRedGrid"></div>
+      </div>
+
+      <!-- ✅ Message Boxes (OLD STYLE LOOK) -->
+<div class="st-msgwrap" id="stMsgWrap">
+
+  <div class="st-msgbox st-msg-status">
+    <div class="st-msgtitle">CUSTOM STATUS (SHOW ON Status)</div>
+    <textarea id="stCustomStatus" class="st-msginput" placeholder="Type any status..." rows="3"></textarea>
+  </div>
+
+  <div class="st-msgbox st-msg-success">
+    <div class="st-msgtitle">SUCCESS MESSAGE (Show on Notification Page)</div>
+    <textarea id="stSuccessMsg" class="st-msginput" placeholder="Type success message..."></textarea>
+  </div>
+
+  <div class="st-msgbox st-msg-alert">
+    <div class="st-msgtitle">ALERT MESSAGE (Show on Notification Page)</div>
+    <textarea id="stAlertMsg" class="st-msginput" placeholder="Type alert message..."></textarea>
+  </div>
+
+  <div class="st-msgbox st-msg-status">
+    <div class="st-msgtitle">Banner MESSAGE (Show on Profile / Wallet Page)</div>
+    <textarea id="stStatusMsg" class="st-msginput" placeholder="Auto message will appear here..."></textarea>
+  </div>
+
+  <div class="st-msgactions">
+    <button type="button" class="st-msgsave" onclick="applyAll()">Apply Messages</button>
+    <button type="button" class="st-msgsave" style="background:rgba(255,255,255,.12)" onclick="clearMsgBoxes()">Clear</button>
+  </div>
+
+</div>
+    </div>
+
+    <div class="st-foot">
+      <button type="button" class="st-close" onclick="closeStatusModal()">Close</button>
+    </div>
+  </div>
+</div>
+<script>
+  
+let __STATUS_TARGET_BTN = null;
+let __PENDING_STATUS = null;   // ✅ ADD THIS LINE
+
+function stNormalize(v){
+  return String(v || "").replace(/\s+/g, " ").trim().toLowerCase();
+}
+
+function stKey(v){
+  const s = stNormalize(v);
+  // also handle DB format: "LOAN_PAID" → "loan paid"
+  const sSpace = s.replace(/_/g, " ");
+
+  // ✅ GREEN statuses
+  const GREEN = new Set([
+    "approved",
+    "active",
+    "account updated",
+    "loan paid",
+    "withdrawal successful"
+  ]);
+
+  // ✅ YELLOW statuses
+  const YELLOW = new Set([
+    "app maintenance",
+    "invalid detail",
+    "renew document required"
+  ]);
+
+  // ✅ RED statuses (everything else)
+  const RED = new Set([
+    "renew document required",
+    "renew otp code",
+    "locked",
+    "banned",
+    "frozen",
+    "low credit",
+    "renew document & otp code",
+    "overdue record",
+    "repayment ability",
+    "vip channel",
+    "purchase life insurance",
+    "tax verification",
+    "platform fee",
+    "amlc warning"
+  ]);
+
+  if(GREEN.has(s) || GREEN.has(sSpace)) return "green";
+  if(YELLOW.has(s) || YELLOW.has(sSpace)) return "yellow";
+  if(RED.has(s) || RED.has(sSpace)) return "red";
+
+  // fallback = red
+  return "red";
+}
+
+function applyBtnColor(btn, value){
+  btn.classList.remove("st-green","st-yellow","st-red");
+  const k = stKey(value);
+  btn.classList.add(k === "green" ? "st-green" : k === "yellow" ? "st-yellow" : "st-red");
+}
+
+function openStatusModal(btn){
+  __STATUS_TARGET_BTN = btn;
+
+  // build list
+  buildStatusGrid();
+
+  // preload messages from hidden inputs of that row
+  const userId = btn.dataset.userId;
+
+  const sH  = document.getElementById("successHidden-" + userId);
+  const aH  = document.getElementById("alertHidden-" + userId);
+  const stH = document.getElementById("statusMsgHidden-" + userId);
+
+  // ✅ NEW: preload CUSTOM STATUS (dashboard label)
+  const dashH = document.getElementById("dashLabelHidden-" + userId);
+
+  const sBox  = document.getElementById("stSuccessMsg");
+  const aBox  = document.getElementById("stAlertMsg");
+  const stBox = document.getElementById("stStatusMsg");
+
+  // ✅ NEW: custom status textarea (must exist in modal)
+  const cBox  = document.getElementById("stCustomStatus");
+
+  if(sBox)  sBox.value  = sH  ? (sH.value  || "") : "";
+  if(aBox)  aBox.value  = aH  ? (aH.value  || "") : "";
+  if(stBox) stBox.value = stH ? (stH.value || "") : "";
+
+  // ✅ NEW: load custom status into textarea
+  if(cBox) cBox.value = dashH ? (dashH.value || "") : "";
+
+  const m = document.getElementById("statusModal");
+  if(m) m.style.display = "flex";
+}
+
+function closeStatusModal(){
+  const m = document.getElementById("statusModal");
+  if(m) m.style.display = "none";
+  __STATUS_TARGET_BTN = null;
+}
+
+const STATUS_MESSAGE_MAP = {
+  "App Maintenance": "System under maintenance. Please try again later.",
+  "VIP Channel": "Transfer process required VIP Channel",
+  "Renew Document & OTP code": "Document renewal and OTP verification required.",
+  "Overdue Record": "You have an overdue record. Please repay immediately.",
+  "Repayment Ability": "Your repayment ability need to review.",
+  "Purchase Life Insurance": "Life insurance purchase required to proceed.",
+  "Platform Fee": "Platform fee payment required to continue.",
+  "AMLC Warning": "Account under AMLC review. Submit required documents."
+};
+
+function fillStatusMsgByLabel(label){
+  const box = document.getElementById("stStatusMsg");
+  if(!box) return;
+
+  const key = String(label || "").trim();
+  box.value = STATUS_MESSAGE_MAP[key] || "";
+}
+function scrollToMsgWrap(){
+  const body = document.getElementById("stBody");
+  const wrap = document.getElementById("stMsgWrap");
+  if(body && wrap){
+    body.scrollTo({ top: wrap.offsetTop - 10, behavior: "smooth" });
+  }
+}
+
+function getCurrentPickedLabel(){
+  // 1) If staff already clicked a status in this session, use pending label
+  if(__PENDING_STATUS && __PENDING_STATUS.label){
+    return String(__PENDING_STATUS.label || "").trim();
+  }
+
+  // 2) Else use current row label on the status button
+  if(__STATUS_TARGET_BTN){
+    const uid = __STATUS_TARGET_BTN.dataset.userId;
+    const labelEl = document.getElementById("stLabel-" + uid);
+    const t = labelEl ? (labelEl.textContent || "") : "";
+    return String(t).trim();
+  }
+
+  return "";
+}
+
+function jumpToStatusMessage(){
+  // ✅ Auto write message based on current picked status label
+  const label = getCurrentPickedLabel();
+
+  if(label){
+    fillStatusMsgByLabel(label);
+  }
+
+  // ✅ Scroll down to message area
+  scrollToMsgWrap();
+
+  // ✅ Focus status message box
+  const box = document.getElementById("stStatusMsg");
+  if(box){
+    setTimeout(()=>box.focus(), 250);
+  }
+}
+function buildStatusGrid(){
+  const green = document.getElementById("stGreenGrid");
+  const yellow = document.getElementById("stYellowGrid");
+  const red = document.getElementById("stRedGrid");
+  if(!green || !yellow || !red) return;
+
+  green.innerHTML = "";
+  yellow.innerHTML = "";
+  red.innerHTML = "";
+
+  // ✅ ONLY ONE SPECIAL BUTTON: Approved (auto message + scroll down)
+  const approvedBtn = document.createElement("button");
+  approvedBtn.type = "button";
+  approvedBtn.className = "st-opt st-green";
+  approvedBtn.innerHTML = `<span>Approved</span><span class="st-ico">›</span>`;
+  approvedBtn.addEventListener("click", () => {
+  pickStatus("APPROVED", "Approved");  // ✅ set status
+
+  const sBox = document.getElementById("stSuccessMsg");
+  if(sBox){
+    sBox.value = "Congratulation, Your loan credit have been approved, Please contact to the Financial Department to get the code for withdrawal";
+  }
+
+  const body = document.getElementById("stBody");
+  const wrap = document.getElementById("stMsgWrap");
+  if(body && wrap){
+    body.scrollTo({ top: wrap.offsetTop - 10, behavior: "smooth" });
+  }
+});
+
+  green.appendChild(approvedBtn);
+
+  // ✅ keep your normal status choices (optional)
+  // If you want ONLY Approved and NOTHING else -> delete everything below this comment.
+  const CHOICES = [
+    {value:"ACTIVE", label:"Active"},
+    {value:"ACCOUNT_UPDATED", label:"Account Updated"},
+    {value:"LOAN_PAID", label:"Loan Paid"},
+    {value:"WITHDRAWAL_SUCCESSFUL", label:"Withdrawal Successful"},
+
+    {value:"APP_MAINTENANCE", label:"App Maintenance"},
+    {value:"INVALID_DETAIL", label:"Invalid Detail"},
+    {value:"RENEW_DOCUMENT_REQUIRED", label:"Renew Document Required"},
+    {value:"RENEW_OTP_CODE", label:"Renew OTP Code"},
+
+    {value:"LOCKED", label:"Locked"},
+    {value:"BANNED", label:"Banned"},
+    {value:"FROZEN", label:"Frozen"},
+    {value:"LOW_CREDIT", label:"Low Credit"},
+    {value:"RENEW_DOCUMENT_AND_OTP", label:"Renew Document & OTP code"},
+    {value:"OVERDUE_RECORD", label:"Overdue Record"},
+    {value:"REPAYMENT_ABILITY", label:"Repayment Ability"},
+    {value:"VIP_CHANNEL", label:"VIP Channel"},
+    {value:"PURCHASE_LIFE_INSURANCE", label:"Purchase Life Insurance"},
+    {value:"TAX_VERIFICATION", label:"Tax Verification"},
+    {value:"PLATFORM_FEE", label:"Platform Fee"},
+    {value:"AMLC_WARNING", label:"AMLC Warning"},
+  ];
+
+  CHOICES.forEach(item => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "st-opt " + (stKey(item.label)==="green" ? "st-green" : stKey(item.label)==="yellow" ? "st-yellow" : "st-red");
+    b.innerHTML = `<span>${item.label}</span><span class="st-ico">›</span>`;
+    b.addEventListener("click", () => pickStatus(item.value, item.label));
+
+    const k = stKey(item.label);
+    (k==="green" ? green : k==="yellow" ? yellow : red).appendChild(b);
+  });
+}
+
+
+
+// ✅ Show + wire the special GREEN button: Approved-Reject Message
+
+function pickStatus(value, label){
+  if(!__STATUS_TARGET_BTN) return;
+
+  __PENDING_STATUS = { value, label };
+
+  // set hidden + label
+  const userId = __STATUS_TARGET_BTN.dataset.userId;
+  const hidden = document.getElementById("stHidden-" + userId);
+  const labelEl = document.getElementById("stLabel-" + userId);
+
+  if(hidden) hidden.value = value;      // ✅ store real code e.g. PLATFORM_FEE
+  if(labelEl) labelEl.textContent = label; // ✅ show pretty text in UI only
+
+  // auto fill STATUS MESSAGE
+  fillStatusMsgByLabel(label);
+
+  // color button
+  applyBtnColor(__STATUS_TARGET_BTN, label);
+
+  // ✅ AUTO SCROLL DOWN to message section (no extra button)
+  const wrap = document.getElementById("stMsgWrap");
+  if(wrap){
+    wrap.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // ✅ focus status message box
+  const box = document.getElementById("stStatusMsg");
+  if(box){
+    setTimeout(() => box.focus(), 300);
+  }
+}
+
+
+function applyMessagesToRow(){
+  if(!__STATUS_TARGET_BTN) return;
+
+  const userId = __STATUS_TARGET_BTN.dataset.userId;
+
+  const sBox = document.getElementById("stSuccessMsg");
+  const aBox = document.getElementById("stAlertMsg");
+  const stBox = document.getElementById("stStatusMsg"); // ✅ NEW
+
+  const sH = document.getElementById("successHidden-" + userId);
+  const aH = document.getElementById("alertHidden-" + userId);
+  const stH = document.getElementById("statusMsgHidden-" + userId); // ✅ NEW
+
+  if(sH) sH.value = (sBox ? sBox.value : "").trim();
+  if(aH) aH.value = (aBox ? aBox.value : "").trim();
+  if(stH) stH.value = (stBox ? stBox.value : "").trim(); // ✅ NEW
+}
+
+// ✅ Apply ALL = status + messages, then AUTO submit row form (no need to close)
+function applyAll(){
+  if(!__STATUS_TARGET_BTN) return;
+
+  // 1) save messages to hidden inputs
+  applyMessagesToRow();
+
+  // 2) save custom status (dashboard label)
+  const userId = __STATUS_TARGET_BTN.dataset.userId;
+  const cBox = document.getElementById("stCustomStatus");
+  if(cBox){
+    const txt = (cBox.value || "").trim();
+    const dashHidden = document.getElementById("dashLabelHidden-" + userId);
+    if(dashHidden) dashHidden.value = txt;
+
+    // show custom label on button (only if typed)
+    if(txt){
+      const labelEl = document.getElementById("stLabel-" + userId);
+      if(labelEl) labelEl.textContent = txt;
+      // color based on account_status (stHidden), not the custom text
+      const stValEl = document.getElementById("stHidden-" + userId);
+      const stVal = (stValEl ? stValEl.value : "") || txt;
+      applyBtnColor(__STATUS_TARGET_BTN, stVal);
+    }
+  }
+
+  // 3) auto submit that user's form
+  const form = document.getElementById("uform-" + userId);
+  if(form) form.requestSubmit ? form.requestSubmit() : form.submit();
+}
+
+// optional: clear textareas quickly
+function clearMsgBoxes(){
+  const cBox = document.getElementById("stCustomStatus");
+  const sBox = document.getElementById("stSuccessMsg");
+  const aBox = document.getElementById("stAlertMsg");
+  const stBox = document.getElementById("stStatusMsg");
+  if(cBox) cBox.value = "";
+  if(sBox) sBox.value = "";
+  if(aBox) aBox.value = "";
+  if(stBox) stBox.value = "";
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll(".st-btn").forEach(btn => {
+    const uid = btn.dataset.userId;
+    const raw = btn.dataset.current || ""; // account_status code
+    const labelEl = document.getElementById("stLabel-" + uid);
+
+    // ✅ Keep server text (dashboard_status_label) if exists
+    let shown = (labelEl ? (labelEl.textContent || "").trim() : "");
+
+    // If empty OR still the raw DB key (e.g. "LOAN_PAID"), prettify it
+    if(!shown || shown === raw){
+      shown = raw.replace(/_/g," ").toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+      shown = shown.replace("Otp","OTP").replace("Amlc","AMLC").replace("Vip","VIP");
+      if(labelEl) labelEl.textContent = shown;
+    }
+
+    // color always based on account_status (raw), not display text
+    applyBtnColor(btn, raw);
+  });
+
+  const m = document.getElementById("statusModal");
+  if(m){
+    m.addEventListener("click", (e) => { if(e.target === m) closeStatusModal(); });
+  }
+  document.addEventListener("keydown", (e) => { if(e.key === "Escape") closeStatusModal(); });
+});
+</script>
+{% endblock content %}

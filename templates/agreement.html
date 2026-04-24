@@ -1,0 +1,828 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Agreement{% endblock %}
+
+{% block content %}
+<style>
+  @font-face {
+    font-family: "Ovelion";
+    src: url("{% static 'fonts/Ovelion-Regular.ttf' %}") format("truetype");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  /* ===== ManaLoan Agreement — Dark Glass Theme ===== */
+
+  html, body { width: 100%; overflow-x: hidden; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    color: #e6edf7;
+    background:
+      radial-gradient(600px 400px at 10% 10%, rgba(59,130,246,.35), transparent 60%),
+      radial-gradient(500px 500px at 90% 20%, rgba(139,92,246,.28), transparent 60%),
+      radial-gradient(700px 500px at 50% 90%, rgba(56,189,248,.22), transparent 60%),
+      radial-gradient(400px 400px at 80% 80%, rgba(16,185,129,.18), transparent 60%),
+      #070b16 !important;
+    background-attachment: fixed !important;
+  }
+
+  .wrap { padding-top: 0 !important; }
+
+  .agree-page, .agree-page * {
+    font-family: "Ovelion", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .agree-page {
+    padding: 22px 14px 40px;
+    color: #e6edf7;
+  }
+
+  .agree-wrap {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  /* ── Back button (glass pill) ── */
+  .agree-back-wrap {
+    margin-bottom: 18px;
+    opacity: 0;
+    animation: fadeInUp .5s ease-out .05s forwards;
+  }
+  .agree-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 40px;
+    padding: 0 16px;
+    border-radius: 12px;
+    background: rgba(30,41,59,.55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #93c5fd !important;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: .04em;
+    text-decoration: none;
+    border: 1px solid rgba(56,189,248,.30);
+    box-shadow: 0 0 14px rgba(56,189,248,.08);
+    transition: all .22s ease;
+  }
+  .agree-back-btn::before {
+    content: "";
+    width: 8px; height: 8px;
+    border-left: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    margin-right: 2px;
+  }
+  .agree-back-btn:hover {
+    color: #fff !important;
+    border-color: rgba(56,189,248,.60);
+    background: rgba(56,189,248,.12);
+    box-shadow: 0 0 20px rgba(56,189,248,.22);
+    transform: translateY(-1px);
+  }
+  .agree-back-btn:active { transform: scale(.98); }
+
+  /* ── Main header banner (if used) ── */
+  .agree-header-banner {
+    background: linear-gradient(135deg, rgba(56,189,248,.20), rgba(99,102,241,.22));
+    border: 1px solid rgba(56,189,248,.45);
+    border-radius: 18px;
+    padding: 22px 20px;
+    color: #ffffff;
+    font-weight: 900;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  .agree-header-banner h1,
+  .agree-header-banner h2 {
+    color: #ffffff;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  /* ── Content cards (glass) ── */
+  .agree-card {
+    position: relative;
+    background: linear-gradient(180deg, rgba(15,23,42,.55) 0%, rgba(10,16,32,.45) 100%);
+    backdrop-filter: blur(20px) saturate(140%);
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    border: 1px solid rgba(56,189,248,.30);
+    border-radius: 18px;
+    box-shadow:
+      0 0 0 1px rgba(56,189,248,.05),
+      0 16px 40px rgba(2,6,23,.45);
+    padding: 22px;
+    color: #e6edf7;
+    margin-bottom: 16px;
+    overflow: hidden;
+    opacity: 0;
+    animation: fadeInUp .55s ease-out forwards;
+  }
+  .agree-wrap > .agree-card:nth-of-type(1){ animation-delay: .1s; }
+  .agree-wrap > .agree-card:nth-of-type(2){ animation-delay: .18s; }
+  .agree-wrap > .agree-card:nth-of-type(3){ animation-delay: .26s; }
+
+  /* ── Section title wrappers ── */
+  .ag-title-wrap {
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .ag-title {
+    color: #ffffff;
+    font-weight: 950;
+    font-size: 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(56,189,248,.35);
+    margin: 0 0 12px;
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+    letter-spacing: .16em;
+    position: relative;
+  }
+  .ag-title::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #38bdf8, #6366f1);
+    box-shadow: 0 0 10px rgba(56,189,248,.55);
+  }
+
+  .agree-title {
+    color: #ffffff;
+    font-weight: 950;
+    font-size: 16px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(56,189,248,.30);
+    margin: 0 0 8px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    position: relative;
+  }
+  .agree-title::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 48px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #38bdf8, #6366f1);
+  }
+
+  .agree-sub {
+    font-size: 12px;
+    color: #94a3b8;
+    margin: 10px 0 14px;
+    letter-spacing: .02em;
+  }
+
+  /* ── HR ── */
+  .agree-hr {
+    height: 1px;
+    border: 0;
+    background: linear-gradient(90deg, transparent, rgba(56,189,248,.35), transparent);
+    margin: 14px 0;
+  }
+
+  /* ── Body paragraphs ── */
+  .agree-p {
+    margin: 10px 0;
+    line-height: 1.75;
+    font-size: 14px;
+    color: #cbd5e1;
+  }
+
+  /* ── Headings inside cards ── */
+  .agree-card h2,
+  .agree-h {
+    color: #93c5fd;
+    font-weight: 900;
+    font-size: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(56,189,248,.25);
+    margin: 18px 0 10px;
+    letter-spacing: .06em;
+  }
+
+  /* ── Article block ── */
+  .article-block {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .article-item {
+    position: relative;
+    padding: 14px 16px 14px 18px;
+    border-radius: 14px;
+    background: rgba(30,41,59,.45);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(56,189,248,.25);
+    color: #cbd5e1;
+    transition: border-color .22s ease, box-shadow .22s ease, transform .1s ease;
+    overflow: hidden;
+  }
+  .article-item::before {
+    content: "";
+    position: absolute;
+    top: 14px;
+    bottom: 14px;
+    left: 0;
+    width: 3px;
+    border-radius: 0 3px 3px 0;
+    background: linear-gradient(180deg, #38bdf8, #6366f1);
+    box-shadow: 0 0 8px rgba(56,189,248,.55);
+  }
+  .article-item:hover {
+    border-color: rgba(56,189,248,.55);
+    box-shadow: 0 0 18px rgba(56,189,248,.15);
+    transform: translateY(-1px);
+  }
+
+  /* ── Article headings ── */
+  .art-title {
+    color: #93c5fd;
+    font-weight: 900;
+    font-size: 12.5px;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    display: block;
+    margin-bottom: 6px;
+  }
+  .art-title:hover { color: #38bdf8; }
+
+  .article-item p { margin: 0; padding: 0; }
+  .article-text {
+    margin-top: 6px;
+    line-height: 1.7;
+    font-size: 13px;
+    color: #cbd5e1;
+    white-space: pre-line;
+  }
+  .article-item b {
+    font-weight: 900;
+    color: #ffffff;
+  }
+
+  /* ── Loan agreement long text ── */
+  .loan-agreement {
+    max-width: 100% !important;
+    margin: 0 auto;
+    line-height: 1.75;
+    color: #cbd5e1;
+  }
+  .loan-agreement h1 {
+    text-align: center;
+    margin: 0 0 16px !important;
+    font-size: 16px;
+    font-weight: 950;
+    color: #ffffff;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(56,189,248,.35);
+    letter-spacing: .04em;
+    position: relative;
+  }
+  .loan-agreement h1::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #38bdf8, #6366f1);
+    box-shadow: 0 0 10px rgba(56,189,248,.55);
+  }
+  .loan-agreement h2 {
+    margin: 20px 0 10px;
+    font-size: 12.5px;
+    font-weight: 900;
+    color: #93c5fd;
+    text-transform: uppercase;
+    letter-spacing: .16em;
+    padding-bottom: 0;
+    border-bottom: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .loan-agreement h2::before {
+    content: "";
+    width: 16px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #38bdf8, transparent);
+    flex: 0 0 auto;
+  }
+  .loan-agreement p,
+  .loan-agreement li {
+    color: #cbd5e1;
+    font-size: 13px;
+    line-height: 1.75;
+  }
+  .loan-agreement ul,
+  .loan-agreement ol {
+    padding-left: 20px;
+    margin: 10px 0;
+    color: #cbd5e1;
+  }
+  .loan-agreement li { margin-bottom: 6px; }
+  .loan-agreement li::marker { color: #38bdf8; }
+  .loan-agreement hr {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(56,189,248,.35), transparent);
+    margin: 20px 0;
+  }
+  .loan-agreement strong {
+    color: #ffffff;
+    font-weight: 900;
+  }
+
+  /* ── Lists in agree-card ── */
+  .agree-card ol,
+  .agree-card ul {
+    padding-left: 20px;
+    margin: 10px 0;
+    color: #cbd5e1;
+  }
+  .agree-card li {
+    margin-bottom: 7px;
+    font-size: 14px;
+    line-height: 1.75;
+    color: #cbd5e1;
+  }
+  .agree-card li::marker { color: #38bdf8; }
+  .agree-card hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(56,189,248,.30), transparent);
+    margin: 18px 0;
+  }
+  .agree-card strong { color: #ffffff; }
+
+  .agree-kv {
+    margin: 0;
+    padding-left: 16px;
+    line-height: 1.7;
+    color: #cbd5e1;
+  }
+  .agree-kv li {
+    margin: 6px 0;
+    font-size: 14px;
+  }
+
+  /* Mobile overrides */
+  @media (max-width: 768px) {
+    .agree-card, .article-item {
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+    }
+    .agree-card {
+      background: linear-gradient(180deg, rgba(15,23,42,.92) 0%, rgba(10,16,32,.88) 100%) !important;
+      animation: none !important;
+      opacity: 1 !important;
+    }
+    .article-item {
+      background: rgba(30,41,59,.75) !important;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .agree-card { padding: 16px; }
+    .agree-title { font-size: 14px; }
+    .loan-agreement h1 { font-size: 14px; }
+    .ag-title { font-size: 16px; }
+  }
+</style>
+
+<div class="agree-page">
+  <div class="agree-wrap">
+
+    <!-- Back button -->
+    <div class="agree-back-wrap">
+      <a class="agree-back-btn" href="javascript:history.back()">Back</a>
+    </div>
+
+    <!-- =========================
+         TOP: ABOUT US
+         ========================= -->
+    <div class="agree-card">
+      <div class="ag-title-wrap">
+        <h2 class="ag-title">ABOUT US</h2>
+      </div>
+
+
+      <hr class="agree-hr">
+
+      <p class="agree-p">
+        Company is a formally established and legally registered financial services organization operating
+        in accordance with the applicable laws, regulations, and regulatory frameworks of [Philippine].
+      </p>
+
+      <p class="agree-p">
+        The Company was officially incorporated on [July 26, 2006] and operates under business registration,
+        financial service license, or regulatory approval number [SEC / LICENSE / REGISTRATION NUMBER], as issued
+        by the relevant governmental or regulatory authority.
+      </p>
+
+      <p class="agree-p">
+        The establishment of Company was driven by the growing demand for structured, accountable, and legally
+        compliant financial assistance solutions designed to serve individuals seeking access to short-term and long-term
+        funding options within a regulated framework.
+      </p>
+
+      <p class="agree-p">
+        The Company exists as a lawful business entity with recognized legal standing and conducts its operations in compliance
+        with commercial, financial, consumer protection, and data protection laws applicable within [Philippine].
+      </p>
+
+      <p class="agree-p">
+        The primary nature of the Company's business is the provision of loan-related and financial facilitation services. These
+        services are structured to ensure operational sustainability, risk management, and legal enforceability.
+      </p>
+
+      <p class="agree-p">
+        The purpose of the Company is to provide structured access to financial resources while maintaining responsible lending
+        practices, internal risk controls, regulatory compliance, and repayment accountability.
+      </p>
+
+      <p class="agree-p">
+        The mission of the Company is to deliver transparent, disciplined, and structured financial services that support borrower
+        needs while ensuring repayment responsibility, operational continuity, and long-term business sustainability.
+      </p>
+
+      <p class="agree-p">
+        The Company's vision is to become a scalable, trusted, and compliant financial service provider capable of operating within
+        evolving regulatory environments while maintaining consistent service standards and risk management practices.
+      </p>
+
+      <p class="agree-p">
+        The Company operates under the philosophy that financial access must be structured, borrowing carries responsibility,
+        agreements must be respected, and repayment is mandatory.
+      </p>
+
+      <p class="agree-p">
+        The Company's services may include loan application intake, identity verification, document validation, risk and eligibility
+        assessment, loan approval or rejection, loan disbursement coordination, repayment schedule administration, account monitoring,
+        and customer communication.
+      </p>
+
+      <p class="agree-p">
+        All applications, requests, and services are subject to internal review and discretion. The Company is not obligated to approve
+        any application and may reject, delay, or suspend services without providing a detailed explanation, except where required by law.
+      </p>
+
+      <p class="agree-p">
+        Users engaging with the Company acknowledge and accept that loans are legally binding obligations, repayment is not optional,
+        and failure to read documentation does not remove responsibility.
+      </p>
+
+      <p class="agree-p">
+        The Company collects, stores, and processes user information for identity verification, compliance checks, operational processing,
+        risk management, and legal enforcement purposes, in accordance with applicable data protection and privacy laws.
+      </p>
+
+      <p class="agree-p">
+        The Company utilizes internal systems and third-party technologies to manage applications, records, communications, and operational
+        workflows. While reasonable security measures are implemented, no electronic system can be guaranteed to be completely risk-free.
+      </p>
+
+      <p class="agree-p">
+        The Company does not provide financial advisory services, investment recommendations, legal consultation, or tax planning advice.
+        All services are transactional in nature.
+      </p>
+
+      <p class="agree-p">
+        The Company reserves the right to modify, update, expand, reduce, or discontinue any part of its services, systems, or operational
+        processes as required by business needs or regulatory changes.
+      </p>
+
+      <p class="agree-p">
+        This About Us section may be updated, revised, expanded, or replaced at any time to reflect changes in operations, regulatory requirements,
+        or business structure. Continued use of the Company's services constitutes acceptance of such updates.
+      </p>
+    </div>
+
+    <!-- =========================
+         MIDDLE: ARTICLE
+         ========================= -->
+    <div class="agree-card">
+      <div class="agree-title">ARTICLE</div>
+      <div class="agree-sub">Terms and conditions (Article 1–12)</div>
+
+      <div class="article-block">
+
+        <div class="article-item">
+          <p><span class="art-title">Article 1: Information & Approval</span><br>
+          <div class="article-text">Borrowers must provide truthful information. Once submitted, data cannot be changed. All loan decisions by the Credit Committee are final.</div>
+        </div>
+
+        <div class="article-item">
+          <p><span class="art-title">Article 2: Disbursement & Compliance</span><br>
+          <div class="article-text">Approved funds will be credited to the borrower's registered account. The borrower agrees to comply with all approved terms and conditions.</div>
+        </div>
+
+        <div class="article-item">
+          <p><span class="art-title">Article 3: Unsecured Loan Verification</span><br>
+          <div class="article-text">For loans without collateral, a refundable verification payment is required to confirm repayment ability. This verification amount will be credited back and added to the borrower's account balance.</div>
+        </div>
+
+        <div class="article-item">
+          <p><span class="art-title">Article 4: Cancellation & Penalties</span><br>
+          <div class="article-text">Once a loan is approved and accepted, the borrower is expected to proceed. Cancellation without valid reason after approval may result in a processing or cancellation penalty. Repeated cancellations may affect future loan eligibility.</div>
+        </div>
+
+        <div class="article-item">
+          <p><span class="art-title">Article 5: Legal Responsibility & Breach</span><br>
+          <div class="article-text">Errors from incorrect information are the borrower's responsibility. False information or violations of this agreement are a breach of contract and handled by law.</div>
+        </div>
+
+        <div class="article-item">
+          <p><span class="art-title">Article 6</span><br>
+          <div class="article-text">(1) The Borrower Cannot Use The Loan For Illegal Activities. Otherwise, The Lender Reserves
+The Right To Require The Borrower To Repay The Principal And Interest Promptly And The
+Legal Consequences Shall Be Borne By The Borrower.
+(2) The Borrower Shall Repay The Principal And Interest Within The Period Specified in The Contract.
+For The Overdue Portion, The Lender Is Entitled To Recover The Loan And Collect 5% Of The Total Amount Due.</div>
+        </div>
+
+        <div class="article-item">
+          <p><span class="art-title">Article 7</span><br>
+          <div class="article-text">Results from the bank approval, if it is not convenient for each borrower to use the securities as
+collateral for the loan. The company will be exposed to the risk of making loans to borrowers.
+There fore, the financial liquidity of the "borrower" needs to be checked. Borrowers must submit
+a loan amount deposit, which is approximately 10%-20% of the loan amount. (Depending on the
+credit department again) to create a credit history to Borrower s ability to payoff the loan.</div>
+        </div>
+
+        <div class="article-item">
+          <p><span class="art-title">Article 8</span><br>
+          <div class="article-text">Dispute Resolution Both Parties agree to resolve any dispute, controversy, or claim arising out of
+or relating to this Agreement through good faith negotiation. If the negotiations do not result in a
+resolution within thirty (30) days, the dispute shall be submitted to mediation before a mutually
+agreed mediator. If mediation fails to resolve the dispute, the matter shall be finally settled by
+arbitration in accordance with the applicable laws and regulations. The decision of the arbitrator
+shall be final and binding upon both Parties.</div>
+        </div>
+
+        <div class="article-item">
+          <p><span class="art-title">Article 9</span><br>
+          <div class="article-text">Governing Law, This Agreement shall be governed by and construed in accordance with the
+laws of the Republic of the Philippines.
+Any dispute arising from or relating to this Agreement shall be subject to the applicable laws,
+rules, and regulations in force within the Philippines.</div>
+        </div>
+
+        <div class="article-item">
+          <p><span class="art-title">Article 10</span><br>
+          <div class="article-text">Confidentiality and Data Privacy, Both Parties agree to maintain the confidentiality of all
+information exchanged in connection with this Agreement, including personal, financial, and
+transaction-related information.
+The Company shall process and protect personal data in accordance with the Data Privacy Act of
+2012 (Republic Act No. 10173) and other applicable data protection regulations in the Philippines.
+Information shall not be disclosed to third parties without prior written consent, except when
+required by law or by competent government authority.</div>
+        </div>
+
+        <div class="article-item">
+          <p><span class="art-title">Article 11</span><br>
+          <div class="article-text">Amendments and Modifications, No amendment, alteration, or modification of this Agreement
+shall be valid unless made in writing and signed by both Parties.
+The Company may update its policies and procedures to comply with regulatory requirements,
+provided that such updates shall not materially prejudice the rights of the Client without proper notice.</div>
+        </div>
+
+        <div class="article-item">
+          <p><span class="art-title">Article 12</span><br>
+          <div class="article-text">Severability, If any provision of this Agreement is declared invalid, illegal, or unenforceable
+under Philippine law, such provision shall be deemed severed from this Agreement.
+The remaining provisions shall continue to be valid and enforceable to the fullest extent permitted by law.</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- =========================
+         BOTTOM: YOUR LONG AGREEMENT DIV
+         ========================= -->
+    <div class="agree-card">
+      <div class="loan-agreement" id="loanAgreement" style="max-width: 900px; margin: 0 auto; line-height: 1.6;">
+        <h1 style="text-align:center; margin: 0 0 12px 0;">
+          EXTENDED LOAN USER AGREEMENT, TERMS, CONDITIONS, DISCLOSURES, ACKNOWLEDGMENTS, WAIVERS, AND LEGAL NOTICES
+        </h1>
+
+        <p><strong>Last Updated:</strong> [INSERT DATE]</p>
+
+        <p>
+          This <strong>Extended Loan User Agreement, Terms, Conditions, Disclosures, Acknowledgments, Waivers, and Legal Notices</strong>
+          (the "<strong>Agreement</strong>") is a legally binding and enforceable contract entered into by and between
+          <strong></strong> (the "Company," "We," "Us," or "Our") and any individual or legal entity who accesses,
+          applies for, receives, guarantees, repays, or otherwise interacts with any loan, financial product, service,
+          website, mobile application, communication channel, or platform operated or provided by the Company
+          (the "User," "Borrower," "Applicant," "Guarantor," "You," or "Your").
+        </p>
+
+        <hr />
+
+        <h2>SECTION 1 — ACCEPTANCE OF TERMS</h2>
+        <ol>
+          <li>
+            By accessing, using, applying for, signing, receiving, or continuing to use any Company service, You expressly acknowledge,
+            confirm, and agree that You have read, understood, accepted, and agreed to be legally bound by all provisions of this Agreement.
+          </li>
+          <li>
+            You acknowledge this Agreement may be lengthy, complex, and repetitive. Such length or repetition does not reduce enforceability.
+          </li>
+          <li>
+            Choosing not to read this Agreement does not relieve You of obligations. "I didn't know" or "I didn't read" is not a defense.
+          </li>
+        </ol>
+
+        <h2>SECTION 2 — DEFINITIONS</h2>
+        <ul>
+          <li><strong>"Loan"</strong> means any amount of money disbursed or made available to You, including renewals, extensions, or restructures.</li>
+          <li><strong>"Due Date"</strong> means the date repayment is required, regardless of weekends, holidays, illness, travel, or personal hardship.</li>
+          <li><strong>"Default"</strong> means any failure, delay, avoidance, misrepresentation, or breach, whether intentional or unintentional.</li>
+          <li><strong>"Platform"</strong> includes websites, apps, Telegram bots, SMS, calls, email, and any other channel used by the Company.</li>
+          <li><strong>"Fees"</strong> include processing, service, administrative, late fees, penalty interest, and recovery costs where permitted by law.</li>
+        </ul>
+
+        <h2>SECTION 3 — ELIGIBILITY & USER REPRESENTATIONS</h2>
+        <ol>
+          <li>You confirm You are legally capable of entering a binding contract in <strong>[Philippine]</strong>.</li>
+          <li>
+            You confirm all information You provide (identity, income, contacts, guarantor info, documents) is true, accurate, complete,
+            and kept up-to-date.
+          </li>
+          <li>
+            Any false, misleading, incomplete, or outdated information may result in rejection, suspension, cancellation, immediate repayment demand,
+            or lawful recovery action.
+          </li>
+        </ol>
+
+        <h2>SECTION 4 — LOAN APPLICATION & APPROVAL</h2>
+        <ol>
+          <li>Submitting an application does not guarantee approval.</li>
+          <li>The Company may request additional documents (ID, selfie, signature, guarantor proof, income proof, bank/wallet details).</li>
+          <li>The Company may verify information through manual checks, databases, and lawful third parties.</li>
+          <li>The Company may approve, reject, delay, cancel, or suspend any application at its sole discretion unless prohibited by law.</li>
+        </ol>
+
+        <h2>SECTION 5 — LOAN AMOUNT, INTEREST, FEES, AND CHARGES</h2>
+        <ol>
+          <li>Loan amount, interest rate, fees, penalties, and schedule are determined by the Company and the specific loan product.</li>
+          <li>
+            Interest may be calculated daily, weekly, monthly, or using other methods, including compounding, as permitted by law and disclosed to You.
+          </li>
+          <li>Fees may include: processing, administrative, platform/service fees, late fees, penalty interest, and recovery/legal costs.</li>
+          <li>All fees are non-refundable unless mandatory law requires otherwise.</li>
+        </ol>
+
+        <h2>SECTION 6 — REPAYMENT OBLIGATIONS</h2>
+        <ol>
+          <li>You agree to repay the Loan in full, including all interest, fees, and penalties by the due dates.</li>
+          <li>
+            Repayment remains required regardless of personal circumstances, missed notifications, device issues, or inability to access the Platform.
+          </li>
+          <li>Failure to receive reminders does not excuse late payment.</li>
+        </ol>
+
+        <h2>SECTION 7 — LATE PAYMENT, DEFAULT, AND RECOVERY</h2>
+        <ol>
+          <li>Late payments may result in late fees, penalty interest, service restrictions, and account flags.</li>
+          <li>
+            A Loan may be considered in Default if a payment is overdue, if You provide false information, avoid communication,
+            or breach any term of this Agreement.
+          </li>
+          <li>
+            Upon Default, the Company may take lawful recovery actions, including contacting You and/or your guarantor, restricting services,
+            and initiating legal procedures where permitted.
+          </li>
+        </ol>
+
+        <h2>SECTION 8 — GUARANTOR RESPONSIBILITY</h2>
+        <ol>
+          <li>If You provide a guarantor, You confirm You have the guarantor's informed permission to share their details.</li>
+          <li>
+            The guarantor may be jointly and severally liable, meaning the Company may seek repayment from the borrower, the guarantor,
+            or both, as allowed by law and the guarantor agreement.
+          </li>
+        </ol>
+
+        <h2>SECTION 9 — DATA COLLECTION, PRIVACY, AND CONSENT</h2>
+        <ol>
+          <li>
+            You authorize the Company to collect, store, and process data necessary for verification, compliance, risk assessment,
+            customer support, and lawful recovery.
+          </li>
+          <li>
+            Data may include: identity details, images, signatures, contact information, device/IP data, communication logs, and repayment history.
+          </li>
+          <li>
+            Data may be shared with service providers, legal authorities, regulators, or recovery partners where lawful and necessary.
+          </li>
+          <li>
+            The Company will take reasonable security measures; however, no system can guarantee absolute security.
+          </li>
+        </ol>
+
+        <h2>SECTION 10 — COMMUNICATION CONSENT</h2>
+        <ol>
+          <li>
+            You consent to being contacted via phone calls, SMS, email, messaging apps, and in-app notifications for verification,
+            reminders, notices, and recovery communications where permitted by law.
+          </li>
+          <li>Contact may occur at reasonable times, and may be increased during overdue or Default status.</li>
+        </ol>
+
+        <h2>SECTION 11 — USER CONDUCT</h2>
+        <p>You agree not to:</p>
+        <ul>
+          <li>Provide false information or forged documents.</li>
+          <li>Threaten, harass, or abuse staff, partners, or agents.</li>
+          <li>Attempt to manipulate repayment records or bypass Platform controls.</li>
+          <li>Use the service for unlawful activity.</li>
+        </ul>
+
+        <h2>SECTION 12 — SUSPENSION, TERMINATION, AND CONTINUING OBLIGATIONS</h2>
+        <ol>
+          <li>The Company may suspend, restrict, or terminate accounts for policy violations, fraud risk, compliance needs, or Default.</li>
+          <li>Termination does not cancel or reduce outstanding debt. All repayment obligations survive termination.</li>
+        </ol>
+
+        <h2>SECTION 13 — DISCLAIMER OF WARRANTIES</h2>
+        <p>
+          All services are provided <strong>"AS IS"</strong> and <strong>"AS AVAILABLE"</strong>. The Company makes no warranties regarding uninterrupted service,
+          approval outcomes, processing times, or suitability for any particular purpose, except where required by law.
+        </p>
+
+        <h2>SECTION 14 — LIMITATION OF LIABILITY</h2>
+        <p>
+          To the maximum extent permitted by law, the Company shall not be liable for indirect, incidental, consequential, special, or punitive damages,
+          including loss of income, profit, opportunity, reputation, or data.
+        </p>
+
+        <h2>SECTION 15 — INDEMNIFICATION</h2>
+        <p>
+          You agree to indemnify and hold harmless the Company from claims, losses, damages, liabilities, and expenses arising from Your breach of this Agreement,
+          misuse of the Platform, unlawful activity, or violation of third-party rights.
+        </p>
+
+        <h2>SECTION 16 — GOVERNING LAW & DISPUTE RESOLUTION</h2>
+        <ol>
+          <li>This Agreement is governed by the laws of <strong>[Philippine]</strong>.</li>
+          <li>
+            You agree to attempt good-faith resolution by contacting support at <strong>[CONTACT]</strong> before initiating formal proceedings, where permitted.
+          </li>
+        </ol>
+
+        <h2>SECTION 17 — MODIFICATIONS</h2>
+        <p>
+          The Company may update this Agreement at any time. Continued use of services after updates constitutes acceptance of the revised terms,
+          except where mandatory law requires a different process.
+        </p>
+
+        <h2>SECTION 18 — SEVERABILITY</h2>
+        <p>
+          If any provision is held invalid or unenforceable, the remaining provisions remain in full force and effect.
+        </p>
+
+        <h2>SECTION 19 — ENTIRE AGREEMENT</h2>
+        <p>
+          This Agreement constitutes the entire agreement between You and the Company regarding the services and supersedes prior communications,
+          representations, or understandings, unless expressly stated in writing by authorized Company officers.
+        </p>
+
+        <h2>SECTION 20 — FINAL ACKNOWLEDGMENT</h2>
+        <p>
+          By clicking <strong>"I Agree"</strong>, signing, or receiving loan funds, You confirm that You had the opportunity to read this Agreement,
+          You understand it creates legal obligations, and You agree to be bound by it in full.
+        </p>
+
+        <hr />
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

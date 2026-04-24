@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}My Loans{% endblock %}
+
+{% block content %}
+<div class="grid">
+
+  <div class="card col-12">
+    <div class="row">
+      <div>
+        <h2>My Loans</h2>
+        <div class="muted">Track your applications & withdrawals</div>
+      </div>
+      <a class="btn btn-primary" href="/loans/apply/">New Application</a>
+    </div>
+  </div>
+
+  <div class="card col-12">
+    <h3>Applications</h3>
+
+    {% if apps %}
+      {% for a in apps %}
+        <div class="card" style="box-shadow:none;">
+          <div class="row">
+            <div>
+              <b>Amount:</b> {{ a.amount }} • <b>Term:</b> {{ a.term_months }} months
+              <div class="muted" style="margin-top:6px;">
+                Bank: {{ a.bank_name|default:"-" }} • Account: {{ a.account_number|default:"-" }}
+              </div>
+            </div>
+
+            {% if a.status == "pending" %}
+              <span class="badge b-pending">PENDING</span>
+            {% elif a.status == "approved" %}
+              <span class="badge b-approved">APPROVED</span>
+            {% elif a.status == "need_otp" %}
+              <span class="badge b-otp">OTP REQUIRED</span>
+            {% elif a.status == "rejected" %}
+              <span class="badge b-rejected">REJECTED</span>
+            {% else %}
+              <span class="badge">{{ a.status|upper }}</span>
+            {% endif %}
+          </div>
+
+          <div class="muted" style="margin-top:8px;">
+            Admin note: {{ a.admin_note|default:"-" }}
+          </div>
+
+          <div style="margin-top:10px;" class="stepper">
+            <div class="step"><span class="dot on"></span><span class="muted">Apply</span></div>
+            <span class="bar"></span>
+            <div class="step"><span class="dot {% if a.status != 'pending' %}on{% endif %}"></span><span class="muted">Approved</span></div>
+            <span class="bar"></span>
+            <div class="step"><span class="dot {% if a.status == 'need_otp' %}on{% endif %}"></span><span class="muted">OTP</span></div>
+            <span class="bar"></span>
+            <div class="step"><span class="dot {% if a.status == 'paid' %}on{% endif %}"></span><span class="muted">Paid</span></div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="muted">No applications yet.</div>
+    {% endif %}
+  </div>
+
+  <div class="card col-12">
+    <h3>Withdrawals</h3>
+
+    {% if withdrawals %}
+      {% for w in withdrawals %}
+        <div class="card" style="box-shadow:none;">
+          <div class="row">
+            <div>
+              <b>Amount:</b> {{ w.amount }}
+              <div class="muted" style="margin-top:6px;">OTP verified: <b>{{ w.otp_verified }}</b></div>
+            </div>
+
+            {% if w.status == "pending" %}
+              <span class="badge b-pending">PENDING</span>
+            {% elif w.status == "otp_sent" %}
+              <span class="badge b-otp">OTP SENT</span>
+            {% elif w.status == "paid" %}
+              <span class="badge b-paid">PAID</span>
+            {% elif w.status == "rejected" %}
+              <span class="badge b-rejected">REJECTED</span>
+            {% else %}
+              <span class="badge">{{ w.status|upper }}</span>
+            {% endif %}
+          </div>
+
+          <div class="muted" style="margin-top:8px;">
+            Admin note: {{ w.admin_note|default:"-" }}
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="muted">No withdrawals yet.</div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

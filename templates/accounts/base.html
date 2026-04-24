@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{% block title %}Green Bank{% endblock %}</title>
+
+  <style>
+    :root{
+      --bg: #f5f7f6;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: #e5e7eb;
+
+      --green-1:#16a34a;
+      --green-2:#22c55e;
+      --green-3:#0f7a3a;
+
+      --shadow: 0 10px 28px rgba(2,6,23,.08);
+      --radius: 16px;
+    }
+    html[data-theme="dark"]{
+      --bg:#0b1220;
+      --card:#0f1a2e;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --line:#22314f;
+      --shadow: 0 10px 28px rgba(0,0,0,.35);
+    }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .nav{
+      position: sticky; top:0; z-index:10;
+      background: linear-gradient(90deg, var(--green-3), var(--green-1));
+      color:#fff;
+      padding: 14px 16px;
+      display:flex; align-items:center; justify-content:space-between;
+      box-shadow: 0 10px 22px rgba(0,0,0,.12);
+    }
+    .brand{ display:flex; align-items:center; gap:10px; font-weight:900; }
+    .logo{
+      width:34px; height:34px; border-radius:12px;
+      background: rgba(255,255,255,.18);
+      display:flex; align-items:center; justify-content:center;
+      border:1px solid rgba(255,255,255,.25);
+      font-weight:900;
+    }
+    .nav-right{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    .pill{
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.25);
+      background: rgba(255,255,255,.12);
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      user-select:none;
+      white-space:nowrap;
+    }
+
+    .wrap{
+      max-width: 980px;
+      margin: 20px auto;
+      padding: 0 14px 24px;
+      animation: fadeUp .45s ease-out both;
+    }
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+<style>
+/* --- add these --- */
+.card{
+  background: rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius:18px;
+  box-shadow:0 18px 45px rgba(0,0,0,.45);
+  padding:18px;
+  animation: popIn .45s ease both;
+}
+
+@keyframes popIn{
+  from{ transform: translateY(14px) scale(.96); opacity:0; }
+  to{ transform: translateY(0) scale(1); opacity:1; }
+}
+
+.choose-card{ width:min(92vw,520px); text-align:center; }
+.form-card{ width:min(92vw,560px); }
+
+.big{ margin:0 0 8px; letter-spacing:.5px; }
+.subtext{ margin:0 0 14px; opacity:.92; }
+
+.btn{
+  display:block;
+  text-decoration:none;
+  text-align:center;
+  border-radius:999px;
+  padding:12px 14px;
+  font-weight:800;
+  margin:12px 0;
+  color:#fff;
+}
+.btn-main{ background:linear-gradient(90deg,var(--g1),var(--g2)); }
+.btn-ghost{ border:1px solid rgba(255,255,255,.35); background:rgba(0,0,0,.18); }
+
+.title{ margin:0 0 6px; }
+.desc{ opacity:.85; margin-bottom:12px; }
+
+.lbl{ display:block; margin:10px 0 6px; font-weight:700; opacity:.95; }
+.input-wrap{
+  display:flex; align-items:center; gap:10px;
+  background: rgba(255,255,255,.9);
+  border-radius:12px;
+  padding:10px 12px;
+}
+.ico{ color:#0f7a3a; font-weight:900; }
+.inp{ border:0; outline:0; width:100%; font-size:14px; background:transparent; }
+.eye{ border:0; background:transparent; cursor:pointer; opacity:.8; }
+
+.w100{ width:100%; border:0; cursor:pointer; }
+.tiny{ margin-top:10px; opacity:.85; font-size:12px; }
+.tiny2{ margin-top:10px; opacity:.9; font-size:13px; }
+.link{ color:#bfffd1; font-weight:800; text-decoration:none; }
+
+@media (max-width:480px){
+  .card{ padding:16px; }
+}
+/* --- end add --- */
+</style>
+
+    .grid{
+      display:grid;
+      gap: 12px;
+      grid-template-columns: repeat(12, 1fr);
+    }
+    .col-12{ grid-column: span 12; }
+    .col-6{ grid-column: span 6; }
+    .col-4{ grid-column: span 4; }
+    @media (max-width: 780px){
+      .col-6,.col-4{ grid-column: span 12; }
+    }
+
+    .row{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+    h1,h2,h3{ margin:0 0 10px; }
+    .muted{ color: var(--muted); }
+
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding: 12px 14px;
+      border-radius: 999px;
+      border: 0;
+      cursor: pointer;
+      font-weight: 900;
+      text-decoration:none;
+      transition: transform .08s ease, opacity .2s ease;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .btn:active{ transform: scale(.98); }
+    .btn-primary{ background: linear-gradient(90deg, var(--green-1), var(--green-2)); color:#fff; }
+    .btn-ghost{ background: transparent; border: 1px solid var(--line); color: var(--text); }
+    .btn-dark{ background:#111827; color:#fff; }
+
+    .field{ margin-bottom:12px; }
+    label{ display:block; font-weight:800; margin-bottom:6px; }
+    input, select, textarea{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--text);
+      outline:none;
+    }
+
+    .badge{
+      display:inline-block;
+      padding: 6px 10px;
+      border-radius:999px;
+      font-size: 12px;
+      font-weight: 900;
+      border:1px solid var(--line);
+      background: rgba(148,163,184,.10);
+    }
+    .b-pending{ background: rgba(245,158,11,.14); border-color: rgba(245,158,11,.28); }
+    .b-approved{ background: rgba(34,197,94,.14); border-color: rgba(34,197,94,.28); }
+    .b-otp{ background: rgba(59,130,246,.14); border-color: rgba(59,130,246,.28); }
+    .b-paid{ background: rgba(34,197,94,.18); border-color: rgba(34,197,94,.30); }
+    .b-rejected{ background: rgba(239,68,68,.14); border-color: rgba(239,68,68,.28); }
+
+    @keyframes fadeUp{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+  </style>
+</head>
+
+<body>
+  <div class="nav">
+    <div class="brand">
+      <div class="logo">GB</div>
+      <div>
+        Green Bank<br>
+        <span style="font-size:12px; font-weight:700; opacity:.9;">Trusted • 24/7</span>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <button class="pill" id="themeBtn" type="button">🌙 / ☀️</button>
+      <a class="pill" href="/dashboard/">Dashboard</a>
+      <a class="pill" href="/loans/my-loans/">My Loans</a>
+      <a class="pill" href="/loans/withdraw/">Withdraw</a>
+      <a class="pill" href="/logout/">Logout</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+    {% block content %}{% endblock %}
+  </div>
+
+  <script>
+    (function(){
+      const key = "gb_theme";
+      const html = document.documentElement;
+      const saved = localStorage.getItem(key);
+      if(saved){ html.setAttribute("data-theme", saved); }
+      const btn = document.getElementById("themeBtn");
+      if(btn){
+        btn.addEventListener("click", () => {
+          const now = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+          html.setAttribute("data-theme", now);
+          localStorage.setItem(key, now);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

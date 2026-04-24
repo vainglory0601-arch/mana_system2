@@ -1,0 +1,1101 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Wallet{% endblock %}
+
+{% block content %}
+<style>
+/* ===== ManaLoan Wallet — Dark Glass Theme ===== */
+
+html, body { width: 100%; overflow-x: hidden; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: #e6edf7;
+  background:
+    radial-gradient(600px 400px at 10% 10%, rgba(59,130,246,.35), transparent 60%),
+    radial-gradient(500px 500px at 90% 20%, rgba(139,92,246,.28), transparent 60%),
+    radial-gradient(700px 500px at 50% 90%, rgba(56,189,248,.22), transparent 60%),
+    radial-gradient(400px 400px at 80% 80%, rgba(16,185,129,.18), transparent 60%),
+    #070b16 !important;
+  background-attachment: fixed !important;
+}
+
+.wrap { padding-top: 0 !important; }
+
+body, .w-wrap, .w-wrap * {
+  font-family: "Ovelion", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Wrapper ── */
+.w-wrap {
+  width: min(520px, 94vw);
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 22px 14px 40px;
+  box-sizing: border-box;
+}
+
+/* ── Status alert banner ── */
+.status-alert {
+  width: 100%;
+  margin-bottom: 14px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  text-align: center;
+  font-weight: 900;
+  letter-spacing: .4px;
+  box-sizing: border-box;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.status-danger  { background: rgba(239,68,68,.15); color: #fca5a5; border: 1px solid rgba(239,68,68,.40); }
+.status-success { background: rgba(16,185,129,.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,.40); }
+.status-warn    { background: rgba(234,179,8,.15);  color: #fde68a; border: 1px solid rgba(234,179,8,.40); }
+
+/* ── Account status badge ── */
+.status-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: .06em;
+  margin-bottom: 12px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.status-active { background: rgba(16,185,129,.15); color: #6ee7b7; border: 1px solid rgba(16,185,129,.45); }
+
+/* ── Hero Wallet card (glass with bank-card feel) ── */
+.cardx.card-diamond {
+  position: relative;
+  padding: 22px 20px !important;
+  border-radius: 22px !important;
+  color: #e6edf7 !important;
+  background:
+    radial-gradient(140% 100% at 0% 0%, rgba(56,189,248,.30) 0%, transparent 60%),
+    radial-gradient(140% 100% at 100% 100%, rgba(139,92,246,.28) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(15,23,42,.60) 0%, rgba(10,16,32,.50) 100%) !important;
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid rgba(56,189,248,.45) !important;
+  box-shadow:
+    0 0 0 1px rgba(56,189,248,.08),
+    0 0 24px rgba(56,189,248,.18),
+    0 20px 60px rgba(2,6,23,.55),
+    inset 0 1px 0 rgba(255,255,255,.08) !important;
+  margin-bottom: 14px;
+  overflow: hidden;
+  animation: fadeInUp .55s ease-out .1s both;
+}
+.cardx.card-diamond::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, transparent 0%, rgba(56,189,248,.10) 50%, transparent 100%);
+  transform: translateX(-120%);
+  animation: walletShine 4.5s ease-in-out infinite;
+}
+@keyframes walletShine {
+  0%, 55% { transform: translateX(-120%); }
+  100%     { transform: translateX(120%); }
+}
+.cardx.card-diamond > * { position: relative; z-index: 2; }
+
+/* ── Standard glass cards ── */
+.cardx {
+  position: relative;
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(15,23,42,.55) 0%, rgba(10,16,32,.45) 100%);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(56,189,248,.30);
+  box-shadow:
+    0 0 0 1px rgba(56,189,248,.05),
+    0 14px 36px rgba(2,6,23,.45);
+  color: #e6edf7;
+  margin-bottom: 12px;
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeInUp .5s ease-out forwards;
+}
+.w-wrap > .cardx:nth-of-type(2){ animation-delay: .14s; }
+.w-wrap > .cardx:nth-of-type(3){ animation-delay: .18s; }
+.w-wrap > .cardx:nth-of-type(4){ animation-delay: .22s; }
+.w-wrap > .cardx:nth-of-type(5){ animation-delay: .26s; }
+.w-wrap > .cardx:nth-of-type(6){ animation-delay: .30s; }
+
+/* Accent top strip on regular cards */
+.cardx:not(.card-diamond)::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #38bdf8, #6366f1, transparent);
+  opacity: .85;
+}
+
+/* ── Row ── */
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* ── Titles ── */
+.title {
+  font-weight: 950;
+  font-size: 18px;
+  color: #ffffff;
+  letter-spacing: .02em;
+}
+.cardx.card-diamond .title { font-size: 15px; letter-spacing: .14em; text-transform: uppercase; color: #67e8f9; }
+.sub {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 2px;
+  letter-spacing: .02em;
+}
+.cardx.card-diamond .sub {
+  font-size: 10px;
+  color: #94a3b8;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  font-weight: 800;
+  margin-top: 4px;
+}
+
+/* ── Balance amount (hero) ── */
+.cardx.card-diamond .balance-amount,
+.cardx.card-diamond div[style*="font-size:28px"] {
+  font-size: 36px !important;
+  font-weight: 950 !important;
+  color: #ffffff !important;
+  letter-spacing: -.01em;
+  margin-top: 16px !important;
+}
+.cardx.card-diamond [data-balance] {
+  background: linear-gradient(135deg, #fff, #cbd5e1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.cardx.card-diamond div[style*="font-size:28px"] span:first-child {
+  background: linear-gradient(135deg, #38bdf8, #818cf8) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  font-weight: 900 !important;
+  margin-right: 4px !important;
+}
+
+/* ── Pills ── */
+.pill {
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  background: rgba(30,41,59,.60);
+  border: 1px solid rgba(56,189,248,.35);
+  color: #93c5fd;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.cardx.card-diamond .pill {
+  background: rgba(56,189,248,.15);
+  color: #67e8f9;
+  border: 1px solid rgba(56,189,248,.55);
+  box-shadow: 0 0 12px rgba(56,189,248,.18);
+}
+.pill[data-wstatus="paid"],
+.pill[data-wstatus="payment_sent"] {
+  background: rgba(16,185,129,.15);
+  color: #6ee7b7;
+  border-color: rgba(16,185,129,.55);
+  box-shadow: 0 0 12px rgba(16,185,129,.18);
+}
+.pill[data-wstatus="rejected"],
+.pill[data-wstatus="withdrawal_fail"] {
+  background: rgba(239,68,68,.15);
+  color: #fca5a5;
+  border-color: rgba(239,68,68,.55);
+  box-shadow: 0 0 12px rgba(239,68,68,.18);
+}
+.pill[data-wstatus="processing"],
+.pill[data-wstatus="reviewed"] {
+  background: rgba(234,179,8,.15);
+  color: #fde68a;
+  border-color: rgba(234,179,8,.55);
+  box-shadow: 0 0 12px rgba(234,179,8,.18);
+}
+
+/* ── Inputs ── */
+.num-input {
+  width: 100%;
+  margin-top: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1.5px solid rgba(56,189,248,.28);
+  background: rgba(30,41,59,.60);
+  color: #ffffff;
+  outline: none;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  box-sizing: border-box;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.num-input::placeholder { color: #64748b; font-weight: 600; }
+.num-input:focus {
+  border-color: rgba(56,189,248,.70);
+  background: rgba(30,41,59,.80);
+  box-shadow: 0 0 0 3px rgba(56,189,248,.18), 0 0 16px rgba(56,189,248,.22);
+}
+
+/* ── Hint ── */
+.hint {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #94a3b8;
+  letter-spacing: .02em;
+}
+
+/* ── Action labels ── */
+.action-label {
+  color: #93c5fd;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+/* ── Withdraw NOW button ── */
+.big-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 54px;
+  border-radius: 999px;
+  text-decoration: none;
+  font-weight: 950;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-size: 14px;
+  color: #fff;
+  background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 60%, #6366f1 100%);
+  box-shadow: 0 8px 22px rgba(56,189,248,.45), 0 0 22px rgba(59,130,246,.30), inset 0 1px 0 rgba(255,255,255,.20);
+  border: 1px solid rgba(56,189,248,.60);
+  width: 100%;
+  cursor: pointer;
+  transition: box-shadow .22s ease, transform .08s ease;
+}
+.big-btn:hover  { box-shadow: 0 12px 28px rgba(56,189,248,.55), 0 0 30px rgba(59,130,246,.45); transform: translateY(-1px); }
+.big-btn:active { transform: scale(.99); }
+.big-btn[disabled] {
+  opacity: .40;
+  cursor: not-allowed;
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  box-shadow: none;
+  border-color: rgba(56,189,248,.18);
+}
+.big-btn .dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255,255,255,.25);
+}
+
+/* ── Form alert ── */
+#formAlert {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 10px 2px 0 !important;
+  padding: 11px 14px !important;
+  border-radius: 12px !important;
+  border: 1px solid rgba(239,68,68,.55) !important;
+  background: rgba(239,68,68,.15) !important;
+  color: #fca5a5 !important;
+  font-weight: 900;
+  font-size: 13px;
+  letter-spacing: .02em;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 0 14px rgba(239,68,68,.18);
+}
+
+/* ── List rows ── */
+.list-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px dashed rgba(56,189,248,.18);
+  font-size: 13px;
+  color: #e6edf7;
+}
+.list-row:last-child { border-bottom: none; }
+.list-row > div:first-child > div:first-child { color: #fff; font-weight: 900; }
+
+/* ── Muted ── */
+.muted {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 3px;
+}
+
+/* ── Timeline ── */
+.timeline { margin-top: 16px; display: none; padding-top: 16px; border-top: 1px dashed rgba(56,189,248,.18); }
+.tl-item  { display: flex; align-items: center; gap: 12px; padding: 10px 0; }
+
+.tl-bullet {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(30,41,59,.70);
+  border: 1px solid rgba(56,189,248,.28);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  transition: background .25s ease, box-shadow .25s ease, border-color .25s ease;
+}
+.tl-bullet.on {
+  background: linear-gradient(135deg, #38bdf8, #6366f1);
+  border-color: rgba(56,189,248,.75);
+  box-shadow: 0 0 14px rgba(56,189,248,.55);
+}
+.tl-bullet.rejected,
+.tl-bullet.on.rejected {
+  background: linear-gradient(135deg, #ef4444, #b91c1c) !important;
+  border-color: rgba(239,68,68,.65) !important;
+  box-shadow: 0 0 14px rgba(239,68,68,.55) !important;
+}
+.tl-bullet.success {
+  background: linear-gradient(135deg, #34d399, #10b981) !important;
+  border-color: rgba(16,185,129,.65) !important;
+  box-shadow: 0 0 14px rgba(16,185,129,.55) !important;
+}
+.tl-bullet svg {
+  width: 18px;
+  height: 18px;
+  fill: #fff;
+}
+
+/* icon toggle helpers */
+.tl-bullet .ico-ok { display: block; }
+.tl-bullet .ico-x  { display: none; }
+.tl-bullet.rejected .ico-ok { display: none; }
+.tl-bullet.rejected .ico-x  { display: block; }
+
+#b3 .ico-ok         { display: block !important; }
+#b3 .ico-x          { display: none !important; }
+#b3.rejected .ico-ok{ display: none !important; }
+#b3.rejected .ico-x { display: block !important; }
+#b3.success .ico-ok { display: block !important; }
+#b3.success .ico-x  { display: none !important; }
+
+.tl-text {
+  font-weight: 900;
+  color: #e6edf7;
+  font-size: 14px;
+  letter-spacing: .02em;
+}
+.tl-text.rejected { color: #fca5a5; font-weight: 950; }
+.tl-text.success  { color: #6ee7b7; }
+
+/* ── Back / top actions ── */
+.top-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-start;
+}
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 12px;
+  background: rgba(30,41,59,.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #93c5fd !important;
+  border: 1px solid rgba(56,189,248,.30);
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: .04em;
+  text-decoration: none;
+  box-shadow: 0 0 14px rgba(56,189,248,.08);
+  transition: all .22s ease;
+}
+.back-btn:hover  {
+  color: #fff !important;
+  background: rgba(56,189,248,.12);
+  border-color: rgba(56,189,248,.60);
+  box-shadow: 0 0 20px rgba(56,189,248,.22);
+  transform: translateY(-1px);
+}
+.back-btn:active { transform: scale(.98); }
+
+/* Mobile overrides */
+@media (max-width: 768px) {
+  .cardx, .cardx.card-diamond, .back-btn, .status-alert, .status-badge, .pill, .num-input, #formAlert {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .cardx {
+    background: linear-gradient(180deg, rgba(15,23,42,.92) 0%, rgba(10,16,32,.88) 100%) !important;
+    animation: none !important;
+    opacity: 1 !important;
+  }
+  .cardx.card-diamond {
+    background:
+      radial-gradient(140% 100% at 0% 0%, rgba(56,189,248,.30) 0%, transparent 60%),
+      radial-gradient(140% 100% at 100% 100%, rgba(139,92,246,.28) 0%, transparent 60%),
+      linear-gradient(180deg, rgba(15,23,42,.92) 0%, rgba(10,16,32,.88) 100%) !important;
+    animation: none !important;
+    opacity: 1 !important;
+  }
+  .cardx.card-diamond::after { animation: none !important; }
+}
+
+@media (max-width: 520px) {
+  .top-actions { padding: 0; }
+}
+</style>
+
+<div class="w-wrap ovelion">
+
+  <!-- Card 1: Balance -->
+
+  <div id="statusAlert"
+     class="status-alert"
+     style="display:none;"
+     data-msg="{{ request.user.status_message|default:''|escapejs }}"
+     {% if request.user.status_message %}data-lock="1"{% endif %}></div>
+  <div class="cardx card-diamond">
+    <div class="row">
+      <div>
+        <div class="title">Wallet</div>
+        <div class="sub">Balance (PHP)</div>
+      </div>
+      <div class="pill">Last transaction - Today</div>
+    </div>
+
+    <div style="margin-top:12px; font-size:28px; font-weight:950;">
+  <span style="font-family:'Inter', system-ui, sans-serif; font-weight:700;">₱</span> <span data-balance>{{ request.user.balance|default:"0.00" }}</span>
+</div>
+  </div>
+
+  <!-- ✅ NEW Card: Withdrawal Amount (above OTP) -->
+  <div class="cardx currency-style">
+    <div class="row">
+      <div>
+        <div class="title" style="font-size:16px;">Withdrawal amount</div>
+        <div class="sub">Enter amount you want to withdraw</div>
+      </div>
+      <div class="pill">PHP</div>
+    </div>
+
+    <input
+      id="amountInput"
+      class="num-input"
+      type="number"
+      inputmode="decimal"
+      min="0"
+      step="0.01"
+      placeholder="0.00"
+      autocomplete="off"
+    />
+    <div class="hint" id="amountHint">Max: PHP 0.00</div>
+  </div>
+
+  <!-- ✅ UPDATED Card: OTP Code (now input number) -->
+  <div class="cardx currency-style">
+    <div class="row">
+      <div>
+        <div class="title" style="font-size:16px;">OTP Code</div>
+        <div class="sub"></div>
+      </div>
+      <div class="pill">OTP</div>
+    </div>
+
+    <input
+      id="otpInput"
+      class="num-input"
+      type="number"
+      inputmode="numeric"
+      min="0"
+      step="1"
+      placeholder="Enter OTP"
+      autocomplete="one-time-code"
+    />
+    <div class="hint">OTP is required to confirm withdrawal.</div>
+  </div>
+
+  <!-- Card 3: Withdraw -->
+  <div class="cardx currency-style">
+    <form method="post" action="{% url 'withdraw_create' %}" style="margin:0;" id="withdrawForm">
+      {% csrf_token %}
+
+      <input type="hidden" name="amount" id="amountHidden" value="">
+      <input type="hidden" name="otp" id="otpHidden" value="">
+
+      <div id="formAlert" style="
+        display:none;
+        margin: 10px 2px 0;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(185,28,28,.7);
+        background: #dc2626;
+        color:#fff;
+        font-weight:900;
+        font-size:13px;
+        text-align:center;">
+      </div>
+
+      <button class="big-btn" type="button" id="withdrawBtn" disabled>WITHDRAW NOW</button>
+      <div class="hint" id="btnHint">Enter a valid amount to enable withdraw.</div>
+    </form>
+
+    <!-- Timeline (3 steps only) -->
+    <div class="timeline" id="timelineBox">
+      <div class="tl-item">
+        <div class="tl-bullet" id="b1">
+          <svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+        </div>
+        <div>
+          <div class="tl-text">Reviewed</div>
+          <div class="muted">Your request is being reviewed</div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-bullet" id="b2">
+          <svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
+        </div>
+        <div>
+          <div class="tl-text">Processing</div>
+          <div class="muted">We are processing your withdrawal</div>
+        </div>
+      </div>
+
+      <div class="tl-item">
+  <div class="tl-bullet" id="b3">
+    <!-- ONE ICON ONLY (JS will change path) -->
+    <svg id="b3Icon" viewBox="0 0 24 24">
+      <path id="b3Path" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"></path>
+    </svg>
+  </div>
+  <div class="tl-text" id="t3">Withdrawal Successfully</div>
+</div>
+    </div>
+  </div> <!-- ✅ close withdraw card -->
+
+  <!-- List -->
+  <div class="cardx currency-style">
+    <div class="row" style="margin-bottom:8px;">
+      <div class="title" style="font-size:16px;">Last withdrawals</div>
+      <div class="pill">{{ withdrawals|length }}</div>
+    </div>
+
+    {% for w in withdrawals %}
+      <div class="list-row">
+        <div>
+          <div style="font-weight:900;">PHP {{ w.amount }} {{ w.currency }}</div>
+          <div class="muted">{{ w.created_at }}</div>
+        </div>
+
+        {% if forloop.first %}
+          <div class="pill" data-wstatus="{{ w.status }}">{{ w.get_status_display }}</div>
+        {% else %}
+          <div class="pill">{{ w.get_status_display }}</div>
+        {% endif %}
+      </div>
+    {% empty %}
+      <div class="muted">No withdrawals yet.</div>
+    {% endfor %}
+  </div>
+
+  <!-- Back -->
+  <div class="top-actions">
+    <a class="back-btn" href="{% url 'dashboard' %}">Back</a>
+  </div>
+  <div class="top-actions-line"></div>
+
+</div> <!-- ✅ close .w-wrap -->
+
+<script>
+(function(){
+  const form = document.getElementById("withdrawForm");
+  const btn  = document.getElementById("withdrawBtn");
+
+  const amountInput  = document.getElementById("amountInput");
+  const otpInput     = document.getElementById("otpInput");
+  const amountHidden = document.getElementById("amountHidden");
+  const otpHidden    = document.getElementById("otpHidden");
+
+  const timeline = document.getElementById("timelineBox");
+  const b1 = document.getElementById("b1");
+  const b2 = document.getElementById("b2");
+  const b3 = document.getElementById("b3");
+  const t3 = document.getElementById("t3");
+
+  const alertBox = document.getElementById("formAlert");
+
+  function getCookie(name){
+    const m = document.cookie.match("(^|;)\\s*"+name+"\\s*=\\s*([^;]+)");
+    return m ? m.pop() : "";
+  }
+  const CSRF = getCookie("csrftoken");
+
+  function show(){ if(timeline) timeline.style.display = "block"; }
+  function hide(){ if(timeline) timeline.style.display = "none"; }
+
+  // ✅ SVG templates (replace icon 100%)
+  const OK_SVG = `
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"></path>
+    </svg>
+  `;
+  const X_SVG = `
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4L10.6 13.4 4.3 19.7 2.9 18.3 9.2 12 2.9 5.7 4.3 4.3l6.3 6.3 6.3-6.3z"></path>
+    </svg>
+  `;
+
+  // =========================
+  // TIMELINE ENGINE
+  // =========================
+  let _uiStage = 0;
+  let _lockUntil = 0;
+  let _currentWdId = null;
+  let _submittedAt = 0;
+
+  function lockUI(ms){ _lockUntil = Date.now() + (ms || 0); }
+  function isLocked(){ return Date.now() < _lockUntil; }
+
+  function setIconOK(){
+    if(!b3) return;
+    b3.innerHTML = OK_SVG; // ✅ replace icon fully
+  }
+  function setIconX(){
+    if(!b3) return;
+    b3.innerHTML = X_SVG;  // ✅ replace icon fully
+  }
+
+  function resetTimeline(){
+    [b1,b2,b3].forEach(el=>{
+      if(!el) return;
+      el.classList.remove("on","success","rejected");
+      el.style.background = "";
+      el.style.borderColor = "";
+    });
+    setIconOK();
+
+    if(t3){
+      t3.classList.remove("success","rejected");
+      t3.textContent = "Withdrawal Successfully";
+    }
+
+    _uiStage = 0;
+  }
+
+  function paintStage(stage){
+    if(stage <= 0){
+      hide();
+      resetTimeline();
+      return;
+    }
+
+    show();
+
+    [b1,b2,b3].forEach(el=>{
+      if(!el) return;
+      el.classList.remove("on","success","rejected");
+      el.style.background = "";
+      el.style.borderColor = "";
+    });
+
+    setIconOK();
+
+    if(t3){
+      t3.classList.remove("success","rejected");
+      t3.textContent = "Withdrawal Successfully";
+    }
+
+    if(stage >= 1 && b1) b1.classList.add("on");
+    if(stage >= 2 && b2) b2.classList.add("on");
+    _uiStage = stage;
+  }
+
+  function paintFinalRejected(){
+    show();
+    if(b1){ b1.classList.remove("rejected","success"); b1.classList.add("on"); }
+    if(b2){ b2.classList.remove("rejected","success"); b2.classList.add("on"); }
+
+    if(b3){
+      b3.classList.remove("on","success");
+      b3.classList.add("rejected");
+      b3.style.setProperty("background", "#dc2626", "important");
+      b3.style.setProperty("border-color", "rgba(255,255,255,.18)", "important");
+
+      // ✅ 100% force X
+      setIconX();
+      void b3.offsetHeight;
+      setIconX();
+    }
+
+    if(t3){
+      t3.classList.add("rejected");
+      t3.textContent = "Rejected";
+    }
+
+    _uiStage = 3;
+  }
+
+  function paintFinalPaid(){
+    show();
+    if(b1){ b1.classList.remove("rejected","success"); b1.classList.add("on"); }
+    if(b2){ b2.classList.remove("rejected","success"); b2.classList.add("on"); }
+
+    if(b3){
+      b3.classList.remove("rejected");
+      b3.classList.add("success");
+      b3.style.setProperty("background", "#7CB342", "important");
+      b3.style.setProperty("border-color", "rgba(255,255,255,.18)", "important");
+
+      // ✅ force ✓
+      setIconOK();
+      void b3.offsetHeight;
+      setIconOK();
+    }
+
+    if(t3){
+      t3.classList.remove("rejected");
+      t3.classList.add("success");
+      t3.textContent = "Withdrawal Successfully";
+    }
+
+    _uiStage = 3;
+  }
+
+  // ✅ Show "Withdrawal Failed" alert inside the card (above WITHDRAW NOW btn)
+  function paintFinalWithdrawalFail(){
+    show();
+
+    // Set b1, b2 directly — do NOT call paintStage to avoid flash/reset
+    if(b1){ b1.classList.remove("rejected","success"); b1.classList.add("on"); }
+    if(b2){ b2.classList.remove("rejected","success"); b2.classList.add("on"); }
+
+    if(b3){
+      b3.classList.remove("on","success","rejected");
+      b3.classList.add("rejected");
+      b3.style.setProperty("background", "#dc2626", "important");
+      b3.style.setProperty("border-color", "rgba(255,255,255,.18)", "important");
+      setIconX();
+    }
+
+    if(t3){
+      t3.classList.remove("success");
+      t3.classList.add("rejected");
+      t3.textContent = "Withdraw Failed";
+    }
+
+    _uiStage = 3;
+
+    // ✅ Show alert ABOVE "WITHDRAW NOW" button (inside the card — formAlert position)
+    if(alertBox){
+      alertBox.textContent = "Withdrawal Failed";
+      alertBox.style.display = "flex";
+    }
+  }
+
+  function setStatusFromDB(raw, sid){
+    const s = (raw || "").toLowerCase().trim();
+    const known = ["reviewed","processing","paid","payment_sent","rejected","withdrawal_fail"];
+
+    if(!known.includes(s)){
+      paintStage(0);
+      return;
+    }
+
+    // ✅ new withdraw id: only reset if NOT already in a stable terminal state
+    if(sid && _currentWdId !== sid){
+      _currentWdId = sid;
+      const terminal = ["paid","payment_sent","rejected","withdrawal_fail"];
+      if(!terminal.includes(s)){
+        _uiStage = 0;
+        _lockUntil = 0;
+        resetTimeline();
+      }
+    }
+
+    const stageMap = { reviewed:1, processing:2, paid:3, payment_sent:3, rejected:3, withdrawal_fail:3 };
+    const stage = stageMap[s] || 0;
+
+    const justSubmitted = _submittedAt && (Date.now() - _submittedAt) < 8000;
+    if(justSubmitted && stage < _uiStage) return;
+
+    // ✅ Clear withdrawal-fail alert when status is no longer withdrawal_fail
+    if(s !== "withdrawal_fail" && alertBox && alertBox.textContent === "Withdrawal Failed"){
+      clearAlert();
+    }
+
+    if(s === "reviewed"){ paintStage(1); return; }
+    if(s === "processing"){ paintStage(2); return; }
+    // ✅ For terminal states: call final paint directly, no paintStage(2) first to avoid flash
+    if(s === "paid" || s === "payment_sent"){ paintFinalPaid(); return; }
+    if(s === "rejected"){ paintFinalRejected(); return; }
+    if(s === "withdrawal_fail"){ paintFinalWithdrawalFail(); return; }
+  }
+
+  function playSubmitAnimation(){
+    show();
+    paintStage(1);
+    setTimeout(()=> paintStage(2), 450);
+  }
+
+  // =========================
+  // POLLING
+  // =========================
+  let _wdPoll = null;
+
+  async function pullWithdrawStatus(){
+    try{
+      const r = await fetch("{% url 'latest_withdraw_status' %}", { cache:"no-store" });
+      const data = await r.json().catch(()=>null);
+      if(!data || data.ok !== true) return;
+
+      if(!data.has){
+        paintStage(0);
+        _currentWdId = null;
+        return;
+      }
+
+      const sid = data.id;
+      const s = (data.status || "").toLowerCase().trim();
+
+      const latest = document.querySelector(".pill[data-wstatus]");
+      if(latest){
+        latest.dataset.wstatus = s;
+        latest.textContent = data.label || data.status || "";
+      }
+
+      setStatusFromDB(s, sid);
+    }catch(e){}
+  }
+
+  function startPolling(){
+    if(_wdPoll) return;
+    _wdPoll = setInterval(pullWithdrawStatus, 2000);
+    pullWithdrawStatus();
+  }
+
+  const init = document.querySelector(".pill[data-wstatus]")?.dataset.wstatus || "";
+  setStatusFromDB(init, null);
+  startPolling();
+
+  // =========================
+  // FORM + BUTTON (same behavior)
+  // =========================
+  function showAlert(msg){
+    if(!alertBox) return;
+    alertBox.textContent = msg;
+    alertBox.style.display = "block";
+  }
+  function clearAlert(){
+    if(!alertBox) return;
+    alertBox.textContent = "";
+    alertBox.style.display = "none";
+  }
+
+  function getBalance(){
+    const t = (document.querySelector("[data-balance]")?.textContent || "0").replace(/,/g,"").trim();
+    return parseFloat(t) || 0;
+  }
+
+  function syncHidden(){
+    if(amountHidden) amountHidden.value = (amountInput?.value || "").trim();
+    if(otpHidden) otpHidden.value = (otpInput?.value || "").trim();
+  }
+
+  function updateBtn(){
+    const bal = getBalance();
+    const amt = parseFloat((amountInput?.value || "").trim()) || 0;
+    const otp = (otpInput?.value || "").trim();
+    const ok = (amt > 0 && amt <= bal && otp.length > 0);
+
+    if(btn){
+      btn.disabled = !ok;
+      btn.style.opacity = ok ? "1" : "0.45";
+      btn.style.pointerEvents = ok ? "auto" : "none";
+    }
+    syncHidden();
+  }
+
+  amountInput && amountInput.addEventListener("input", ()=>{ clearAlert(); updateBtn(); });
+  otpInput && otpInput.addEventListener("input", ()=>{ clearAlert(); updateBtn(); });
+  updateBtn();
+
+  let locked = false;
+
+  btn && btn.addEventListener("click", async ()=>{
+    if(locked) return;
+    clearAlert();
+
+    const bal = getBalance();
+    const amountRaw = (amountInput?.value || "").trim();
+    const otpRaw = (otpInput?.value || "").trim();
+    const amount = parseFloat(amountRaw) || 0;
+
+    if(!amountRaw || amount <= 0){ showAlert("Please enter withdrawal amount."); return; }
+    if(amount > bal){ showAlert("Amount exceeds your balance."); return; }
+    if(!otpRaw){ showAlert("Please enter OTP code."); return; }
+
+    hide();
+    resetTimeline();
+
+    // 1) verify OTP
+    try{
+      const verifyForm = new FormData();
+      verifyForm.append("otp", otpRaw);
+
+      const vr = await fetch("{% url 'verify_withdraw_otp' %}", {
+        method: "POST",
+        headers: { "X-CSRFToken": CSRF, "X-Requested-With": "XMLHttpRequest" },
+        body: verifyForm
+      });
+
+            const vdata = await vr.json().catch(()=>null);
+      if(!vdata || vdata.ok !== true){
+        // ✅ បង្ហាញ message ត្រឹមត្រូវតាមប្រភេទ error
+        const err = vdata.error || "";
+        if(err === "otp_already_used"){
+          showAlert(vdata.message || "This OTP has already been used. Please request a new one.");
+        } else {
+          showAlert("Wrong OTP code.");
+        }
+        return;
+      }
+    }catch(e){
+      showAlert("Network error. Try again.");
+      return;
+    }
+
+      // 2) create withdraw
+    syncHidden();
+    locked = true;
+    btn.disabled = true;
+    btn.style.opacity = "0.6";
+
+    try{
+      const res = await fetch("{% url 'withdraw_create' %}", {
+        method: "POST",
+        headers: { "X-Requested-With": "XMLHttpRequest", "X-CSRFToken": CSRF },
+        body: new FormData(form)
+      });
+
+      const data = await res.json().catch(()=>null);
+
+      if(!data || data.ok !== true){
+        locked = false;
+        updateBtn();
+        hide();
+        resetTimeline();
+
+        const err = data && data.error;
+        if(err === "amount_required") showAlert("Please enter withdrawal amount.");
+        else if(err === "exceed") showAlert("Amount exceeds your balance.");
+        else if(err === "insufficient") showAlert("No balance available.");
+        else if(err === "otp_wrong") showAlert("Wrong OTP code.");
+        else if(err === "otp_already_used") showAlert(data.message || "This OTP has already been used. Please request a new one.");
+        else if(err === "account_not_active") showAlert("Your account is not ACTIVE. Please contact company department.");
+        else showAlert("Request failed. Try again.");
+
+        return;  // ✅ ត្រូវការ return នៅទីនេះ
+      }
+
+      // ✅ Success code starts here (outside if block)
+      _submittedAt = Date.now();
+      lockUI(8000);
+      playSubmitAnimation();
+
+      // ✅ ការពារ OTP reuse - clear input ភ្លាម
+      if(otpInput){
+        otpInput.value = "";
+        otpInput.placeholder = "Enter new OTP";
+      }
+      if(otpHidden) otpHidden.value = "";
+
+      // ✅ Disable button វិញ
+      updateBtn();
+
+      const latest = document.querySelector(".pill[data-wstatus]");
+      if(latest){
+        latest.dataset.wstatus = "processing";
+        latest.textContent = "Processing";
+      }
+
+      _uiStage = 2;
+
+    }catch(e){
+      locked = false;
+      updateBtn();
+      hide();
+      resetTimeline();
+      showAlert("Network error. Try again.");
+    }
+  });
+
+})();
+</script>
+<script>
+(function(){
+  const el = document.getElementById("statusAlert");
+  if(!el) return;
+
+  const msg = (el.dataset.msg || "").trim();
+  if(!msg) return;
+
+  el.textContent = msg;
+  el.style.display = "block";
+
+  // reset
+  el.classList.remove("status-danger","status-success","status-warn");
+
+  // auto color
+  const m = msg.toLowerCase();
+  const isGreen  = m.includes("approved") || m.includes("success") || m.includes("active");
+  const isYellow = m.includes("maintenance") || m.includes("invalid") || m.includes("warning");
+
+  if(isGreen) el.classList.add("status-success");
+  else if(isYellow) el.classList.add("status-warn");
+  else el.classList.add("status-danger");
+})();
+</script>
+{% endblock %}

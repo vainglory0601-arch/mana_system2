@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Apply Loan{% endblock %}
+
+{% block content %}
+<div class="grid">
+  <div class="card col-12">
+    <div class="row">
+      <div>
+        <h2>Loan Application</h2>
+        <div class="muted">Fill the form carefully. Upload documents clearly.</div>
+      </div>
+      <span class="badge b-pending">Secure</span>
+    </div>
+  </div>
+
+  <div class="card col-12">
+    <form method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="btn btn-primary" type="submit" style="width:100%;">Submit Application</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Withdraw{% endblock %}
+
+{% block content %}
+<div class="grid">
+  <div class="card col-12">
+    <div class="row">
+      <div>
+        <h2>Withdraw Funds</h2>
+        <div class="muted">Request withdrawal from your wallet balance</div>
+      </div>
+      <span class="badge b-pending">Secure</span>
+    </div>
+  </div>
+
+  <div class="card col-12">
+    <div style="margin-bottom: 20px;">
+      <div class="muted">Current Wallet Balance</div>
+      <h2 style="margin: 8px 0; color: var(--g2);">Rs {{ request.user.wallet_balance|default:"0.00" }}</h2>
+    </div>
+
+    {% if error %}
+      <div style="padding: 12px; background: rgba(239,68,68,.2); border: 1px solid rgba(239,68,68,.4); border-radius: 12px; margin-bottom: 16px; color: #fff;">
+        {{ error }}
+      </div>
+    {% endif %}
+    
+    {% if ok %}
+      <div style="padding: 12px; background: rgba(34,197,94,.2); border: 1px solid rgba(34,197,94,.4); border-radius: 12px; margin-bottom: 16px; color: #fff;">
+        {{ ok }}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="card col-12">
+    <h3>Create Withdrawal Request</h3>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="create">
+      <div class="field">
+        <label for="amount">Amount</label>
+        <input type="number" name="amount" id="amount" placeholder="Enter amount" min="1" required>
+      </div>
+      <button class="btn btn-primary" type="submit" style="width:100%;">Submit Request</button>
+    </form>
+  </div>
+
+  {% if latest %}
+  <div class="card col-12">
+    <h3>Latest Request</h3>
+    <div style="margin-bottom: 16px;">
+      <div class="row">
+        <div>
+          <div><b>Amount:</b> Rs {{ latest.amount }}</div>
+          <div class="muted" style="margin-top: 6px;">
+            <b>Status:</b> {{ latest.status|upper }} | 
+            <b>OTP Verified:</b> {{ latest.otp_verified|yesno:"Yes,No" }}
+          </div>
+        </div>
+        {% if latest.status == "pending" %}
+          <span class="badge b-pending">PENDING</span>
+        {% elif latest.status == "otp_sent" %}
+          <span class="badge b-otp">OTP SENT</span>
+        {% elif latest.status == "paid" %}
+          <span class="badge b-paid">PAID</span>
+        {% elif latest.status == "rejected" %}
+          <span class="badge b-rejected">REJECTED</span>
+        {% endif %}
+      </div>
+      
+      {% if latest.admin_note %}
+        <div class="muted" style="margin-top: 12px; padding: 10px; background: rgba(255,255,255,.05); border-radius: 8px;">
+          <b>Admin Note:</b> {{ latest.admin_note }}
+        </div>
+      {% endif %}
+    </div>
+
+    {% if latest.status == "otp_sent" %}
+      <div style="padding: 16px; background: rgba(59,130,246,.15); border: 1px solid rgba(59,130,246,.3); border-radius: 12px; margin-bottom: 16px;">
+        <div style="margin-bottom: 12px; font-weight: 700;">OTP Code:</div>
+        <div style="font-size: 24px; font-weight: 900; letter-spacing: 4px; color: var(--g2); margin-bottom: 16px;">
+          {{ latest.otp_code }}
+        </div>
+        <form method="post">
+          {% csrf_token %}
+          <input type="hidden" name="action" value="verify">
+          <div class="field">
+            <label for="otp">Enter OTP to Verify</label>
+            <input type="text" name="otp" id="otp" placeholder="Enter OTP code" required maxlength="10">
+          </div>
+          <button class="btn btn-primary" type="submit" style="width:100%;">Verify OTP</button>
+        </form>
+      </div>
+    {% elif latest.status == "pending" %}
+      <div class="muted" style="padding: 12px; background: rgba(255,255,255,.05); border-radius: 8px;">
+        Your withdrawal request is pending admin approval. You will receive an OTP code once approved.
+      </div>
+    {% endif %}
+  </div>
+  {% else %}
+  <div class="card col-12">
+    <div class="muted" style="text-align: center; padding: 20px;">
+      No withdrawal requests yet. Create one above to get started.
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="card col-12">
+    <a href="/dashboard/" class="btn btn-ghost" style="width:100%; text-align:center;">← Back to Dashboard</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,724 @@
+{% extends "staff_base.html" %}
+{% block title %}User Detail{% endblock %}
+{% block content %}
+
+<form method="post" action="{% url 'staff_user_update' u.id %}" enctype="multipart/form-data" autocomplete="off">
+  {% csrf_token %}
+<input type="hidden" name="next" value="{{ request.path }}">
+  <div class="card-h">
+    <div>
+      <div class="h1">User: {{ u.phone }}</div>
+      <div class="muted">
+        Loan: {% if loan %}#{{ loan.id }} • {{ progress.loan_status }}{% else %}—{% endif %}
+      </div>
+    </div>
+
+    <div style="display:flex; gap:10px; align-items:center;">
+      <button class="savebtn" type="submit">Save</button>
+      <a class="btn" href="{% url 'staff_users' %}">← Back</a>
+    </div>
+  </div>
+  
+
+
+  <div class="content user-detail-page">
+
+    <!-- ✅ Progress Tracker -->
+    <div class="cardx">
+      <div class="p-head">
+        <div>
+          <div class="p-title">User Progress</div>
+          <div class="p-sub">{{ progress.stuck }}</div>
+        </div>
+        <span class="pill">{{ progress.loan_status }}</span>
+      </div>
+
+      <div class="p-grid">
+        <div class="p-item">
+          <span class="dot {% if progress.loan_started %}ok{% else %}no{% endif %}"></span>
+          <div class="p-text">
+            <div class="p-k">Loan Started</div>
+            <div class="p-v">{% if progress.loan_started %}Done{% else %}Not yet{% endif %}</div>
+          </div>
+        </div>
+
+        <div class="p-item">
+          <span class="dot {% if progress.loan_info_done %}ok{% else %}no{% endif %}"></span>
+          <div class="p-text">
+            <div class="p-k">Loan Information</div>
+            <div class="p-v">{% if progress.loan_info_done %}Done{% else %}Missing fields{% endif %}</div>
+          </div>
+        </div>
+
+        <div class="p-item">
+          <span class="dot {% if progress.id_upload_done %}ok{% else %}no{% endif %}"></span>
+          <div class="p-text">
+            <div class="p-k">ID Upload</div>
+            <div class="p-v">{% if progress.id_upload_done %}Done{% else %}Not complete{% endif %}</div>
+          </div>
+        </div>
+
+        <div class="p-item">
+          <span class="dot {% if progress.signature_done %}ok{% else %}no{% endif %}"></span>
+          <div class="p-text">
+            <div class="p-k">Signature</div>
+            <div class="p-v">{% if progress.signature_done %}Done{% else %}Not found{% endif %}</div>
+          </div>
+        </div>
+
+        <div class="p-item">
+          <span class="dot {% if progress.pm_saved %}ok{% else %}no{% endif %}"></span>
+          <div class="p-text">
+            <div class="p-k">Payment Method Filled</div>
+            <div class="p-v">{% if progress.pm_saved %}Done{% else %}Empty{% endif %}</div>
+          </div>
+        </div>
+
+        <div class="p-item">
+          <span class="dot {% if progress.pm_locked %}ok{% else %}no{% endif %}"></span>
+          <div class="p-text">
+            <div class="p-k">Payment Method Saved</div>
+            <div class="p-v">{% if progress.pm_locked %}Locked (Saved){% else %}Not saved yet{% endif %}</div>
+          </div>
+        </div>
+      </div>
+
+      {% if loan %}
+        <div style="margin-top:12px;">
+          <a class="mini-link" href="{% url 'staff_loan_detail' loan.id %}">Open Loan Detail →</a>
+        </div>
+      {% endif %}
+    </div>
+
+    <div style="display:grid; grid-template-columns: 520px 1fr; gap: 22px; align-items:start;">
+
+      <!-- LEFT: user + payment method -->
+      <div class="user-detail-form">
+
+        <p><label>Phone</label>
+          <input type="text" value="{{ u.phone }}" readonly>
+        </p>
+
+        <p><label>Register IP</label>
+          <input type="text" value="{{ u.register_ip|default:'-' }}" readonly>
+        </p>
+
+        <p><label>Country</label>
+          <input type="text" value="{{ u.register_country|default:'-' }}" readonly>
+        </p>
+
+        <p><label>City</label>
+          <input type="text" value="{{ u.register_city|default:'-' }}" readonly>
+        </p>
+
+        <hr class="sep">
+
+        <p><label>Account Status</label>
+
+  <!-- hidden input that will be submitted with Save -->
+  <input type="hidden"
+         name="account_status"
+         id="stHiddenDetail"
+         value="{{ u.account_status|default:'' }}">
+
+  <!-- Button trigger (same style like staff_users.html) -->
+  <button type="button"
+          class="st-btn"
+          id="stBtnDetail"
+          data-current="{{ u.account_status|default:''|escapejs }}"
+          onclick="openStatusModalDetail(this)">
+    <span class="st-label" id="stLabelDetail">
+      {{ u.account_status|default:"Active" }}
+    </span>
+    <span class="st-ico" aria-hidden="true">›</span>
+  </button>
+</p>
+
+        <p><label>Withdraw OTP</label>
+          <input type="text" name="withdraw_otp" value="{{ u.withdraw_otp|default_if_none:'' }}">
+        </p>
+
+        <p><label>Notification message</label>
+          <input type="text" name="notification_message" value="{{ u.notification_message|default_if_none:'' }}">
+        </p>
+
+        <p><label>Success message</label>
+          <input type="text" name="success_message" value="{{ u.success_message|default_if_none:'' }}">
+        </p>
+
+        <hr class="sep">
+
+        <div class="h2">Payment Method</div>
+
+        <p><label>Bank name</label>
+          <input type="text" name="bank_name" value="{{ pm.bank_name|default_if_none:'' }}">
+        </p>
+        <p><label>Bank account</label>
+          <input type="text" name="bank_account" value="{{ pm.bank_account|default_if_none:'' }}">
+        </p>
+
+        <p><label>Wallet name</label>
+          <input type="text" name="wallet_name" value="{{ pm.wallet_name|default_if_none:'' }}">
+        </p>
+        <p><label>Wallet phone</label>
+          <input type="text" name="wallet_phone" value="{{ pm.wallet_phone|default_if_none:'' }}">
+        </p>
+
+        <p><label>Payment Locked</label>
+          <input type="text" value="{% if pm.locked %}True{% else %}False{% endif %}" readonly>
+        </p>
+
+      </div>
+      <!-- RIGHT: uploaded images (MOVE HERE) -->
+<div class="right-area">
+  <div class="img-head">
+    <div class="h2">Uploaded Images</div>
+
+    {% if not loan %}
+  <button type="submit"
+          class="make-app-btn"
+          formaction="{% url 'staff_create_loan_draft' u.id %}"
+          formmethod="post">
+    Make Application
+  </button>
+{% if loan %}
+  <button type="submit"
+          class="make-app-btn"
+          formaction="{% url 'staff_loan_update' loan.id %}"
+          formmethod="post"
+          formenctype="multipart/form-data"
+          name="img_only"
+          value="1">
+    Save Images
+  </button>
+{% endif %}  
+{% endif %}
+  </div>
+
+  {% if not loan %}
+    <div class="muted" style="margin-top:8px;">No loan yet. Nothing to show.</div>
+
+    <div class="img-grid" style="margin-top:10px;">
+      <div class="img-card">
+        <div class="muted small">ID Front</div>
+        <div class="img-box missing"><div class="img-empty">No loan</div></div>
+      </div>
+      <div class="img-card">
+        <div class="muted small">ID Back</div>
+        <div class="img-box missing"><div class="img-empty">No loan</div></div>
+      </div>
+      <div class="img-card">
+        <div class="muted small">Selfie + ID</div>
+        <div class="img-box missing"><div class="img-empty">No loan</div></div>
+      </div>
+      <div class="img-card">
+        <div class="muted small">Signature</div>
+        <div class="img-box missing sig"><div class="img-empty">No loan</div></div>
+      </div>
+    </div>
+
+  {% else %}
+
+    <!-- ✅ Separate form (NOT nested) -->
+
+      <div class="img-grid" style="margin-top:10px;">
+
+        <div class="img-card">
+          <div class="muted small">ID Front</div>
+          <div class="img-box {% if not loan.id_front %}missing{% else %}ok{% endif %}">
+            {% if loan.id_front %}<img src="{{ loan.id_front.url }}" alt="ID Front">{% else %}
+              <div class="img-empty">Missing</div>
+            {% endif %}
+          </div>
+          <div class="img-actions">
+            <input type="file" name="id_front" accept="image/*">
+          </div>
+        </div>
+
+        <div class="img-card">
+          <div class="muted small">ID Back</div>
+          <div class="img-box {% if not loan.id_back %}missing{% else %}ok{% endif %}">
+            {% if loan.id_back %}<img src="{{ loan.id_back.url }}" alt="ID Back">{% else %}
+              <div class="img-empty">Missing</div>
+            {% endif %}
+          </div>
+          <div class="img-actions">
+            <input type="file" name="id_back" accept="image/*">
+          </div>
+        </div>
+
+        <div class="img-card">
+          <div class="muted small">Selfie + ID</div>
+          <div class="img-box {% if not loan.selfie_with_id %}missing{% else %}ok{% endif %}">
+            {% if loan.selfie_with_id %}<img src="{{ loan.selfie_with_id.url }}" alt="Selfie with ID">{% else %}
+              <div class="img-empty">Missing</div>
+            {% endif %}
+          </div>
+          <div class="img-actions">
+            <input type="file" name="selfie_with_id" accept="image/*">
+          </div>
+        </div>
+
+        <div class="img-card">
+          <div class="muted small">Signature</div>
+          <div class="img-box sig {% if not loan.signature_image %}missing{% else %}ok{% endif %}">
+            {% if loan.signature_image %}<img src="{{ loan.signature_image.url }}" alt="Signature">{% else %}
+              <div class="img-empty">Missing</div>
+            {% endif %}
+          </div>
+          <div class="img-actions">
+            <input type="file" name="signature_image" accept="image/*">
+          </div>
+        </div>
+
+      </div>
+
+  {% endif %}
+</div>
+    </div>
+  </div>
+</form>
+
+
+
+<style>
+/* ===== page card ===== */
+.cardx{
+  background: #e9edf3;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 18px 60px rgba(0,0,0,.10);
+  margin-bottom: 14px;
+}
+
+.p-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.p-title{ font-weight:950; color:#0b2b55; font-size:16px; }
+.p-sub{ margin-top:4px; font-size:12px; color:#2b4a6a; opacity:.9; }
+.pill{
+  display:inline-flex;
+  padding:6px 10px;
+  border-radius:999px;
+  background:#0b5ea8;
+  color:#fff;
+  font-weight:950;
+  font-size:12px;
+  white-space:nowrap;
+}
+
+.p-grid{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap:10px;
+}
+@media (max-width: 980px){
+  .p-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+.p-item{
+  display:flex; gap:10px; align-items:center;
+  padding:10px 12px;
+  border-radius:12px;
+  background:#f7f9fc;
+  border:1px solid rgba(0,0,0,.08);
+}
+.dot{
+  width:12px;height:12px;border-radius:999px;
+  background:#ef4444;
+  box-shadow: 0 0 0 3px rgba(239,68,68,.15);
+}
+.dot.ok{ background:#22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,.18); }
+.dot.no{ background:#ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.15); }
+.p-k{ font-weight:950; color:#0b2b55; font-size:12px; }
+.p-v{ font-size:12px; color:#2b4a6a; opacity:.9; }
+
+.mini-link{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 12px;
+  border-radius:12px;
+  background:#0b5ea8;
+  color:#fff;
+  font-weight:950;
+  text-decoration:none;
+}
+.mini-link:hover{ opacity:.92; }
+
+.user-detail-form label{
+  color:#0b5fa5 !important;
+  font-weight:900;
+}
+.user-detail-form input, .user-detail-form select{
+  width:100%;
+  height:40px;
+  border-radius:12px;
+  border:0;
+  outline:none;
+  background:#111827;
+  color:#fff;
+  font-weight:900;
+  padding:0 12px;
+  box-sizing:border-box;
+}
+.user-detail-form input[readonly]{ opacity:.9; }
+.sep{ border:0; border-top:1px solid rgba(0,0,0,.08); margin:12px 0; }
+.h2{ font-weight:950; color:#0b2b55; margin-bottom:10px; }
+
+.img-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:16px;
+}
+.img-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:6px;
+}
+
+.make-app-btn{
+  height:36px;
+  padding:0 14px;
+  border-radius:12px;
+  border:0;
+  cursor:pointer;
+  font-weight:950;
+  background:#0b5ea8;
+  color:#fff;
+  box-shadow: 0 10px 22px rgba(0,0,0,.22);
+}
+.make-app-btn:hover{ opacity:.92; }
+.img-card .small{ font-size:12px; }
+.img-box{
+  height:280px;
+  border-radius:14px;
+  border:1px solid rgba(0,0,0,.10);
+  background:#fff;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.img-box img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.img-box.sig img{
+  object-fit:contain;
+  background:#fff;
+}
+.img-actions input[type="file"]{
+  width: 100%;
+  cursor: pointer;
+  position: relative;
+  z-index: 5;
+}
+
+.img-box.ok{
+  border:2px solid rgba(34,197,94,.55) !important;
+  box-shadow: 0 0 0 4px rgba(34,197,94,.10);
+}
+
+.img-box.missing{
+  border:2px solid rgba(239,68,68,.60) !important;
+  box-shadow: 0 0 0 4px rgba(239,68,68,.10);
+}
+.img-empty{
+  font-weight:950;
+  color:#ef4444;
+  opacity:.85;
+}
+</style>
+
+<style>
+/* ===== Status Button ===== */
+.st-btn{
+  width: 100%;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 3px solid rgba(255,255,255,.90);
+  cursor: pointer;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+
+  font-weight: 950;
+  letter-spacing: .04em;
+
+  box-shadow: 0 10px 22px rgba(0,0,0,.28);
+  transition: transform .08s ease, filter .2s ease, opacity .2s ease;
+}
+.st-btn:active{ transform: scale(.99); }
+.st-btn:hover{ filter: brightness(1.03); }
+
+.st-label{
+  overflow:hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.st-ico{
+  width:28px;height:28px;
+  border-radius:999px;
+  display:flex;align-items:center;justify-content:center;
+  background: rgba(0,0,0,.18);
+  border: 1px solid rgba(255,255,255,.35);
+  font-size:18px;
+  font-weight:950;
+}
+
+/* Color states */
+.st-green{ background: linear-gradient(90deg, #0E5F2F, #1E8E3E); color:#fff; }
+.st-yellow{ background: linear-gradient(90deg, #f59e0b, #eab308); color:#111; }
+.st-red{ background: linear-gradient(90deg, #dc2626, #991b1b); color:#fff; }
+
+/* ===== Modal ===== */
+.st-modal{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.60);
+  z-index: 99999;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding: 16px;
+}
+.st-box{
+  width: min(760px, 94vw);
+  background: #0b1220;
+  border-radius: 18px;
+  border: 2px solid rgba(192,192,192,.65);
+  box-shadow: 0 24px 80px rgba(0,0,0,.55);
+  overflow:hidden;
+}
+.st-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 14px 16px;
+  background: rgba(255,255,255,.06);
+  border-bottom: 1px solid rgba(255,255,255,.10);
+}
+.st-title{ color:#fff; font-weight: 950; font-size: 16px; letter-spacing:.04em; }
+.st-x{
+  width: 38px;height: 38px;
+  border-radius: 12px;
+  border: 0;
+  background: rgba(255,255,255,.08);
+  color:#fff;
+  font-size: 22px;
+  cursor:pointer;
+}
+.st-body{ padding: 14px 16px 18px; display:grid; gap: 14px; }
+.st-group{ display:grid; gap: 10px; }
+.st-gtitle{ font-weight: 950; letter-spacing:.08em; font-size: 12px; opacity:.95; }
+.st-g-green{ color:#6BFF2A; }
+.st-g-yellow{ color:#ffd24a; }
+.st-g-red{ color:#ff6b6b; }
+.st-grid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+@media (max-width: 720px){
+  .st-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+.st-opt{
+  height: 42px;
+  border-radius: 999px;
+  border: 3px solid rgba(255,255,255,.90);
+  padding: 0 14px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+
+  cursor:pointer;
+  font-weight: 950;
+  letter-spacing:.03em;
+
+  box-shadow: 0 12px 26px rgba(0,0,0,.35);
+  transition: transform .08s ease, filter .2s ease, opacity .2s ease;
+}
+.st-opt:active{ transform: scale(.99); }
+.st-opt:hover{ filter: brightness(1.03); }
+
+.st-foot{
+  padding: 12px 16px 16px;
+  display:flex;
+  justify-content:flex-end;
+  border-top: 1px solid rgba(255,255,255,.10);
+}
+.st-close{
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 0;
+  background: rgba(255,255,255,.10);
+  color:#fff;
+  font-weight: 950;
+  cursor:pointer;
+}
+/* ✅ hide form but keep file inputs clickable */
+.sr-only-form{
+  position: absolute;
+  left: -9999px;
+  top: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+</style>
+<!-- ✅ Status Picker Modal (DETAIL PAGE) -->
+<div id="statusModalDetail" class="st-modal">
+  <div class="st-box" role="dialog" aria-modal="true" aria-label="Change Status">
+    <div class="st-head">
+      <div class="st-title">Select Status</div>
+      <button type="button" class="st-x" onclick="closeStatusModalDetail()">×</button>
+    </div>
+
+    <div class="st-body">
+      <div class="st-group">
+        <div class="st-gtitle st-g-green">GREEN</div>
+        <div class="st-grid" id="stGreenGridDetail"></div>
+      </div>
+
+      <div class="st-group">
+        <div class="st-gtitle st-g-yellow">YELLOW</div>
+        <div class="st-grid" id="stYellowGridDetail"></div>
+      </div>
+
+      <div class="st-group">
+        <div class="st-gtitle st-g-red">RED</div>
+        <div class="st-grid" id="stRedGridDetail"></div>
+      </div>
+    </div>
+
+    <div class="st-foot">
+      <button type="button" class="st-close" onclick="closeStatusModalDetail()">Close</button>
+    </div>
+  </div>
+</div>
+<script>
+let __DETAIL_BTN = null;
+
+function stNormalize(v){
+  return String(v || "").replace(/\s+/g, " ").trim().toLowerCase();
+}
+
+function stKey(label){
+  const s = stNormalize(label);
+  const GREEN = new Set(["active","account updated","loan paid","withdrawal successful"]);
+  const YELLOW = new Set(["app maintenance","invalid detail"]);
+  if (GREEN.has(s)) return "green";
+  if (YELLOW.has(s)) return "yellow";
+  return "red";
+}
+
+function applyBtnColor(btn, label){
+  btn.classList.remove("st-green","st-yellow","st-red");
+  const k = stKey(label);
+  btn.classList.add(k === "green" ? "st-green" : k === "yellow" ? "st-yellow" : "st-red");
+}
+
+function buildStatusGridDetail(){
+  const green = document.getElementById("stGreenGridDetail");
+  const yellow = document.getElementById("stYellowGridDetail");
+  const red = document.getElementById("stRedGridDetail");
+  if(!green || !yellow || !red) return;
+
+  green.innerHTML = "";
+  yellow.innerHTML = "";
+  red.innerHTML = "";
+
+  const CHOICES = [
+    {value:"ACTIVE", label:"Active"},
+    {value:"ACCOUNT_UPDATED", label:"Account Updated"},
+    {value:"LOAN_PAID", label:"Loan Paid"},
+    {value:"WITHDRAWAL_SUCCESSFUL", label:"Withdrawal Successful"},
+
+    {value:"APP_MAINTENANCE", label:"App Maintenance"},
+    {value:"INVALID_DETAIL", label:"Invalid Detail"},
+    {value:"RENEW_DOCUMENT_REQUIRED", label:"Renew Document Required"},
+    {value:"RENEW_OTP_CODE", label:"Renew OTP Code"},
+
+    {value:"LOCKED", label:"Locked"},
+    {value:"BANNED", label:"Banned"},
+    {value:"FROZEN", label:"Frozen"},
+    {value:"LOW_CREDIT", label:"Low Credit"},
+    {value:"RENEW_DOCUMENT_AND_OTP_CODE", label:"Renew Document & OTP Code"},
+    {value:"OVERDUE_RECORD", label:"Overdue Record"},
+    {value:"REPAYMENT_ABILITY", label:"Repayment Ability"},
+    {value:"VIP_CHANNEL", label:"VIP Channel"},
+    {value:"PURCHASE_LIFE_INSURANCE", label:"Purchase Life Insurance"},
+    {value:"TAX_VERIFICATION", label:"Tax Verification"},
+    {value:"PLATFORM_FEE", label:"Platform Fee"},
+    {value:"AMLC_WARNING", label:"AMLC Warning"},
+  ];
+
+  CHOICES.forEach(item => {
+    const b = document.createElement("button");
+    b.type = "button";
+    const k = stKey(item.label);
+    b.className = "st-opt " + (k==="green" ? "st-green" : k==="yellow" ? "st-yellow" : "st-red");
+    b.innerHTML = `<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${item.label}</span><span class="st-ico">›</span>`;
+    b.addEventListener("click", () => pickStatusDetail(item.value, item.label));
+    (k==="green" ? green : k==="yellow" ? yellow : red).appendChild(b);
+  });
+}
+
+function openStatusModalDetail(btn){
+  __DETAIL_BTN = btn;
+  buildStatusGridDetail();
+  const m = document.getElementById("statusModalDetail");
+  if(m) m.style.display = "flex";
+}
+
+function closeStatusModalDetail(){
+  const m = document.getElementById("statusModalDetail");
+  if(m) m.style.display = "none";
+  __DETAIL_BTN = null;
+}
+
+function pickStatusDetail(value, label){
+  const hidden = document.getElementById("stHiddenDetail");
+  const labelEl = document.getElementById("stLabelDetail");
+  if(hidden) hidden.value = value;
+  if(labelEl) labelEl.textContent = label;
+
+  if(__DETAIL_BTN) applyBtnColor(__DETAIL_BTN, label);
+  closeStatusModalDetail();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("stBtnDetail");
+  const hidden = document.getElementById("stHiddenDetail");
+  const labelEl = document.getElementById("stLabelDetail");
+
+  const raw = (hidden && hidden.value) ? hidden.value : (btn ? btn.dataset.current : "");
+  const nice = String(raw || "")
+    .replace(/_/g," ")
+    .toLowerCase()
+    .replace(/\b\w/g, c => c.toUpperCase());
+
+  if(labelEl) labelEl.textContent = nice || "Active";
+  if(btn) applyBtnColor(btn, labelEl ? labelEl.textContent : nice);
+
+  const m = document.getElementById("statusModalDetail");
+  if(m){
+    m.addEventListener("click", (e) => { if(e.target === m) closeStatusModalDetail(); });
+  }
+  document.addEventListener("keydown", (e) => { if(e.key === "Escape") closeStatusModalDetail(); });
+});
+</script>
+{% endblock %}

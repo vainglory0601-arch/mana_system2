@@ -1,0 +1,931 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>  
+<meta charset="UTF-8">
+<link rel="icon" type="image/png" href="{% static 'img/logo.webp' %}?v=3">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+{% block extra_css %}
+<style>
+:root{
+  --g1:#4a7a1e;
+  --g2:#7CB342;
+}
+@font-face{
+  font-family: "Ovelion";
+  src: url("{% static 'fonts/Ovelion-Regular.ttf' %}") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+  font-family: "Ovelion", sans-serif !important;
+}
+
+/* ===== FORCE OVELION FONT FOR ALL ELEMENTS ===== */
+
+body,
+button,
+select,
+input,
+textarea,
+th,
+td,
+a {
+  font-family: "Ovelion", sans-serif !important;
+}
+.ovelion{
+  font-family: "Ovelion", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+  font-weight: 400;
+  letter-spacing: .04em;
+}
+/* ✅ Global responsive & bottom-bar space (apply to all pages) */
+*{ box-sizing:border-box; }
+img,video{ max-width:100%; height:auto; }
+html{ -webkit-text-size-adjust:100%; }
+
+/* bar height + gap សម្រាប់ជាទម្រង់ទំនេរខាងក្រោម */
+:root{ --bar-h:68px; --bar-gap:14px; }
+/* ដាក់ទំហំទំនេរឲ្យ content ពីព្រោះមាន bottom bar fixed */
+body{ padding-bottom: calc(var(--bar-h) + var(--bar-gap)); }
+
+/* ===== Account Status Badge (GLOBAL) ===== */
+.status-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 16px;
+  border-radius:999px;
+  font-weight:800;
+  font-size:13px;
+  letter-spacing:.6px;
+  text-transform:uppercase;
+}
+
+/* ACTIVE (dashboard green) */
+.status-active{
+  background: linear-gradient(180deg,#16a34a,#0f7a3a);
+  color:#ecfdf5;
+  box-shadow: 0 0 0 1px rgba(34,197,94,.45),
+              0 6px 18px rgba(34,197,94,.35);
+}
+
+/* FROZEN / REJECT / ERROR (dashboard red) */
+.status-danger{
+  background: linear-gradient(180deg,#dc2626,#991b1b);
+  color:#fff;
+  box-shadow: 0 0 0 1px rgba(239,68,68,.55),
+              0 6px 18px rgba(239,68,68,.35);
+}
+/* WARNING / YELLOW */
+.status-warn{
+  background: linear-gradient(180deg,#eab308,#a16207);
+  color:#111;
+  box-shadow: 0 0 0 1px rgba(234,179,8,.55),
+              0 6px 18px rgba(234,179,8,.30);
+}
+/* ✅ SUCCESS / GREEN alert banner */
+.status-success{
+  background: linear-gradient(180deg,#16a34a,#0f7a3a);
+  color:#ecfdf5;
+  box-shadow: 0 0 0 1px rgba(34,197,94,.45),
+              0 6px 18px rgba(34,197,94,.35);
+}
+/* SUCCESS / GREEN (Wallet Congratulations) */
+.status-success{
+  background: linear-gradient(180deg,#16a34a,#0f7a3a);
+  color:#ecfdf5;
+  box-shadow: 0 0 0 1px rgba(34,197,94,.45),
+              0 6px 18px rgba(34,197,94,.35);
+}
+/* ===== BODY (Dashboard background) ===== */
+body{
+  margin: 0;
+  min-height: 100vh;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+
+  /* ✅ NO overlay, show image original */
+  background: url("{% static 'img/SL-012322-48100-03.webp' %}") center/cover no-repeat fixed !important;
+  background-color: #DCEDC8;
+  background-blend-mode: normal;
+}
+
+/* ===== PAGE ENTER/LEAVE ANIMATION ===== */
+.page-enter{
+  animation: pageIn .45s ease both;
+}
+@keyframes pageIn{
+  from{ opacity:0; transform: translateX(16px); }
+  to{ opacity:1; transform: translateX(0); }
+}
+.page-leave{
+  animation: pageOut .22s ease both;
+}
+@keyframes pageOut{
+  from{ opacity:1; transform: translateX(0); }
+  to{ opacity:0; transform: translateX(-14px); }
+}
+
+/* ===== PAGE WRAP (GLOBAL SAFE) ===== */
+/* ===== PAGE WRAP (GLOBAL) ===== */
+.wrap{
+  width:100%;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:flex-start;
+  padding: 18px 5px 5px;   /* 🔥 top 18px | left-right 5px | bottom 5px */
+  box-sizing:border-box;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* make any page container centered (dash-wrap / card / any main box) */
+
+/* ONLY when a page needs topbar spacing, add class "has-topbar" on .wrap */
+.wrap.has-topbar{
+  padding-top: 18px;
+}
+
+/* ===== GLASS CARD ===== */
+.card{
+  width:100%;
+  max-width:420px;
+  padding:28px;
+  border-radius:18px;
+  background:rgba(220,237,200,.22);
+  backdrop-filter:blur(8px);         /* ✅ កាត់ពី 18px មក 8px */
+  -webkit-backdrop-filter:blur(8px); /* ✅ កាត់ពី 18px មក 8px */
+  box-shadow:0 30px 70px rgba(0,0,0,.45);
+  animation: zoomIn .45s ease;
+  text-align:center;
+}
+
+/* ✅ បន្ថែមនេះដើម្បីបិទ Blur នៅ Mobile (ធ្វើឲ្យលឿនជាង 60%) */
+@media (max-width: 768px) {
+  .card, .cardx {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    animation: none !important; /* បិទ Animation នៅ Mobile */
+  }
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes zoomIn{
+  from{transform:scale(.85);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+
+/* ===== SILVER RUN TEXT ===== */
+.silver-run{
+  background:linear-gradient(
+    120deg,
+    rgba(255,255,255,.7),
+    rgba(255,255,255,1),
+    rgba(200,200,200,.85),
+    rgba(255,255,255,1),
+    rgba(255,255,255,.7)
+  );
+  background-size:220% 100%;
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:silverRun 2.6s linear infinite;
+}
+@keyframes silverRun{
+  from{background-position:0%}
+  to{background-position:220%}
+}
+.silver-run{
+  animation-iteration-count: 3; /* ✅ រត់តែ 3 ដង ហើយឈប់ */
+}
+
+/* ===== WAVE EXCLAMATION ===== */
+.wave-bang{
+  display:inline-block;
+  transform-origin:40% 70%;
+  animation:waveBang 1.6s ease-in-out infinite;
+}
+
+@keyframes waveBang{
+  0%{transform:rotate(0)}
+  20%{transform:rotate(-12deg)}
+  40%{transform:rotate(14deg)}
+  60%{transform:rotate(-8deg)}
+  80%{transform:rotate(10deg)}
+  100%{transform:rotate(0)}
+}
+
+/* ===== GRID SYSTEM ===== */
+.grid{
+  display:grid;
+  gap: 12px;
+  grid-template-columns: repeat(12, 1fr);
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 14px;
+}
+.col-12{ grid-column: span 12; }
+.col-6{ grid-column: span 6; }
+.col-4{ grid-column: span 4; }
+@media (max-width: 780px){
+  .col-6,.col-4{ grid-column: span 12; }
+}
+
+/* ===== UTILITY CLASSES ===== */
+.row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+h1,h2,h3{ margin:0 0 10px; }
+.muted{
+  color: rgba(255,255,255,.7);
+  font-size: 14px;
+}
+
+/* ===== BUTTONS ===== */
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  border: 0;
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration:none;
+  transition: transform .08s ease, opacity .2s ease;
+  user-select:none;
+  white-space:nowrap;
+  font-size: 14px;
+}
+.btn:active{ transform: scale(.98); }
+.btn-primary{
+  background: linear-gradient(90deg, #4a7a1e, #7CB342d0);
+  color:#fff;
+}
+.btn-ghost{
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.35);
+  color: #fff;
+}
+
+/* ===== FORM STYLES ===== */
+.field{ margin-bottom:12px; }
+label{
+  display:block;
+  font-weight:600;
+  margin-bottom:6px;
+  color: rgba(255,255,255,.9);
+}
+input, select, textarea{
+  width:100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.2);
+  background: rgba(255,255,255,.1);
+  color: #fff;
+  outline:none;
+  font-size: 14px;
+}
+input::placeholder, textarea::placeholder{
+  color: rgba(255,255,255,.5);
+}
+input:focus, select:focus, textarea:focus{
+  border-color: var(--g2);
+  background: rgba(255,255,255,.15);
+}
+
+/* ===== BADGES ===== */
+.badge{
+  display:inline-block;
+  padding: 6px 12px;
+  border-radius:999px;
+  font-size: 12px;
+  font-weight: 700;
+  border:1px solid rgba(255,255,255,.2);
+  background: rgba(255,255,255,.1);
+  color: #fff;
+}
+.b-pending{ background: rgba(245,158,11,.2); border-color: rgba(245,158,11,.4); }
+.b-approved{ background: rgba(34,197,94,.2); border-color: rgba(34,197,94,.4); }
+.b-otp{ background: rgba(59,130,246,.2); border-color: rgba(59,130,246,.4); }
+.b-paid{ background: rgba(34,197,94,.25); border-color: rgba(34,197,94,.45); }
+.b-rejected{ background: rgba(239,68,68,.2); border-color: rgba(239,68,68,.4); }
+
+/* ===== CARD OVERRIDES FOR GRID ===== */
+.grid .card{
+  max-width: 100%;
+  text-align: left;
+}
+
+/* ===== FIXED BOTTOM BAR ===== */
+.fixed-bottom-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 30px;
+  height: 60px;
+  background: linear-gradient(90deg, var(--g1), var(--g2));
+  box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 18px;
+  margin: 0 auto;
+  max-width: 800px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.fixed-bottom-bar-content {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* =========================
+   ✅ TOPBAR FIX (PC + Mobile)
+   Make topbar align with centered content
+   ========================= */
+
+/* Container width for ALL pages (same line, no cut) */
+.wrap{
+  width: 100% !important;
+  max-width: 800px !important;   /* ✅ match your bottom bar max width */
+  margin: 0 auto !important;
+}
+
+/* If some pages need wider, you can add class "wide" in template later */
+.wrap.wide{
+  max-width: 1400px !important;
+}
+
+/* Generic topbar (if your pages have .topbar) */
+.topbar{
+  width: 100% !important;
+  max-width: 800px !important;   /* ✅ same as wrap/bottom bar */
+  margin: 0 auto 14px auto !important;
+  box-sizing: border-box !important;
+}
+
+/* If topbar is outside wrap, still keep it centered */
+body > .topbar{
+  max-width: 800px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+/* prevent clipping on PC */
+html, body{
+  height: auto !important;
+  overflow-x: hidden !important;
+}
+
+/* =========================
+   ✅ GLOBAL CardX (ALL pages)
+   Make cards NOT transparent
+   ========================= */
+.cardx{
+  background: rgba(255,255,255,0.93) !important;
+  border: none !important;
+  border-top: 3px solid #7CB342 !important;
+  border-radius: 18px !important;
+  color: #1a1a1a !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: 0 4px 20px rgba(0,0,0,.12), 0 2px 8px rgba(74,122,30,.10) !important;
+}
+
+</style>
+{% endblock %}
+</head>
+
+<body data-auth="{{ request.user.is_authenticated|yesno:'true,false' }}">
+<div class="wrap page-enter" id="pageRoot">
+  {% block content %}{% endblock %}
+</div>
+
+<script>
+// Back navigation handling: prefer history back; fallback to /dashboard/. Used globally.
+// Prevent stuck or blank screens on back (including mobile bfcache/pageshow issues).
+
+function flowBack() {
+  // If there's a history (user navigated), go back. Otherwise, fallback.
+  if (window.history.length > 1) {
+    // Try to go back in history. For some browsers this may not leave the app; in those cases, fallback elsewhere.
+    window.history.back();
+
+    // Defensive: after a short timeout, if still same page, do fallback.
+    setTimeout(function() {
+      if (document.visibilityState !== 'hidden' && (performance.navigation && performance.navigation.type !== 2)) {
+        // Not actually navigating back, so fallback.
+        window.location.href = "/dashboard/";
+      }
+    }, 500);
+  } else {
+    window.location.href = "/dashboard/";
+  }
+}
+
+// Prevent stuck/blank screens on page restore from bfcache (pageshow's persisted).
+// If a transition was interrupted, reinstate the correct content and scroll.
+
+(function () {
+  const root = document.getElementById('pageRoot');
+  if (!root) return;
+
+  function saveScroll() {
+    try {
+      sessionStorage.setItem('page-scrollY', window.scrollY.toString());
+      sessionStorage.setItem('page-scrollX', window.scrollX.toString());
+    } catch (e) {}
+  }
+  function restoreScroll() {
+    try {
+      const scrollY = parseInt(sessionStorage.getItem('page-scrollY') || '', 10);
+      const scrollX = parseInt(sessionStorage.getItem('page-scrollX') || '', 10);
+      if (!isNaN(scrollY)) window.scrollTo(scrollX || 0, scrollY);
+    } catch (e) {}
+  }
+  function setNavFlag() {
+    try { sessionStorage.setItem('page-navigate', '1'); } catch (e) {}
+  }
+  function clearNavFlag() {
+    try { sessionStorage.removeItem('page-navigate'); } catch (e) {}
+  }
+  function hasNavFlag() {
+    try { return sessionStorage.getItem('page-navigate') === '1'; }
+    catch (e) { return false; }
+  }
+
+  document.addEventListener('click', function (e) {
+    const a = e.target.closest('a');
+    if (!a) return;
+    const href = a.getAttribute('href') || '';
+    const target = a.getAttribute('target');
+    if (target && target !== '_self') return;
+    if (href.startsWith('#') || href.startsWith('javascript:')) return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+    e.preventDefault();
+    saveScroll();
+    setNavFlag();
+
+    root.classList.remove('page-enter');
+    root.classList.add('page-leave');
+
+    setTimeout(function () {
+      window.location.href = href;
+    }, 180);
+  }, true);
+
+  // Fix for blank/stuck screens on mobile and Safari back/forward navigation (bfcache).
+  window.addEventListener('pageshow', function (event) {
+    if (event.persisted || (performance.getEntriesByType("navigation")[0]?.type === "back_forward")) {
+      if (hasNavFlag()) {
+        clearNavFlag();
+        restoreScroll();
+        if (root) {
+          root.classList.remove('page-leave');
+          root.classList.add('page-enter');
+        }
+      } else {
+        // In rare cases, forcibly restore .page-enter
+        if (root && !root.classList.contains('page-enter')) {
+          root.classList.remove('page-leave');
+          root.classList.add('page-enter');
+        }
+      }
+    }
+  });
+
+  clearNavFlag();
+})();
+</script>
+<script>
+  (function(){
+    const isAuth = document.body.dataset.auth === "true";
+    if (!isAuth) return;
+    const API_URL = window.API_URL || "/api/realtime/";
+    const INTERVAL_MS = window.INTERVAL_MS || 15000;   // ✅ 15 វិនាទី ជំនួស 2 វិនាទី (ថយចុះ 87%)
+  
+    let timer = null;
+    let lastWithdrawalStatus = null;
+    let lastBalance = null;
+  
+    function qs(sel){ return document.querySelector(sel); }
+  
+    function updateNotif(count){
+      const a = document.querySelector('.notify-wrap');
+      if(!a) return;
+  
+      const n = parseInt(count || 0, 10) || 0;
+  
+      a.classList.toggle('has-unread', n > 0);
+     
+      
+  
+      let b = a.querySelector('.notify-badge');
+      if(n > 0){
+        if(!b){
+          b = document.createElement('span');
+          b.className = 'notify-badge';
+          a.appendChild(b);
+        }
+        if(a.classList.contains('dot-only')){
+          b.textContent = '';
+        }else{
+          b.textContent = (n > 99) ? '99+' : String(n);
+        }
+        b.style.display = 'flex';
+      }else{
+        if(b) b.style.display = 'none';
+      }
+    }
+  
+    function formatStatusText(s){
+  if(!s) return "Active";
+  return String(s)
+    .toLowerCase()
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function normalizeKey(s){
+  return String(s || "")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+function prettyLabel(s){
+  if(!s) return "Active";
+  return String(s)
+    .toLowerCase()
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function getStatusTone(key){
+  // GREEN
+  const green = new Set([
+  "ACTIVE",
+  "APPROVED",
+  "ACCOUNT_UPDATED",
+  "LOAN_PAID",
+  "WITHDRAWAL_SUCCESSFUL"
+]);
+
+  // YELLOW
+  const yellow = new Set([
+    "APP_MAINTENANCE",
+    "INVALID_DETAIL",
+    "RENEW_DOCUMENT_REQUIRED"
+  ]);
+
+  if(green.has(key)) return "green";
+  if(yellow.has(key)) return "yellow";
+  return "red";
+}
+
+function normalizeKey(s){
+  return String(s || "")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+function prettyLabel(s){
+  if(!s) return "Active";
+  return String(s)
+    .toLowerCase()
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function getStatusTone(key){
+  const green = new Set(["ACTIVE","APPROVED","ACCOUNT_UPDATED","LOAN_PAID","WITHDRAWAL_SUCCESSFUL"]);
+  const yellow = new Set(["APP_MAINTENANCE","INVALID_DETAIL","RENEW_DOCUMENT_REQUIRED"]);
+  if(green.has(key)) return "green";
+  if(yellow.has(key)) return "yellow";
+  return "red";
+}
+
+/* ✅ NEW: accepts (statusKey, statusLabel) */
+function updateAccountStatus(statusKey, statusLabel){
+  const badge = document.getElementById("accStatusBadge");
+  if(!badge) return;
+
+  const key = normalizeKey(statusKey) || "ACTIVE";
+
+  // ✅ show custom label if provided, else show key pretty
+  const label = (String(statusLabel || "").trim()) || prettyLabel(key);
+  badge.textContent = label;
+
+  // ✅ color based on KEY only (stable)
+  badge.classList.remove("status-active","status-warn","status-danger");
+  const tone = getStatusTone(key);
+  if(tone === "green") badge.classList.add("status-active");
+  else if(tone === "yellow") badge.classList.add("status-warn");
+  else badge.classList.add("status-danger");
+}
+  
+    function applyState(data){
+      if(!data || !data.ok) return;
+  
+      // ✅ notif dot/badge
+      updateNotif(data.notif_count);
+  
+      // ✅ status badge realtime (ALWAYS)
+      updateAccountStatus(data.account_status, data.account_status_label);
+      const alertBox = document.getElementById("statusAlert");
+      if(alertBox){
+
+      // ✅ ADD THIS: if this page wants custom banner, DON'T overwrite it
+      if (alertBox.dataset.lock === "1") return;
+
+  const key = normalizeKey(data.account_status || "ACTIVE");
+  const msg = (data.status_message || "").trim();
+
+  // reset classes
+  alertBox.classList.remove("status-danger","status-warn","status-success");
+
+  // ✅ ACTIVE = hide
+if(key === "ACTIVE" || key === "ACCOUNT_UPDATED"){
+  alertBox.style.display = "none";
+  alertBox.textContent = "";
+}
+// ✅ GREEN (Approved / Loan paid / Withdrawal successful)
+else if(key === "APPROVED" || key === "LOAN_PAID" || key === "WITHDRAWAL_SUCCESSFUL"){
+  alertBox.classList.add("status-success");
+  alertBox.style.display = "block";
+  alertBox.textContent = msg || (
+    key === "APPROVED"
+      ? "Your account is Approved, Please contact to Financial Department."
+      : key === "LOAN_PAID"
+        ? "Congratulations! Loan Paid."
+        : "Congratulations! Withdrawal Successful."
+  );
+
+  // ✅ APPROVED keep visible (do NOT auto hide), but keep auto-hide for the other 2 if you want
+  if(key !== "APPROVED"){
+    clearTimeout(window.__statusAlertTimer);
+    window.__statusAlertTimer = setTimeout(() => {
+      alertBox.style.display = "none";
+      alertBox.textContent = "";
+    }, 20000);
+  }
+}
+  // ✅ YELLOW
+  else if(key === "APP_MAINTENANCE" || key === "INVALID_DETAIL" || key === "RENEW_DOCUMENT_REQUIRED"){
+    alertBox.classList.add("status-warn");
+    alertBox.style.display = "block";
+    alertBox.textContent = msg || ("Your account is " + prettyLabel(key) + ". Please contact company department.");
+  }
+  // ✅ RED (everything else)
+  else{
+  alertBox.classList.add("status-danger");
+  alertBox.style.display = "block";
+  alertBox.textContent = msg || ("Your account is " + prettyLabel(key) + ", Please contact to Financial Department.");
+}
+}
+  
+      // ✅ balance realtime (only update when changed)
+      const balEl = document.querySelector("[data-balance]");
+      if(balEl && data.balance !== undefined && data.balance !== lastBalance){
+        lastBalance = data.balance;
+        balEl.textContent = data.balance;
+      }
+  
+      // ✅ OTP required flag (wallet page)
+      if(typeof window.__setOtpRequired === "function"){
+        window.__setOtpRequired(!!data.otp_required);
+      }
+
+      // ✅ withdrawal timeline (wallet)
+// សំខាន់៖ ឲ្យវារត់តែ page ដែលមាន #b4 ប៉ុណ្ណោះ
+// Wallet page របស់អ្នកប្រើ b1/b2/b3 ហើយមាន script ផ្ទាល់ខ្លួន
+(function(){
+  const b4Exists = !!document.getElementById("b4");
+  if(!b4Exists) return;
+
+  const status = (data.withdrawal && data.withdrawal.status) || "";
+  const holdUntil = window.__walletHoldUntil || 0;
+  const now = Date.now();
+
+  function setBulletCheck(el){
+    if(!el) return;
+    el.innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>';
+  }
+  function setBulletX(el){
+    if(!el) return;
+    el.innerHTML = '<svg viewBox="0 0 24 24"><path d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4L10.6 13.4 4.3 19.7 2.9 18.3 9.2 12 2.9 5.7 4.3 4.3l6.3 6.3 6.3-6.3z"/></svg>';
+  }
+
+  if(!status) return;
+
+  const timeline = qs("#timelineBox");
+  const b1 = qs("#b1"), b2 = qs("#b2"), b3 = qs("#b3"), b4 = qs("#b4");
+
+  function on(el){ if(el) el.classList.add("on"); }
+  function resetBullet(el){
+    if(!el) return;
+    el.classList.remove("rej","rejected","on");
+    setBulletCheck(el);
+  }
+
+  if(timeline) timeline.style.display = "block";
+
+  if(now < holdUntil && status === "processing"){ return; }
+
+  if(status !== lastWithdrawalStatus){
+    lastWithdrawalStatus = status;
+
+    [b1,b2,b3,b4].forEach(resetBullet);
+
+    const t4 = document.getElementById("t4");
+    const t4msg = document.getElementById("t4msg");
+    if(t4){
+      t4.textContent = "Payment sent";
+      t4.classList.remove("rejected");
+    }
+    if(t4msg){
+      t4msg.textContent = "Only Company can mark this as sent";
+    }
+
+    if(status === "processing"){ on(b1); }
+    if(status === "waiting"){ on(b1); on(b2); }
+    if(status === "reviewed"){ on(b1); on(b2); on(b3); }
+
+    if(status === "paid"){
+      on(b1); on(b2); on(b3); on(b4);
+      setBulletCheck(b4);
+      if(t4) t4.textContent = "Payment sent";
+    }
+
+    if(status === "rejected"){
+      on(b1); on(b2); on(b3);
+
+      if(b4){
+        b4.classList.add("rejected");
+        b4.classList.remove("on");
+        setBulletX(b4);
+      }
+      if(t4){
+        t4.textContent = "Rejected";
+        t4.classList.add("rejected");
+      }
+      if(t4msg){
+        t4msg.textContent = "Your withdrawal request was rejected.";
+      }
+    }
+  }
+})();
+  
+      // ✅ disable withdraw button if balance 0
+      const btn = qs("#withdrawBtn");
+      if(btn){
+        const balNum = parseFloat((data.balance || "0").replace(/,/g,"")) || 0;
+        btn.disabled = !(balNum > 0);
+        btn.style.opacity = btn.disabled ? "0.55" : "1";
+        btn.style.pointerEvents = btn.disabled ? "none" : "auto";
+      }
+    }
+  
+    async function tick(){
+      if(document.hidden) return;
+      try{
+        const res = await fetch(API_URL, {cache:"no-store", credentials:"same-origin"});
+        const data = await res.json();
+        applyState(data);
+      }catch(e){}
+    }
+  
+    function start(){
+      if(timer) return;
+      tick();
+      timer = setInterval(tick, INTERVAL_MS);
+    }
+    function stop(){
+      if(timer){ clearInterval(timer); timer = null; }
+    }
+  
+    document.addEventListener("visibilitychange", function(){
+      if(document.hidden) stop();
+      else start();
+    });
+  
+    start();
+  })();
+  </script>
+<script>
+(function() {
+    // កំណត់ថា បើធំជាង 2MB ទើបបង្ហាប់
+    const MAX_SIZE_MB = 2;
+    const MAX_WIDTH = 1920;  // ទទឹងធំបំផុត
+    const QUALITY = 0.85;    // គុណភាព 85%
+
+    document.addEventListener('change', async function(e) {
+        const input = e.target;
+        
+        // ពិនិត្យថាជា input file ឬអត់ និងមាន class "compress-img"
+        if (!input.matches('input[type="file"].compress-img')) return;
+        
+        const file = input.files[0];
+        if (!file || !file.type.startsWith('image/')) return;
+        
+        // បើតូចជាង 2MB ទុកដដែល
+        if (file.size <= MAX_SIZE_MB * 1024 * 1024) return;
+
+        // បង្ហាញ Loading
+        const btn = input.closest('form')?.querySelector('button[type="submit"]');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerText = 'កំពុងបង្ហាប់រូប...';
+        }
+
+        try {
+            const compressedFile = await compressImage(file);
+            
+            // ជំនួស File ដើមជាមួយ File បង្ហាប់
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(compressedFile);
+            input.files = dataTransfer.files;
+            
+            console.log('បង្ហាប់រូបភាពរួចរាល់:', (compressedFile.size/1024).toFixed(1) + 'KB');
+        } catch (err) {
+            console.error('បរាជ័យ:', err);
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerText = 'Confirm Apply';
+            }
+        }
+    });
+
+    function compressImage(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                
+                img.onload = function() {
+                    // គណនាទំហំថ្មី
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height = Math.round(height * (MAX_WIDTH / width));
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_WIDTH) {
+                            width = Math.round(width * (MAX_WIDTH / height));
+                            height = MAX_WIDTH;
+                        }
+                    }
+                    
+                    // បង្កើត Canvas
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    
+                    // បំពេញផ្ទៃស (សម្រាប់ PNG)
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, width, height);
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // បំលែងជា JPEG
+                    canvas.toBlob((blob) => {
+                        if (!blob) return reject('Error');
+                        const newFile = new File([blob], 
+                            file.name.replace(/\.[^/.]+$/, '') + '.jpg', 
+                            { type: 'image/jpeg', lastModified: Date.now() }
+                        );
+                        resolve(newFile);
+                    }, 'image/jpeg', QUALITY);
+                };
+                img.onerror = reject;
+            };
+            reader.onerror = reject;
+        });
+    }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,396 @@
+{% extends "view/base.html" %}
+{% block content %}
+<style>
+/* ===============================
+   LOANS (MATCH WITHDRAWALS STYLE)
+   =============================== */
+
+.loan-card-h{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+.loan-card-h .h1{
+  font-weight:950;
+  font-size:18px;
+  color:#004182;
+}
+.loan-card-h .muted{
+  color:rgba(0,65,130,.75);
+  font-weight:800;
+}
+
+/* filter bar like withdrawals */
+.loan-filter{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.loan-filter input,
+.loan-filter select{
+  height:42px;
+  padding:0 14px;
+  border-radius:14px;
+  border:0;
+  outline:none;
+  background:#fff;
+  box-shadow: 0 10px 22px rgba(0,0,0,.12);
+  font-weight:800;
+  color:#004182;
+}
+.loan-filter select{
+  padding:0 12px;
+}
+
+/* match your green save button look */
+.loan-filter .filter-btn{
+  height:42px;
+  padding:0 18px;
+  border:0;
+  border-radius:14px;
+  cursor:pointer;
+  font-weight:900;
+  color:#fff;
+  background:#166534;
+  box-shadow: 0 10px 22px rgba(0,0,0,.18);
+}
+.loan-filter .filter-btn:hover{ opacity:.93; }
+
+/* table like withdrawals */
+#loansTable{
+  width:100%;
+  table-layout:auto;
+  border-collapse:separate;
+  border-spacing:0;
+}
+
+#loansTable th,
+#loansTable td{
+  border-right:3px solid rgba(184,184,184,.87);
+  text-align:center;
+  vertical-align:middle;
+  padding:10px;
+}
+#loansTable th:last-child,
+#loansTable td:last-child{ border-right:0; }
+
+/* ID small */
+#loansTable th:nth-child(1),
+#loansTable td:nth-child(1){
+  width:70px;
+  min-width:70px;
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+/* NAME no spacing weird */
+#loansTable th:nth-child(2),
+#loansTable td:nth-child(2){
+  min-width:160px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+/* phone style blue */
+#loansTable td:nth-child(3){
+  color:#004182 !important;
+  font-weight:900 !important;
+  white-space:nowrap;
+  min-width:140px;
+}
+
+/* amount */
+#loansTable td.money{
+  white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+  font-weight:900;
+  min-width:150px;
+}
+
+/* term */
+#loansTable td.term{
+  font-weight:900;
+  min-width:90px;
+}
+
+/* created */
+#loansTable td.created{
+  white-space:nowrap;
+  min-width:160px;
+  font-weight:800;
+  color:rgba(0,65,130,.9);
+}
+
+/* zebra */
+#loansTable tbody tr:nth-child(even){
+  background: rgba(0,65,130,.03);
+}
+#loansTable tbody tr:hover{
+  background: rgba(0,65,130,.06);
+}
+
+/* status badge dropdown */
+#loansTable select.status-select{
+  width:100%;
+  height:38px;
+  padding:0 34px 0 12px;
+  border:0 !important;
+  border-radius:14px !important;
+  font-weight:900 !important;
+  text-align:center !important;
+  text-align-last:center !important;
+  appearance:none !important;
+  -webkit-appearance:none !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.25),
+    0 10px 22px rgba(0,0,0,.18) !important;
+  line-height:38px !important;
+  padding:0 !important;  
+}
+
+#loansTable select.st-pending{ background:#0b5ea8 !important; color:#fff !important; }
+#loansTable select.st-approved{ background:#22c55e !important; color:#fff !important; }
+#loansTable select.st-rejected{ background:#ef4444 !important; color:#fff !important; }
+
+/* save button same as withdrawals look */
+.loan-save{
+  height:38px;
+  padding:0 16px;
+  border:0;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:900;
+  color:#fff;
+  background:#166534;
+  box-shadow:0 10px 22px rgba(0,0,0,.18);
+}
+.loan-save:hover{ opacity:.93; }
+
+/* pager */
+.pager{
+  display:flex;
+  justify-content:flex-end;
+  gap:12px;
+  align-items:center;
+  margin-top:12px;
+}
+.pager a{
+  text-decoration:none;
+  padding:10px 14px;
+  border-radius:12px;
+  font-weight:900;
+  color:#fff;
+  background:#166534;
+  box-shadow:0 10px 22px rgba(0,0,0,.18);
+}
+.pager a:hover{ opacity:.93; }
+.pager .muted{
+  color:#004182;
+  font-weight:900;
+}
+.loan-link{
+  color:#004182;
+  font-weight:950;
+  text-decoration:none;
+}
+.loan-link:hover{ text-decoration:underline; }
+</style>
+
+<div class="loan-card-h">
+  <div>
+    <div class="h1">Loan Applications</div>
+    <div class="muted">(Approved/Rejected)</div>
+  </div>
+
+  <form method="get" class="loan-filter">
+    <input name="q" value="{{ q }}" placeholder="Search phone or name...">
+
+    <select name="status">
+      <option value="">All status</option>
+      <option value="PENDING" {% if status == "PENDING" %}selected{% endif %}>PENDING</option>
+      <option value="APPROVED" {% if status == "APPROVED" %}selected{% endif %}>APPROVED</option>
+      <option value="REJECTED" {% if status == "REJECTED" %}selected{% endif %}>REJECTED</option>
+    </select>
+
+    <button class="filter-btn" type="submit">Filter</button>
+  </form>
+</div>
+
+<div class="content">
+  <div class="table-wrap">
+    <table id="loansTable">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>NAME</th>
+          <th>PHONE</th>
+          <th>AMOUNT</th>
+          <th>TERM</th>
+          <th>CREATED</th>
+          <th>STATUS</th>
+          <th>SAVE</th>
+        </tr>
+      </thead>
+
+      <tbody>
+      {% for loan in page.object_list %}
+
+        <form id="loanForm{{ loan.id }}" method="post" action="{% url 'view_loan_status_update_view' loan.id %}">
+  {% csrf_token %}
+
+  <!-- ✅ like staff_users: auto send notification success message -->
+  <input type="hidden" name="success_message" id="loanSuccess-{{ loan.id }}" value="">
+  <input type="hidden" name="notification_message" id="loanAlert-{{ loan.id }}" value="">
+  <input type="hidden" name="status_message" id="loanStatusMsg-{{ loan.id }}" value="">
+</form>
+
+        <tr>
+          <td>
+  <a class="loan-link" href="{% url 'view_loan_detail' loan.id %}">#{{ loan.id }}</a>
+</td>
+          <td>{{ loan.full_name|default:"-" }}</td>
+
+<td>
+  <a class="loan-link" href="{% url 'view_loan_detail' loan.id %}">
+    {{ loan.user.phone }}
+  </a>
+</td>
+
+          <td class="money" data-money="{{ loan.amount }}">{{ loan.amount|default:"-" }}</td>
+          <td class="term">{{ loan.term_months|default:"-" }}</td>
+          <td class="created">{{ loan.created_at|date:"d/m/Y H:i" }}</td>
+
+          <td>
+            <select name="status"
+        form="loanForm{{ loan.id }}"
+        class="status-select"
+        data-loan-id="{{ loan.id }}">
+              <option value="PENDING" {% if loan.status == "PENDING" %}selected{% endif %}>PENDING</option>
+              <option value="APPROVED" {% if loan.status == "APPROVED" %}selected{% endif %}>APPROVED</option>
+              <option value="REJECTED" {% if loan.status == "REJECTED" %}selected{% endif %}>REJECTED</option>
+            </select>
+          </td>
+
+          <td>
+            <button class="loan-save" type="submit" form="loanForm{{ loan.id }}">Save</button>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="8" style="padding:16px;color:#004182;font-weight:900;">No loans found.</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+
+    <script>
+      // paint status dropdown like badge
+      document.addEventListener("DOMContentLoaded", function(){
+        const sels = document.querySelectorAll("#loansTable select.status-select");
+
+        function paint(el){
+          el.classList.remove("st-pending","st-approved","st-rejected");
+          const v = (el.value || "").toUpperCase().trim();
+          if(v === "PENDING") el.classList.add("st-pending");
+          else if(v === "APPROVED") el.classList.add("st-approved");
+          else if(v === "REJECTED") el.classList.add("st-rejected");
+        }
+
+        sels.forEach(s=>{
+          paint(s);
+          s.addEventListener("change", function(){ paint(this); });
+        });
+      });
+    </script>
+
+    <script>
+      // format amount like 1,000,000.00
+      function formatMoneyWithComma(n){
+        const num = Number(n);
+        if(!Number.isFinite(num)) return n;
+        return num.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      }
+      document.addEventListener("DOMContentLoaded", function(){
+        document.querySelectorAll("#loansTable td.money").forEach(td=>{
+          const raw = td.getAttribute("data-money");
+          if(raw === null || raw === "" || raw === "None") return;
+          td.textContent = formatMoneyWithComma(raw);
+        });
+      });
+    </script>
+    <script>
+document.addEventListener("DOMContentLoaded", function(){
+  const APPROVED_MSG =
+    "Congratulation, Your loan credit have been approved, Please contact to the Financial Department to get the code for withdrawal";
+
+  const sels = document.querySelectorAll("#loansTable select.status-select");
+
+  function paint(el){
+    el.classList.remove("st-pending","st-approved","st-rejected");
+    const v = (el.value || "").toUpperCase().trim();
+    if(v === "PENDING") el.classList.add("st-pending");
+    else if(v === "APPROVED") el.classList.add("st-approved");
+    else if(v === "REJECTED") el.classList.add("st-rejected");
+  }
+
+  function submitForm(formId){
+    const f = document.getElementById(formId);
+    if(!f) return;
+    if(f.requestSubmit) f.requestSubmit();
+    else f.submit();
+  }
+
+  sels.forEach(sel => {
+    paint(sel);
+
+    sel.addEventListener("change", function(){
+      paint(this);
+
+      const loanId = this.dataset.loanId;
+      if(!loanId) return;
+
+      const v = (this.value || "").toUpperCase().trim();
+
+      const sH  = document.getElementById("loanSuccess-" + loanId);
+      const aH  = document.getElementById("loanAlert-" + loanId);
+      const stH = document.getElementById("loanStatusMsg-" + loanId);
+
+      // ✅ ONLY when APPROVED -> auto write message + auto submit (no popup)
+      if(v === "APPROVED"){
+        if(sH) sH.value = APPROVED_MSG;
+        if(aH) aH.value = "";        // optional
+        if(stH) stH.value = "";      // optional
+
+        submitForm("loanForm" + loanId);
+        return;
+      }
+
+      // optional: if rejected clear success message
+      if(v === "REJECTED"){
+        if(sH) sH.value = "";
+      }
+    });
+  });
+});
+</script>
+
+    <div class="pager">
+      {% if page.has_previous %}
+        <a href="?q={{ q }}&status={{ status }}&page={{ page.previous_page_number }}">← Prev</a>
+      {% endif %}
+      <span class="muted">Page {{ page.number }} / {{ page.paginator.num_pages }}</span>
+      {% if page.has_next %}
+        <a href="?q={{ q }}&status={{ status }}&page={{ page.next_page_number }}">Next →</a>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

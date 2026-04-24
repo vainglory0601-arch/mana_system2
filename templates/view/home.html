@@ -1,0 +1,46 @@
+{% extends "view/base.html" %}
+{% block content %}
+
+<div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:14px;">
+  <div>
+    <div style="font-weight:950;font-size:18px;color:#004182;">Overview</div>
+    <div style="color:rgba(0,65,130,.75);font-weight:700;">Quick totals</div>
+  </div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card stat-teal">
+    <div class="stat-top">
+      <div>
+        <div class="stat-title">Users</div>
+        <div style="opacity:.9;font-size:12px;">Total users</div>
+      </div>
+    </div>
+    <div class="stat-num">{{ users_total }}</div>
+    <a class="stat-btn" href="/view/users/">Open →</a>
+  </div>
+
+  <div class="stat-card stat-orange">
+    <div class="stat-top">
+      <div>
+        <div class="stat-title">Loans</div>
+        <div style="opacity:.9;font-size:12px;">Loan applications</div>
+      </div>
+    </div>
+    <div class="stat-num">{{ loans_total }}</div>
+    <a class="stat-btn" href="/view/loans/">Open →</a>
+  </div>
+
+  <div class="stat-card stat-purple">
+    <div class="stat-top">
+      <div>
+        <div class="stat-title">Withdrawals</div>
+        <div style="opacity:.9;font-size:12px;">Requests</div>
+      </div>
+    </div>
+    <div class="stat-num">{{ withdrawals_total }}</div>
+    <a class="stat-btn" href="/view/withdrawals/">Open →</a>
+  </div>
+</div>
+
+{% endblock %}

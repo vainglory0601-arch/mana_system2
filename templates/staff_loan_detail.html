@@ -1,0 +1,273 @@
+{# __staff_loan_detail.html__ #}
+{% extends "staff_base.html" %}
+{% block title %}Loan Detail{% endblock %}
+{% block content %}
+
+<form method="post" action="{% url 'staff_loan_update' loan.id %}" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <div class="card-h">
+  <div>
+    <div class="h1">Loan #{{ loan.id }}</div>
+
+    <div class="muted" style="margin-top:6px;">
+      User: <b>{{ loan.user.phone }}</b>
+      • Loan Status: <b>{{ loan.status }}</b>
+      • Payment Method: 
+      {% if pm.locked %}
+        <span class="pill ok">SAVED</span>
+      {% else %}
+        <span class="pill bad">NOT SAVED</span>
+      {% endif %}
+    </div>
+
+    <div class="muted" style="margin-top:6px;">
+      Step: <b>{{ step_label }}</b>
+    </div>
+
+    <!-- ✅ Step Tracker (Register → Loan Form → Payment Method → Submitted) -->
+    <div class="step-wrap">
+      <div class="step-row">
+        <div class="dot done">✓</div>
+        <div class="line done"></div>
+
+        <div class="dot done">✓</div>
+        <div class="line {% if pm.locked %}done{% else %}{% endif %}"></div>
+
+        <div class="dot {% if pm.locked %}done{% else %}active{% endif %}">
+          {% if pm.locked %}✓{% else %}3{% endif %}
+        </div>
+        <div class="line {% if loan.status != 'DRAFT' and pm.locked %}done{% else %}{% endif %}"></div>
+
+        <div class="dot {% if loan.status != 'DRAFT' and pm.locked %}done{% else %}{% endif %}">
+          {% if loan.status != 'DRAFT' and pm.locked %}✓{% else %}4{% endif %}
+        </div>
+      </div>
+
+      <div class="step-labels">
+        <div>Register</div>
+        <div>Loan Form</div>
+        <div>Payment Method</div>
+        <div>Submitted</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div style="display:flex; gap:10px; align-items:center;">
+    <button class="savebtn" type="submit">Save</button>
+    <a class="btn" href="{% url 'staff_loans' %}">← Back</a>
+  </div>
+</div>
+  <div class="content loan-detail-page">
+
+    <div style="display:grid; grid-template-columns: 520px 1fr; gap: 22px; align-items:start;">
+
+      <!-- LEFT: info (staff can edit) -->
+      <div class="user-detail-form">
+
+        <!-- ✅ NOW EDITABLE + has name -->
+        <p><label>Phone</label><input type="text" name="phone" value="{{ loan.user.phone }}"></p>
+
+        <p><label>Full name</label><input type="text" name="full_name" value="{{ loan.full_name|default_if_none:'' }}"></p>
+        <p><label>Age</label><input type="number" name="age" value="{{ loan.age|default_if_none:'' }}"></p>
+        <p><label>Current living</label><input type="text" name="current_living" value="{{ loan.current_living|default_if_none:'' }}"></p>
+        <p><label>Hometown</label><input type="text" name="hometown" value="{{ loan.hometown|default_if_none:'' }}"></p>
+
+        <p><label>Income</label><input type="text" name="income" value="{{ loan.income|default_if_none:'' }}"></p>
+        <p><label>Monthly expenses</label><input type="text" name="monthly_expenses" value="{{ loan.monthly_expenses|default_if_none:'' }}"></p>
+
+        <p><label>Guarantor contact</label><input type="text" name="guarantor_contact" value="{{ loan.guarantor_contact|default_if_none:'' }}"></p>
+        <p><label>Guarantor living</label><input type="text" name="guarantor_current_living" value="{{ loan.guarantor_current_living|default_if_none:'' }}"></p>
+
+        <p><label>Identity name</label><input type="text" name="identity_name" value="{{ loan.identity_name|default_if_none:'' }}"></p>
+        <p><label>Identity number</label><input type="text" name="identity_number" value="{{ loan.identity_number|default_if_none:'' }}"></p>
+
+        <!-- ✅ NOW EDITABLE + has name -->
+        <p><label>Amount</label><input type="text" name="amount" value="{{ loan.amount }}"></p>
+
+        <!-- ✅ NOW EDITABLE + has name -->
+        <p><label>Term (months)</label><input type="number" name="term_months" value="{{ loan.term_months }}"></p>
+
+        <!-- ✅ NEW: Purposes (from loan apply) -->
+        <div class="purpose-box">
+          <div class="purpose-title">Purposes</div>
+          <div class="purpose-body">
+            {% if loan.loan_purposes and loan.loan_purposes|length > 0 %}
+              <ul class="purpose-list">
+                {% for p in loan.loan_purposes %}
+                  <li>{{ p }}</li>
+                {% endfor %}
+              </ul>
+            {% else %}
+              <span class="muted">—</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- ✅ readonly (auto-calc in views.py) -->
+        <p><label>Monthly repayment</label><input type="text" value="{{ loan.monthly_repayment }}" readonly></p>
+        <p><label>Created at</label><input type="text" value="{{ loan.created_at }}" readonly></p>
+
+        <!-- ✅ Staff can change status -->
+        <p>
+          <label>Status</label>
+          <select name="status">
+            {% for v, lbl in loan.STATUS_CHOICES %}
+              <option value="{{ v }}" {% if loan.status == v %}selected{% endif %}>{{ lbl }}</option>
+            {% endfor %}
+          </select>
+        </p>
+
+      </div>
+
+      <!-- RIGHT: uploaded images (unchanged) -->
+      <div>
+        <div class="h1" style="font-size:14px;margin-bottom:10px;">Uploaded Images</div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+
+          <div>
+            <div class="muted" style="margin-bottom:6px;">ID Front</div>
+            <div style="height:280px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.35);overflow:hidden;">
+              {% if loan.id_front %}
+                <img src="{{ loan.id_front.url }}" style="width:100%;height:100%;object-fit:cover;">
+              {% endif %}
+            </div>
+            <div style="margin-top:8px;">
+              <input type="file" name="id_front" accept="image/*">
+            </div>
+          </div>
+
+          <div>
+            <div class="muted" style="margin-bottom:6px;">ID Back</div>
+            <div style="height:280px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.35);overflow:hidden;">
+              {% if loan.id_back %}
+                <img src="{{ loan.id_back.url }}" style="width:100%;height:100%;object-fit:cover;">
+              {% endif %}
+            </div>
+            <div style="margin-top:8px;">
+              <input type="file" name="id_back" accept="image/*">
+            </div>
+          </div>
+
+          <div>
+            <div class="muted" style="margin-bottom:6px;">Selfie + ID</div>
+            <div style="height:280px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.35);overflow:hidden;">
+              {% if loan.selfie_with_id %}
+                <img src="{{ loan.selfie_with_id.url }}" style="width:100%;height:100%;object-fit:cover;">
+              {% endif %}
+            </div>
+            <div style="margin-top:8px;">
+              <input type="file" name="selfie_with_id" accept="image/*">
+            </div>
+          </div>
+
+          <div>
+            <div class="muted" style="margin-bottom:6px;">Signature</div>
+            <div style="height:280px;border-radius:14px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.35);overflow:hidden;display:flex;align-items:center;justify-content:center;">
+              {% if loan.signature_image %}
+                <img src="{{ loan.signature_image.url }}" style="width:100%;height:100%;object-fit:contain;background:#fff;">
+              {% endif %}
+            </div>
+            <div style="margin-top:8px;">
+              <input type="file" name="signature_image" accept="image/*">
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</form>
+
+<style>
+  /* staff_loan_detail.html only */
+  label, .label, .form-label, .field label, .content label{
+  color:#0b5fa5 !important;  /* blue */
+  opacity:1;
+}
+
+  /* ✅ NEW: Purposes box */
+  .purpose-box{
+    margin: 12px 0 8px;
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.18);
+    background: rgba(0,0,0,.35);
+  }
+  .purpose-title{
+    color:#0b5fa5 !important;
+    font-weight:900;
+    font-size:12px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    margin-bottom:8px;
+    opacity:.95;
+  }
+  .purpose-body{
+    color: rgba(255,255,255,.88);
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .purpose-list{
+    margin: 0;
+    padding-left: 18px;
+  }
+  .purpose-list li{
+    margin: 4px 0;
+  }
+    .pill{
+    display:inline-flex;
+    align-items:center;
+    padding:4px 10px;
+    border-radius:999px;
+    font-weight:900;
+    font-size:12px;
+    margin-left:6px;
+    border:1px solid rgba(255,255,255,.18);
+    background: rgba(0,0,0,.25);
+  }
+  .pill.ok{ color:#22c55e; border-color: rgba(34,197,94,.45); background: rgba(34,197,94,.10); }
+  .pill.bad{ color:#ff4a4a; border-color: rgba(255,74,74,.45); background: rgba(255,74,74,.10); }
+
+  .step-wrap{ margin-top:12px; }
+  .step-row{ display:flex; align-items:center; gap:10px; }
+  .dot{
+    width:34px; height:34px; border-radius:999px;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:950;
+    border:1px solid rgba(255,255,255,.18);
+    background:rgba(0,0,0,.18);
+    color:rgba(255,255,255,.75);
+  }
+  .dot.active{
+    background: rgba(0,65,130,.22);
+    border-color: rgba(0,65,130,.60);
+    color:#fff;
+  }
+  .dot.done{
+    background: rgba(34,197,94,.12);
+    border-color: rgba(34,197,94,.45);
+    color:#22c55e;
+  }
+  .line{
+    flex:1; height:3px; border-radius:999px;
+    background:rgba(255,255,255,.18);
+  }
+  .line.done{
+    background: rgba(34,197,94,.65);
+  }
+  .step-labels{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    margin-top:8px;
+    font-size:12px;
+    opacity:.85;
+    text-align:center;
+  }
+</style>
+
+{% endblock %}

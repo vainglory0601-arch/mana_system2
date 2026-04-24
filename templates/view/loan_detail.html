@@ -1,0 +1,387 @@
+{% extends "view/base.html" %}
+{% block content %}
+
+<style>
+/* ====== Header bar ====== */
+.card-h{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+.card-h .h1{
+  font-weight:950;
+  font-size:18px;
+  color:#004182;
+}
+.card-h .muted{
+  margin-top:6px;
+  color:rgba(0,65,130,.85);
+  font-weight:800;
+}
+
+/* back button */
+.btn{
+  height:42px;
+  padding:0 16px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:14px;
+  border:0;
+  cursor:pointer;
+  font-weight:900;
+  color:#fff;
+  text-decoration:none;
+  background:#166534;
+  box-shadow: 0 10px 22px rgba(0,0,0,.18);
+}
+.btn:hover{ opacity:.93; }
+
+/* ====== Step tracker ====== */
+.pill{
+  display:inline-flex;
+  align-items:center;
+  padding:4px 10px;
+  border-radius:999px;
+  font-weight:900;
+  font-size:12px;
+  margin-left:6px;
+  border:1px solid rgba(0,0,0,.12);
+  background: rgba(0,0,0,.06);
+}
+.pill.ok{ color:#166534; border-color: rgba(34,197,94,.45); background: rgba(34,197,94,.12); }
+.pill.bad{ color:#b91c1c; border-color: rgba(239,68,68,.45); background: rgba(239,68,68,.12); }
+
+.step-wrap{ margin-top:12px; }
+.step-row{ display:flex; align-items:center; gap:10px; }
+.dot{
+  width:34px; height:34px; border-radius:999px;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:950;
+  border:1px solid rgba(0,0,0,.12);
+  background:rgba(0,0,0,.04);
+  color:rgba(0,0,0,.55);
+}
+.dot.active{
+  background: rgba(0,65,130,.16);
+  border-color: rgba(0,65,130,.45);
+  color:#004182;
+}
+.dot.done{
+  background: rgba(34,197,94,.16);
+  border-color: rgba(34,197,94,.45);
+  color:#166534;
+}
+.line{
+  flex:1; height:3px; border-radius:999px;
+  background:rgba(0,0,0,.10);
+}
+.line.done{
+  background: rgba(34,197,94,.65);
+}
+.step-labels{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  margin-top:8px;
+  font-size:12px;
+  opacity:.85;
+  text-align:center;
+  color:rgba(0,65,130,.9);
+  font-weight:800;
+}
+
+/* ====== Layout grid ====== */
+.loan-detail-page{
+  background: transparent;
+}
+
+.user-detail-form label{
+  color:#004182 !important;
+  font-weight:900;
+}
+
+.user-detail-form input, .user-detail-form select{
+  width:100%;
+  height:40px;
+  border-radius:12px;
+  border:1px solid rgba(0,0,0,.12);
+  outline:none;
+  background:#111827;
+  color:#fff;
+  font-weight:900;
+  padding:0 12px;
+  box-sizing:border-box;
+}
+
+.user-detail-form input[readonly],
+.user-detail-form select[disabled]{
+  opacity:.95;
+}
+
+.sep{ border:0; border-top:1px solid rgba(0,0,0,.10); margin:12px 0; }
+.h2{ font-weight:950; color:#004182; margin-bottom:10px; }
+
+/* Purposes box (readonly) */
+.purpose-box{
+  margin: 12px 0 8px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,.10);
+  background: rgba(0,65,130,.03);
+}
+.purpose-title{
+  color:#004182 !important;
+  font-weight:900;
+  font-size:12px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  margin-bottom:8px;
+  opacity:.95;
+}
+.purpose-body{
+  color: rgba(0,65,130,.95);
+  font-size: 13px;
+  line-height: 1.45;
+  font-weight:800;
+}
+.purpose-list{
+  margin: 0;
+  padding-left: 18px;
+}
+.purpose-list li{
+  margin: 4px 0;
+}
+
+/* Images */
+.img-grid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:16px;
+}
+.img-card .small{ font-size:12px; }
+.img-box{
+  height:280px;
+  border-radius:14px;
+  border:1px solid rgba(0,0,0,.12);
+  background:#fff;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.img-box img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.img-box.sig img{
+  object-fit:contain;
+  background:#fff;
+}
+.img-empty{
+  font-weight:950;
+  color:#b91c1c;
+  opacity:.85;
+}
+</style>
+
+<div class="card-h">
+  <div>
+    <div class="h1">Loan #{{ loan.id }}</div>
+
+    <div class="muted">
+      User: <b>{{ loan.user.phone }}</b>
+      • Loan Status: <b>{{ loan.status }}</b>
+      • Payment Method:
+      {% if pm.locked %}
+        <span class="pill ok">SAVED</span>
+      {% else %}
+        <span class="pill bad">NOT SAVED</span>
+      {% endif %}
+    </div>
+
+    <div class="muted" style="margin-top:6px;">
+      Step: <b>{{ step_label }}</b>
+    </div>
+
+    <!-- Step Tracker -->
+    <div class="step-wrap">
+      <div class="step-row">
+        <div class="dot done">✓</div>
+        <div class="line done"></div>
+
+        <div class="dot done">✓</div>
+        <div class="line {% if pm.locked %}done{% endif %}"></div>
+
+        <div class="dot {% if pm.locked %}done{% else %}active{% endif %}">
+          {% if pm.locked %}✓{% else %}3{% endif %}
+        </div>
+        <div class="line {% if loan.status != 'DRAFT' and pm.locked %}done{% endif %}"></div>
+
+        <div class="dot {% if loan.status != 'DRAFT' and pm.locked %}done{% endif %}">
+          {% if loan.status != 'DRAFT' and pm.locked %}✓{% else %}4{% endif %}
+        </div>
+      </div>
+
+      <div class="step-labels">
+        <div>Register</div>
+        <div>Loan Form</div>
+        <div>Payment Method</div>
+        <div>Submitted</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex; gap:10px; align-items:center;">
+    <a class="btn" href="{% url 'view_loans' %}">← Back</a>
+  </div>
+</div>
+
+<div class="content loan-detail-page">
+  <div style="display:grid; grid-template-columns: 520px 1fr; gap: 22px; align-items:start;">
+
+    <!-- LEFT: readonly info -->
+    <div class="user-detail-form">
+
+      <p><label>Phone</label>
+        <input type="text" value="{{ loan.user.phone }}" readonly>
+      </p>
+
+      <p><label>Full name</label>
+        <input type="text" value="{{ loan.full_name|default_if_none:'' }}" readonly>
+      </p>
+
+      <p><label>Age</label>
+        <input type="text" value="{{ loan.age|default_if_none:'' }}" readonly>
+      </p>
+
+      <p><label>Current living</label>
+        <input type="text" value="{{ loan.current_living|default_if_none:'' }}" readonly>
+      </p>
+
+      <p><label>Hometown</label>
+        <input type="text" value="{{ loan.hometown|default_if_none:'' }}" readonly>
+      </p>
+
+      <p><label>Income</label>
+        <input type="text" value="{{ loan.income|default_if_none:'' }}" readonly>
+      </p>
+
+      <p><label>Monthly expenses</label>
+        <input type="text" value="{{ loan.monthly_expenses|default_if_none:'' }}" readonly>
+      </p>
+
+      <p><label>Guarantor contact</label>
+        <input type="text" value="{{ loan.guarantor_contact|default_if_none:'' }}" readonly>
+      </p>
+
+      <p><label>Guarantor living</label>
+        <input type="text" value="{{ loan.guarantor_current_living|default_if_none:'' }}" readonly>
+      </p>
+
+      <p><label>Identity name</label>
+        <input type="text" value="{{ loan.identity_name|default_if_none:'' }}" readonly>
+      </p>
+
+      <p><label>Identity number</label>
+        <input type="text" value="{{ loan.identity_number|default_if_none:'' }}" readonly>
+      </p>
+
+      <p><label>Amount</label>
+        <input type="text" value="{{ loan.amount|default_if_none:'' }}" readonly>
+      </p>
+
+      <p><label>Term (months)</label>
+        <input type="text" value="{{ loan.term_months|default_if_none:'' }}" readonly>
+      </p>
+
+      <!-- Purposes readonly -->
+      <div class="purpose-box">
+        <div class="purpose-title">Purposes</div>
+        <div class="purpose-body">
+          {% if loan.loan_purposes and loan.loan_purposes|length > 0 %}
+            <ul class="purpose-list">
+              {% for p in loan.loan_purposes %}
+                <li>{{ p }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <span class="muted">—</span>
+          {% endif %}
+        </div>
+      </div>
+
+      <p><label>Monthly repayment</label>
+        <input type="text" value="{{ loan.monthly_repayment|default_if_none:'' }}" readonly>
+      </p>
+
+      <p><label>Created at</label>
+        <input type="text" value="{{ loan.created_at }}" readonly>
+      </p>
+
+      <p><label>Status</label>
+        <input type="text" value="{{ loan.status }}" readonly>
+      </p>
+
+    </div>
+
+    <!-- RIGHT: images readonly -->
+    <div>
+      <div class="h2" style="font-size:14px;margin-bottom:10px;">Uploaded Images</div>
+
+      <div class="img-grid">
+
+        <div class="img-card">
+          <div class="muted small" style="margin-bottom:6px;">ID Front</div>
+          <div class="img-box">
+            {% if loan.id_front %}
+              <img src="{{ loan.id_front.url }}" alt="ID Front">
+            {% else %}
+              <div class="img-empty">Missing</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="img-card">
+          <div class="muted small" style="margin-bottom:6px;">ID Back</div>
+          <div class="img-box">
+            {% if loan.id_back %}
+              <img src="{{ loan.id_back.url }}" alt="ID Back">
+            {% else %}
+              <div class="img-empty">Missing</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="img-card">
+          <div class="muted small" style="margin-bottom:6px;">Selfie + ID</div>
+          <div class="img-box">
+            {% if loan.selfie_with_id %}
+              <img src="{{ loan.selfie_with_id.url }}" alt="Selfie with ID">
+            {% else %}
+              <div class="img-empty">Missing</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="img-card">
+          <div class="muted small" style="margin-bottom:6px;">Signature</div>
+          <div class="img-box sig">
+            {% if loan.signature_image %}
+              <img src="{{ loan.signature_image.url }}" alt="Signature">
+            {% else %}
+              <div class="img-empty">Missing</div>
+            {% endif %}
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{% block title %}Green Bank{% endblock %}</title>
+
+  <style>
+    :root{
+      --bg: #f5f7f6;
+      --card: rgba(255,255,255,.92);
+      --text: #0f172a;
+      --muted: #64748b;
+      --line: rgba(229,231,235,.9);
+
+      --green-1:#16a34a;
+      --green-2:#22c55e;
+      --green-3:#0f7a3a;
+
+      --shadow: 0 14px 34px rgba(2,6,23,.14);
+      --radius: 18px;
+    }
+    html[data-theme="dark"]{
+      --bg:#0b1220;
+      --card: rgba(15,26,46,.92);
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --line: rgba(34,49,79,.9);
+      --shadow: 0 14px 34px rgba(0,0,0,.45);
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      min-height: 100vh;
+    }
+
+    /* BACKGROUND HERO */
+    .bg{
+      min-height: 100vh;
+      background:
+        linear-gradient(rgba(0,0,0,.55), rgba(0,0,0,.75)),
+        url("https://images.unsplash.com/photo-1601597111158-2fceff292cdc?auto=format&fit=crop&w=1920&q=80");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    /* TOP NAV */
+    .nav{
+      position: sticky; top:0; z-index:10;
+      padding: 14px 16px;
+      display:flex; align-items:center; justify-content:space-between;
+      background: linear-gradient(90deg, rgba(15,122,58,.92), rgba(22,163,74,.92));
+      color:#fff;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 22px rgba(0,0,0,.18);
+    }
+    .brand{ display:flex; align-items:center; gap:10px; font-weight:900; }
+    .logo{
+      width:34px; height:34px; border-radius:12px;
+      background: rgba(255,255,255,.18);
+      display:flex; align-items:center; justify-content:center;
+      border:1px solid rgba(255,255,255,.25);
+      font-weight:900;
+    }
+    .nav-right{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    .pill{
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.25);
+      background: rgba(255,255,255,.12);
+      color:#fff;
+      font-weight:800;
+      cursor:pointer;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      user-select:none;
+      white-space:nowrap;
+    }
+
+    /* LAYOUT */
+    .wrap{
+      max-width: 980px;
+      margin: 18px auto;
+      padding: 0 14px 24px;
+      animation: fadeUp .45s ease-out both;
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      margin-bottom: 14px;
+      backdrop-filter: blur(8px);
+    }
+
+    h1,h2,h3{ margin:0 0 10px; }
+    .muted{ color: var(--muted); }
+
+    .row{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+
+    /* FORM */
+    .field{ margin-bottom:12px; }
+    label{ display:block; font-weight:800; margin-bottom:6px; }
+    input, select, textarea{
+      width:100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.65);
+      color: var(--text);
+      outline:none;
+    }
+    html[data-theme="dark"] input,
+    html[data-theme="dark"] select,
+    html[data-theme="dark"] textarea{
+      background: rgba(15,26,46,.65);
+    }
+
+    /* BUTTONS */
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding: 12px 14px;
+      border-radius: 999px;
+      border: 0;
+      cursor: pointer;
+      font-weight: 900;
+      text-decoration:none;
+      transition: transform .08s ease, opacity .2s ease;
+      user-select:none;
+      white-space:nowrap;
+    }
+    .btn:active{ transform: scale(.98); }
+    .btn-primary{ background: linear-gradient(90deg, var(--green-1), var(--green-2)); color:#fff; }
+    .btn-ghost{ background: transparent; border: 1px solid rgba(255,255,255,.35); color:#fff; }
+    .btn-dark{ background:#111827; color:#fff; }
+
+    /* Make Django default form.as_p look nicer */
+    form p{ margin: 0 0 12px; }
+    form p label{ display:block; font-weight:800; margin-bottom:6px; }
+    form p input{ width:100%; }
+
+    @keyframes fadeUp{ from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);} }
+  </style>
+</head>
+
+<body class="bg">
+  <div class="nav">
+    <div class="brand">
+      <div class="logo">GB</div>
+      <div>
+        Green Bank<br>
+        <span style="font-size:12px; font-weight:700; opacity:.9;">Trusted • 24/7</span>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <button class="pill" id="themeBtn" type="button">🌙 / ☀️</button>
+      <a class="pill" href="/login/">Login</a>
+      <a class="pill" href="/register/">Register</a>
+      <a class="pill" href="/dashboard/">Dashboard</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+    {% block content %}{% endblock %}
+  </div>
+
+  <script>
+    (function(){
+      const key = "gb_theme";
+      const html = document.documentElement;
+      const saved = localStorage.getItem(key);
+      if(saved){ html.setAttribute("data-theme", saved); }
+      const btn = document.getElementById("themeBtn");
+      if(btn){
+        btn.addEventListener("click", () => {
+          const now = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+          html.setAttribute("data-theme", now);
+          localStorage.setItem(key, now);
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

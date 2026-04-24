@@ -1,0 +1,116 @@
+/* =========================
+   3 COLOR SYSTEM (UCB STYLE)
+   - Blue: #003262
+   - Gold: #FDB515
+   - Metallic Gold: #BC9B6A
+   - Main content stays WHITE
+   ========================= */
+
+:root{
+  --ucb-blue: #003262;
+  --ucb-gold: #FDB515;
+  --ucb-metal: #BC9B6A;
+  --ucb-white: #ffffff;
+}
+
+/* ✅ Keep main big area WHITE */
+.content-wrapper,
+.content,
+.content-header,
+.main-footer{
+  background: var(--ucb-white) !important;
+}
+
+/* ✅ Sidebar background = Berkeley Blue */
+.main-sidebar,
+.sidebar,
+.brand-link{
+  background: var(--ucb-blue) !important;
+}
+
+/* Brand text/icon */
+.brand-link,
+.brand-link .brand-text{
+  color: #fff !important;
+}
+
+/* ✅ Sidebar menu items */
+.nav-sidebar .nav-item > .nav-link{
+  color: rgba(255,255,255,.90) !important;
+  border-radius: 10px !important;
+  margin: 4px 10px !important;
+}
+
+/* Hover = Metallic Gold (soft) */
+.nav-sidebar .nav-item > .nav-link:hover{
+  background: rgba(188,155,106,.22) !important; /* metal */
+  color: #fff !important;
+}
+
+/* ✅ Active item = California Gold */
+.nav-sidebar .nav-item > .nav-link.active{
+  background: var(--ucb-gold) !important;
+  color: #111 !important;
+  font-weight: 900 !important;
+}
+
+/* Active icon color */
+.nav-sidebar .nav-item > .nav-link.active i,
+.nav-sidebar .nav-item > .nav-link.active svg{
+  color: #111 !important;
+  fill: #111 !important;
+}
+
+/* ✅ Top navbar (header) */
+.main-header.navbar{
+  background: var(--ucb-white) !important;
+  border-bottom: 2px solid rgba(0,50,98,.12) !important;
+}
+
+/* ✅ Cards on dashboard = white card with blue/metal border */
+.card{
+  background: #fff !important;
+  border: 1px solid rgba(0,50,98,.18) !important; /* blue border */
+  border-top: 4px solid var(--ucb-metal) !important; /* metal accent */
+  border-radius: 16px !important;
+  box-shadow: 0 10px 28px rgba(0,0,0,.08) !important;
+}
+
+/* Card title */
+.card .card-header,
+.card .card-title{
+  color: var(--ucb-blue) !important;
+  font-weight: 900 !important;
+}
+
+/* ✅ Buttons */
+.btn-primary{
+  background: var(--ucb-blue) !important;
+  border-color: var(--ucb-blue) !important;
+}
+.btn-primary:hover{
+  background: #00274C !important; /* darker blue */
+  border-color: #00274C !important;
+}
+
+/* Small "Change" buttons in dashboard */
+.card a.btn,
+.card .btn{
+  border-radius: 10px !important;
+}
+
+/* ✅ Links */
+a{ color: var(--ucb-blue) !important; }
+a:hover{ color: #00274C !important; }
+
+/* ✅ Badges / highlights */
+.badge-primary,
+.bg-primary{
+  background: var(--ucb-gold) !important;
+  color: #111 !important;
+}
+
+/* ✅ Table header accent (optional nice) */
+table thead th{
+  border-bottom: 2px solid rgba(188,155,106,.35) !important;
+}

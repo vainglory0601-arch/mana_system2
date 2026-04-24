@@ -1,0 +1,311 @@
+{% extends "view/base.html" %}
+{% block content %}
+
+<div class="card-h">
+  <div>
+    <div class="h1">User: {{ u.phone }}</div>
+    <div class="muted">
+      Loan: {% if loan %}#{{ loan.id }} • {{ progress.loan_status }}{% else %}—{% endif %}
+    </div>
+  </div>
+
+  <div style="display:flex; gap:10px; align-items:center;">
+    <a class="btn" href="{% url 'view_users' %}">← Back</a>
+  </div>
+</div>
+
+<div class="content user-detail-page">
+
+  <!-- ✅ Progress Tracker -->
+  <div class="cardx">
+    <div class="p-head">
+      <div>
+        <div class="p-title">User Progress</div>
+        <div class="p-sub">{{ progress.stuck }}</div>
+      </div>
+      <span class="pill">{{ progress.loan_status }}</span>
+    </div>
+
+    <div class="p-grid">
+      <div class="p-item">
+        <span class="dot {% if progress.loan_started %}ok{% else %}no{% endif %}"></span>
+        <div class="p-text">
+          <div class="p-k">Loan Started</div>
+          <div class="p-v">{% if progress.loan_started %}Done{% else %}Not yet{% endif %}</div>
+        </div>
+      </div>
+
+      <div class="p-item">
+        <span class="dot {% if progress.loan_info_done %}ok{% else %}no{% endif %}"></span>
+        <div class="p-text">
+          <div class="p-k">Loan Information</div>
+          <div class="p-v">{% if progress.loan_info_done %}Done{% else %}Missing fields{% endif %}</div>
+        </div>
+      </div>
+
+      <div class="p-item">
+        <span class="dot {% if progress.id_upload_done %}ok{% else %}no{% endif %}"></span>
+        <div class="p-text">
+          <div class="p-k">ID Upload</div>
+          <div class="p-v">{% if progress.id_upload_done %}Done{% else %}Not complete{% endif %}</div>
+        </div>
+      </div>
+
+      <div class="p-item">
+        <span class="dot {% if progress.signature_done %}ok{% else %}no{% endif %}"></span>
+        <div class="p-text">
+          <div class="p-k">Signature</div>
+          <div class="p-v">{% if progress.signature_done %}Done{% else %}Not found{% endif %}</div>
+        </div>
+      </div>
+
+      <div class="p-item">
+        <span class="dot {% if progress.pm_saved %}ok{% else %}no{% endif %}"></span>
+        <div class="p-text">
+          <div class="p-k">Payment Method Filled</div>
+          <div class="p-v">{% if progress.pm_saved %}Done{% else %}Empty{% endif %}</div>
+        </div>
+      </div>
+
+      <div class="p-item">
+        <span class="dot {% if progress.pm_locked %}ok{% else %}no{% endif %}"></span>
+        <div class="p-text">
+          <div class="p-k">Payment Method Saved</div>
+          <div class="p-v">{% if progress.pm_locked %}Locked (Saved){% else %}Not saved yet{% endif %}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns: 520px 1fr; gap: 22px; align-items:start;">
+
+    <!-- LEFT: user basic -->
+    <div class="user-detail-form">
+      <p><label>Phone</label>
+        <input type="text" value="{{ u.phone }}" readonly>
+      </p>
+
+      <p><label>Register IP</label>
+        <input type="text" value="{{ u.register_ip|default:'-' }}" readonly>
+      </p>
+
+      <p><label>Country</label>
+        <input type="text" value="{{ u.register_country|default:'-' }}" readonly>
+      </p>
+
+      <p><label>City</label>
+        <input type="text" value="{{ u.register_city|default:'-' }}" readonly>
+      </p>
+
+      <hr class="sep">
+
+      <p><label>Account Status</label>
+        <input type="text" value="{{ u.account_status|default:'Active' }}" readonly>
+      </p>
+
+      <p><label>Withdraw OTP</label>
+        <input type="text" value="{{ u.withdraw_otp|default_if_none:'' }}" readonly>
+      </p>
+
+      <p><label>Notification message</label>
+        <input type="text" value="{{ u.notification_message|default_if_none:'' }}" readonly>
+      </p>
+
+      <p><label>Success message</label>
+        <input type="text" value="{{ u.success_message|default_if_none:'' }}" readonly>
+      </p>
+
+      <hr class="sep">
+
+      <div class="h2">Payment Method</div>
+
+      <p><label>Bank name</label>
+        <input type="text" value="{{ pm.bank_name|default_if_none:'' }}" readonly>
+      </p>
+      <p><label>Bank account</label>
+        <input type="text" value="{{ pm.bank_account|default_if_none:'' }}" readonly>
+      </p>
+
+      <p><label>Wallet name</label>
+        <input type="text" value="{{ pm.wallet_name|default_if_none:'' }}" readonly>
+      </p>
+      <p><label>Wallet phone</label>
+        <input type="text" value="{{ pm.wallet_phone|default_if_none:'' }}" readonly>
+      </p>
+
+      <p><label>Payment Locked</label>
+        <input type="text" value="{% if pm and pm.locked %}True{% else %}False{% endif %}" readonly>
+      </p>
+    </div>
+
+    <!-- RIGHT: uploaded images -->
+    <div class="right-area">
+      <div class="img-head">
+        <div class="h2">Uploaded Images</div>
+      </div>
+
+      {% if not loan %}
+        <div class="muted" style="margin-top:8px;">No loan yet. Nothing to show.</div>
+
+        <div class="img-grid" style="margin-top:10px;">
+          <div class="img-card">
+            <div class="muted small">ID Front</div>
+            <div class="img-box missing"><div class="img-empty">No loan</div></div>
+          </div>
+          <div class="img-card">
+            <div class="muted small">ID Back</div>
+            <div class="img-box missing"><div class="img-empty">No loan</div></div>
+          </div>
+          <div class="img-card">
+            <div class="muted small">Selfie + ID</div>
+            <div class="img-box missing"><div class="img-empty">No loan</div></div>
+          </div>
+          <div class="img-card">
+            <div class="muted small">Signature</div>
+            <div class="img-box missing sig"><div class="img-empty">No loan</div></div>
+          </div>
+        </div>
+
+      {% else %}
+
+        <div class="img-grid" style="margin-top:10px;">
+
+          <div class="img-card">
+            <div class="muted small">ID Front</div>
+            <div class="img-box {% if not loan.id_front %}missing{% else %}ok{% endif %}">
+              {% if loan.id_front %}
+                <img src="{{ loan.id_front.url }}" alt="ID Front">
+              {% else %}
+                <div class="img-empty">Missing</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="img-card">
+            <div class="muted small">ID Back</div>
+            <div class="img-box {% if not loan.id_back %}missing{% else %}ok{% endif %}">
+              {% if loan.id_back %}
+                <img src="{{ loan.id_back.url }}" alt="ID Back">
+              {% else %}
+                <div class="img-empty">Missing</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="img-card">
+            <div class="muted small">Selfie + ID</div>
+            <div class="img-box {% if not loan.selfie_with_id %}missing{% else %}ok{% endif %}">
+              {% if loan.selfie_with_id %}
+                <img src="{{ loan.selfie_with_id.url }}" alt="Selfie with ID">
+              {% else %}
+                <div class="img-empty">Missing</div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="img-card">
+            <div class="muted small">Signature</div>
+            <div class="img-box sig {% if not loan.signature_image %}missing{% else %}ok{% endif %}">
+              {% if loan.signature_image %}
+                <img src="{{ loan.signature_image.url }}" alt="Signature">
+              {% else %}
+                <div class="img-empty">Missing</div>
+              {% endif %}
+            </div>
+          </div>
+
+        </div>
+
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<style>
+.cardx{
+  background: #e9edf3;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 18px 60px rgba(0,0,0,.10);
+  margin-bottom: 14px;
+}
+
+.p-head{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+.p-title{ font-weight:950; color:#0b2b55; font-size:16px; }
+.p-sub{ margin-top:4px; font-size:12px; color:#2b4a6a; opacity:.9; }
+.pill{
+  display:inline-flex; padding:6px 10px; border-radius:999px;
+  background:#0b5ea8; color:#fff; font-weight:950; font-size:12px; white-space:nowrap;
+}
+
+.p-grid{
+  margin-top:12px;
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap:10px;
+}
+@media (max-width: 980px){ .p-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+.p-item{
+  display:flex; gap:10px; align-items:center;
+  padding:10px 12px;
+  border-radius:12px;
+  background:#f7f9fc;
+  border:1px solid rgba(0,0,0,.08);
+}
+.dot{
+  width:12px;height:12px;border-radius:999px;
+  background:#ef4444;
+  box-shadow: 0 0 0 3px rgba(239,68,68,.15);
+}
+.dot.ok{ background:#22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,.18); }
+.dot.no{ background:#ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.15); }
+.p-k{ font-weight:950; color:#0b2b55; font-size:12px; }
+.p-v{ font-size:12px; color:#2b4a6a; opacity:.9; }
+
+.user-detail-form label{ color:#0b5fa5 !important; font-weight:900; }
+.user-detail-form input{
+  width:100%;
+  height:40px;
+  border-radius:12px;
+  border:0;
+  outline:none;
+  background:#111827;
+  color:#fff;
+  font-weight:900;
+  padding:0 12px;
+  box-sizing:border-box;
+}
+.user-detail-form input[readonly]{ opacity:.92; }
+
+.sep{ border:0; border-top:1px solid rgba(0,0,0,.08); margin:12px 0; }
+.h2{ font-weight:950; color:#0b2b55; margin-bottom:10px; }
+
+.img-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+.img-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-top:6px; }
+.img-card .small{ font-size:12px; }
+
+.img-box{
+  height:280px;
+  border-radius:14px;
+  border:1px solid rgba(0,0,0,.10);
+  background:#fff;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.img-box img{ width:100%; height:100%; object-fit:cover; }
+.img-box.sig img{ object-fit:contain; background:#fff; }
+
+.img-box.ok{
+  border:2px solid rgba(34,197,94,.55) !important;
+  box-shadow: 0 0 0 4px rgba(34,197,94,.10);
+}
+.img-box.missing{
+  border:2px solid rgba(239,68,68,.60) !important;
+  box-shadow: 0 0 0 4px rgba(239,68,68,.10);
+}
+.img-empty{ font-weight:950; color:#ef4444; opacity:.85; }
+</style>
+
+{% endblock %}

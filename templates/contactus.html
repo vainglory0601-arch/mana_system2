@@ -1,0 +1,370 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Contact{% endblock %}
+
+{% block content %}
+<style>
+/* ===== ManaLoan Contact Us — Dark Glass Theme ===== */
+
+html, body { width: 100%; overflow-x: hidden; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Ovelion", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: #e6edf7;
+  background:
+    radial-gradient(600px 400px at 10% 10%, rgba(59,130,246,.35), transparent 60%),
+    radial-gradient(500px 500px at 90% 20%, rgba(139,92,246,.28), transparent 60%),
+    radial-gradient(700px 500px at 50% 90%, rgba(56,189,248,.22), transparent 60%),
+    radial-gradient(400px 400px at 80% 80%, rgba(16,185,129,.18), transparent 60%),
+    #070b16 !important;
+  background-attachment: fixed !important;
+}
+
+.wrap { padding-top: 0 !important; align-items: flex-start !important; justify-content: center !important; }
+
+.page, .page * {
+  font-family: "Ovelion", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page {
+  width: min(520px, 94vw);
+  margin: 0 auto;
+  padding: 22px 14px 40px;
+  box-sizing: border-box;
+}
+
+/* Top row */
+.cu-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+  opacity: 0;
+  animation: fadeInUp .5s ease-out .05s forwards;
+}
+.cu-pagetitle {
+  font-size: 22px;
+  font-weight: 950;
+  color: #fff;
+  letter-spacing: -.2px;
+}
+.cu-pagetitle small {
+  display: block;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: .02em;
+  margin-top: 2px;
+}
+
+.cu-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  background: rgba(30,41,59,.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #93c5fd !important;
+  border: 1px solid rgba(56,189,248,.30);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-decoration: none;
+  box-shadow: 0 0 14px rgba(56,189,248,.08);
+  transition: all .22s ease;
+  flex: 0 0 auto;
+}
+.cu-back-btn svg { width: 14px; height: 14px; }
+.cu-back-btn:hover {
+  color: #fff !important;
+  border-color: rgba(56,189,248,.60);
+  background: rgba(56,189,248,.12);
+  box-shadow: 0 0 20px rgba(56,189,248,.22);
+}
+
+/* ── Hero header card ── */
+.cardx.cu-hero {
+  position: relative;
+  padding: 22px 20px !important;
+  border-radius: 22px !important;
+  background:
+    radial-gradient(140% 100% at 0% 0%, rgba(56,189,248,.28) 0%, transparent 60%),
+    radial-gradient(140% 100% at 100% 100%, rgba(139,92,246,.28) 0%, transparent 60%),
+    linear-gradient(180deg, rgba(15,23,42,.60) 0%, rgba(10,16,32,.50) 100%) !important;
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid rgba(56,189,248,.45) !important;
+  box-shadow:
+    0 0 0 1px rgba(56,189,248,.08),
+    0 0 24px rgba(56,189,248,.18),
+    0 20px 60px rgba(2,6,23,.55),
+    inset 0 1px 0 rgba(255,255,255,.08) !important;
+  margin-bottom: 14px;
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeInUp .55s ease-out .1s forwards;
+}
+.cu-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(120deg, transparent 0%, rgba(56,189,248,.10) 50%, transparent 100%);
+  transform: translateX(-120%);
+  animation: cuShine 4.5s ease-in-out infinite;
+}
+@keyframes cuShine {
+  0%, 55% { transform: translateX(-120%); }
+  100%    { transform: translateX(120%); }
+}
+.cu-hero > * { position: relative; z-index: 2; }
+
+.cu-hero-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.cu-hero-ico {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(56,189,248,.25), rgba(99,102,241,.25));
+  border: 1px solid rgba(56,189,248,.55);
+  display: flex; align-items: center; justify-content: center;
+  flex: 0 0 auto;
+  box-shadow: 0 0 18px rgba(56,189,248,.30), inset 0 1px 0 rgba(255,255,255,.12);
+}
+.cu-hero-ico svg {
+  width: 24px; height: 24px;
+  fill: none; stroke: #38bdf8;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* ── Standard glass card ── */
+.cardx {
+  position: relative;
+  padding: 22px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(15,23,42,.55) 0%, rgba(10,16,32,.45) 100%);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(56,189,248,.30);
+  box-shadow:
+    0 0 0 1px rgba(56,189,248,.05),
+    0 14px 36px rgba(2,6,23,.45);
+  color: #e6edf7;
+  margin-bottom: 14px;
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeInUp .5s ease-out .18s forwards;
+}
+
+/* Titles */
+.title {
+  font-weight: 950;
+  font-size: 18px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  margin: 0 0 6px;
+  color: #ffffff;
+}
+.sub {
+  font-size: 13px;
+  color: #94a3b8;
+  margin: 0;
+  letter-spacing: .02em;
+  line-height: 1.55;
+}
+
+/* Labels */
+label {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  color: #93c5fd;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin: 14px 0 6px;
+}
+
+/* Inputs and textarea */
+input, textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 12px;
+  border: 1.5px solid rgba(56,189,248,.28);
+  background: rgba(30,41,59,.60);
+  color: #ffffff;
+  padding: 13px 16px;
+  outline: none;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .02em;
+  font-family: inherit;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+input::placeholder, textarea::placeholder {
+  color: #64748b;
+  font-weight: 600;
+}
+textarea {
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.5;
+}
+input:focus, textarea:focus {
+  border-color: rgba(56,189,248,.70);
+  background: rgba(30,41,59,.80);
+  box-shadow: 0 0 0 3px rgba(56,189,248,.18), 0 0 16px rgba(56,189,248,.22);
+}
+
+/* Send button */
+.btn {
+  width: 100%;
+  margin-top: 16px;
+  border: 1px solid rgba(56,189,248,.70);
+  border-radius: 999px;
+  padding: 15px 16px;
+  font-weight: 950;
+  font-size: 14px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: #fff;
+  cursor: pointer;
+  font-family: inherit;
+  background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 60%, #6366f1 100%);
+  box-shadow: 0 8px 22px rgba(56,189,248,.45), 0 0 22px rgba(59,130,246,.30), inset 0 1px 0 rgba(255,255,255,.20);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(56,189,248,.55), 0 0 30px rgba(59,130,246,.45);
+}
+.btn:active { transform: scale(.99); }
+
+/* Success alert */
+.alert-success {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(16,185,129,.10);
+  border: 1px solid rgba(16,185,129,.45);
+  border-left: 4px solid #10b981;
+  border-radius: 14px;
+  padding: 14px 16px;
+  color: #a7f3d0;
+  font-weight: 800;
+  font-size: 13.5px;
+  margin-bottom: 14px;
+  letter-spacing: .01em;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 0 14px rgba(16,185,129,.18);
+  animation: fadeInUp .4s ease-out both;
+}
+.alert-success svg { width: 18px; height: 18px; flex: 0 0 auto; stroke: #6ee7b7; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+.muted {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-top: 10px;
+  letter-spacing: .02em;
+}
+
+/* Mobile overrides */
+@media (max-width: 768px) {
+  .cardx, .cu-hero, .alert-success, input, textarea {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .cardx {
+    background: linear-gradient(180deg, rgba(15,23,42,.92) 0%, rgba(10,16,32,.88) 100%) !important;
+    animation: none !important;
+    opacity: 1 !important;
+  }
+  .cu-hero {
+    background:
+      radial-gradient(140% 100% at 0% 0%, rgba(56,189,248,.28) 0%, transparent 60%),
+      radial-gradient(140% 100% at 100% 100%, rgba(139,92,246,.28) 0%, transparent 60%),
+      linear-gradient(180deg, rgba(15,23,42,.92) 0%, rgba(10,16,32,.88) 100%) !important;
+    animation: none !important;
+    opacity: 1 !important;
+  }
+  .cu-hero::after { animation: none !important; }
+}
+
+@media (max-width: 520px) {
+  .page { padding: 18px 12px 40px; }
+}
+</style>
+
+<div class="page">
+
+  <!-- Top row: title + back -->
+  <div class="cu-top">
+    <div class="cu-pagetitle">
+      Contact Us
+      <small>We're here to help</small>
+    </div>
+    <a class="cu-back-btn" href="{% url 'dashboard' %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Back
+    </a>
+  </div>
+
+  <!-- Hero header -->
+  <div class="cardx cu-hero">
+    <div class="cu-hero-row">
+      <div class="cu-hero-ico" aria-hidden="true">
+        <svg viewBox="0 0 24 24">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </div>
+      <div>
+        <div class="title">Contact Us</div>
+        <p class="sub">Send us a message — we will contact you soon.</p>
+      </div>
+    </div>
+  </div>
+
+  {% if sent %}
+    <div class="alert-success">
+      <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      Thank you! We will contact you soon.
+    </div>
+  {% endif %}
+
+  <div class="cardx">
+    <form method="POST" action="/contact/">
+      {% csrf_token %}
+
+      <label>Full name</label>
+      <input type="text" name="full_name" placeholder="Your full name" required>
+
+      <label>Phone / WhatsApp</label>
+      <input type="tel" name="phone" placeholder="e.g. +63 900 000 0000" required>
+
+      <label>Subject (optional)</label>
+      <input type="text" name="subject" placeholder="What is this about?">
+
+      <label>Message</label>
+      <textarea name="message" placeholder="Type your message here..." required></textarea>
+
+      <button class="btn" type="submit">Send Message</button>
+    </form>
+  </div>
+
+</div>
+{% endblock %}

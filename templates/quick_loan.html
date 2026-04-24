@@ -1,0 +1,719 @@
+{% extends "base.html" %}
+{% block title %}Quick Loan - ManaLoan{% endblock %}
+
+{% block content %}
+<style>
+/* ===== ManaLoan Quick Loan — Dark Glass Theme ===== */
+
+html, body { width: 100%; overflow-x: hidden; }
+
+body{
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Ovelion", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color: #e6edf7;
+  background:
+    radial-gradient(600px 400px at 10% 10%, rgba(59,130,246,.35), transparent 60%),
+    radial-gradient(500px 500px at 90% 20%, rgba(139,92,246,.28), transparent 60%),
+    radial-gradient(700px 500px at 50% 90%, rgba(56,189,248,.22), transparent 60%),
+    radial-gradient(400px 400px at 80% 80%, rgba(16,185,129,.18), transparent 60%),
+    #070b16 !important;
+  background-attachment: fixed !important;
+}
+
+.wrap{ padding-top: 0 !important; align-items: flex-start; }
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 10px 30px rgba(59,130,246,.35), 0 0 0 1px rgba(59,130,246,.25) inset; }
+  50%      { box-shadow: 0 14px 40px rgba(59,130,246,.55), 0 0 0 1px rgba(96,165,250,.45) inset; }
+}
+
+.page{
+  width: min(520px, 94vw);
+  margin: 0 auto;
+  padding: 22px 14px 40px;
+  box-sizing: border-box;
+}
+
+/* ===== Top row ===== */
+.top-row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  opacity: 0;
+  animation: fadeInUp .5s ease-out .05s forwards;
+}
+.page-title{
+  color: #fff;
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -.2px;
+}
+.page-title small{
+  display: block;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 500;
+  margin-top: 2px;
+  letter-spacing: .02em;
+}
+.back-btn{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 12px;
+  background: rgba(30,41,59,.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(56,189,248,.30);
+  color: #93c5fd;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
+  letter-spacing: .04em;
+  box-shadow: 0 0 14px rgba(56,189,248,.08);
+  transition: all .22s ease;
+}
+.back-btn:hover{
+  color: #fff;
+  border-color: rgba(56,189,248,.60);
+  background: rgba(56,189,248,.12);
+  box-shadow: 0 0 20px rgba(56,189,248,.22);
+}
+.back-btn svg{ width: 14px; height: 14px; }
+
+/* ===== Glass card ===== */
+.qcard{
+  position: relative;
+  padding: 22px;
+  margin-bottom: 16px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(15,23,42,.55) 0%, rgba(10,16,32,.45) 100%);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid rgba(56,189,248,.45);
+  box-shadow:
+    0 0 0 1px rgba(56,189,248,.08),
+    0 0 24px rgba(56,189,248,.18),
+    0 20px 60px rgba(2,6,23,.55),
+    inset 0 1px 0 rgba(255,255,255,.08);
+  overflow: visible;
+  opacity: 0;
+  animation: fadeInUp .55s ease-out .15s forwards;
+}
+.qcard::before, .qcard::after { display: none; }
+
+/* ===== Field labels ===== */
+.field{ margin-bottom: 14px; }
+.field > label,
+.qcard label{
+  display: block;
+  color: #67e8f9;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+/* ===== Amount input ===== */
+input[type="number"]{
+  width: 100%;
+  background: rgba(30,41,59,.45);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(56,189,248,.30);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 20px;
+  font-weight: 900;
+  color: #fff;
+  text-align: center;
+  font-family: inherit;
+  box-sizing: border-box;
+  outline: none;
+  letter-spacing: .5px;
+  caret-color: #38bdf8;
+  box-shadow:
+    0 0 12px rgba(56,189,248,.06),
+    inset 0 1px 0 rgba(255,255,255,.04);
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
+input[type="number"]::placeholder{ color: #64748b; font-weight: 700; }
+input[type="number"]:focus{
+  border-color: rgba(56,189,248,.75);
+  background: rgba(30,41,59,.60);
+  box-shadow:
+    0 0 20px rgba(56,189,248,.22),
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+input[readonly]{ opacity: .85; cursor: default; }
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button{ -webkit-appearance: none; margin: 0; }
+input[type="number"]{ -moz-appearance: textfield; }
+
+/* ===== Term grid ===== */
+.term-grid{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 10px;
+}
+@media (max-width: 520px){
+  .term-grid{ grid-template-columns: repeat(4, 1fr); }
+}
+.term-btn{
+  padding: 14px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(56,189,248,.30);
+  background: rgba(30,41,59,.45);
+  color: #93c5fd;
+  font-weight: 900;
+  font-size: 15px;
+  font-family: inherit;
+  cursor: pointer;
+  letter-spacing: .02em;
+  box-shadow:
+    0 0 12px rgba(56,189,248,.06),
+    inset 0 1px 0 rgba(255,255,255,.04);
+  transition: all .22s ease;
+}
+.term-btn:hover{
+  color: #fff;
+  border-color: rgba(56,189,248,.60);
+  background: rgba(56,189,248,.10);
+  box-shadow: 0 0 18px rgba(56,189,248,.18);
+}
+.term-btn:active{ transform: scale(.97); }
+.term-btn.active{
+  color: #fff;
+  background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 60%, #6366f1 100%);
+  border-color: rgba(56,189,248,.85);
+  box-shadow:
+    0 6px 18px rgba(59,130,246,.40),
+    inset 0 1px 0 rgba(255,255,255,.20);
+}
+.term-btn:disabled{
+  opacity: .45;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.hint{ margin-top: 10px; color: #94a3b8; font-size: 12px; font-weight: 600; letter-spacing: .02em; }
+
+/* ===== Summary ===== */
+.summary{
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(56,189,248,.22);
+  display: grid; gap: 0;
+  font-size: 13px;
+}
+.summary .row{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid rgba(56,189,248,.12);
+  padding: 12px 0;
+}
+.summary .row:last-child{
+  border-bottom: none;
+  border-top: 2px solid rgba(56,189,248,.35);
+  margin-top: 4px;
+  padding-top: 14px;
+  font-size: 15px;
+}
+.summary .k{ color: #94a3b8; font-weight: 600; }
+.summary .v{ color: #fff; font-weight: 900; }
+.summary .row:last-child .v{
+  background: linear-gradient(135deg, #38bdf8, #818cf8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ===== CTA ===== */
+.cta{ margin-top: 16px; width: 100%; }
+#goApply{
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 50%, #6366f1 100%);
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-weight: 950;
+  font-size: 15px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  font-family: inherit;
+  cursor: pointer;
+  animation: glowPulse 2.6s ease-in-out infinite;
+  transition: transform .2s;
+}
+#goApply:hover{ transform: translateY(-2px); }
+#goApply:active{ transform: translateY(0); }
+#goApply:disabled{
+  opacity: .50;
+  cursor: not-allowed;
+  transform: none;
+  animation: none;
+  background: rgba(30,41,59,.60);
+  color: #64748b;
+}
+
+/* ===== Status card ===== */
+#statusCard{
+  border-color: rgba(234,179,8,.45);
+  box-shadow:
+    0 0 0 1px rgba(234,179,8,.10),
+    0 0 24px rgba(234,179,8,.18),
+    0 20px 60px rgba(2,6,23,.55),
+    inset 0 1px 0 rgba(255,255,255,.08);
+}
+.status-head{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.status-title{
+  font-size: 18px;
+  font-weight: 900;
+  margin: 0;
+  color: #fff;
+  letter-spacing: -.2px;
+}
+.status-sub{
+  margin-top: 6px;
+  color: #94a3b8;
+  line-height: 1.5;
+  font-size: 13px;
+}
+
+/* ===== Status pill ===== */
+.mini-pill{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  background: rgba(234,179,8,.15);
+  color: #fde047;
+  border: 1px solid rgba(234,179,8,.45);
+  box-shadow: 0 0 14px rgba(234,179,8,.18);
+  white-space: nowrap;
+}
+.mini-pill::before{
+  content: ""; width: 5px; height: 5px; border-radius: 999px;
+  background: #eab308; box-shadow: 0 0 8px #eab308;
+}
+.mini-pill.is-rejected{
+  background: rgba(239,68,68,.15);
+  color: #fca5a5;
+  border-color: rgba(239,68,68,.45);
+  box-shadow: 0 0 14px rgba(239,68,68,.18);
+}
+.mini-pill.is-rejected::before{ background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+
+/* ===== View contract button ===== */
+.status-btn{
+  flex: 0 0 auto;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(56,189,248,.35);
+  background: rgba(56,189,248,.08);
+  backdrop-filter: blur(10px);
+  color: #67e8f9;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  letter-spacing: .04em;
+  transition: all .22s ease;
+}
+.status-btn:hover{
+  color: #fff;
+  border-color: rgba(56,189,248,.70);
+  background: rgba(56,189,248,.15);
+  box-shadow: 0 0 18px rgba(56,189,248,.22);
+}
+
+/* ===== Progress timeline ===== */
+.step-row{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+.dot{
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 14px;
+  background: rgba(30,41,59,.60);
+  border: 1px solid rgba(56,189,248,.25);
+  color: #94a3b8;
+  flex-shrink: 0;
+  transition: all .25s ease;
+}
+.dot.active{
+  background: linear-gradient(135deg, #38bdf8, #3b82f6);
+  color: #fff;
+  border-color: rgba(56,189,248,.80);
+  box-shadow: 0 0 18px rgba(56,189,248,.45);
+}
+.line{
+  flex: 1; height: 3px; border-radius: 999px;
+  background: rgba(30,41,59,.60);
+  border: 1px solid rgba(56,189,248,.15);
+}
+.line.active{
+  background: linear-gradient(90deg, #38bdf8, #6366f1);
+  border-color: transparent;
+  box-shadow: 0 0 10px rgba(56,189,248,.40);
+}
+
+.step-labels{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.step-labels.three{
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* ===== Reject alert ===== */
+.reject-alert{
+  margin-top: 14px;
+  border-radius: 12px;
+  padding: 14px;
+  border: 1px solid rgba(239,68,68,.40);
+  background: rgba(239,68,68,.08);
+  color: #fca5a5;
+  box-shadow: 0 0 18px rgba(239,68,68,.14);
+}
+.reject-alert .ra-title{ font-weight: 900; color: #fecaca; }
+.reject-alert .ra-text{ margin-top: 6px; color: #fca5a5; font-size: 13px; line-height: 1.5; }
+
+/* ===== Mobile fallback (backdrop-filter disabled) ===== */
+@media (max-width: 768px) {
+  .qcard, .top-row, .back-btn {
+    opacity: 1 !important;
+    animation: none !important;
+  }
+  .qcard {
+    background: rgba(10,16,32,.92) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .back-btn, input[type="number"], .term-btn, .status-btn {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  input[type="number"], .term-btn {
+    background: rgba(15,23,42,.70) !important;
+  }
+}
+</style>
+
+<div class="page">
+
+  <!-- Top row -->
+  <div class="top-row">
+    <div class="page-title">
+      Quick Loan
+      <small>Get instant decision in minutes</small>
+    </div>
+    <a class="back-btn" href="{% url 'dashboard' %}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+      Back
+    </a>
+  </div>
+
+  <!-- ===== Card 1: Amount/Term ===== -->
+  <div class="qcard">
+    <div class="field">
+      <label>Loan amount (Min 80,000 · Max 5,000,000)</label>
+      <input
+        type="number"
+        id="qAmount"
+        min="80000"
+        max="5000000"
+        placeholder="Enter amount"
+        {% if loan %}readonly{% endif %}
+      >
+    </div>
+
+    <div class="field" style="margin-top:16px;">
+      <label>Loan terms</label>
+      <input type="hidden" id="qTerm">
+
+      <div class="term-grid">
+        <button type="button" class="term-btn" data-term="6" {% if loan %}disabled{% endif %}>6</button>
+        <button type="button" class="term-btn" data-term="12" {% if loan %}disabled{% endif %}>12</button>
+        <button type="button" class="term-btn" data-term="24" {% if loan %}disabled{% endif %}>24</button>
+        <button type="button" class="term-btn" data-term="36" {% if loan %}disabled{% endif %}>36</button>
+      </div>
+
+      <div class="hint" id="qHint">Choose months</div>
+    </div>
+
+    <div class="summary" aria-live="polite">
+      <div class="row"><div class="k">Amount of loan</div><div class="v" id="qSumAmount">—</div></div>
+      <div class="row"><div class="k">Interest rate</div><div class="v">0.5%</div></div>
+      <div class="row"><div class="k">Loan period</div><div class="v" id="qSumTerm">—</div></div>
+      <div class="row"><div class="k">Monthly repayment</div><div class="v" id="qSumMonthly">—</div></div>
+    </div>
+
+    <button class="cta" type="button" id="goApply" disabled>
+      Continue to Application
+    </button>
+  </div>
+
+  <!-- ===== Card 2: Application Status ===== -->
+  <div class="qcard" id="statusCard" style="display:none;">
+    <div class="status-head">
+      <div>
+        <h2 class="status-title">Application Status</h2>
+        <div class="status-sub" id="statusText">
+          Our team is reviewing your documents. Please wait.
+        </div>
+      </div>
+      <span class="mini-pill" id="statusPill">Pending</span>
+    </div>
+
+    <div class="reject-alert" id="rejectAlert" style="display:none;">
+      <div class="ra-title">Application Rejected</div>
+      <div class="ra-text">Your application was rejected. You can submit again.</div>
+    </div>
+
+    <div class="step-row">
+      <div class="dot active" id="s1">1</div>
+      <div class="line" id="l1"></div>
+      <div class="dot" id="s2">2</div>
+      <div class="line" id="l2"></div>
+      <div class="dot" id="s3">3</div>
+    </div>
+
+    <div class="step-labels three">
+      <div>Under review</div>
+      <div>Checking</div>
+      <div>Approved</div>
+    </div>
+
+    <div style="margin-top:14px;">
+      <a class="status-btn" href="{% url 'contract' %}">
+        View contract
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"/>
+          <polyline points="12 5 19 12 12 19"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+  const amountEl = document.getElementById("qAmount");
+  const termEl = document.getElementById("qTerm");
+  const hint = document.getElementById("qHint");
+
+  const outAmount = document.getElementById("qSumAmount");
+  const outTerm = document.getElementById("qSumTerm");
+  const outMonthly = document.getElementById("qSumMonthly");
+
+  const btns = document.querySelectorAll(".term-btn");
+  const goBtn = document.getElementById("goApply");
+
+  function fmt(n){
+    try { return Number(n).toLocaleString(); } catch (e) { return String(n); }
+  }
+
+  function update(){
+    const amount = Number(amountEl?.value || 0);
+    const term = Number(termEl?.value || 0);
+
+    if (outAmount) outAmount.textContent = amount > 0 ? ("PHP " + fmt(amount)) : "—";
+    if (outTerm) outTerm.textContent = term > 0 ? (term + " months") : "—";
+
+    const rate = 0.005;
+    if(amount > 0 && term > 0){
+      const total = amount + (amount * rate * term);
+      const monthly = total / term;
+      if (outMonthly) outMonthly.textContent = "PHP " + fmt(Math.round(monthly));
+
+      {% if not loan %}
+        goBtn.disabled = false;
+      {% endif %}
+    } else {
+      if (outMonthly) outMonthly.textContent = "—";
+      {% if not loan %}
+        goBtn.disabled = true;
+      {% endif %}
+    }
+  }
+
+  btns.forEach((b)=>{
+    b.addEventListener("click", ()=>{
+      {% if loan %} return; {% endif %}
+      btns.forEach((x)=>x.classList.remove("active"));
+      b.classList.add("active");
+      if (termEl) termEl.value = b.dataset.term || "";
+      if (hint) hint.textContent = (b.dataset.term || "") + " months";
+      update();
+    });
+  });
+
+  if (amountEl){
+    amountEl.addEventListener("input", ()=>{
+      {% if loan %} return; {% endif %}
+      update();
+    });
+  }
+
+  {% if loan %}
+    if (amountEl) amountEl.value = "{{ loan.amount }}";
+    if (termEl) termEl.value = "{{ loan.term_months }}";
+
+    btns.forEach((b)=>{
+      if ((b.dataset.term || "") === "{{ loan.term_months }}"){
+        b.classList.add("active");
+        if (hint) hint.textContent = "{{ loan.term_months }} months";
+      } else {
+        b.classList.remove("active");
+      }
+    });
+
+    goBtn.textContent = "Submitted";
+    goBtn.disabled = true;
+  {% else %}
+    goBtn.addEventListener("click", ()=>{
+      const amount = amountEl?.value || "";
+      const term = termEl?.value || "";
+      if(!amount || !term) return;
+      window.location.href = "{% url 'loan_apply' %}?amount=" + encodeURIComponent(amount) + "&term=" + encodeURIComponent(term);
+    });
+  {% endif %}
+
+  update();
+
+  // ===== Status Tracker =====
+  function stepFromStatus(st){
+    const s = String(st || "").toUpperCase().trim();
+    if(s === "PENDING") return 1;
+    if(s === "REVIEW") return 2;
+    if(s === "APPROVED") return 3;
+    if(s === "PAID") return 3;
+    return 1;
+  }
+
+  function applyStep(n, label){
+    const dots = [null, "s1", "s2", "s3"];
+    const lines = [null, "l1", "l2"];
+
+    for(let i=1;i<=3;i++){
+      const d = document.getElementById(dots[i]);
+      if(d){
+        const isDone = i < n;
+        const isActive = i <= n;
+
+        d.classList.toggle("active", isActive);
+
+        if(isDone || (i === 3 && n === 3)){
+          d.textContent = "✓";
+        }else{
+          d.textContent = String(i);
+        }
+      }
+
+      if(i<=2){
+        const ln = document.getElementById(lines[i]);
+        if(ln) ln.classList.toggle("active", i < n);
+      }
+    }
+
+    const pill = document.getElementById("statusPill");
+    if (pill) pill.textContent = String(label || "PENDING");
+
+    const text = document.getElementById("statusText");
+    const s = String(label || "").toUpperCase().trim();
+    if(text){
+      if(s === "REVIEW") text.textContent = "Initial approval in progress. Please wait.";
+      else if(s === "APPROVED") text.textContent = "Final approval. Almost done.";
+      else if(s === "PAID") text.textContent = "Success Paid. Your loan has been completed.";
+      else text.textContent = "Our team is reviewing your documents. Please wait.";
+    }
+  }
+
+  async function pollLoanStatus(){
+    try{
+      const r = await fetch("{% url 'loan_status_api' %}", {
+        headers: {"X-Requested-With":"XMLHttpRequest"}
+      });
+      const j = await r.json();
+
+      const card = document.getElementById("statusCard");
+
+      if(!j || !j.ok || !j.show){
+        if(card) card.style.display = "none";
+        return;
+      }
+
+      if(card) card.style.display = "block";
+      const pill = document.getElementById("statusPill");
+      const isRejected = String(j.status || "").toUpperCase() === "REJECTED";
+      if (pill) pill.classList.toggle("is-rejected", isRejected);
+
+      if(String(j.status || "").toUpperCase() === "REJECTED"){
+        applyStep(1, "REJECTED");
+        const t = document.getElementById("statusText");
+        if (t) t.textContent = "Rejected. Please contact company department.";
+        return;
+      }
+
+      const n = stepFromStatus(j.status);
+      applyStep(n, j.status_label || j.status);
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  pollLoanStatus();
+  setInterval(pollLoanStatus, 10000);
+
+  const params = new URLSearchParams(window.location.search);
+  const fromDone = params.get("done") === "1";
+  if(fromDone){
+    const card = document.getElementById("statusCard");
+    if(card) card.style.display = "block";
+    applyStep(1, "PENDING");
+  }
+</script>
+{% endblock %}
