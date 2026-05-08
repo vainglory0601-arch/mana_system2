@@ -1,26 +1,259 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Loan Application - ManaLoan{% endblock %}
+{% block title %}Loan Application - Overseas FilipinoLoan{% endblock %}
 
 {% block content %}
 <style>
-/* ===== ManaLoan Loan Application — Dark Glass Theme ===== */
+/* ===== Overseas FilipinoLoan Loan Application — Filipino Flag Style ===== */
+
+:root {
+  --ph-blue: #0032A0;
+  --ph-blue-dark: #00226e;
+  --ph-red: #BF0D3E;
+  --ph-red-dark: #8b0628;
+  --ph-gold: #FED141;
+  --ph-gold-dark: #e6b820;
+  --ink: #0a1a3a;
+  --mut: #5a6378;
+  --line: #e3e8f1;
+}
 
 html, body { width: 100%; overflow-x: hidden; }
 
 body{
   margin: 0;
   min-height: 100vh;
-  font-family: "Ovelion", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  color: #e6edf7;
+  font-family: "Lato", "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+  color: var(--ink) !important;
   background:
-    radial-gradient(600px 400px at 10% 10%, rgba(59,130,246,.35), transparent 60%),
-    radial-gradient(500px 500px at 90% 20%, rgba(139,92,246,.28), transparent 60%),
-    radial-gradient(700px 500px at 50% 90%, rgba(56,189,248,.22), transparent 60%),
-    radial-gradient(400px 400px at 80% 80%, rgba(16,185,129,.18), transparent 60%),
-    #070b16 !important;
+    radial-gradient(800px 600px at 15% 20%, rgba(0,50,160,.10) 0%, transparent 60%),
+    radial-gradient(700px 500px at 85% 80%, rgba(191,13,62,.08) 0%, transparent 60%),
+    radial-gradient(500px 400px at 50% 50%, rgba(254,209,65,.10) 0%, transparent 65%),
+    linear-gradient(180deg, #fafbff 0%, #eef2fb 100%) !important;
   background-attachment: fixed !important;
+}
+body, body *, body button, body input, body select, body textarea, body a {
+  font-family: "Lato", "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+}
+
+/* ====================================================== */
+/* ===== FILIPINO FLAG THEME OVERRIDES ================== */
+/* ====================================================== */
+
+.page-title { color: var(--ph-blue-dark) !important; font-size: 24px !important; font-weight: 950 !important; letter-spacing: -.4px !important; }
+.page-title small { color: var(--mut) !important; font-weight: 600 !important; }
+
+.back-btn {
+  background: #fff !important;
+  border: 2px solid var(--ph-blue) !important;
+  color: var(--ph-blue-dark) !important;
+  border-radius: 999px !important;
+  font-weight: 900 !important;
+  letter-spacing: .08em !important;
+  text-transform: uppercase !important;
+  font-size: 12.5px !important;
+  box-shadow: 0 4px 12px rgba(0,50,160,.12) !important;
+  backdrop-filter: none !important;
+}
+.back-btn:hover {
+  background: var(--ph-blue) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 18px rgba(0,50,160,.30) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Glass card → white with PH stripe */
+.apply-card {
+  background: #ffffff !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: 0 4px 20px rgba(0,50,160,.08), 0 1px 3px rgba(0,0,0,.04) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  color: var(--ink) !important;
+}
+.apply-card::before {
+  content: "" !important;
+  position: absolute !important;
+  top: 0 !important; left: 0 !important; right: 0 !important;
+  height: 3px !important;
+  background: linear-gradient(90deg, var(--ph-blue), var(--ph-red), var(--ph-gold)) !important;
+  border-radius: 22px 22px 0 0 !important;
+}
+
+/* Section headers */
+.sec-head h3 { color: var(--ph-blue-dark) !important; }
+.sec-head p { color: var(--mut) !important; }
+.section-title { color: var(--ph-red) !important; }
+
+/* Type cards (loan purpose) — keep functional, recolor base */
+.type-card {
+  background: #fff !important;
+  border-color: var(--line) !important;
+  color: var(--ink) !important;
+  backdrop-filter: none !important;
+}
+.type-card:hover {
+  border-color: var(--ph-blue) !important;
+  background: rgba(0,50,160,.04) !important;
+  box-shadow: 0 6px 18px rgba(0,50,160,.14) !important;
+}
+.type-icon {
+  background: rgba(0,50,160,.08) !important;
+  border: 1px solid rgba(0,50,160,.30) !important;
+}
+.type-icon svg { stroke: var(--ph-blue) !important; }
+.type-name { color: var(--ph-blue-dark) !important; }
+.type-desc { color: var(--mut) !important; }
+.type-check {
+  border-color: var(--line) !important;
+  background: #fff !important;
+}
+/* Selected (uses :has to apply when input checked) */
+.type-card:has(input:checked) {
+  border-color: var(--ph-red) !important;
+  background: rgba(191,13,62,.04) !important;
+  box-shadow: 0 6px 18px rgba(191,13,62,.18) !important;
+}
+.type-card:has(input:checked) .type-icon {
+  background: linear-gradient(135deg, var(--ph-red), var(--ph-red-dark)) !important;
+  border-color: var(--ph-red) !important;
+}
+.type-card:has(input:checked) .type-icon svg { stroke: #fff !important; }
+.type-card:has(input:checked) .type-check {
+  background: var(--ph-red) !important;
+  border-color: var(--ph-red) !important;
+}
+
+/* Inputs */
+.field label { color: var(--ph-blue-dark) !important; }
+input[type="text"], input[type="number"], input[type="tel"], input[type="email"], textarea, select {
+  background: #fff !important;
+  border: 1.5px solid var(--line) !important;
+  color: var(--ink) !important;
+  caret-color: var(--ph-blue) !important;
+  backdrop-filter: none !important;
+}
+input::placeholder, textarea::placeholder { color: #9ca3af !important; }
+input:focus, textarea:focus, select:focus {
+  border-color: var(--ph-blue) !important;
+  box-shadow: 0 0 0 4px rgba(0,50,160,.10) !important;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--ink) !important;
+  -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
+}
+
+/* Term buttons */
+.term-btn {
+  background: #fff !important;
+  border: 1.5px solid var(--line) !important;
+  color: var(--ph-blue) !important;
+  font-weight: 900 !important;
+  backdrop-filter: none !important;
+}
+.term-btn:hover {
+  border-color: var(--ph-blue) !important;
+  background: rgba(0,50,160,.04) !important;
+  color: var(--ph-blue-dark) !important;
+}
+.term-btn.active {
+  background: linear-gradient(135deg, var(--ph-blue), var(--ph-blue-dark)) !important;
+  color: #fff !important;
+  border-color: var(--ph-blue) !important;
+  box-shadow: 0 6px 18px rgba(0,50,160,.35) !important;
+}
+
+/* Hint */
+.hint { color: var(--mut) !important; }
+
+/* HR divider */
+hr { border: 0 !important; border-top: 1px dashed var(--line) !important; }
+
+/* ID upload boxes */
+.idbox {
+  background: #f6f8fc !important;
+  border: 1.5px dashed rgba(0,50,160,.35) !important;
+  color: var(--mut) !important;
+}
+.idbox:hover {
+  border-color: var(--ph-blue) !important;
+  background: rgba(0,50,160,.04) !important;
+  box-shadow: 0 4px 14px rgba(0,50,160,.12) !important;
+}
+.idbox.has-img {
+  border-color: var(--ph-blue) !important;
+  border-style: solid !important;
+}
+.idbox small { color: var(--mut) !important; }
+.idbox strong { color: var(--ph-blue-dark) !important; }
+.id-text strong { color: var(--ph-blue-dark) !important; }
+.id-text small { color: var(--mut) !important; }
+.id-ico { color: var(--ph-red) !important; }
+.id-guide {
+  background: transparent !important;
+  border: 0 !important;
+}
+.id-guide .id-art { color: var(--ph-blue) !important; }
+.id-guide .id-caption strong { color: var(--ph-blue-dark) !important; }
+
+/* Signature canvas */
+.sig-canvas {
+  background: #f6f8fc !important;
+  border: 1.5px dashed rgba(0,50,160,.35) !important;
+}
+.sig-clear-wrap .sig-btn {
+  background: #fff !important;
+  border: 1.5px solid var(--line) !important;
+  color: var(--ph-red) !important;
+  font-weight: 900 !important;
+}
+.sig-clear-wrap .sig-btn:hover {
+  background: rgba(191,13,62,.06) !important;
+  border-color: var(--ph-red) !important;
+}
+
+/* Summary */
+.summary { border-top-color: var(--line) !important; }
+.summary .row { border-bottom-color: var(--line) !important; }
+.summary .k { color: var(--mut) !important; }
+.summary .v { color: var(--ph-blue-dark) !important; }
+.summary .row:last-child {
+  border-top-color: var(--ph-gold) !important;
+}
+.summary .row:last-child .v {
+  color: var(--ph-red) !important;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: var(--ph-red) !important;
+}
+
+/* Submit button */
+.submit-btn, button[type="submit"] {
+  background: linear-gradient(135deg, var(--ph-red) 0%, var(--ph-red-dark) 100%) !important;
+  color: #fff !important;
+  border: 0 !important;
+  box-shadow: 0 6px 18px rgba(191,13,62,.40) !important;
+  animation: none !important;
+  letter-spacing: .12em !important;
+  text-transform: uppercase !important;
+  font-weight: 950 !important;
+}
+.submit-btn:hover, button[type="submit"]:hover {
+  box-shadow: 0 10px 26px rgba(191,13,62,.55) !important;
+  filter: brightness(1.08) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Mobile fix — force visibility */
+@media (max-width: 768px) {
+  .apply-card, .top-row {
+    opacity: 1 !important;
+    animation: none !important;
+  }
 }
 
 .wrap{ padding-top: 0 !important; align-items: flex-start; }

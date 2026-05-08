@@ -12,25 +12,167 @@
     font-display: swap;
   }
 
-  /* ===== ManaLoan Agreement — Dark Glass Theme ===== */
+  /* ===== Overseas FilipinoLoan Agreement — Filipino Flag Style ===== */
+
+  :root {
+    --ph-blue: #0032A0;
+    --ph-blue-dark: #00226e;
+    --ph-red: #BF0D3E;
+    --ph-red-dark: #8b0628;
+    --ph-gold: #FED141;
+    --ph-gold-dark: #e6b820;
+    --ink: #0a1a3a;
+    --mut: #5a6378;
+    --line: #e3e8f1;
+  }
 
   html, body { width: 100%; overflow-x: hidden; }
 
   body {
     margin: 0;
     min-height: 100vh;
-    color: #e6edf7;
+    color: var(--ink) !important;
     background:
-      radial-gradient(600px 400px at 10% 10%, rgba(59,130,246,.35), transparent 60%),
-      radial-gradient(500px 500px at 90% 20%, rgba(139,92,246,.28), transparent 60%),
-      radial-gradient(700px 500px at 50% 90%, rgba(56,189,248,.22), transparent 60%),
-      radial-gradient(400px 400px at 80% 80%, rgba(16,185,129,.18), transparent 60%),
-      #070b16 !important;
+      radial-gradient(800px 600px at 15% 20%, rgba(0,50,160,.10) 0%, transparent 60%),
+      radial-gradient(700px 500px at 85% 80%, rgba(191,13,62,.08) 0%, transparent 60%),
+      radial-gradient(500px 400px at 50% 50%, rgba(254,209,65,.10) 0%, transparent 65%),
+      linear-gradient(180deg, #fafbff 0%, #eef2fb 100%) !important;
     background-attachment: fixed !important;
   }
 
   .wrap { padding-top: 0 !important; }
 
+  /* ====================================================== */
+  /* ===== Filipino flag theme overrides ================== */
+  /* ====================================================== */
+
+  .agree-page { color: var(--ink) !important; }
+
+  /* Back button */
+  .agree-back-btn {
+    background: #ffffff !important;
+    color: var(--ph-blue-dark) !important;
+    border: 2px solid var(--ph-blue) !important;
+    border-radius: 999px !important;
+    font-weight: 900 !important;
+    letter-spacing: .08em !important;
+    text-transform: uppercase !important;
+    box-shadow: 0 4px 12px rgba(0,50,160,.12) !important;
+    backdrop-filter: none !important;
+  }
+  .agree-back-btn:hover {
+    background: var(--ph-blue) !important;
+    color: #fff !important;
+    box-shadow: 0 8px 18px rgba(0,50,160,.30) !important;
+    transform: translateY(-2px) !important;
+  }
+  .agree-back-btn::before { color: currentColor !important; }
+
+  /* Header banner */
+  .agree-header-banner {
+    background: linear-gradient(135deg, var(--ph-blue-dark), var(--ph-blue)) !important;
+    border: 1px solid rgba(254,209,65,.40) !important;
+    color: #ffffff !important;
+  }
+  .agree-header-banner h1,
+  .agree-header-banner h2 { color: #ffffff !important; }
+
+  /* Content cards (white with PH stripe) */
+  .agree-card {
+    background: #ffffff !important;
+    border: 1px solid var(--line) !important;
+    box-shadow: 0 4px 20px rgba(0,50,160,.08), 0 1px 3px rgba(0,0,0,.04) !important;
+    backdrop-filter: none !important;
+    color: var(--ink) !important;
+    position: relative !important;
+  }
+  .agree-card::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important; left: 0 !important; right: 0 !important;
+    height: 3px !important;
+    background: linear-gradient(90deg, var(--ph-blue), var(--ph-red), var(--ph-gold)) !important;
+    border-radius: 18px 18px 0 0 !important;
+  }
+
+  /* Section titles */
+  .ag-title {
+    color: var(--ph-blue-dark) !important;
+    border-bottom: 2px solid var(--ph-gold) !important;
+  }
+  .ag-title::after { background: linear-gradient(90deg, var(--ph-blue), var(--ph-red)) !important; }
+  .agree-title {
+    color: var(--ph-blue-dark) !important;
+    border-bottom: 2px solid var(--ph-gold) !important;
+  }
+  .agree-title::after { background: linear-gradient(90deg, var(--ph-blue), var(--ph-red)) !important; }
+  .agree-sub { color: var(--mut) !important; }
+
+  /* HR */
+  .agree-hr {
+    background: linear-gradient(90deg, transparent, rgba(0,50,160,.30), transparent) !important;
+  }
+
+  /* Body paragraphs */
+  .agree-p { color: var(--ink) !important; }
+
+  /* Headings inside cards */
+  .agree-card h2,
+  .agree-h {
+    color: var(--ph-red) !important;
+    border-bottom: 1px solid var(--line) !important;
+  }
+
+  /* Article items */
+  .article-item {
+    background: #f6f8fc !important;
+    border: 1px solid var(--line) !important;
+    backdrop-filter: none !important;
+    color: var(--ink) !important;
+  }
+  .article-item::before { background: linear-gradient(180deg, var(--ph-blue), var(--ph-red)) !important; }
+  .article-item:hover {
+    border-color: var(--ph-blue) !important;
+    box-shadow: 0 6px 18px rgba(0,50,160,.14) !important;
+  }
+  .art-title { color: var(--ph-red) !important; }
+  .art-title:hover { color: var(--ph-red-dark) !important; }
+  .article-text { color: var(--ink) !important; }
+  .article-item b { color: var(--ph-blue-dark) !important; }
+
+  /* Loan agreement long text */
+  .loan-agreement { color: var(--ink) !important; }
+  .loan-agreement h1 {
+    color: var(--ph-blue-dark) !important;
+    border-bottom: 2px solid var(--ph-gold) !important;
+  }
+  .loan-agreement h1::after { background: linear-gradient(90deg, var(--ph-blue), var(--ph-red)) !important; }
+  .loan-agreement h2 { color: var(--ph-red) !important; }
+  .loan-agreement h2::before { background: linear-gradient(90deg, var(--ph-blue), transparent) !important; }
+  .loan-agreement p,
+  .loan-agreement li { color: var(--ink) !important; }
+  .loan-agreement li::marker { color: var(--ph-blue) !important; }
+  .loan-agreement hr { background: linear-gradient(90deg, transparent, rgba(0,50,160,.30), transparent) !important; }
+  .loan-agreement strong { color: var(--ph-blue-dark) !important; }
+
+  .agree-card ol,
+  .agree-card ul,
+  .agree-kv { color: var(--ink) !important; }
+  .agree-card li { color: var(--ink) !important; }
+  .agree-card li::marker { color: var(--ph-blue) !important; }
+  .agree-card hr { background: linear-gradient(90deg, transparent, rgba(0,50,160,.30), transparent) !important; }
+  .agree-card strong { color: var(--ph-blue-dark) !important; }
+
+  /* Mobile fix — force visibility */
+  @media (max-width: 768px) {
+    .agree-card, .article-item {
+      animation: none !important;
+      opacity: 1 !important;
+      backdrop-filter: none !important;
+    }
+  }
+
+  /* Original style continues below */
   .agree-page, .agree-page * {
     font-family: "Ovelion", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
   }

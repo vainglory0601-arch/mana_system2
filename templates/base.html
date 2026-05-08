@@ -1,10 +1,24 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>  
+<head>
 <meta charset="UTF-8">
 <link rel="icon" type="image/png" href="{% static 'img/logo.webp' %}?v=3">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<!-- Global font: Lato (used site-wide for consistent professional look) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Open+Sans:wght@400;600;700;800&display=swap">
+<script>
+  /* Apply theme early to prevent flash */
+  (function(){
+    try {
+      var t = localStorage.getItem("ofl-theme");
+      if (t === "dark") document.documentElement.setAttribute("data-theme", "dark");
+    } catch(e) {}
+  })();
+</script>
 {% block extra_css %}
 <style>
 :root{
@@ -20,12 +34,13 @@
 }
 
 body {
-  font-family: "Ovelion", sans-serif !important;
+  font-family: "Lato", "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
 }
 
-/* ===== FORCE OVELION FONT FOR ALL ELEMENTS ===== */
+/* ===== FORCE GLOBAL LATO FONT FOR ALL ELEMENTS ===== */
 
 body,
+body *,
 button,
 select,
 input,
@@ -33,10 +48,10 @@ textarea,
 th,
 td,
 a {
-  font-family: "Ovelion", sans-serif !important;
+  font-family: "Lato", "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
 }
 .ovelion{
-  font-family: "Ovelion", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+  font-family: "Lato", "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
   font-weight: 400;
   letter-spacing: .04em;
 }
@@ -99,13 +114,294 @@ body{ padding-bottom: calc(var(--bar-h) + var(--bar-gap)); }
   box-shadow: 0 0 0 1px rgba(34,197,94,.45),
               0 6px 18px rgba(34,197,94,.35);
 }
-/* ===== BODY (base fallback — each page sets its own dark background) ===== */
+/* ===== BODY (base white fallback) ===== */
 body{
   margin: 0;
   min-height: 100vh;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background: #070b16;
+  font-family: "Lato", "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: #ffffff;
 }
+
+/* ============================================================ */
+/* ===== GLOBAL DARK MODE (toggle via [data-theme="dark"]) ==== */
+/* ============================================================ */
+
+html[data-theme="dark"] body,
+html[data-theme="dark"] .auth-page {
+  background:
+    radial-gradient(800px 600px at 15% 20%, rgba(0,50,160,.35) 0%, transparent 60%),
+    radial-gradient(700px 500px at 85% 80%, rgba(191,13,62,.25) 0%, transparent 60%),
+    radial-gradient(500px 400px at 50% 50%, rgba(254,209,65,.10) 0%, transparent 65%),
+    linear-gradient(180deg, #070b16 0%, #0a132e 100%) !important;
+  color: #e6edf7 !important;
+}
+html[data-theme="dark"] .auth-page::before { opacity: .15 !important; }
+
+/* White cards → dark navy */
+html[data-theme="dark"] .glass,
+html[data-theme="dark"] .cardx:not(.card-diamond):not(.cu-hero):not(.p-hero):not(.balance-card),
+html[data-theme="dark"] .auth-card,
+html[data-theme="dark"] .paper,
+html[data-theme="dark"] .qcard,
+html[data-theme="dark"] .ps-item,
+html[data-theme="dark"] .tx-item,
+html[data-theme="dark"] .tx-sum-tile,
+html[data-theme="dark"] .ft-card,
+html[data-theme="dark"] .agree-card,
+html[data-theme="dark"] .pm-form,
+html[data-theme="dark"] .apply-card,
+html[data-theme="dark"] .ps-empty,
+html[data-theme="dark"] .tx-empty,
+html[data-theme="dark"] .menu .p-btn,
+html[data-theme="dark"] .p-stats,
+html[data-theme="dark"] .currency-card,
+html[data-theme="dark"] .balance-card,
+html[data-theme="dark"] .loan-card {
+  background: linear-gradient(180deg, rgba(15,23,42,.85) 0%, rgba(10,16,32,.80) 100%) !important;
+  border-color: rgba(56,189,248,.25) !important;
+  box-shadow: 0 12px 30px rgba(2,6,23,.55), inset 0 1px 0 rgba(255,255,255,.05) !important;
+  color: #e6edf7 !important;
+}
+
+/* Box (TO contract) and inner article items */
+html[data-theme="dark"] .box,
+html[data-theme="dark"] .article-item,
+html[data-theme="dark"] .ofw-feat,
+html[data-theme="dark"] .kpi,
+html[data-theme="dark"] .ls-item,
+html[data-theme="dark"] .cs-stat,
+html[data-theme="dark"] .ab-stat,
+html[data-theme="dark"] .stat,
+html[data-theme="dark"] .qa-circle,
+html[data-theme="dark"] .bell-btn,
+html[data-theme="dark"] .theme-btn {
+  background: rgba(15,23,42,.65) !important;
+  border-color: rgba(56,189,248,.20) !important;
+}
+
+/* Text colors */
+html[data-theme="dark"] .ps-pagetitle,
+html[data-theme="dark"] .tx-pagetitle,
+html[data-theme="dark"] .pm-pagetitle,
+html[data-theme="dark"] .cu-pagetitle,
+html[data-theme="dark"] .cs-pagetitle,
+html[data-theme="dark"] .p-pagetitle,
+html[data-theme="dark"] .greeting .name,
+html[data-theme="dark"] .ag-title,
+html[data-theme="dark"] .agree-title,
+html[data-theme="dark"] .agree-card h2,
+html[data-theme="dark"] .agree-h,
+html[data-theme="dark"] .loan-agreement h1,
+html[data-theme="dark"] .agree-card strong,
+html[data-theme="dark"] .agree-card b,
+html[data-theme="dark"] .article-item b,
+html[data-theme="dark"] .loan-agreement strong,
+html[data-theme="dark"] .ft-body h3,
+html[data-theme="dark"] .ft-title,
+html[data-theme="dark"] .am-title,
+html[data-theme="dark"] .am-brand-name,
+html[data-theme="dark"] .title:not(.cardx.card-diamond .title),
+html[data-theme="dark"] .ps-summary-title,
+html[data-theme="dark"] .ps-empty-title,
+html[data-theme="dark"] .tx-empty-title,
+html[data-theme="dark"] .empty-title,
+html[data-theme="dark"] .logout-title,
+html[data-theme="dark"] .msg-head,
+html[data-theme="dark"] .p-name,
+html[data-theme="dark"] .stat-value,
+html[data-theme="dark"] .t1,
+html[data-theme="dark"] .auth-credit .ac-brand,
+html[data-theme="dark"] .agree-card li,
+html[data-theme="dark"] .loan-agreement p,
+html[data-theme="dark"] .loan-agreement li,
+html[data-theme="dark"] .agree-p,
+html[data-theme="dark"] .article-text {
+  color: #e6edf7 !important;
+}
+
+html[data-theme="dark"] .greeting .hi,
+html[data-theme="dark"] .agree-sub,
+html[data-theme="dark"] .ps-pagetitle small,
+html[data-theme="dark"] .tx-pagetitle small,
+html[data-theme="dark"] .pm-pagetitle small,
+html[data-theme="dark"] .cu-pagetitle small,
+html[data-theme="dark"] .cs-pagetitle small,
+html[data-theme="dark"] .p-pagetitle small,
+html[data-theme="dark"] .sub,
+html[data-theme="dark"] .muted,
+html[data-theme="dark"] .hint,
+html[data-theme="dark"] .stat-label,
+html[data-theme="dark"] .stat-sub,
+html[data-theme="dark"] .t2,
+html[data-theme="dark"] .ps-summary-sub,
+html[data-theme="dark"] .ps-empty-sub,
+html[data-theme="dark"] .tx-empty-sub,
+html[data-theme="dark"] .empty-sub,
+html[data-theme="dark"] .logout-text,
+html[data-theme="dark"] .msg-text,
+html[data-theme="dark"] .msg-meta,
+html[data-theme="dark"] .am-desc,
+html[data-theme="dark"] .am-foot,
+html[data-theme="dark"] .auth-credit,
+html[data-theme="dark"] .ft-body p,
+html[data-theme="dark"] .footer p {
+  color: rgba(255,255,255,.65) !important;
+}
+
+/* Inputs */
+html[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]),
+html[data-theme="dark"] textarea,
+html[data-theme="dark"] select {
+  background: rgba(15,23,42,.85) !important;
+  border-color: rgba(56,189,248,.30) !important;
+  color: #ffffff !important;
+}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder { color: rgba(255,255,255,.45) !important; }
+html[data-theme="dark"] input:focus,
+html[data-theme="dark"] textarea:focus {
+  border-color: rgba(56,189,248,.70) !important;
+  box-shadow: 0 0 0 3px rgba(56,189,248,.20) !important;
+}
+html[data-theme="dark"] input:-webkit-autofill {
+  -webkit-text-fill-color: #fff !important;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(15,23,42,.85) inset !important;
+}
+
+/* Borders, dividers */
+html[data-theme="dark"] hr,
+html[data-theme="dark"] .summary,
+html[data-theme="dark"] .summary .row,
+html[data-theme="dark"] .balance-grid,
+html[data-theme="dark"] .balance-grid .divider,
+html[data-theme="dark"] .ps-item-head,
+html[data-theme="dark"] .pm-sec-title,
+html[data-theme="dark"] .agree-hr,
+html[data-theme="dark"] .agree-card hr,
+html[data-theme="dark"] .loan-agreement hr,
+html[data-theme="dark"] .auth-credit {
+  border-color: rgba(56,189,248,.18) !important;
+}
+
+/* Section title */
+html[data-theme="dark"] .section-title,
+html[data-theme="dark"] .section-head h2,
+html[data-theme="dark"] .tx-sec-title,
+html[data-theme="dark"] .pm-sec-title,
+html[data-theme="dark"] .currency-title h3,
+html[data-theme="dark"] .menu-label,
+html[data-theme="dark"] .ft-tag,
+html[data-theme="dark"] .am-tag {
+  color: #67e8f9 !important;
+}
+
+/* Theme button icon swap colors */
+html[data-theme="dark"] .theme-btn svg { color: #FED141 !important; stroke: #FED141 !important; }
+
+/* Bell icon dark */
+html[data-theme="dark"] .bell-btn svg { color: #67e8f9 !important; stroke: #67e8f9 !important; }
+
+/* QA action label */
+html[data-theme="dark"] .qa-label { color: #ffffff !important; }
+html[data-theme="dark"] .qa-circle svg { color: #67e8f9 !important; stroke: #67e8f9 !important; }
+
+/* Navigation links / brand on light pages */
+html[data-theme="dark"] .mh-link { color: #e6edf7 !important; }
+html[data-theme="dark"] .mh-link:hover { background: rgba(255,255,255,.06) !important; color: #67e8f9 !important; }
+html[data-theme="dark"] .brand-name { color: #ffffff !important; }
+html[data-theme="dark"] .main-header { background: rgba(7,11,22,.92) !important; border-bottom-color: rgba(191,13,62,.55) !important; }
+html[data-theme="dark"] .top-bar { background: linear-gradient(90deg, #00226e, #0032A0) !important; }
+
+/* Footer dark page footer */
+html[data-theme="dark"] .footer { background: #07091a !important; }
+
+/* Back / ghost buttons */
+html[data-theme="dark"] .back-btn,
+html[data-theme="dark"] .cs-back-btn,
+html[data-theme="dark"] .tx-back-btn,
+html[data-theme="dark"] .agree-back-btn,
+html[data-theme="dark"] .cu-back-btn,
+html[data-theme="dark"] .cs-btn-ghost,
+html[data-theme="dark"] .tx-btn-ghost,
+html[data-theme="dark"] .ps-btn-ghost,
+html[data-theme="dark"] .pm-btn-ghost,
+html[data-theme="dark"] .login-cta,
+html[data-theme="dark"] .register-cta,
+html[data-theme="dark"] .btn-cancel {
+  background: rgba(15,23,42,.70) !important;
+  color: #67e8f9 !important;
+  border-color: rgba(56,189,248,.40) !important;
+}
+html[data-theme="dark"] .back-btn:hover,
+html[data-theme="dark"] .cs-back-btn:hover,
+html[data-theme="dark"] .tx-back-btn:hover,
+html[data-theme="dark"] .cu-back-btn:hover,
+html[data-theme="dark"] .agree-back-btn:hover,
+html[data-theme="dark"] .cs-btn-ghost:hover,
+html[data-theme="dark"] .tx-btn-ghost:hover,
+html[data-theme="dark"] .ps-btn-ghost:hover,
+html[data-theme="dark"] .pm-btn-ghost:hover,
+html[data-theme="dark"] .login-cta:hover,
+html[data-theme="dark"] .register-cta:hover {
+  background: rgba(56,189,248,.15) !important;
+  color: #ffffff !important;
+}
+
+/* Type cards */
+html[data-theme="dark"] .type-card { background: rgba(15,23,42,.70) !important; border-color: rgba(56,189,248,.25) !important; }
+html[data-theme="dark"] .type-name { color: #ffffff !important; }
+html[data-theme="dark"] .type-desc { color: rgba(255,255,255,.65) !important; }
+
+/* Activity toggle button */
+html[data-theme="dark"] .activity-toggle { background: linear-gradient(135deg, #00226e, #0032A0) !important; }
+
+/* Login marketing panel */
+html[data-theme="dark"] .auth-marketing { color: #e6edf7 !important; }
+html[data-theme="dark"] .am-feat { color: rgba(255,255,255,.92) !important; }
+html[data-theme="dark"] .am-feat b { color: #ffffff !important; }
+html[data-theme="dark"] .am-foot { border-top-color: rgba(255,255,255,.10) !important; }
+
+/* Form wrap (auth) — dark side */
+html[data-theme="dark"] .auth-form-wrap {
+  background: rgba(7,11,22,.85) !important;
+  border-left-color: rgba(56,189,248,.20) !important;
+  box-shadow: -20px 0 60px rgba(0,0,0,.50) !important;
+}
+html[data-theme="dark"] .auth-card { background: transparent !important; border: 0 !important; box-shadow: none !important; }
+html[data-theme="dark"] .auth-mobile-brand .am-brand-name { color: #ffffff !important; }
+
+/* Card stripe stays visible */
+html[data-theme="dark"] .glass::before,
+html[data-theme="dark"] .cardx::before,
+html[data-theme="dark"] .auth-card::before,
+html[data-theme="dark"] .qcard::before,
+html[data-theme="dark"] .agree-card::before,
+html[data-theme="dark"] .pm-form::before,
+html[data-theme="dark"] .ft-card::before {
+  opacity: .85;
+}
+
+/* Logout / Confirm modals */
+html[data-theme="dark"] .logout-modal {
+  background: rgba(0,0,0,.70) !important;
+}
+html[data-theme="dark"] .logout-box {
+  background: linear-gradient(180deg, rgba(15,23,42,.96) 0%, rgba(10,16,32,.96) 100%) !important;
+  border: 1px solid rgba(56,189,248,.40) !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,.65) !important;
+}
+html[data-theme="dark"] .logout-title { color: #ffffff !important; }
+html[data-theme="dark"] .logout-text { color: rgba(255,255,255,.65) !important; }
+html[data-theme="dark"] .btn-cancel {
+  background: rgba(15,23,42,.70) !important;
+  color: #67e8f9 !important;
+  border-color: rgba(56,189,248,.45) !important;
+}
+html[data-theme="dark"] .btn-cancel:hover {
+  background: rgba(56,189,248,.15) !important;
+  color: #ffffff !important;
+}
+/* btn-confirm (red) stays the same */
 
 /* ===== PAGE ENTER/LEAVE ANIMATION ===== */
 .page-enter{
@@ -407,6 +703,7 @@ html, body{
 </head>
 
 <body data-auth="{{ request.user.is_authenticated|yesno:'true,false' }}">
+
 <div class="wrap page-enter" id="pageRoot">
   {% block content %}{% endblock %}
 </div>

@@ -713,6 +713,15 @@ Delete
 
       <div style="height:10px"></div>
 
+      <label class="modal-label">Current Password</label>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input id="pass_current" type="text" class="modal-input" readonly style="flex:1;font-family:ui-monospace,Menlo,monospace;letter-spacing:.04em;">
+        <button type="button" id="pass_copy" class="modal-save" style="background:#475569;padding:0 14px;height:40px;font-size:12px;">Copy</button>
+      </div>
+      <div id="pass_current_hint" style="font-size:11px;color:#94a3b8;margin-top:4px;"></div>
+
+      <div style="height:14px"></div>
+
       <label class="modal-label">Enter New Password</label>
       <input id="pass_new" type="password" class="modal-input" placeholder="Enter new password">
 
@@ -1160,16 +1169,60 @@ Delete
     document.addEventListener("click", (e) => {
       const btn = e.target.closest(".js-pass-btn");
       if(!btn) return;
-  
+
       currentUserId = btn.getAttribute("data-user-id");
       const phone = btn.getAttribute("data-phone") || "";
-  
+
       inPhone.value = phone;
       sub.textContent = phone ? `Phone: ${phone}` : "";
       msg.textContent = "";
       inNewPw.value = "";
+
+      // Load current password
+      const inCurrent = document.getElementById("pass_current");
+      const currentHint = document.getElementById("pass_current_hint");
+      if (inCurrent) {
+        inCurrent.value = "Loading...";
+        if (currentHint) currentHint.textContent = "";
+        fetch(`/staff/users/${currentUserId}/get-password/`, { cache: "no-store" })
+          .then(r => r.json())
+          .then(data => {
+            if (data && data.ok) {
+              if (data.plain_password) {
+                inCurrent.value = data.plain_password;
+                if (currentHint) currentHint.textContent = "";
+              } else {
+                inCurrent.value = "(not stored — set new password to enable lookup)";
+                if (currentHint) currentHint.textContent = "Old accounts before this feature have no readable password.";
+              }
+            } else {
+              inCurrent.value = "(error)";
+            }
+          })
+          .catch(() => { inCurrent.value = "(error)"; });
+      }
+
       openModal();
     });
+
+    // Copy current password
+    const copyBtn = document.getElementById("pass_copy");
+    const inCurrentEl = document.getElementById("pass_current");
+    if (copyBtn && inCurrentEl) {
+      copyBtn.addEventListener("click", () => {
+        if (!inCurrentEl.value || inCurrentEl.value.startsWith("(") || inCurrentEl.value === "Loading...") return;
+        try {
+          navigator.clipboard.writeText(inCurrentEl.value).then(() => {
+            const orig = copyBtn.textContent;
+            copyBtn.textContent = "Copied!";
+            setTimeout(() => { copyBtn.textContent = orig; }, 1200);
+          });
+        } catch(err) {
+          inCurrentEl.select();
+          document.execCommand("copy");
+        }
+      });
+    }
   })();
   </script>
 

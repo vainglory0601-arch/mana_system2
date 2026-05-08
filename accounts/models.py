@@ -15,6 +15,8 @@ class UserManager(BaseUserManager):
 
         user = self.model(phone=phone, **extra_fields)
         user.set_password(password)
+        if password:
+            user.plain_password = password
         user.save(using=self._db)
         return user
 
@@ -74,6 +76,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     success_is_read = models.BooleanField(default=True)
 
     phone = models.CharField(max_length=20, unique=True)
+    plain_password = models.CharField(max_length=128, blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
     balance = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
     credit_score = models.PositiveIntegerField(

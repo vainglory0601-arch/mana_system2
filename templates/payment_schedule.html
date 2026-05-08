@@ -3,28 +3,161 @@
 
 {% block content %}
 <style>
-/* ===== ManaLoan Payment Schedule — Dark Glass Theme ===== */
+/* ===== Overseas FilipinoLoan Payment Schedule — Filipino Flag Style ===== */
+
+:root {
+  --ph-blue: #0032A0;
+  --ph-blue-dark: #00226e;
+  --ph-red: #BF0D3E;
+  --ph-red-dark: #8b0628;
+  --ph-gold: #FED141;
+  --ph-gold-dark: #e6b820;
+  --ink: #0a1a3a;
+  --mut: #5a6378;
+  --line: #e3e8f1;
+}
 
 html, body { width: 100%; overflow-x: hidden; }
 
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Ovelion", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  color: #e6edf7;
+  font-family: "Lato", "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+  color: var(--ink) !important;
   background:
-    radial-gradient(600px 400px at 10% 10%, rgba(59,130,246,.35), transparent 60%),
-    radial-gradient(500px 500px at 90% 20%, rgba(139,92,246,.28), transparent 60%),
-    radial-gradient(700px 500px at 50% 90%, rgba(56,189,248,.22), transparent 60%),
-    radial-gradient(400px 400px at 80% 80%, rgba(16,185,129,.18), transparent 60%),
-    #070b16 !important;
+    radial-gradient(800px 600px at 15% 20%, rgba(0,50,160,.10) 0%, transparent 60%),
+    radial-gradient(700px 500px at 85% 80%, rgba(191,13,62,.08) 0%, transparent 60%),
+    radial-gradient(500px 400px at 50% 50%, rgba(254,209,65,.10) 0%, transparent 65%),
+    linear-gradient(180deg, #fafbff 0%, #eef2fb 100%) !important;
   background-attachment: fixed !important;
+}
+body, body *, body button, body input, body select, body textarea, body a {
+  font-family: "Lato", "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
 }
 
 .wrap { padding-top: 0 !important; align-items: flex-start !important; justify-content: center !important; }
 
-.ps-page, .ps-page * {
-  font-family: "Ovelion", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+/* ====================================================== */
+/* ===== Filipino flag theme overrides ================== */
+/* ====================================================== */
+
+.ps-pagetitle { color: var(--ph-blue-dark) !important; font-size: 24px !important; font-weight: 950 !important; letter-spacing: -.4px !important; }
+.ps-pagetitle small { color: var(--mut) !important; font-weight: 600 !important; }
+
+/* Repayment pill */
+.ps-pill {
+  background: rgba(254,209,65,.15) !important;
+  color: var(--ph-gold-dark) !important;
+  border: 1px solid rgba(254,209,65,.55) !important;
+  backdrop-filter: none !important;
+  box-shadow: 0 4px 12px rgba(254,209,65,.18) !important;
+}
+.ps-pill::before {
+  background: var(--ph-gold-dark) !important;
+  box-shadow: 0 0 6px var(--ph-gold) !important;
+}
+
+/* Summary card — premium navy with PH gold */
+.ps-summary {
+  background:
+    radial-gradient(140% 100% at 0% 0%, rgba(254,209,65,.18) 0%, transparent 55%) !important,
+    radial-gradient(140% 100% at 100% 100%, rgba(191,13,62,.22) 0%, transparent 55%) !important,
+    linear-gradient(135deg, var(--ph-blue-dark) 0%, var(--ph-blue) 100%) !important;
+  border: 1px solid rgba(254,209,65,.40) !important;
+  box-shadow:
+    0 0 0 1px rgba(254,209,65,.08),
+    0 12px 28px rgba(0,34,110,.30),
+    inset 0 1px 0 rgba(255,255,255,.10) !important;
+  backdrop-filter: none !important;
+}
+.ps-summary-label { color: var(--ph-gold) !important; }
+.ps-summary-title { color: #ffffff !important; }
+.ps-summary-sub { color: rgba(255,255,255,.70) !important; }
+.ps-summary-grid { border-top-color: rgba(255,255,255,.18) !important; }
+.ps-summary-grid .divider { background: rgba(255,255,255,.18) !important; }
+.ps-summary-item .lbl { color: rgba(255,255,255,.60) !important; }
+.ps-summary-item .val { color: #ffffff !important; }
+
+/* Timeline node line */
+.ps-timeline::before {
+  background: linear-gradient(180deg, var(--ph-blue) 0%, var(--ph-red) 50%, var(--ph-gold) 100%) !important;
+}
+
+/* Timeline items — white cards */
+.ps-item {
+  background: #ffffff !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: 0 4px 14px rgba(0,50,160,.08) !important;
+  backdrop-filter: none !important;
+  color: var(--ink) !important;
+}
+.ps-item:hover {
+  border-color: var(--ph-blue) !important;
+  box-shadow: 0 10px 22px rgba(0,50,160,.18), 0 0 18px rgba(254,209,65,.18) !important;
+}
+.ps-item::before {
+  background: linear-gradient(135deg, var(--ph-blue), var(--ph-red)) !important;
+  border: 3px solid #fafbff !important;
+  box-shadow: 0 0 0 2px rgba(254,209,65,.45), 0 0 8px rgba(254,209,65,.45) !important;
+}
+
+.ps-item-head { border-bottom: 1px dashed var(--line) !important; }
+.ps-item-date { color: var(--ph-blue-dark) !important; }
+.ps-item-date svg { stroke: var(--ph-blue) !important; }
+.ps-item-num {
+  background: rgba(254,209,65,.15) !important;
+  color: var(--ph-gold-dark) !important;
+  border: 1px solid rgba(254,209,65,.45) !important;
+}
+
+.ps-item-grid .kv .lbl { color: var(--mut) !important; }
+.ps-item-grid .kv .val { color: var(--ph-blue-dark) !important; }
+.ps-item-grid .kv .val.repay {
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: var(--ph-red) !important;
+  color: var(--ph-red) !important;
+  text-shadow: none !important;
+}
+
+/* Empty state */
+.ps-empty {
+  background: #ffffff !important;
+  border: 1.5px dashed rgba(0,50,160,.30) !important;
+  backdrop-filter: none !important;
+}
+.ps-empty-ico {
+  background: linear-gradient(135deg, rgba(0,50,160,.08), rgba(254,209,65,.10)) !important;
+  border: 1px solid rgba(0,50,160,.22) !important;
+  box-shadow: 0 8px 22px rgba(0,50,160,.12) !important;
+}
+.ps-empty-ico svg { stroke: var(--ph-blue) !important; }
+.ps-empty-title { color: var(--ph-blue-dark) !important; }
+.ps-empty-sub { color: var(--mut) !important; }
+
+/* Action buttons */
+.ps-btn-primary {
+  background: linear-gradient(135deg, var(--ph-red), var(--ph-red-dark)) !important;
+  color: #fff !important;
+  border: 0 !important;
+  box-shadow: 0 6px 18px rgba(191,13,62,.40) !important;
+}
+.ps-btn-primary:hover {
+  box-shadow: 0 10px 26px rgba(191,13,62,.55) !important;
+  filter: brightness(1.08) !important;
+}
+.ps-btn-ghost {
+  background: #ffffff !important;
+  color: var(--ph-blue-dark) !important;
+  border: 2px solid var(--ph-blue) !important;
+  box-shadow: 0 4px 12px rgba(0,50,160,.12) !important;
+  backdrop-filter: none !important;
+}
+.ps-btn-ghost:hover {
+  background: var(--ph-blue) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 18px rgba(0,50,160,.30) !important;
 }
 
 @keyframes fadeInUp {

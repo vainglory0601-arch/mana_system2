@@ -1,26 +1,727 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Dashboard - ManaLoan{% endblock %}
+{% block title %}Dashboard - Overseas FilipinoLoan{% endblock %}
 
 {% block content %}
 <style>
-/* ===== ManaLoan Dashboard — Loan-first UI ===== */
+/* ===== Overseas FilipinoLoan Dashboard — Filipino Flag Style (preview) ===== */
+
+:root {
+  --ph-blue: #0032A0;
+  --ph-blue-dark: #00226e;
+  --ph-red: #BF0D3E;
+  --ph-red-dark: #8b0628;
+  --ph-gold: #FED141;
+  --ph-gold-dark: #e6b820;
+  --ink: #0a1a3a;
+  --mut: #5a6378;
+  --line: #e3e8f1;
+}
 
 html, body { width: 100%; overflow-x: hidden; }
 
 body{
   margin: 0;
   min-height: 100vh;
-  font-family: "Ovelion", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  color: #e6edf7;
-  background:
-    radial-gradient(600px 400px at 10% 10%, rgba(59,130,246,.35), transparent 60%),
-    radial-gradient(500px 500px at 90% 20%, rgba(139,92,246,.28), transparent 60%),
-    radial-gradient(700px 500px at 50% 90%, rgba(56,189,248,.22), transparent 60%),
-    radial-gradient(400px 400px at 80% 80%, rgba(16,185,129,.18), transparent 60%),
-    #070b16 !important;
+  font-family: "Lato", "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+  color: var(--ink) !important;
+  background: #ffffff !important;
   background-attachment: fixed !important;
 }
+body, body *, body button, body input, body select, body textarea, body a {
+  font-family: "Lato", "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+}
+/* Keep numeric/code-style monospace where intentionally set */
+.mono, [class*="-amount"], [class*="-num"]{ font-family: ui-monospace, SFMono-Regular, Menlo, monospace !important; }
+
+/* ====================================================== */
+/* ===== FILIPINO FLAG THEME — match choose.html ========= */
+/* ====================================================== */
+
+/* Glass cards → DARK navy with PH flag top stripe */
+.glass {
+  position: relative !important;
+  background: linear-gradient(180deg, #0f1a3a 0%, #0a132e 100%) !important;
+  border: 1px solid rgba(0,50,160,.45) !important;
+  border-radius: 18px !important;
+  box-shadow:
+    0 0 0 1px rgba(0,50,160,.15),
+    0 12px 30px rgba(0,34,110,.25),
+    0 4px 14px rgba(0,0,0,.10) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.glass::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--ph-blue), var(--ph-red), var(--ph-gold));
+  border-radius: 18px 18px 0 0;
+  z-index: 1;
+}
+
+/* Greeting / top */
+.greeting .hi { color: var(--mut) !important; font-weight: 700 !important; }
+.greeting .name { color: var(--ph-blue-dark) !important; font-weight: 950 !important; }
+
+/* Bell button */
+.bell-btn {
+  background: #fff !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: 0 2px 10px rgba(0,50,160,.10) !important;
+  backdrop-filter: none !important;
+}
+.bell-btn:hover {
+  border-color: var(--ph-blue) !important;
+  box-shadow: 0 4px 14px rgba(0,50,160,.20) !important;
+}
+.bell-btn svg { color: var(--ph-blue) !important; stroke: var(--ph-blue) !important; }
+.bell-btn.has-unread { animation: notifPulseRed 1.4s ease-in-out infinite !important; }
+@keyframes notifPulseRed {
+  0%   { box-shadow: 0 0 0 0 rgba(191,13,62,.45); }
+  70%  { box-shadow: 0 0 0 10px rgba(191,13,62,0); }
+  100% { box-shadow: 0 0 0 0 rgba(191,13,62,0); }
+}
+.notify-badge { background: var(--ph-red) !important; border-color: #fff !important; }
+
+/* ===== Outstanding balance card (dark) ===== */
+.balance-card {
+  padding: 28px 22px 22px !important;
+}
+.balance-label {
+  color: var(--ph-gold) !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  letter-spacing: .22em !important;
+  text-shadow: 0 0 12px rgba(254,209,65,.35) !important;
+}
+.balance-amount {
+  color: #ffffff !important;
+  font-weight: 950 !important;
+}
+.balance-amount > * { color: #ffffff !important; }
+.balance-amount .sym {
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: #ffffff !important;
+  color: #ffffff !important;
+}
+[data-balance] {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+.balance-sub { color: rgba(255,255,255,.65) !important; font-weight: 600 !important; }
+
+.balance-grid { border-top: 1px solid rgba(255,255,255,.12) !important; }
+.balance-grid .divider { background: rgba(255,255,255,.12) !important; }
+.bg-item .lbl { color: rgba(255,255,255,.55) !important; font-weight: 800 !important; }
+.bg-item .val { color: #ffffff !important; font-weight: 900 !important; }
+.bg-item .val.rate { color: var(--ph-red) !important; }
+.bg-item .val.rate small { color: rgba(255,255,255,.55) !important; font-weight: 600 !important; }
+.bg-item .val.status {
+  color: #34d399 !important;
+  text-shadow: 0 0 10px rgba(16,185,129,.35) !important;
+  font-weight: 900 !important;
+}
+
+.progress-bar {
+  background: rgba(255,255,255,.10) !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+}
+.progress-fill {
+  background: linear-gradient(90deg, var(--ph-blue) 0%, var(--ph-red) 60%, var(--ph-gold) 100%) !important;
+  box-shadow: 0 0 8px rgba(254,209,65,.30) !important;
+}
+.progress-meta .done { color: var(--ph-red) !important; font-weight: 900 !important; }
+.progress-meta .total { color: rgba(255,255,255,.55) !important; font-weight: 600 !important; }
+
+/* Avatar ring */
+.balance-avatar {
+  background: linear-gradient(135deg, var(--ph-blue), var(--ph-red)) !important;
+  box-shadow:
+    0 4px 14px rgba(0,50,160,.30),
+    0 0 0 1px rgba(0,50,160,.40) inset !important;
+  animation: avatarPulsePh 2.8s ease-in-out infinite !important;
+  z-index: 4 !important;
+}
+@keyframes avatarPulsePh {
+  0%, 100% { box-shadow: 0 4px 14px rgba(0,50,160,.30), 0 0 0 1px rgba(0,50,160,.40) inset; }
+  50%      { box-shadow: 0 6px 20px rgba(191,13,62,.40), 0 0 0 1px rgba(191,13,62,.55) inset; }
+}
+.balance-avatar-inner { background: #fff !important; }
+.balance-avatar-verified {
+  background: linear-gradient(135deg, #16a34a, #15803d) !important;
+  border: 2px solid #fff !important;
+  box-shadow: 0 0 8px rgba(22,163,74,.45) !important;
+}
+
+/* Quick actions — bright GOLD eye-catching */
+.quick-actions { gap: 14px !important; }
+.qa-circle {
+  background: linear-gradient(135deg, var(--ph-gold) 0%, var(--ph-gold-dark) 100%) !important;
+  border: 2px solid var(--ph-gold-dark) !important;
+  box-shadow:
+    0 6px 18px rgba(254,209,65,.45),
+    0 0 22px rgba(254,209,65,.30),
+    inset 0 1px 0 rgba(255,255,255,.40) !important;
+  backdrop-filter: none !important;
+  position: relative;
+  animation: qaGoldPulse 2.6s ease-in-out infinite;
+}
+@keyframes qaGoldPulse {
+  0%, 100% { box-shadow: 0 6px 18px rgba(254,209,65,.45), 0 0 22px rgba(254,209,65,.30), inset 0 1px 0 rgba(255,255,255,.40); }
+  50%      { box-shadow: 0 8px 24px rgba(254,209,65,.65), 0 0 32px rgba(254,209,65,.50), inset 0 1px 0 rgba(255,255,255,.55); }
+}
+.qa-circle svg { color: var(--ph-blue-dark) !important; stroke: var(--ph-blue-dark) !important; }
+.qa-item:hover .qa-circle {
+  background: linear-gradient(135deg, #fff3ad 0%, var(--ph-gold) 100%) !important;
+  border-color: var(--ph-red) !important;
+  box-shadow:
+    0 10px 26px rgba(254,209,65,.65),
+    0 0 32px rgba(191,13,62,.30),
+    inset 0 1px 0 rgba(255,255,255,.55) !important;
+  transform: translateY(-3px) scale(1.03);
+}
+.qa-item:hover .qa-circle svg { color: var(--ph-red-dark) !important; stroke: var(--ph-red-dark) !important; }
+.qa-label { color: var(--ph-blue-dark) !important; font-weight: 900 !important; }
+.qa-item:hover .qa-label { color: var(--ph-red) !important; }
+
+/* Dark mode gold buttons stay bright */
+html[data-theme="dark"] .qa-circle {
+  background: linear-gradient(135deg, var(--ph-gold) 0%, var(--ph-gold-dark) 100%) !important;
+  border: 2px solid var(--ph-gold-dark) !important;
+}
+html[data-theme="dark"] .qa-circle svg { color: var(--ph-blue-dark) !important; stroke: var(--ph-blue-dark) !important; }
+html[data-theme="dark"] .qa-label { color: var(--ph-gold) !important; }
+
+/* Section titles */
+.section-title,
+.section-head h2,
+.dash-wrap h2 {
+  color: var(--ph-blue-dark) !important;
+  font-weight: 950 !important;
+}
+
+/* Personal Loan card (dark) */
+.loan-card .badge-pop,
+.popular-pill {
+  background: rgba(254,209,65,.15) !important;
+  color: var(--ph-gold) !important;
+  border: 1px solid rgba(254,209,65,.55) !important;
+  font-weight: 900 !important;
+}
+.loan-card h3,
+.loan-title { color: #ffffff !important; }
+.loan-card h3 span,
+.loan-title span,
+.loan-card h3 .accent,
+.loan-card .red-accent { color: var(--ph-gold) !important; }
+.loan-card .sub,
+.loan-sub { color: rgba(255,255,255,.65) !important; font-weight: 600 !important; }
+
+.kpi,
+.ls-item {
+  background: rgba(255,255,255,.05) !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
+}
+.kpi .v,
+.ls-item .v { color: var(--ph-gold) !important; font-weight: 950 !important; }
+.kpi .k,
+.ls-item .l { color: rgba(255,255,255,.60) !important; font-weight: 800 !important; }
+
+.checks li,
+.features li,
+.lf-item { color: rgba(255,255,255,.92) !important; font-weight: 700 !important; }
+.checks svg,
+.features svg,
+.checks li svg,
+.features li svg,
+.lf-check svg { color: var(--ph-gold) !important; stroke: var(--ph-gold) !important; }
+.check-circle, .check-box, .lf-check {
+  background: rgba(254,209,65,.10) !important;
+  border: 1px solid rgba(254,209,65,.40) !important;
+}
+.check-circle svg, .check-box svg, .lf-check svg { stroke: var(--ph-gold) !important; }
+
+/* Apply button (red) */
+.apply-btn {
+  background: linear-gradient(135deg, var(--ph-red), var(--ph-red-dark)) !important;
+  box-shadow: 0 6px 18px rgba(191,13,62,.40) !important;
+  border: 0 !important;
+  color: #fff !important;
+}
+.apply-btn:hover {
+  box-shadow: 0 10px 26px rgba(191,13,62,.55) !important;
+  transform: translateY(-2px);
+}
+
+/* Currency table (dark card) */
+.currency-title h3 { color: #ffffff !important; }
+.currency-title .auto {
+  color: var(--ph-gold) !important;
+  background: rgba(254,209,65,.10) !important;
+  border: 1px solid rgba(254,209,65,.45) !important;
+}
+.fx-table thead th {
+  color: var(--ph-gold) !important;
+  background: rgba(255,255,255,.06) !important;
+  border-bottom: 1px solid rgba(255,255,255,.15) !important;
+  font-weight: 900 !important;
+}
+.fx-table td,
+.fx-table tbody tr td {
+  border-top: 1px solid rgba(255,255,255,.08) !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+.fx-table tbody tr td:nth-child(2),
+.fx-table tbody tr td:nth-child(3) {
+  color: #ffffff !important;
+  font-weight: 800 !important;
+}
+.fx-table tbody tr:hover td {
+  background: rgba(254,209,65,.06) !important;
+}
+.fx-code { color: #ffffff !important; font-weight: 900 !important; }
+.fx-country { color: rgba(255,255,255,.70) !important; }
+.fx-meta, #fxUpdated { color: rgba(255,255,255,.55) !important; }
+
+/* ===== Live ticker (PH blue with gold separator) ===== */
+.live-ticker {
+  background: linear-gradient(180deg, var(--ph-blue-dark) 0%, var(--ph-blue) 100%) !important;
+  border: 0 !important;
+  border-bottom: 2px solid var(--ph-gold) !important;
+  box-shadow: 0 4px 12px rgba(0,34,110,.40) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+.live-ticker::before {
+  background: linear-gradient(90deg, transparent, var(--ph-gold), transparent) !important;
+  height: 1px !important;
+  opacity: .7 !important;
+}
+.lt-tag {
+  background: var(--ph-gold) !important;
+  color: var(--ph-blue-dark) !important;
+  border: 1px solid var(--ph-gold-dark) !important;
+  box-shadow: 0 0 10px rgba(254,209,65,.55) !important;
+}
+.lt-tag .pulse {
+  background: var(--ph-red) !important;
+  box-shadow: 0 0 6px var(--ph-red), 0 0 2px #fff !important;
+}
+.lt-item {
+  background: rgba(255,255,255,.10) !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  color: rgba(255,255,255,.92) !important;
+}
+.lt-item .phone { color: #fff !important; }
+.lt-item .sep { color: var(--ph-gold) !important; }
+.lt-item .amt { color: var(--ph-gold) !important; }
+.lt-item .time,
+.lt-item > span:not(.phone):not(.sep):not(.amt):not(.time) { color: rgba(255,255,255,.75) !important; }
+.lt-item .check {
+  background: linear-gradient(135deg, var(--ph-gold), var(--ph-gold-dark)) !important;
+  box-shadow: 0 0 6px rgba(254,209,65,.55) !important;
+}
+.lt-item .check svg { stroke: var(--ph-blue-dark) !important; }
+.live-ticker::after {
+  background: linear-gradient(90deg,
+    var(--ph-blue-dark) 0%,
+    rgba(0,34,110,.6) 4%,
+    transparent 10%,
+    transparent 90%,
+    rgba(0,34,110,.6) 96%,
+    var(--ph-blue-dark) 100%) !important;
+}
+
+/* ===== Footer strip ===== */
+.dash-footer {
+  border-top: 1px solid var(--line) !important;
+  color: var(--mut) !important;
+}
+.dash-footer .df-brand { color: var(--ph-blue-dark) !important; font-weight: 950 !important; }
+.dash-footer .df-brand .dot {
+  background: linear-gradient(135deg, var(--ph-blue), var(--ph-red)) !important;
+  box-shadow: 0 0 8px rgba(0,50,160,.45) !important;
+}
+.dash-footer .sep { color: var(--ph-gold-dark) !important; }
+.dash-footer .v { color: var(--ph-red) !important; font-weight: 900 !important; }
+
+/* Generic fixes for dark mode artifacts */
+.android-no-blur .glass { background: #fff !important; }
+.android-no-blur .bell-btn { background: #fff !important; }
+.android-no-blur .qa-circle {
+  background: linear-gradient(135deg, var(--ph-gold) 0%, var(--ph-gold-dark) 100%) !important;
+  border: 2px solid var(--ph-gold-dark) !important;
+}
+html[data-theme="dark"] .android-no-blur .qa-circle {
+  background: linear-gradient(135deg, var(--ph-gold) 0%, var(--ph-gold-dark) 100%) !important;
+}
+
+/* ===== FX Search Card (larger) ===== */
+.fx-search-card {
+  padding: 30px 26px 28px !important;
+  margin-top: 6px !important;
+}
+.fx-search-card .currency-title h3 {
+  font-size: 22px !important;
+  letter-spacing: -.3px !important;
+}
+.live-dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  border-radius: 999px;
+  background: #34d399;
+  box-shadow: 0 0 8px #34d399;
+  margin-right: 4px;
+  vertical-align: middle;
+  animation: livePulseFx 1.4s ease-in-out infinite;
+}
+@keyframes livePulseFx { 50% { opacity: .35; transform: scale(.8); } }
+
+.currency-title .auto {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+}
+
+.fx-intro {
+  color: rgba(255,255,255,.65) !important;
+  font-size: 13.5px;
+  margin: 6px 0 18px;
+  line-height: 1.6;
+  font-weight: 600;
+}
+
+/* Search input */
+.fx-search-wrap { position: relative; }
+.fx-search-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255,255,255,.06);
+  border: 1.5px solid rgba(255,255,255,.15);
+  border-radius: 14px;
+  padding: 4px 16px;
+  transition: border-color .18s, background .18s;
+}
+.fx-search-input:focus-within {
+  border-color: var(--ph-gold);
+  background: rgba(255,255,255,.10);
+  box-shadow: 0 0 0 4px rgba(254,209,65,.15);
+}
+.fx-search-ico {
+  width: 20px; height: 20px;
+  color: var(--ph-gold);
+  flex: 0 0 auto;
+  margin-right: 10px;
+}
+#fxSearch {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: 0;
+  padding: 16px 0;
+  color: #fff !important;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  letter-spacing: .02em;
+}
+#fxSearch::placeholder { color: rgba(255,255,255,.45); font-weight: 600; }
+.fx-clear {
+  border: 0;
+  background: transparent;
+  width: 28px; height: 28px;
+  border-radius: 999px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: rgba(255,255,255,.55);
+  flex: 0 0 auto;
+  transition: background .15s, color .15s;
+}
+.fx-clear:hover {
+  background: rgba(255,255,255,.10);
+  color: #fff;
+}
+.fx-clear svg { width: 14px; height: 14px; }
+
+/* Dropdown */
+.fx-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0; right: 0;
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #1a2548 0%, #131c3a 100%);
+  border: 1px solid rgba(254,209,65,.30);
+  box-shadow: 0 16px 36px rgba(0,0,0,.50);
+  max-height: 280px;
+  overflow-y: auto;
+  z-index: 30;
+}
+.fx-dropdown::-webkit-scrollbar { width: 6px; }
+.fx-dropdown::-webkit-scrollbar-thumb { background: rgba(254,209,65,.25); border-radius: 99px; }
+.fx-dropdown li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.fx-dropdown li:hover,
+.fx-dropdown li.active {
+  background: rgba(254,209,65,.10);
+}
+.fx-dropdown li img {
+  width: 24px; height: 18px;
+  border-radius: 3px;
+  object-fit: cover;
+  flex: 0 0 auto;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.12);
+}
+.fx-dropdown li .dd-code {
+  color: #fff;
+  font-weight: 900;
+  font-size: 13.5px;
+  letter-spacing: .04em;
+  flex: 0 0 auto;
+  min-width: 44px;
+}
+.fx-dropdown li .dd-country {
+  color: rgba(255,255,255,.65);
+  font-size: 12px;
+  font-weight: 600;
+  flex: 1;
+}
+.fx-dropdown li .dd-tick {
+  color: var(--ph-gold);
+  font-size: 16px;
+  display: none;
+}
+.fx-dropdown li.selected .dd-tick { display: inline; }
+
+.fx-empty {
+  padding: 16px;
+  text-align: center;
+  color: rgba(255,255,255,.50);
+  font-size: 13px;
+}
+
+/* Confirm row */
+.fx-confirm-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+.fx-selected {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.04);
+  border: 1px dashed rgba(255,255,255,.15);
+  min-height: 56px;
+}
+.fx-selected.has-value {
+  background: rgba(254,209,65,.08);
+  border-color: rgba(254,209,65,.45);
+  border-style: solid;
+}
+.fx-selected img {
+  width: 26px; height: 18px;
+  border-radius: 3px;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.12);
+}
+.fx-selected .fx-sel-code {
+  color: #fff;
+  font-weight: 900;
+  font-size: 13.5px;
+  letter-spacing: .04em;
+}
+.fx-selected .fx-sel-country {
+  color: rgba(255,255,255,.65);
+  font-size: 12px;
+  font-weight: 600;
+}
+.fx-selected .fx-sel-empty {
+  color: rgba(255,255,255,.50);
+  font-size: 13px;
+  font-weight: 600;
+  font-style: italic;
+}
+.fx-confirm-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 22px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--ph-gold) 0%, var(--ph-gold-dark) 100%);
+  color: var(--ph-blue-dark);
+  font-weight: 950;
+  font-size: 13px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  border: 0;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 6px 18px rgba(254,209,65,.40);
+  transition: transform .18s, box-shadow .18s, filter .18s;
+  flex: 0 0 auto;
+}
+.fx-confirm-btn svg { width: 14px; height: 14px; flex: 0 0 auto; }
+.fx-confirm-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 8px 20px rgba(254,209,65,.55);
+}
+.fx-confirm-btn:disabled {
+  background: rgba(255,255,255,.08) !important;
+  color: rgba(255,255,255,.35) !important;
+  box-shadow: none !important;
+  cursor: not-allowed;
+  transform: none !important;
+  filter: none !important;
+}
+
+/* Result card */
+.fx-result {
+  margin-top: 20px;
+  padding: 22px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(254,209,65,.10), rgba(0,50,160,.15));
+  border: 1px solid rgba(254,209,65,.45);
+  box-shadow: 0 6px 18px rgba(0,0,0,.20);
+  animation: fxResultIn .4s ease-out;
+}
+@keyframes fxResultIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fx-result-head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.fx-result-flag {
+  width: 42px; height: 30px;
+  border-radius: 5px;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.20), 0 4px 12px rgba(0,0,0,.30);
+}
+.fx-result-text { flex: 1; min-width: 0; }
+.fx-result-code {
+  color: #fff;
+  font-weight: 950;
+  font-size: 18px;
+  letter-spacing: .04em;
+}
+.fx-result-country {
+  color: rgba(255,255,255,.70);
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.fx-result-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(52,211,153,.18);
+  color: #6ee7b7;
+  border: 1px solid rgba(52,211,153,.55);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .14em;
+}
+.fx-result-rate {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(0,0,0,.25);
+  border: 1px solid rgba(255,255,255,.10);
+}
+.fx-result-rate .rate-from {
+  font-size: 18px;
+  font-weight: 900;
+  color: rgba(255,255,255,.85);
+  letter-spacing: -.2px;
+}
+.fx-result-rate .rate-arrow {
+  width: 32px; height: 32px;
+  border-radius: 999px;
+  background: var(--ph-gold);
+  color: var(--ph-blue-dark);
+  display: flex; align-items: center; justify-content: center;
+  flex: 0 0 auto;
+  box-shadow: 0 0 12px rgba(254,209,65,.45);
+}
+.fx-result-rate .rate-arrow svg { width: 16px; height: 16px; }
+.fx-result-rate .rate-to {
+  font-size: 22px;
+  font-weight: 950;
+  color: var(--ph-gold);
+  letter-spacing: -.4px;
+  text-shadow: 0 0 12px rgba(254,209,65,.35);
+}
+.fx-result-meta {
+  margin-top: 10px;
+  font-size: 11.5px;
+  color: rgba(255,255,255,.55);
+  text-align: right;
+  font-weight: 600;
+  letter-spacing: .02em;
+}
+
+@media (max-width: 380px) {
+  .fx-confirm-row { flex-direction: column; align-items: stretch; }
+  .fx-confirm-btn { justify-content: center; }
+}
+
+/* Loan card head — Most Popular pill + Available Loans label inline */
+.loan-card-head {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  margin-bottom: 12px !important;
+}
+.loan-card-head .popular-pill {
+  margin: 0 !important;
+}
+.loan-card-title {
+  font-size: 13px !important;
+  font-weight: 900 !important;
+  letter-spacing: .14em !important;
+  text-transform: uppercase !important;
+  color: #ffffff !important;
+}
+@media (max-width: 380px) {
+  .loan-card-title { font-size: 11px !important; letter-spacing: .10em !important; }
+}
+
+/* ====================================================== */
+/* === END Filipino flag theme overrides ================ */
 
 .wrap{ padding-top: 0 !important; }
 
@@ -562,8 +1263,339 @@ body{
 }
 .android-no-blur .glass{ background: rgba(10,16,32,.92) !important; }
 
-/* ===== Live ticker (full-width top bar, fixed at viewport top) ===== */
-.live-ticker{
+/* ===== Top action bar (Dark mode + Activity toggle + Bell) ===== */
+.top-action-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+.top-action-bar .activity-toggle {
+  flex: 1;
+  justify-content: center;
+}
+.top-action-bar .theme-btn,
+.top-action-bar .bell-btn {
+  flex: 0 0 auto;
+}
+
+/* Theme toggle button (square, matches bell-btn size) */
+.theme-btn {
+  width: 42px; height: 42px;
+  border-radius: 14px !important;
+  background: #fff !important;
+  border: 1px solid var(--line) !important;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  box-shadow: 0 2px 10px rgba(0,50,160,.10) !important;
+  transition: all .2s ease;
+}
+.theme-btn:hover {
+  border-color: var(--ph-blue) !important;
+  box-shadow: 0 4px 14px rgba(0,50,160,.20) !important;
+}
+.theme-btn svg {
+  width: 18px; height: 18px;
+  color: var(--ph-blue);
+  stroke: var(--ph-blue);
+}
+.theme-btn .theme-moon { display: none; }
+[data-theme="dark"] .theme-btn .theme-sun { display: none; }
+[data-theme="dark"] .theme-btn .theme-moon { display: block; }
+
+/* ===== Activity Toggle Button ===== */
+.activity-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  margin: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #00226e 0%, #0032A0 100%);
+  border: 1px solid rgba(254,209,65,.45);
+  color: #fff;
+  font-weight: 900;
+  font-size: 12.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 4px 14px rgba(0,34,110,.30);
+  transition: transform .18s, box-shadow .18s, background .18s;
+  opacity: 0;
+  animation: fadeInUp .55s ease-out .04s forwards;
+}
+.activity-toggle:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(254,209,65,.30), 0 4px 14px rgba(0,34,110,.40);
+  border-color: var(--ph-gold);
+}
+.activity-toggle:active { transform: scale(.98); }
+.at-pulse {
+  width: 7px; height: 7px;
+  border-radius: 999px;
+  background: #ef4444;
+  box-shadow: 0 0 8px #ef4444;
+  animation: livePulseAt 1.3s ease-in-out infinite;
+  flex: 0 0 auto;
+}
+@keyframes livePulseAt {
+  50% { opacity: .35; transform: scale(.75); }
+}
+.at-text { letter-spacing: .12em; }
+.at-count {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--ph-gold);
+  color: var(--ph-blue-dark);
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  flex: 0 0 auto;
+  box-shadow: 0 0 8px rgba(254,209,65,.45);
+}
+.at-chev {
+  width: 14px; height: 14px;
+  flex: 0 0 auto;
+  transition: transform .25s ease;
+}
+.activity-toggle[aria-expanded="true"] .at-chev {
+  transform: rotate(180deg);
+}
+
+/* ===== Today's Activity Banner ===== */
+.activity-banner[hidden] { display: none !important; }
+.activity-banner {
+  position: relative;
+  margin: 0 0 18px;
+  padding: 18px 20px;
+  border-radius: 18px;
+  background:
+    radial-gradient(160% 100% at 0% 0%, rgba(254,209,65,.18) 0%, transparent 55%),
+    radial-gradient(160% 100% at 100% 100%, rgba(191,13,62,.20) 0%, transparent 55%),
+    linear-gradient(135deg, #00226e 0%, #0032A0 100%);
+  border: 1px solid rgba(254,209,65,.40);
+  box-shadow:
+    0 0 0 1px rgba(254,209,65,.10),
+    0 12px 28px rgba(0,34,110,.40),
+    inset 0 1px 0 rgba(255,255,255,.10);
+  overflow: hidden;
+  opacity: 0;
+  animation: fadeInUp .55s ease-out .04s forwards;
+}
+.activity-banner::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #FED141, transparent);
+}
+.activity-banner::after {
+  content: "";
+  position: absolute;
+  top: -50%; right: -20%;
+  width: 240px; height: 240px;
+  background: radial-gradient(circle, rgba(254,209,65,.20) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.ab-head {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.ab-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(239,68,68,.18);
+  border: 1px solid rgba(239,68,68,.55);
+  color: #fca5a5;
+  font-size: 9.5px;
+  font-weight: 950;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+.ab-tag .pulse {
+  width: 6px; height: 6px;
+  border-radius: 999px;
+  background: #ef4444;
+  box-shadow: 0 0 6px #ef4444;
+  animation: livePulseAb 1.3s ease-in-out infinite;
+}
+@keyframes livePulseAb {
+  50% { opacity: .35; transform: scale(.8); }
+}
+.ab-title {
+  flex: 1;
+  color: #fff;
+  font-weight: 950;
+  font-size: 14px;
+  letter-spacing: .04em;
+}
+.ab-time {
+  color: var(--ph-gold);
+  font-weight: 800;
+  font-size: 11.5px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: .08em;
+}
+
+.ab-stats {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: center;
+  gap: 0;
+  padding: 14px 0;
+  border-top: 1px solid rgba(255,255,255,.10);
+  border-bottom: 1px solid rgba(255,255,255,.10);
+  margin-bottom: 14px;
+}
+.ab-stat {
+  text-align: center;
+  padding: 0 6px;
+}
+.ab-stat-num {
+  color: var(--ph-gold);
+  font-size: 22px;
+  font-weight: 950;
+  letter-spacing: -.4px;
+  line-height: 1;
+  text-shadow: 0 0 14px rgba(254,209,65,.30);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.ab-stat-lbl {
+  margin-top: 5px;
+  color: rgba(255,255,255,.65);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.ab-divider {
+  width: 1px;
+  height: 32px;
+  background: linear-gradient(180deg, transparent, rgba(254,209,65,.35), transparent);
+  align-self: center;
+}
+
+.ab-latest {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.ab-latest-lbl {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  color: rgba(255,255,255,.70);
+  font-size: 10.5px;
+  font-weight: 900;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.ab-latest-lbl svg {
+  width: 13px; height: 13px;
+  color: var(--ph-gold);
+}
+.ab-latest-track {
+  flex: 1;
+  position: relative;
+  height: 38px;
+  overflow: hidden;
+}
+.ab-entry {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.12);
+  transform: translateY(100%);
+  opacity: 0;
+  transition: opacity .5s ease, transform .5s cubic-bezier(.4,0,.2,1);
+}
+.ab-entry.in {
+  transform: translateY(0);
+  opacity: 1;
+}
+.ab-entry.out {
+  transform: translateY(-100%);
+  opacity: 0;
+}
+.ab-entry .ab-check {
+  width: 22px; height: 22px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--ph-gold), var(--ph-gold-dark));
+  display: flex; align-items: center; justify-content: center;
+  flex: 0 0 auto;
+}
+.ab-entry .ab-check svg {
+  width: 11px; height: 11px;
+  stroke: var(--ph-blue-dark);
+  stroke-width: 4;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ab-entry .ab-phone {
+  color: #fff;
+  font-weight: 900;
+  letter-spacing: .04em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11.5px;
+}
+.ab-entry .ab-action {
+  color: rgba(255,255,255,.70);
+  font-size: 11px;
+  font-weight: 600;
+}
+.ab-entry .ab-amt {
+  color: var(--ph-gold);
+  font-weight: 900;
+  font-size: 12.5px;
+  letter-spacing: -.01em;
+  margin-left: auto;
+}
+.ab-entry .ab-time-ago {
+  color: rgba(255,255,255,.50);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+@media (max-width: 480px) {
+  .activity-banner { padding: 14px 14px; }
+  .ab-stat-num { font-size: 18px; }
+  .ab-divider { height: 28px; }
+  .ab-latest { flex-direction: column; align-items: stretch; gap: 8px; }
+  .ab-latest-track { height: 44px; }
+  .ab-entry { flex-wrap: wrap; padding: 6px 12px; }
+  .ab-entry .ab-action { display: none; }
+}
+
+/* ===== Old Live ticker (kept hidden, replaced by activity banner) ===== */
+.live-ticker[hidden] { display: none !important; }
+.live-ticker:not([hidden]) {
   position: fixed;
   top: 0;
   left: 0;
@@ -736,9 +1768,80 @@ body{
 
 <div class="dash-wrap">
 
-  <!-- ===== Live customer ticker ===== -->
-  <div class="live-ticker" aria-label="Live withdrawals">
-    <span class="lt-tag"><span class="pulse"></span> Live</span>
+  <!-- ===== Top action bar: Dark mode + Activity toggle + Bell ===== -->
+  <div class="top-action-bar">
+    <button type="button" class="theme-btn" id="themeToggle" aria-label="Toggle dark mode">
+      <svg class="theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+      </svg>
+      <svg class="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+
+    <button type="button" class="activity-toggle" id="activityToggle" aria-expanded="false" aria-controls="activityBanner">
+      <span class="at-pulse"></span>
+      <span class="at-text">Today's Activity</span>
+      <span class="at-count" id="atCount">0</span>
+      <svg class="at-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+    </button>
+
+    <a class="bell-btn {% if notif_count|default:0|add:0 > 0 %}has-unread{% endif %}"
+       href="{% url 'notifications' %}"
+       aria-label="Notifications">
+      {% if notif_count|default:0|add:0 > 0 %}
+        <span class="notify-badge dot"></span>
+      {% endif %}
+      <svg viewBox="0 0 24 24">
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+      </svg>
+    </a>
+  </div>
+
+  <!-- ===== Today's Activity Banner ===== -->
+  <div class="activity-banner" id="activityBanner" aria-label="Today's activity" hidden>
+    <div class="ab-head">
+      <span class="ab-tag"><span class="pulse"></span> Live</span>
+      <span class="ab-title"></span>
+      <span class="ab-time" id="abClock">--:--</span>
+    </div>
+
+    <div class="ab-stats">
+      <div class="ab-stat">
+        <div class="ab-stat-num" data-counter="1847">0</div>
+        <div class="ab-stat-lbl">Withdrawals</div>
+      </div>
+      <div class="ab-divider"></div>
+      <div class="ab-stat">
+        <div class="ab-stat-num">₱<span data-counter="45.6">0</span>M</div>
+        <div class="ab-stat-lbl">Total Disbursed</div>
+      </div>
+      <div class="ab-divider"></div>
+      <div class="ab-stat">
+        <div class="ab-stat-num"><span data-counter="98">0</span>%</div>
+        <div class="ab-stat-lbl">Approved Rate</div>
+      </div>
+    </div>
+
+    <!-- Latest activity rotator -->
+    <div class="ab-latest">
+      <div class="ab-latest-lbl">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Latest Activity
+      </div>
+      <div class="ab-latest-track" id="abLatestTrack">
+        <!-- entries injected by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden ticker template (data only, used by JS) -->
+  <div class="live-ticker" hidden>
+    <span class="lt-tag"></span>
     <div class="lt-viewport">
       <div class="lt-track">
         {% comment %}15 items, duplicated for seamless loop{% endcomment %}
@@ -778,39 +1881,34 @@ body{
     </div>
   </div>
 
-  <!-- Top row: greeting + bell -->
+  <!-- Greeting (welcome row) -->
   <div class="top-row">
     <div class="greeting">
       <div class="hi">Welcome back,</div>
-      <div class="name">{{ request.user.phone }}</div>
+      <div class="name">{% if last_loan and last_loan.full_name %}{{ last_loan.full_name }}{% else %}{{ request.user.phone }}{% endif %}</div>
     </div>
-
-    <a class="bell-btn {% if notif_count|default:0|add:0 > 0 %}has-unread{% endif %}"
-       href="{% url 'notifications' %}"
-       aria-label="Notifications">
-      {% if notif_count|default:0|add:0 > 0 %}
-        <span class="notify-badge dot"></span>
-      {% endif %}
-      <svg viewBox="0 0 24 24">
-        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-        <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-      </svg>
-    </a>
   </div>
 
   <!-- Outstanding Balance card -->
-  <div class="glass balance-card {% if selfie_url %}has-avatar{% endif %}">
+  <div class="glass balance-card has-avatar">
 
-    {% if selfie_url %}
-      <div class="balance-avatar" aria-hidden="true">
-        <div class="balance-avatar-inner">
+    <div class="balance-avatar" aria-hidden="true">
+      <div class="balance-avatar-inner">
+        {% if selfie_url %}
           <img src="{{ selfie_url }}" alt="Profile">
-        </div>
-        <div class="balance-avatar-verified" title="Verified">
-          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
+        {% else %}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;color:#FED141;">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        {% endif %}
       </div>
-    {% endif %}
+      {% if selfie_url %}
+      <div class="balance-avatar-verified" title="Verified">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      {% endif %}
+    </div>
 
     <div class="balance-label">Outstanding Balance</div>
     <div class="balance-amount">
@@ -818,7 +1916,7 @@ body{
     </div>
     <div class="balance-sub">
       {% with color_key=request.user.account_status|default:"ACTIVE"|upper display_text=request.user.dashboard_status_label|default:request.user.account_status|default:"ACTIVE" %}
-        Account #ML-{{ request.user.id|default:"00000" }} · {{ display_text }}
+        Account #OFL-{{ request.user.id|default:"00000" }} · {{ display_text }}
       {% endwith %}
     </div>
 
@@ -830,7 +1928,7 @@ body{
       <div class="divider"></div>
       <div class="bg-item">
         <div class="lbl">Rate</div>
-        <div class="val rate">2.8% <small>p.a.</small></div>
+        <div class="val rate">0.5% <small>p.a.</small></div>
       </div>
       <div class="divider"></div>
       <div class="bg-item">
@@ -903,20 +2001,18 @@ body{
     </a>
   </div>
 
-  <!-- Available Loans section -->
-  <div class="section-head">
-    <h2>Available Loans</h2>
-  </div>
-
   <!-- Featured Loan card -->
   <div class="glass loan-card">
-    <div class="popular-pill">Most Popular</div>
+    <div class="loan-card-head">
+      <div class="popular-pill">Most Popular</div>
+      <div class="loan-card-title">Available Loans</div>
+    </div>
     <div class="loan-title">Personal <span>Loan</span></div>
     <div class="loan-sub">No collateral · Fast disbursement</div>
 
     <div class="loan-stats">
       <div class="ls-item">
-        <div class="v">2.8%</div>
+        <div class="v">0.5%</div>
         <div class="l">p.a. Rate</div>
       </div>
       <div class="ls-item">
@@ -924,7 +2020,7 @@ body{
         <div class="l">Max Amount</div>
       </div>
       <div class="ls-item">
-        <div class="v">84mo</div>
+        <div class="v">36mo</div>
         <div class="l">Max Term</div>
       </div>
     </div>
@@ -960,32 +2056,65 @@ body{
     </div>
   </div>
 
-  <!-- Currency table -->
-  <div class="glass currency-card">
+  <!-- Currency converter (search + confirm) -->
+  <div class="glass currency-card fx-search-card">
     <div class="currency-title">
-      <h3>Exchange Rates</h3>
-      <span class="auto">Auto daily</span>
+      <h3>Live Currency</h3>
+      <span class="auto"><span class="live-dot"></span> Live</span>
     </div>
-    <div class="fx-scroll" aria-label="Exchange rates list">
-      <table class="fx-table">
-        <thead>
-          <tr>
-            <th>Currency</th>
-            <th>USD</th>
-            <th style="text-align:right;">Convert</th>
-          </tr>
-        </thead>
-        <tbody id="fxRows"></tbody>
-      </table>
+
+    <p class="fx-intro">Search and select your currency to see the live rate against USD.</p>
+
+    <!-- Search box with dropdown -->
+    <div class="fx-search-wrap">
+      <div class="fx-search-input">
+        <svg class="fx-search-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="fxSearch" placeholder="Search PHP, SAR, MYR..." autocomplete="off">
+        <button type="button" id="fxClear" class="fx-clear" aria-label="Clear" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <ul class="fx-dropdown" id="fxDropdown" hidden></ul>
     </div>
-    <div class="fx-meta">
-      <div id="fxUpdated">Updated: —</div>
+
+    <!-- Confirm row -->
+    <div class="fx-confirm-row">
+      <div class="fx-selected" id="fxSelected">
+        <span class="fx-sel-empty">No currency selected</span>
+      </div>
+      <button type="button" class="fx-confirm-btn" id="fxConfirm" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        Confirm
+      </button>
+    </div>
+
+    <!-- Result card -->
+    <div class="fx-result" id="fxResult" hidden>
+      <div class="fx-result-head">
+        <img class="fx-result-flag" id="fxResultFlag" src="" alt="">
+        <div class="fx-result-text">
+          <div class="fx-result-code" id="fxResultCode">—</div>
+          <div class="fx-result-country" id="fxResultCountry">—</div>
+        </div>
+        <div class="fx-result-badge">LIVE</div>
+      </div>
+      <div class="fx-result-rate">
+        <div class="rate-from">1 USD</div>
+        <div class="rate-arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </div>
+        <div class="rate-to" id="fxResultRate">— —</div>
+      </div>
+      <div class="fx-result-meta" id="fxUpdated">Updated: —</div>
     </div>
   </div>
 
   <!-- ===== Footer strip ===== -->
   <div class="dash-footer">
-    <span class="df-brand"><span class="dot"></span> ManaLoan</span>
+    <span class="df-brand"><span class="dot"></span> Overseas FilipinoLoan</span>
     <span class="sep">·</span>
     <span class="v">v1.0.0</span>
     <span class="sep">·</span>
@@ -997,69 +2126,296 @@ body{
 </div>
 
 <script>
-  (function () {
-    const rowsEl = document.getElementById("fxRows");
-    const updatedEl = document.getElementById("fxUpdated");
-    if (!rowsEl || !updatedEl) return;
+/* ===== Theme toggle (Dark mode) ===== */
+(function(){
+  const btn = document.getElementById("themeToggle");
+  if (!btn) return;
+  const root = document.documentElement;
 
-    const currencies = [
-      { code:"PHP", country:"Philippines", flag:"{% static 'img/flags/philippines.png' %}" },
-      { code:"SAR", country:"Saudi",       flag:"{% static 'img/flags/saudi arabian.png' %}" },
-      { code:"MYR", country:"Malaysia",    flag:"{% static 'img/flags/malaysia.png' %}" },
-      { code:"IDR", country:"Indonesia",   flag:"{% static 'img/flags/indonesia.png' %}" },
-      { code:"INR", country:"India",       flag:"{% static 'img/flags/india.png' %}" },
-      { code:"AFN", country:"Afghanistan", flag:"{% static 'img/flags/afghanistan.png' %}" },
-      { code:"KES", country:"Kenya",       flag:"{% static 'img/flags/kenyan.png' %}" },
-      { code:"OMR", country:"Oman",        flag:"{% static 'img/flags/oman.png' %}" },
-      { code:"PKR", country:"Pakistan",    flag:"{% static 'img/flags/pakistan.png' %}" },
-      { code:"VND", country:"Vietnam",     flag:"{% static 'img/flags/vietnam.png' %}" },
-    ];
+  // Restore saved preference
+  const saved = localStorage.getItem("ofl-theme");
+  if (saved === "dark") root.setAttribute("data-theme", "dark");
 
-    function fmtRate(x){
-      if (!Number.isFinite(x)) return "—";
-      return new Intl.NumberFormat(undefined, {
-        maximumFractionDigits: 2,
-        minimumFractionDigits: 0,
-      }).format(x);
+  btn.addEventListener("click", () => {
+    const cur = root.getAttribute("data-theme");
+    if (cur === "dark") {
+      root.removeAttribute("data-theme");
+      localStorage.setItem("ofl-theme", "light");
+    } else {
+      root.setAttribute("data-theme", "dark");
+      localStorage.setItem("ofl-theme", "dark");
+    }
+  });
+})();
+</script>
+
+<script>
+/* ===== Activity Toggle ===== */
+(function(){
+  const btn = document.getElementById("activityToggle");
+  const banner = document.getElementById("activityBanner");
+  const countEl = document.getElementById("atCount");
+  if (!btn || !banner) return;
+
+  // Set live count badge
+  if (countEl) countEl.textContent = "1,847";
+
+  let countersAnimated = false;
+
+  btn.addEventListener("click", () => {
+    const isOpen = btn.getAttribute("aria-expanded") === "true";
+    if (isOpen) {
+      banner.hidden = true;
+      btn.setAttribute("aria-expanded", "false");
+    } else {
+      banner.hidden = false;
+      btn.setAttribute("aria-expanded", "true");
+      // Trigger counter animation on first open
+      if (!countersAnimated) {
+        countersAnimated = true;
+        animateCounters();
+      }
+    }
+  });
+
+  function animateCounters(){
+    document.querySelectorAll("#activityBanner [data-counter]").forEach(el => {
+      const target = parseFloat(el.dataset.counter);
+      if (!Number.isFinite(target)) return;
+      const isFloat = String(el.dataset.counter).includes(".");
+      const dur = 1500;
+      const start = performance.now();
+      function tick(now){
+        const t = Math.min(1, (now - start) / dur);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const v = target * eased;
+        el.textContent = isFloat ? v.toFixed(1) : Math.floor(v).toLocaleString();
+        if (t < 1) requestAnimationFrame(tick);
+        else el.textContent = isFloat ? target.toFixed(1) : Math.floor(target).toLocaleString();
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+})();
+</script>
+
+<script>
+/* ===== Today's Activity Banner (clock + rotator) ===== */
+(function(){
+  // Live clock
+  const clockEl = document.getElementById("abClock");
+  function tickClock(){
+    if (!clockEl) return;
+    const d = new Date();
+    const hh = String(d.getHours()).padStart(2, "0");
+    const mm = String(d.getMinutes()).padStart(2, "0");
+    const ss = String(d.getSeconds()).padStart(2, "0");
+    clockEl.textContent = hh + ":" + mm + ":" + ss;
+  }
+  tickClock();
+  setInterval(tickClock, 1000);
+
+  // Latest activity rotator
+  const track = document.getElementById("abLatestTrack");
+  if (!track) return;
+
+  const entries = [
+    { phone: "0917-**-78547", amt: "₱500,000",   ago: "2m ago" },
+    { phone: "0906-**-42315", amt: "₱250,000",   ago: "5m ago" },
+    { phone: "0920-**-91023", amt: "₱1,200,000", ago: "8m ago" },
+    { phone: "0927-**-68251", amt: "₱750,000",   ago: "12m ago" },
+    { phone: "0935-**-30729", amt: "₱350,000",   ago: "15m ago" },
+    { phone: "0998-**-82901", amt: "₱2,000,000", ago: "18m ago" },
+    { phone: "0918-**-54083", amt: "₱180,000",   ago: "22m ago" },
+    { phone: "0905-**-73502", amt: "₱950,000",   ago: "25m ago" },
+    { phone: "0949-**-26918", amt: "₱620,000",   ago: "30m ago" },
+    { phone: "0977-**-29384", amt: "₱150,000",   ago: "35m ago" },
+    { phone: "0922-**-71562", amt: "₱1,500,000", ago: "40m ago" },
+    { phone: "0963-**-58291", amt: "₱450,000",   ago: "45m ago" },
+    { phone: "0939-**-83174", amt: "₱800,000",   ago: "50m ago" },
+    { phone: "0908-**-64308", amt: "₱320,000",   ago: "55m ago" },
+    { phone: "0989-**-95847", amt: "₱2,500,000", ago: "1h ago" },
+  ];
+
+  let i = 0;
+  let current = null;
+
+  function buildEntry(e){
+    const div = document.createElement("div");
+    div.className = "ab-entry";
+    div.innerHTML =
+      '<div class="ab-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>' +
+      '<div class="ab-phone">' + e.phone + '</div>' +
+      '<div class="ab-action">withdrew</div>' +
+      '<div class="ab-amt">' + e.amt + '</div>' +
+      '<div class="ab-time-ago">· ' + e.ago + '</div>';
+    return div;
+  }
+
+  function showNext(){
+    const next = buildEntry(entries[i % entries.length]);
+    track.appendChild(next);
+    requestAnimationFrame(() => next.classList.add("in"));
+
+    if (current) {
+      const old = current;
+      old.classList.remove("in");
+      old.classList.add("out");
+      setTimeout(() => { if (old.parentNode) old.parentNode.removeChild(old); }, 600);
     }
 
-    function render(rates, updatedText){
-      rowsEl.innerHTML = "";
-      currencies.forEach(c => {
-        const raw = rates && Object.prototype.hasOwnProperty.call(rates, c.code) ? rates[c.code] : null;
-        const rate = (raw === null || raw === undefined) ? NaN : Number(raw);
+    current = next;
+    i++;
+  }
 
-        const tr = document.createElement("tr");
+  showNext();
+  setInterval(showNext, 4500);
+})();
+</script>
 
-        const td1 = document.createElement("td");
-        td1.innerHTML =
-          '<div class="fx-left">' +
-            '<img class="fx-flag" src="'+c.flag+'" alt="'+c.country+'">' +
-            '<div style="min-width:0">' +
-              '<div class="fx-code">'+c.code+'</div>' +
-              '<div class="fx-country">'+c.country+'</div>' +
-            '</div>' +
-          '</div>';
+<script>
+/* ===== FX Search + Confirm Currency Converter ===== */
+(function () {
+  const searchInput = document.getElementById("fxSearch");
+  const dropdown = document.getElementById("fxDropdown");
+  const clearBtn = document.getElementById("fxClear");
+  const selectedBox = document.getElementById("fxSelected");
+  const confirmBtn = document.getElementById("fxConfirm");
+  const resultBox = document.getElementById("fxResult");
+  const resultFlag = document.getElementById("fxResultFlag");
+  const resultCode = document.getElementById("fxResultCode");
+  const resultCountry = document.getElementById("fxResultCountry");
+  const resultRate = document.getElementById("fxResultRate");
+  const resultUpdated = document.getElementById("fxUpdated");
 
-        const td2 = document.createElement("td");
-        td2.textContent = "1 USD";
+  if (!searchInput || !dropdown) return;
 
-        const td3 = document.createElement("td");
-        td3.style.textAlign = "right";
-        td3.textContent = Number.isFinite(rate) ? (fmtRate(rate) + " " + c.code) : ("— " + c.code);
+  const currencies = [
+    { code:"PHP", country:"Philippines", flag:"{% static 'img/flags/philippines.png' %}" },
+    { code:"SAR", country:"Saudi Arabia", flag:"{% static 'img/flags/saudi arabian.png' %}" },
+    { code:"MYR", country:"Malaysia",    flag:"{% static 'img/flags/malaysia.png' %}" },
+    { code:"IDR", country:"Indonesia",   flag:"{% static 'img/flags/indonesia.png' %}" },
+    { code:"INR", country:"India",       flag:"{% static 'img/flags/india.png' %}" },
+    { code:"AFN", country:"Afghanistan", flag:"{% static 'img/flags/afghanistan.png' %}" },
+    { code:"KES", country:"Kenya",       flag:"{% static 'img/flags/kenyan.png' %}" },
+    { code:"OMR", country:"Oman",        flag:"{% static 'img/flags/oman.png' %}" },
+    { code:"PKR", country:"Pakistan",    flag:"{% static 'img/flags/pakistan.png' %}" },
+    { code:"VND", country:"Vietnam",     flag:"{% static 'img/flags/vietnam.png' %}" },
+  ];
 
-        tr.appendChild(td1); tr.appendChild(td2); tr.appendChild(td3);
-        rowsEl.appendChild(tr);
-      });
+  let selected = null;
+  let cachedRates = null;
+  let cachedUpdated = null;
 
-      updatedEl.textContent = "Updated: " + (updatedText || new Date().toLocaleString());
+  function fmtRate(x){
+    if (!Number.isFinite(x)) return "—";
+    return new Intl.NumberFormat(undefined, {
+      maximumFractionDigits: 2, minimumFractionDigits: 0,
+    }).format(x);
+  }
+
+  function renderDropdown(query) {
+    const q = (query || "").trim().toLowerCase();
+    const filtered = q
+      ? currencies.filter(c =>
+          c.code.toLowerCase().includes(q) ||
+          c.country.toLowerCase().includes(q))
+      : currencies;
+
+    dropdown.innerHTML = "";
+    if (filtered.length === 0) {
+      const li = document.createElement("li");
+      li.className = "fx-empty";
+      li.textContent = "No currency found";
+      li.style.listStyle = "none";
+      dropdown.appendChild(li);
+      dropdown.hidden = false;
+      return;
     }
 
-    fetch("/api/fx/", { cache: "no-store" })
-      .then(r => r.ok ? r.json() : Promise.reject(r))
-      .then(data => render(data.rates || {}, data.updated))
-      .catch(() => render(null, null));
-  })();
+    filtered.forEach(c => {
+      const li = document.createElement("li");
+      if (selected && selected.code === c.code) li.classList.add("selected");
+      li.innerHTML =
+        '<img src="'+c.flag+'" alt="'+c.country+'">' +
+        '<span class="dd-code">'+c.code+'</span>' +
+        '<span class="dd-country">'+c.country+'</span>' +
+        '<span class="dd-tick">✓</span>';
+      li.addEventListener("click", () => selectCurrency(c));
+      dropdown.appendChild(li);
+    });
+    dropdown.hidden = false;
+  }
+
+  function hideDropdown() { dropdown.hidden = true; }
+
+  function selectCurrency(c) {
+    selected = c;
+    searchInput.value = c.code + " · " + c.country;
+    selectedBox.classList.add("has-value");
+    selectedBox.innerHTML =
+      '<img src="'+c.flag+'" alt="'+c.country+'">' +
+      '<div><div class="fx-sel-code">'+c.code+'</div>' +
+      '<div class="fx-sel-country">'+c.country+'</div></div>';
+    confirmBtn.disabled = false;
+    clearBtn.hidden = false;
+    hideDropdown();
+  }
+
+  function clearSelection() {
+    selected = null;
+    searchInput.value = "";
+    selectedBox.classList.remove("has-value");
+    selectedBox.innerHTML = '<span class="fx-sel-empty">No currency selected</span>';
+    confirmBtn.disabled = true;
+    clearBtn.hidden = true;
+    resultBox.hidden = true;
+    hideDropdown();
+  }
+
+  function showResult() {
+    if (!selected) return;
+    const raw = cachedRates && Object.prototype.hasOwnProperty.call(cachedRates, selected.code)
+      ? cachedRates[selected.code] : null;
+    const rate = (raw === null || raw === undefined) ? NaN : Number(raw);
+
+    resultFlag.src = selected.flag;
+    resultFlag.alt = selected.country;
+    resultCode.textContent = selected.code;
+    resultCountry.textContent = selected.country;
+    resultRate.textContent = Number.isFinite(rate) ? (fmtRate(rate) + " " + selected.code) : ("— " + selected.code);
+    resultUpdated.textContent = "Updated: " + (cachedUpdated || new Date().toLocaleString());
+    resultBox.hidden = false;
+    resultBox.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  // Input events
+  searchInput.addEventListener("input", () => {
+    clearBtn.hidden = !searchInput.value;
+    renderDropdown(searchInput.value);
+    if (selected && !searchInput.value.startsWith(selected.code)) {
+      // user is typing fresh search — reset selection state for confirm
+    }
+  });
+  searchInput.addEventListener("focus", () => renderDropdown(searchInput.value));
+  searchInput.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") hideDropdown();
+  });
+
+  clearBtn.addEventListener("click", clearSelection);
+
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".fx-search-wrap")) hideDropdown();
+  });
+
+  confirmBtn.addEventListener("click", showResult);
+
+  // Fetch rates
+  fetch("/api/fx/", { cache: "no-store" })
+    .then(r => r.ok ? r.json() : Promise.reject(r))
+    .then(data => { cachedRates = data.rates || {}; cachedUpdated = data.updated || null; })
+    .catch(() => { cachedRates = null; });
+})();
 </script>
 
 <script>

@@ -6,6 +6,17 @@
   <title>Admin Management</title>
   {% load static %}
 
+  <script>
+    (function(){
+      try{
+        var t = localStorage.getItem("ofl-theme") || "light";
+        document.documentElement.setAttribute("data-theme", t);
+      }catch(e){
+        document.documentElement.setAttribute("data-theme","light");
+      }
+    })();
+  </script>
+
   <style>
 
 /* ✅ Select text = White */
@@ -1362,6 +1373,428 @@ th{ text-align:left; font-size:12px; letter-spacing:.06em; text-transform:upperc
   text-decoration: underline;
 }
 
+/* ================================================================
+   THEME TOGGLE BUTTON (topbar)
+   ================================================================ */
+.theme-toggle{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  height:42px;
+  padding:0 14px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.22);
+  background: rgba(0,0,0,.55);
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+  font-family: inherit;
+  letter-spacing: .04em;
+  text-shadow:
+    0 0 6px rgba(255,255,255,.7),
+    0 0 14px rgba(0,200,255,.45);
+  box-shadow: 0 0 12px rgba(0,200,255,.25);
+}
+.theme-toggle:hover{ transform: translateY(-1px); }
+.theme-toggle .tt-ico{ font-size: 16px; line-height: 1; }
+html[data-theme="dark"] .theme-toggle .tt-sun{ display:inline; }
+html[data-theme="dark"] .theme-toggle .tt-moon{ display:none; }
+html[data-theme="light"] .theme-toggle .tt-sun{ display:none; }
+html[data-theme="light"] .theme-toggle .tt-moon{ display:inline; }
+
+/* ================================================================
+   DARK MODE (whole staff site)
+   ================================================================ */
+html[data-theme="dark"] body{
+  background:
+    linear-gradient(rgba(2,6,14,.85), rgba(0,0,0,.92)),
+    url("{% static 'img/staff-bg.webp' %}") !important;
+  background-size: cover !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-attachment: fixed !important;
+  color:#eaf2ff;
+}
+
+/* Topbar */
+html[data-theme="dark"] .topbar{
+  background: linear-gradient(120deg, rgba(11,43,87,.95), rgba(2,6,14,.95)) !important;
+  border:2px solid rgba(201,163,58,.55) !important;
+  box-shadow: 0 0 18px rgba(0,180,255,.18), 0 14px 14px rgba(0,0,0,.4) !important;
+}
+html[data-theme="dark"] .pill{
+  background: rgba(0,0,0,.55) !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+}
+html[data-theme="dark"] .topbar .btn,
+html[data-theme="dark"] .theme-toggle{
+  background: rgba(0,0,0,.65) !important;
+  border:1px solid rgba(0,200,255,.35) !important;
+}
+
+/* Side menu */
+html[data-theme="dark"] .card.side{
+  background: linear-gradient(160deg, rgba(11,43,87,.85), rgba(2,6,14,.85)) !important;
+  border:2px solid rgba(201,163,58,.45) !important;
+}
+html[data-theme="dark"] .card.side .card-h{
+  background: linear-gradient(120deg, rgba(11,43,87,.55), rgba(0,0,0,.45)) !important;
+  border-bottom:1px solid rgba(201,163,58,.45) !important;
+}
+html[data-theme="dark"] .card.side .menu-item{
+  background: rgba(0,0,0,.45) !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  color:#eaf2ff !important;
+}
+html[data-theme="dark"] .card.side .menu-item:hover{
+  background: rgba(0,0,0,.65) !important;
+}
+html[data-theme="dark"] .card.side .menu-item.active{
+  background: linear-gradient(135deg, #0A3D78, #C9A33A) !important;
+  color:#fff !important;
+}
+html[data-theme="dark"] .card.side .menu-item.active .menu-text,
+html[data-theme="dark"] .card.side .menu-item.active .menu-arrow{
+  color:#fff !important;
+}
+
+/* RIGHT dashboard card (the white card in light mode) */
+html[data-theme="dark"] .dashboard-card{
+  background: rgba(8,14,28,.92) !important;
+  border: 1px solid rgba(255,255,255,.10) !important;
+  box-shadow: 0 18px 50px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.08) !important;
+  color:#eaf2ff !important;
+}
+html[data-theme="dark"] .dashboard-card .h1{
+  color:#eaf2ff !important;
+  text-shadow:
+    0 0 6px rgba(255,255,255,.5),
+    0 0 14px rgba(0,200,255,.35) !important;
+}
+html[data-theme="dark"] .dashboard-card .muted{
+  color: rgba(234,242,255,.7) !important;
+}
+
+/* Tables: header bar and body text */
+html[data-theme="dark"] .dashboard-card table thead th{
+  background:#0A3D78 !important;
+  color:#fff !important;
+}
+html[data-theme="dark"] .dashboard-card thead tr{
+  background:#0A3D78 !important;
+}
+html[data-theme="dark"] .dashboard-card table tbody td,
+html[data-theme="dark"] .dashboard-card table tbody td a,
+html[data-theme="dark"] .dashboard-card table tbody td span,
+html[data-theme="dark"] .dashboard-card table tbody td strong,
+html[data-theme="dark"] .dashboard-card table tbody td b,
+html[data-theme="dark"] .dashboard-card table tbody td p,
+html[data-theme="dark"] .dashboard-card table tbody td div{
+  color:#eaf2ff !important;
+}
+html[data-theme="dark"] .dashboard-card table tbody tr td{
+  border-bottom: 1px solid rgba(255,255,255,.10) !important;
+}
+
+/* Inputs/selects/textareas inside the dashboard card tables */
+html[data-theme="dark"] .dashboard-card table tbody td input,
+html[data-theme="dark"] .dashboard-card table tbody td select,
+html[data-theme="dark"] .dashboard-card table tbody td textarea{
+  background: transparent !important;
+  border-bottom: 2px solid rgba(255,255,255,.30) !important;
+  color:#eaf2ff !important;
+}
+html[data-theme="dark"] .dashboard-card table tbody td input::placeholder,
+html[data-theme="dark"] .dashboard-card table tbody td textarea::placeholder{
+  color: rgba(234,242,255,.55) !important;
+}
+html[data-theme="dark"] .dashboard-card table tbody td input:focus,
+html[data-theme="dark"] .dashboard-card table tbody td select:focus,
+html[data-theme="dark"] .dashboard-card table tbody td textarea:focus{
+  border-bottom-color:#5fb1ff !important;
+}
+html[data-theme="dark"] .dashboard-card .status-select{
+  color:#eaf2ff !important;
+  border-bottom: 2px solid rgba(255,255,255,.30) !important;
+}
+
+/* General inputs/selects outside tables */
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea{
+  background: rgba(0,0,0,.55) !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+  color:#eaf2ff !important;
+}
+
+/* Stat cards / perf card */
+html[data-theme="dark"] .perf-card{
+  background: rgba(0,0,0,.55) !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+}
+html[data-theme="dark"] .perf-bars{
+  background: rgba(255,255,255,.04) !important;
+  border:1px solid rgba(255,255,255,.08) !important;
+}
+html[data-theme="dark"] .user-mini-card,
+html[data-theme="dark"] .perf-wrap .user-mini-card{
+  background: rgba(0,0,0,.55) !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+}
+
+/* Bright stat-dark card needs darker treatment in dark mode */
+html[data-theme="dark"] .stat-dark{
+  background: linear-gradient(135deg, rgba(20,30,50,.85), rgba(8,14,28,.85)) !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+  color:#eaf2ff !important;
+}
+html[data-theme="dark"] .stat-dark .stat-title,
+html[data-theme="dark"] .stat-dark .stat-num{
+  color:#eaf2ff !important;
+}
+
+/* Dashboard search */
+html[data-theme="dark"] .dash-input,
+html[data-theme="dark"] .dash-select{
+  background: rgba(0,0,0,.55) !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+  color:#eaf2ff !important;
+}
+html[data-theme="dark"] .dash-btn{
+  background: linear-gradient(135deg,#0A3D78,#000) !important;
+  border:1px solid rgba(255,255,255,.22) !important;
+  color:#fff !important;
+}
+
+/* Period buttons */
+html[data-theme="dark"] .period-btn{
+  background: rgba(255,255,255,.06) !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+  color:#eaf2ff !important;
+}
+html[data-theme="dark"] .period-btn.active{
+  background: linear-gradient(90deg,#0A3D78,#0a6ad6) !important;
+  border:1px solid #0a6ad6 !important;
+}
+
+/* Modals already dark — keep, but ensure msgModal looks dark too */
+html[data-theme="dark"] #msgModal .modal-box{
+  background: rgba(15,20,32,.96) !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+  color:#eaf2ff !important;
+}
+html[data-theme="dark"] #msgModal h3{
+  color:#eaf2ff !important;
+}
+html[data-theme="dark"] #msgTextarea{
+  background: rgba(0,0,0,.65) !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+  color:#eaf2ff !important;
+}
+
+/* Save button accent */
+html[data-theme="dark"] .savebtn{
+  background: linear-gradient(135deg, rgba(10,61,120,.95), rgba(0,0,0,.95)) !important;
+  border:1px solid rgba(255,255,255,.22) !important;
+  color:#fff !important;
+}
+
+/* Scrollbar in dark */
+html[data-theme="dark"] .content::-webkit-scrollbar-track{
+  background: rgba(255,255,255,.04) !important;
+}
+html[data-theme="dark"] .content::-webkit-scrollbar-thumb{
+  background: rgba(255,255,255,.18) !important;
+}
+
+/* ================================================================
+   DARK MODE — beat page-level blue color overrides on every staff page
+   (forces every blue text/link/input inside .dashboard-card to white)
+   ================================================================ */
+
+/* Users page: phone link + balance input */
+html[data-theme="dark"] .dashboard-card .users-table td.phone a.u-link,
+html[data-theme="dark"] .dashboard-card .users-table td.balance-cell,
+html[data-theme="dark"] .dashboard-card .users-table td.balance-cell input.balance-input{
+  color:#ffffff !important;
+}
+
+/* Loans page links/text */
+html[data-theme="dark"] .dashboard-card .loans-table td a,
+html[data-theme="dark"] .dashboard-card .loans-table td,
+html[data-theme="dark"] .dashboard-card .loans-table td input,
+html[data-theme="dark"] .dashboard-card .loans-table td select,
+html[data-theme="dark"] .dashboard-card .loans-table td textarea{
+  color:#ffffff !important;
+}
+
+/* Withdrawals + Payment methods */
+html[data-theme="dark"] .dashboard-card #pmTable td a,
+html[data-theme="dark"] .dashboard-card #pmTable td,
+html[data-theme="dark"] .dashboard-card #pmTable td input,
+html[data-theme="dark"] .dashboard-card #pmTable td select{
+  color:#ffffff !important;
+}
+
+/* Catch-all: any descendant of .dashboard-card whose author CSS forced
+   the blue brand color — flip to white in dark mode */
+html[data-theme="dark"] .dashboard-card td,
+html[data-theme="dark"] .dashboard-card td a,
+html[data-theme="dark"] .dashboard-card td span,
+html[data-theme="dark"] .dashboard-card td strong,
+html[data-theme="dark"] .dashboard-card td b,
+html[data-theme="dark"] .dashboard-card td p,
+html[data-theme="dark"] .dashboard-card td div,
+html[data-theme="dark"] .dashboard-card td input,
+html[data-theme="dark"] .dashboard-card td select,
+html[data-theme="dark"] .dashboard-card td textarea,
+html[data-theme="dark"] .dashboard-card .h1,
+html[data-theme="dark"] .dashboard-card .h2,
+html[data-theme="dark"] .dashboard-card label,
+html[data-theme="dark"] .dashboard-card .muted{
+  color:#ffffff !important;
+}
+html[data-theme="dark"] .dashboard-card .muted{
+  color: rgba(255,255,255,.75) !important;
+}
+
+/* Inline-style elements (style="color:#004182") still override class CSS,
+   but scoping them to the dashboard-card with attribute selector + dark
+   gives us enough specificity */
+html[data-theme="dark"] .dashboard-card [style*="#004182"],
+html[data-theme="dark"] .dashboard-card [style*="#0b3b66"]{
+  color:#ffffff !important;
+}
+
+/* Status-select keep readable on dark */
+html[data-theme="dark"] .dashboard-card .status-select{
+  color:#ffffff !important;
+}
+
+/* Placeholder color in dark */
+html[data-theme="dark"] .dashboard-card td input::placeholder,
+html[data-theme="dark"] .dashboard-card td textarea::placeholder{
+  color: rgba(255,255,255,.55) !important;
+}
+
+/* ================================================================
+   DARK MODE — Loans page #loanTable specific blue text overrides
+   ================================================================ */
+html[data-theme="dark"] .dashboard-card #loanTable td,
+html[data-theme="dark"] .dashboard-card #loanTable td a,
+html[data-theme="dark"] .dashboard-card #loanTable td.col-phone,
+html[data-theme="dark"] .dashboard-card #loanTable td.col-phone a.u-link,
+html[data-theme="dark"] .dashboard-card #loanTable td.col-amount,
+html[data-theme="dark"] .dashboard-card #loanTable td.col-term,
+html[data-theme="dark"] .dashboard-card #loanTable td.col-created{
+  color:#ffffff !important;
+}
+html[data-theme="dark"] .dashboard-card #loanTable tbody tr:hover{
+  background: rgba(255,255,255,.06) !important;
+}
+/* Status select inside #loanTable keeps its colored badge styles —
+   only the default (unstyled / no class) variant gets white text */
+html[data-theme="dark"] .dashboard-card #loanTable td:nth-child(6) select{
+  background:#1e293b !important;
+  color:#ffffff !important;
+}
+html[data-theme="dark"] .dashboard-card #loanTable td:nth-child(6) select.approved{
+  background:#22c55e !important; color:#fff !important;
+}
+html[data-theme="dark"] .dashboard-card #loanTable td:nth-child(6) select.review{
+  background:#facc15 !important; color:#111827 !important;
+}
+
+/* ================================================================
+   DARK MODE — Withdrawals page #withdrawalsTable specific overrides
+   ================================================================ */
+html[data-theme="dark"] .dashboard-card #withdrawalsTable td,
+html[data-theme="dark"] .dashboard-card #withdrawalsTable td a,
+html[data-theme="dark"] .dashboard-card #withdrawalsTable td:nth-child(3),
+html[data-theme="dark"] .dashboard-card #withdrawalsTable td:nth-child(3) a{
+  color:#ffffff !important;
+}
+html[data-theme="dark"] .dashboard-card #withdrawalsTable .cs-score-display{
+  color:#ffffff !important;
+  background: rgba(255,255,255,.06) !important;
+  border:1px solid rgba(255,255,255,.18) !important;
+}
+html[data-theme="dark"] .dashboard-card #withdrawalsTable tbody tr:hover{
+  background: rgba(255,255,255,.06) !important;
+}
+
+/* ================================================================
+   DARK MODE — Users page (.users-table) specific overrides
+   ================================================================ */
+html[data-theme="dark"] .dashboard-card .users-table td,
+html[data-theme="dark"] .dashboard-card .users-table td a,
+html[data-theme="dark"] .dashboard-card .users-table td input,
+html[data-theme="dark"] .dashboard-card .users-table td select{
+  color:#ffffff !important;
+}
+
+/* ================================================================
+   DARK MODE — Payment Methods page (#pmTable) specific overrides
+   ================================================================ */
+html[data-theme="dark"] .dashboard-card #pmTable td,
+html[data-theme="dark"] .dashboard-card #pmTable td a,
+html[data-theme="dark"] .dashboard-card #pmTable td:nth-child(2) a,
+html[data-theme="dark"] .dashboard-card #pmTable td input,
+html[data-theme="dark"] .dashboard-card #pmTable td select{
+  color:#ffffff !important;
+}
+
+/* ================================================================
+   DARK MODE — All modal popups (.modal-card style used in staff pages)
+   ================================================================ */
+html[data-theme="dark"] .modal{
+  background: rgba(0,0,0,.70) !important;
+}
+html[data-theme="dark"] .modal-card{
+  background:#0f172a !important;
+  color:#eaf2ff !important;
+  box-shadow: 0 18px 60px rgba(0,0,0,.65) !important;
+  border:1px solid rgba(255,255,255,.10) !important;
+}
+html[data-theme="dark"] .modal-head{
+  background:#1e293b !important;
+  border-bottom:1px solid rgba(255,255,255,.08) !important;
+}
+html[data-theme="dark"] .modal-title{
+  color:#ffffff !important;
+}
+html[data-theme="dark"] .modal-sub{
+  color: rgba(255,255,255,.75) !important;
+}
+html[data-theme="dark"] .modal-x{
+  background:#334155 !important;
+  color:#fff !important;
+}
+html[data-theme="dark"] .modal-label{
+  color: rgba(255,255,255,.85) !important;
+}
+html[data-theme="dark"] .modal-input{
+  background:#1e293b !important;
+  color:#ffffff !important;
+  border:1px solid rgba(255,255,255,.12) !important;
+}
+html[data-theme="dark"] .modal-input::placeholder{
+  color: rgba(255,255,255,.55) !important;
+}
+html[data-theme="dark"] .modal-save{
+  background:#0a6ad6 !important;
+  color:#fff !important;
+}
+html[data-theme="dark"] .modal-cancel{
+  background:#475569 !important;
+  color:#fff !important;
+  border:0 !important;
+}
+html[data-theme="dark"] .modal-msg{
+  color:#5fb1ff !important;
+}
+
   </style>
 </head>
 
@@ -1373,6 +1806,11 @@ th{ text-align:left; font-size:12px; letter-spacing:.06em; text-transform:upperc
         <div class="muted">({{ request.user.phone }})</div>
       </div>
       <div class="pill pill-anim-top">
+        <button type="button" class="theme-toggle" id="staffThemeToggle" aria-label="Toggle theme">
+          <span class="tt-ico tt-sun">☀</span>
+          <span class="tt-ico tt-moon">🌙</span>
+          <span class="tt-label"></span>
+        </button>
         <a class="btn" href="{% url 'staff_dashboard' %}">Dashboard</a>
         <a class="btn" href="#" id="staffLogoutBtn">Logout</a>
       </div>
@@ -1563,8 +2001,30 @@ th{ text-align:left; font-size:12px; letter-spacing:.06em; text-transform:upperc
       // first time: allow animations, then mark as played
       sessionStorage.setItem("staffWelcomePlayed", "1");
     })();
-    
-    
+  </script>
+
+  <script>
+    // ============ Staff Theme Toggle (Dark / Light) ============
+    (function(){
+      var btn = document.getElementById("staffThemeToggle");
+      if(!btn) return;
+      var label = btn.querySelector(".tt-label");
+
+      function applyLabel(){
+        var t = document.documentElement.getAttribute("data-theme") || "light";
+        if(label) label.textContent = (t === "dark") ? "Light" : "Dark";
+      }
+
+      applyLabel();
+
+      btn.addEventListener("click", function(){
+        var cur = document.documentElement.getAttribute("data-theme") || "light";
+        var next = (cur === "dark") ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", next);
+        try{ localStorage.setItem("ofl-theme", next); }catch(e){}
+        applyLabel();
+      });
+    })();
   </script>
 
 </body>

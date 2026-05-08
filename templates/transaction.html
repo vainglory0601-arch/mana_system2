@@ -3,28 +3,146 @@
 
 {% block content %}
 <style>
-/* ===== ManaLoan Transactions — Dark Glass Theme (v2) ===== */
+/* ===== Overseas FilipinoLoan Transactions — Filipino Flag Style ===== */
+
+:root {
+  --ph-blue: #0032A0;
+  --ph-blue-dark: #00226e;
+  --ph-red: #BF0D3E;
+  --ph-red-dark: #8b0628;
+  --ph-gold: #FED141;
+  --ph-gold-dark: #e6b820;
+  --ink: #0a1a3a;
+  --mut: #5a6378;
+  --line: #e3e8f1;
+}
 
 html, body { width: 100%; overflow-x: hidden; }
 
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Ovelion", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  color: #e6edf7;
+  font-family: "Lato", "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+  color: var(--ink) !important;
   background:
-    radial-gradient(600px 400px at 10% 10%, rgba(59,130,246,.35), transparent 60%),
-    radial-gradient(500px 500px at 90% 20%, rgba(139,92,246,.28), transparent 60%),
-    radial-gradient(700px 500px at 50% 90%, rgba(56,189,248,.22), transparent 60%),
-    radial-gradient(400px 400px at 80% 80%, rgba(16,185,129,.18), transparent 60%),
-    #070b16 !important;
+    radial-gradient(800px 600px at 15% 20%, rgba(0,50,160,.10) 0%, transparent 60%),
+    radial-gradient(700px 500px at 85% 80%, rgba(191,13,62,.08) 0%, transparent 60%),
+    radial-gradient(500px 400px at 50% 50%, rgba(254,209,65,.10) 0%, transparent 65%),
+    linear-gradient(180deg, #fafbff 0%, #eef2fb 100%) !important;
   background-attachment: fixed !important;
+}
+body, body *, body button, body input, body select, body textarea, body a {
+  font-family: "Lato", "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
 }
 
 .wrap { padding-top: 0 !important; }
 
-.tx-page, .tx-page * {
-  font-family: "Ovelion", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+/* ====================================================== */
+/* ===== Filipino flag theme overrides ================== */
+/* ====================================================== */
+
+.tx-pagetitle { color: var(--ph-blue-dark) !important; font-size: 24px !important; font-weight: 950 !important; letter-spacing: -.4px !important; }
+.tx-pagetitle small { color: var(--mut) !important; font-weight: 600 !important; }
+
+/* Summary tiles */
+.tx-sum-tile {
+  background: #ffffff !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: 0 4px 14px rgba(0,50,160,.08) !important;
+  backdrop-filter: none !important;
+}
+.tx-sum-tile.bal { border-color: rgba(0,50,160,.30) !important; }
+.tx-sum-tile.bal::before { background: linear-gradient(90deg, transparent, var(--ph-blue), transparent) !important; }
+.tx-sum-tile.bal .tx-sum-value {
+  color: var(--ph-blue-dark) !important;
+  background: none !important;
+  -webkit-background-clip: initial !important;
+  background-clip: initial !important;
+  -webkit-text-fill-color: var(--ph-blue-dark) !important;
+}
+.tx-sum-tile.ok { border-color: rgba(22,163,74,.40) !important; }
+.tx-sum-tile.ok::before { background: linear-gradient(90deg, transparent, #16a34a, transparent) !important; }
+.tx-sum-tile.ok .tx-sum-value { color: #16a34a !important; }
+.tx-sum-tile.rej { border-color: rgba(191,13,62,.40) !important; }
+.tx-sum-tile.rej::before { background: linear-gradient(90deg, transparent, var(--ph-red), transparent) !important; }
+.tx-sum-tile.rej .tx-sum-value { color: var(--ph-red) !important; }
+.tx-sum-label { color: var(--mut) !important; font-weight: 800 !important; }
+
+/* Section title */
+.tx-sec-title { color: var(--ph-red) !important; }
+.tx-sec-hint { color: var(--mut) !important; }
+
+/* Transaction items */
+.tx-item {
+  background: #ffffff !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: 0 4px 14px rgba(0,50,160,.08) !important;
+  backdrop-filter: none !important;
+}
+.tx-item.ok { border-color: rgba(22,163,74,.30) !important; }
+.tx-item.ok::before { background: linear-gradient(180deg, #34d399, #15803d) !important; }
+.tx-item.rej { border-color: rgba(191,13,62,.30) !important; }
+.tx-item.rej::before { background: linear-gradient(180deg, var(--ph-red), var(--ph-red-dark)) !important; }
+.tx-item:hover { box-shadow: 0 10px 22px rgba(0,50,160,.12) !important; }
+
+.tx-item.ok .tx-ico { background: rgba(22,163,74,.10) !important; border-color: rgba(22,163,74,.45) !important; }
+.tx-item.ok .tx-ico svg { stroke: #16a34a !important; }
+.tx-item.rej .tx-ico { background: rgba(191,13,62,.08) !important; border-color: rgba(191,13,62,.45) !important; }
+.tx-item.rej .tx-ico svg { stroke: var(--ph-red) !important; }
+
+.tx-item.ok .tx-amount { color: #15803d !important; }
+.tx-item.rej .tx-amount { color: var(--ph-red-dark) !important; }
+.tx-meta { color: var(--mut) !important; }
+.tx-curr { color: var(--mut) !important; }
+
+.tx-pill.ok {
+  background: rgba(22,163,74,.10) !important;
+  color: #166534 !important;
+  border-color: rgba(22,163,74,.45) !important;
+}
+.tx-pill.rej {
+  background: rgba(191,13,62,.08) !important;
+  color: var(--ph-red-dark) !important;
+  border-color: rgba(191,13,62,.45) !important;
+}
+
+/* Empty state */
+.tx-empty {
+  background: #ffffff !important;
+  border: 1.5px dashed rgba(0,50,160,.30) !important;
+  backdrop-filter: none !important;
+}
+.tx-empty-ico {
+  background: linear-gradient(135deg, rgba(0,50,160,.08), rgba(254,209,65,.10)) !important;
+  border: 1px solid rgba(0,50,160,.22) !important;
+  box-shadow: 0 8px 22px rgba(0,50,160,.12) !important;
+}
+.tx-empty-ico svg { stroke: var(--ph-blue) !important; }
+.tx-empty-title { color: var(--ph-blue-dark) !important; }
+.tx-empty-sub { color: var(--mut) !important; }
+
+/* Action buttons */
+.tx-btn-primary {
+  background: linear-gradient(135deg, var(--ph-red), var(--ph-red-dark)) !important;
+  color: #fff !important;
+  border: 0 !important;
+  box-shadow: 0 6px 18px rgba(191,13,62,.40) !important;
+}
+.tx-btn-primary:hover {
+  box-shadow: 0 10px 26px rgba(191,13,62,.55) !important;
+  filter: brightness(1.08) !important;
+}
+.tx-btn-ghost {
+  background: #ffffff !important;
+  color: var(--ph-blue-dark) !important;
+  border: 2px solid var(--ph-blue) !important;
+  box-shadow: 0 4px 12px rgba(0,50,160,.12) !important;
+  backdrop-filter: none !important;
+}
+.tx-btn-ghost:hover {
+  background: var(--ph-blue) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 18px rgba(0,50,160,.30) !important;
 }
 
 @keyframes fadeInUp {

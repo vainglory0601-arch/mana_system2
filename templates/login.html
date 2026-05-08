@@ -1,11 +1,13 @@
 {% extends "base.html" %}
-{% block title %}Login - ManaLoan{% endblock %}
+{% block title %}Login - Overseas FilipinoLoan{% endblock %}
 {% load static %}
 {% block nav %}{% endblock %}
 
 {% block content %}
 <style>
-  /* Override base.html wrapper */
+  /* ===== OFL Login — Filipino Flag Style ===== */
+  /* Palette: #0032A0 Blue · #BF0D3E Red · #FED141 Gold · #FFFFFF White */
+
   #pageRoot.wrap {
     max-width: 100% !important;
     width: 100% !important;
@@ -16,99 +18,239 @@
   body {
     padding-bottom: 0 !important;
     overflow-x: hidden !important;
-    background:
-      radial-gradient(600px 400px at 10% 10%, rgba(59,130,246,.35), transparent 60%),
-      radial-gradient(500px 500px at 90% 20%, rgba(139,92,246,.28), transparent 60%),
-      radial-gradient(700px 500px at 50% 90%, rgba(56,189,248,.22), transparent 60%),
-      radial-gradient(400px 400px at 80% 80%, rgba(16,185,129,.18), transparent 60%),
-      #070b16 !important;
-    background-attachment: fixed !important;
+    margin: 0;
+    min-height: 100vh;
+    background: #f6f8fc !important;
+    color: #0a1a3a !important;
+    font-family: "Lato", "Open Sans", "Ovelion", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
   }
+  body, body * { font-family: inherit !important; }
 
   * { box-sizing: border-box; }
 
-  /* ── Animations ── */
+  :root {
+    --ph-blue: #0032A0;
+    --ph-blue-dark: #00226e;
+    --ph-red: #BF0D3E;
+    --ph-red-dark: #8b0628;
+    --ph-gold: #FED141;
+    --ph-gold-dark: #e6b820;
+    --ink: #0a1a3a;
+    --mut: #5a6378;
+    --line: #e3e8f1;
+  }
+
   @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(20px); }
+    from { opacity: 0; transform: translateY(18px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-  @keyframes glow {
-    0%, 100% { box-shadow: 0 10px 30px rgba(59,130,246,.35), 0 0 0 1px rgba(59,130,246,.25) inset; }
-    50%      { box-shadow: 0 14px 40px rgba(59,130,246,.55), 0 0 0 1px rgba(96,165,250,.45) inset; }
-  }
+  @keyframes sunSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-  /* ── Page wrapper ── */
-  .az-page {
-    max-width: 520px;
-    margin: 0 auto;
-    padding: 30px 14px 40px;
+  /* ===== Page wrapper (soft cream/blue background that blends with white card) ===== */
+  .auth-page {
     min-height: 100vh;
-    color: #e6edf7;
-    font-family: "Ovelion", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  }
-
-  /* ── Brand (top) ── */
-  .brand {
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    margin-bottom: 20px;
-    opacity: 0; animation: fadeInUp .7s ease-out forwards;
-  }
-  .brand-logo {
-    width: 38px; height: 38px; border-radius: 10px;
-    background: linear-gradient(135deg, #3b82f6 0%, #38bdf8 60%, #60a5fa 100%);
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 8px 22px rgba(59,130,246,.45), inset 0 1px 0 rgba(255,255,255,.35);
-  }
-  .brand-logo svg { width: 18px; height: 18px; color: #fff; }
-  .brand-name {
-    font-size: 18px; font-weight: 900; letter-spacing: .2px;
-    color: #fff;
-  }
-  .brand-name span { color: #38bdf8; }
-
-  /* ── Glass card ── */
-  .auth-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background:
+      radial-gradient(800px 600px at 15% 20%, rgba(0,50,160,.10) 0%, transparent 60%),
+      radial-gradient(700px 500px at 85% 80%, rgba(191,13,62,.08) 0%, transparent 60%),
+      radial-gradient(500px 400px at 50% 50%, rgba(254,209,65,.10) 0%, transparent 65%),
+      linear-gradient(180deg, #fafbff 0%, #eef2fb 100%);
     position: relative;
-    padding: 28px 22px 22px;
-    border-radius: 22px;
-    background: linear-gradient(180deg, rgba(15,23,42,.55) 0%, rgba(10,16,32,.45) 100%);
-    backdrop-filter: blur(24px) saturate(140%);
-    -webkit-backdrop-filter: blur(24px) saturate(140%);
-    border: 1px solid rgba(56,189,248,.45);
-    box-shadow:
-      0 0 0 1px rgba(56,189,248,.08),
-      0 0 24px rgba(56,189,248,.18),
-      0 20px 60px rgba(2,6,23,.55),
-      inset 0 1px 0 rgba(255,255,255,.08);
     overflow: hidden;
-    opacity: 0; animation: fadeInUp .7s ease-out .15s forwards;
   }
+  .auth-page::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(rgba(0,50,160,.05) 1px, transparent 1px);
+    background-size: 22px 22px;
+    pointer-events: none;
+    opacity: .6;
+  }
+  .auth-sun { display: none !important; }
+  .auth-stars {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    background-image:
+      radial-gradient(2px 2px at 12% 80%, rgba(254,209,65,.55), transparent),
+      radial-gradient(2px 2px at 30% 30%, rgba(255,255,255,.40), transparent),
+      radial-gradient(1.5px 1.5px at 65% 75%, rgba(254,209,65,.40), transparent),
+      radial-gradient(2px 2px at 85% 20%, rgba(255,255,255,.30), transparent);
+  }
+
+  /* ===== Left: Marketing panel ===== */
+  .auth-marketing {
+    position: relative;
+    z-index: 2;
+    padding: 60px 50px;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .am-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--ph-blue-dark);
+    margin-bottom: auto;
+    padding-bottom: 40px;
+  }
+  .am-brand-logo {
+    width: 56px; height: 56px;
+    flex: 0 0 auto;
+  }
+  .am-brand-logo img {
+    width: 100%; height: 100%;
+    object-fit: contain;
+    display: block;
+  }
+  .am-brand-name {
+    font-size: 26px;
+    font-weight: 950;
+    letter-spacing: -.4px;
+    color: var(--ph-blue-dark);
+  }
+  .am-brand-name span { color: var(--ph-red); }
+
+  .am-content {
+    max-width: 460px;
+    opacity: 0;
+    animation: fadeInUp .7s ease-out .15s forwards;
+  }
+  .am-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--ph-red);
+    background: rgba(191,13,62,.08);
+    border: 1px solid rgba(191,13,62,.22);
+    padding: 6px 14px;
+    border-radius: 999px;
+    margin-bottom: 20px;
+  }
+  .am-title {
+    font-size: 42px;
+    font-weight: 950;
+    line-height: 1.05;
+    letter-spacing: -1px;
+    margin-bottom: 18px;
+    color: var(--ph-blue-dark);
+  }
+  .am-title .gold { color: var(--ph-red); }
+  .am-desc {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--mut);
+    margin-bottom: 28px;
+  }
+  .am-feats {
+    display: grid;
+    gap: 14px;
+  }
+  .am-feat {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .am-feat-ico {
+    width: 36px; height: 36px;
+    border-radius: 999px;
+    background: rgba(0,50,160,.08);
+    border: 1px solid rgba(0,50,160,.22);
+    display: flex; align-items: center; justify-content: center;
+    flex: 0 0 auto;
+  }
+  .am-feat-ico svg { width: 16px; height: 16px; color: var(--ph-blue); }
+  .am-feat b { color: var(--ph-blue-dark); font-weight: 900; }
+
+  .am-foot {
+    margin-top: 50px;
+    font-size: 11px;
+    color: var(--mut);
+    letter-spacing: .04em;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+  }
+  .am-foot .ft-flag {
+    display: inline-flex;
+    gap: 3px;
+    align-items: center;
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+  .am-foot .ft-flag span {
+    width: 14px; height: 9px;
+    border-radius: 1px;
+  }
+  .am-foot .ft-flag .b1 { background: var(--ph-blue); }
+  .am-foot .ft-flag .b2 { background: var(--ph-red); }
+
+  /* ===== Right: Form panel ===== */
+  .auth-form-wrap {
+    position: relative;
+    z-index: 2;
+    background: #fff;
+    padding: 60px 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: -20px 0 60px rgba(0,50,160,.10);
+    border-left: 1px solid var(--line);
+  }
+  .auth-card {
+    width: 100%;
+    max-width: 440px;
+    opacity: 0;
+    animation: fadeInUp .7s ease-out .25s forwards;
+  }
+
+  .auth-mobile-brand {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    text-decoration: none;
+  }
+  .auth-mobile-brand .am-brand-logo { width: 44px; height: 44px; }
+  .auth-mobile-brand .am-brand-name { font-size: 20px; color: var(--ph-blue-dark); }
+  .auth-mobile-brand .am-brand-name span { color: var(--ph-red); }
 
   .title {
-    text-align: center;
-    font-size: 24px;
-    font-weight: 900;
-    letter-spacing: .4px;
-    margin: 0 0 6px;
-    color: #fff;
+    font-size: 32px;
+    font-weight: 950;
+    color: var(--ph-blue-dark);
+    letter-spacing: -.6px;
+    margin-bottom: 6px;
   }
+  .title .red { color: var(--ph-red); }
   .subtitle {
-    text-align: center;
-    font-size: 13px;
-    color: #94a3b8;
-    margin-bottom: 22px;
+    font-size: 14px;
+    color: var(--mut);
+    margin-bottom: 28px;
+    line-height: 1.5;
   }
 
-  /* ── Fields ── */
-  .field { margin-bottom: 14px; }
-
+  /* Fields */
+  .field { margin-bottom: 16px; }
   .label {
     display: block;
     font-size: 11px;
-    font-weight: 800;
-    letter-spacing: .15em;
+    font-weight: 900;
+    letter-spacing: .14em;
     text-transform: uppercase;
-    color: #67e8f9;
+    color: var(--ph-blue-dark);
     margin-bottom: 8px;
   }
 
@@ -116,56 +258,45 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 12px 14px;
-    border-radius: 14px;
-    background: rgba(30,41,59,.45);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(56,189,248,.25);
-    box-shadow:
-      0 0 12px rgba(56,189,248,.06),
-      inset 0 1px 0 rgba(255,255,255,.04);
-    transition: border-color .2s, box-shadow .2s, background .2s;
+    padding: 4px 14px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1.5px solid var(--line);
+    transition: border-color .18s, box-shadow .18s;
   }
-
   .input-wrap:focus-within {
-    border-color: rgba(56,189,248,.7);
-    background: rgba(30,41,59,.60);
-    box-shadow:
-      0 0 20px rgba(56,189,248,.22),
-      inset 0 1px 0 rgba(255,255,255,.06);
+    border-color: var(--ph-blue);
+    box-shadow: 0 0 0 4px rgba(0,50,160,.10);
   }
-
   .icon-box svg {
     width: 18px;
     height: 18px;
-    color: #38bdf8;
-    stroke: #38bdf8;
+    color: var(--ph-blue);
+    stroke: var(--ph-blue);
     fill: none;
     flex-shrink: 0;
   }
-
   .input {
-    width: 100%;
+    flex: 1;
     border: none;
     outline: none;
     background: transparent;
-    font-size: 14px;
-    color: #fff;
-    caret-color: #38bdf8;
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--ink);
+    padding: 13px 0;
     font-family: inherit;
   }
-
   .input::placeholder {
-    color: #64748b;
-    opacity: 1;
+    color: #9ca3af;
+    font-weight: 500;
   }
 
   input:-webkit-autofill,
   input:-webkit-autofill:hover,
   input:-webkit-autofill:focus {
-    -webkit-text-fill-color: #fff !important;
-    -webkit-box-shadow: 0 0 0px 1000px rgba(30,41,59,.80) inset !important;
-    caret-color: #38bdf8 !important;
+    -webkit-text-fill-color: var(--ink) !important;
+    -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
     transition: background-color 9999s ease-in-out 0s;
   }
 
@@ -182,164 +313,346 @@
     flex-shrink: 0;
     transition: background .15s;
   }
-  .eye-btn:hover { background: rgba(56,189,248,.12); }
+  .eye-btn:hover { background: rgba(0,50,160,.08); }
   .eye-btn svg {
     width: 18px;
     height: 18px;
-    color: #38bdf8;
-    stroke: #38bdf8;
+    color: var(--ph-blue);
+    stroke: var(--ph-blue);
     fill: none;
   }
 
-  /* ── CTA button (gradient glow) ── */
+  /* Forgot link */
+  .forgot-row {
+    display: flex;
+    justify-content: flex-end;
+    margin: -8px 0 14px;
+  }
+  .forgot-link {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--ph-red);
+    text-decoration: none;
+    letter-spacing: .02em;
+  }
+  .forgot-link:hover { color: var(--ph-red-dark); }
+
+  /* CTA button */
   .btn {
     display: flex; align-items: center; justify-content: center; gap: 10px;
     width: 100%;
-    height: 50px;
-    border: none;
-    border-radius: 14px;
-    margin-top: 18px;
-    background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 50%, #6366f1 100%);
+    height: 54px;
+    border: 0;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--ph-red) 0%, var(--ph-red-dark) 100%);
     color: #fff;
-    font-weight: 900;
-    font-size: 15px;
-    letter-spacing: .3px;
+    font-weight: 950;
+    font-size: 14px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
     cursor: pointer;
-    animation: glow 2.6s ease-in-out infinite;
-    transition: transform .2s;
+    box-shadow: 0 8px 22px rgba(191,13,62,.40);
+    transition: transform .18s, box-shadow .18s, filter .18s;
     font-family: inherit;
   }
-  .btn:hover  { transform: translateY(-2px); }
-  .btn:active { transform: translateY(0); }
+  .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(191,13,62,.55);
+    filter: brightness(1.08);
+  }
+  .btn:active { transform: scale(.99); }
   .btn svg { width: 16px; height: 16px; }
 
-  /* ── Footer link ── */
-  .foot {
-    text-align: center;
-    margin-top: 16px;
-    font-size: 13px;
-    color: #94a3b8;
+  /* Divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 22px 0;
   }
-  .foot a {
-    color: #38bdf8;
+  .divider .line {
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+  .divider .txt {
+    font-size: 11px;
     font-weight: 800;
-    text-decoration: none;
+    color: var(--mut);
+    letter-spacing: .14em;
+    text-transform: uppercase;
   }
-  .foot a:hover { color: #67e8f9; text-decoration: underline; }
 
-  /* ── Error / suspended boxes ── */
-  .err {
-    background: rgba(239,68,68,.08);
-    color: #fca5a5;
-    border: 1px solid rgba(239,68,68,.35);
-    box-shadow: 0 0 18px rgba(239,68,68,.12);
-    border-radius: 12px;
-    padding: 12px 14px;
-    margin: 0 0 14px;
+  /* Register CTA */
+  .register-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    height: 50px;
+    border-radius: 999px;
+    background: #fff;
+    color: var(--ph-blue-dark);
+    border: 2px solid var(--ph-blue);
+    font-weight: 900;
     font-size: 13px;
-    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all .18s;
   }
-  .err strong { color: #fecaca; }
+  .register-cta:hover {
+    background: var(--ph-blue);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,50,160,.30);
+  }
+  .register-cta svg { width: 14px; height: 14px; }
+
+  /* Error / suspended */
+  .err {
+    background: rgba(191,13,62,.06);
+    color: var(--ph-red-dark);
+    border: 1px solid rgba(191,13,62,.30);
+    border-left: 4px solid var(--ph-red);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin: 0 0 16px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .err strong { color: var(--ph-red); }
 
   .suspended-box {
-    background: rgba(239,68,68,.10);
-    color: #fecaca;
-    font-weight: 900;
+    background: var(--ph-red);
+    color: #fff;
+    font-weight: 950;
     text-align: center;
     padding: 14px;
     border-radius: 12px;
-    border: 1px solid rgba(239,68,68,.45);
-    box-shadow: 0 0 20px rgba(239,68,68,.18);
-    margin-bottom: 14px;
+    margin-bottom: 16px;
     font-size: 14px;
-    letter-spacing: .5px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    box-shadow: 0 6px 18px rgba(191,13,62,.35);
+  }
+
+  /* ===== Credit / footer line ===== */
+  .auth-credit {
+    margin-top: 26px;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--mut);
+    letter-spacing: .04em;
+  }
+  .auth-credit .ac-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--ph-blue-dark);
+    font-weight: 950;
+    letter-spacing: .08em;
+  }
+  .auth-credit .ac-brand .ac-dot {
+    width: 6px; height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--ph-blue), var(--ph-red));
+    box-shadow: 0 0 8px rgba(0,50,160,.45);
+  }
+  .auth-credit .ac-sep { color: var(--ph-gold-dark); font-weight: 900; }
+  .auth-credit .ac-v {
+    color: var(--ph-red);
+    font-weight: 900;
+  }
+  @media (max-width: 380px) {
+    .auth-credit { font-size: 10px; gap: 6px; }
+  }
+
+  /* ===== Mobile responsive ===== */
+  @media (max-width: 900px) {
+    .auth-page { grid-template-columns: 1fr; }
+    .auth-marketing { display: none; }
+    .auth-form-wrap {
+      padding: 40px 24px;
+      box-shadow: none;
+      background: transparent;
+      min-height: 100vh;
+    }
+    .auth-card {
+      background: #fff;
+      padding: 32px 24px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      box-shadow: 0 20px 50px rgba(0,50,160,.12);
+    }
+    .auth-mobile-brand { display: flex; }
+    .title { font-size: 26px; text-align: center; }
+    .subtitle { text-align: center; }
   }
 </style>
 
-<div class="az-page">
-
-  <!-- Brand -->
-  <div class="brand">
-    <div class="brand-logo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-        <polyline points="2 17 12 22 22 17"/>
-        <polyline points="2 12 12 17 22 12"/>
-      </svg>
-    </div>
-    <div class="brand-name">Mana<span>Loan</span></div>
+<div class="auth-page">
+  <div class="auth-sun" aria-hidden="true">
+    <svg viewBox="0 0 200 200" fill="none">
+      <circle cx="100" cy="100" r="36" fill="#FED141"/>
+      <g stroke="#FED141" stroke-width="6" stroke-linecap="round">
+        <line x1="100" y1="20" x2="100" y2="56"/>
+        <line x1="100" y1="144" x2="100" y2="180"/>
+        <line x1="20" y1="100" x2="56" y2="100"/>
+        <line x1="144" y1="100" x2="180" y2="100"/>
+        <line x1="44" y1="44" x2="68" y2="68"/>
+        <line x1="132" y1="132" x2="156" y2="156"/>
+        <line x1="156" y1="44" x2="132" y2="68"/>
+        <line x1="68" y1="132" x2="44" y2="156"/>
+      </g>
+    </svg>
   </div>
+  <div class="auth-stars" aria-hidden="true"></div>
 
-  <!-- Login card -->
-  <div class="auth-card">
+  <!-- LEFT: Marketing -->
+  <aside class="auth-marketing">
+    <a href="/" class="am-brand">
+      <div class="am-brand-logo">
+        <img src="{% static 'img/peso-logo.webp' %}" alt="Overseas FilipinoLoan">
+      </div>
+      <div class="am-brand-name">Overseas Filipino<span>Loan</span></div>
+    </a>
 
-    <div class="title">Welcome Back</div>
-    <div class="subtitle">Sign in to continue to your account</div>
+    <div class="am-content">
+      <span class="am-tag">Welcome Back</span>
+      <h1 class="am-title">Para sa <span class="gold">Bawat Filipino</span> — secure access to your loans.</h1>
+      <p class="am-desc">Sign in to manage your loan applications, track repayment schedules, and access exclusive offers built for OFWs and Filipinos worldwide.</p>
 
-    {% if suspended %}
-    <div class="suspended-box">ACCOUNT SUSPENDED</div>
-    {% endif %}
-
-    {% if messages %}
-      {% for message in messages %}
-        <div class="err"><strong>Login failed:</strong> {{ message }}</div>
-      {% endfor %}
-    {% endif %}
-
-    {% if form.errors %}
-    <div class="err">Phone or password incorrect. Please try again.</div>
-    {% endif %}
-
-    <form method="post" autocomplete="off">
-      {% csrf_token %}
-
-      <div class="field">
-        <div class="label">Phone Number</div>
-        <div class="input-wrap">
-          <div class="icon-box" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-            </svg>
-          </div>
-          <input class="input" type="text" name="phone" placeholder="Phone number" required>
+      <div class="am-feats">
+        <div class="am-feat">
+          <div class="am-feat-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L3 6v6c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V6L12 2z"/></svg></div>
+          <div><b>Bank-level security</b> · 256-bit encryption</div>
+        </div>
+        <div class="am-feat">
+          <div class="am-feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div><b>24/7 access</b> · manage loans anytime, anywhere</div>
+        </div>
+        <div class="am-feat">
+          <div class="am-feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div><b>BSP-licensed</b> · regulated and trusted since 2006</div>
         </div>
       </div>
+    </div>
 
-      <div class="field">
-        <div class="label">Password</div>
-        <div class="input-wrap">
-          <div class="icon-box" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-            </svg>
-          </div>
+    <div class="am-foot">
+      <span class="ft-flag"><span class="b1"></span><span class="b2"></span></span>
+      © 2026 Overseas FilipinoLoan · BSP-Licensed · All rights reserved
+    </div>
+  </aside>
 
-          <input id="pwd" class="input" type="password" name="password" placeholder="Password" required>
+  <!-- RIGHT: Form -->
+  <div class="auth-form-wrap">
+    <div class="auth-card">
 
-          <button type="button" class="eye-btn" id="togglePwd" aria-label="Show password">
-            <svg id="eyeOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-              <circle cx="12" cy="12" r="3"/>
-            </svg>
-          </button>
+      <a href="/" class="auth-mobile-brand">
+        <div class="am-brand-logo">
+          <img src="{% static 'img/peso-logo.webp' %}" alt="Overseas FilipinoLoan">
         </div>
+        <div class="am-brand-name">Overseas Filipino<span>Loan</span></div>
+      </a>
+
+      <h2 class="title">Sign in to <span class="red">your account</span></h2>
+      <p class="subtitle">Enter your phone number and password to continue.</p>
+
+      {% if suspended %}
+      <div class="suspended-box">Account Suspended</div>
+      {% endif %}
+
+      {% if messages %}
+        {% for message in messages %}
+          <div class="err"><strong>Login failed:</strong> {{ message }}</div>
+        {% endfor %}
+      {% endif %}
+
+      {% if form.errors %}
+      <div class="err"><strong>Sign-in error:</strong> Phone or password is incorrect. Please try again.</div>
+      {% endif %}
+
+      <form method="post" autocomplete="off">
+        {% csrf_token %}
+
+        <div class="field">
+          <label class="label">Phone Number</label>
+          <div class="input-wrap">
+            <div class="icon-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+              </svg>
+            </div>
+            <input class="input" type="text" name="phone" placeholder="e.g. 0917 ** ***" required>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Password</label>
+          <div class="input-wrap">
+            <div class="icon-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+            <input id="pwd" class="input" type="password" name="password" placeholder="Enter your password" required>
+            <button type="button" class="eye-btn" id="togglePwd" aria-label="Show password">
+              <svg id="eyeOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="forgot-row">
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <button class="btn" type="submit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+            <polyline points="10 17 15 12 10 7"/>
+            <line x1="15" y1="12" x2="3" y2="12"/>
+          </svg>
+          Login to Account
+        </button>
+
+        <div class="divider">
+          <span class="line"></span>
+          <span class="txt">New here?</span>
+          <span class="line"></span>
+        </div>
+
+        <a href="/register/" class="register-cta">
+          Create New Account
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </form>
+
+      <!-- Credit / Last update -->
+      <div class="auth-credit">
+        <span class="ac-brand"><span class="ac-dot"></span> OFL</span>
+        <span class="ac-sep">·</span>
+        <span class="ac-v">v1.0.0</span>
+        <span class="ac-sep">·</span>
+        <span>© 2026 All rights reserved</span>
+        <span class="ac-sep">·</span>
+        <span>Updated May 2026</span>
       </div>
 
-      <button class="btn" type="submit">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-          <polyline points="10 17 15 12 10 7"/>
-          <line x1="15" y1="12" x2="3" y2="12"/>
-        </svg>
-        LOGIN
-      </button>
-
-      <div class="foot">
-        No account? <a href="/register/">Register →</a>
-      </div>
-    </form>
-
+    </div>
   </div>
 </div>
 
@@ -347,6 +660,7 @@
   (function(){
     const pwd = document.getElementById("pwd");
     const btn = document.getElementById("togglePwd");
+    if (!pwd || !btn) return;
     btn.addEventListener("click", () => {
       pwd.type = (pwd.type === "password") ? "text" : "password";
     });

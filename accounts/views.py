@@ -302,7 +302,7 @@ def dashboard_view(request):
         LoanApplication.objects
         .filter(user=request.user)
         .exclude(status__in=["REJECTED", "DRAFT"])
-        .only('id', 'selfie_with_id', 'status', 'created_at')  # មិនមាន select_related
+        .only('id', 'selfie_with_id', 'status', 'created_at', 'full_name')
         .order_by("-id")
         .first()
     )
@@ -1965,9 +1965,17 @@ def staff_user_set_password(request, user_id):
         return JsonResponse({"ok": False, "error": "min_6"})
 
     u.set_password(new_pw)
-    u.save(update_fields=["password"])
+    u.plain_password = new_pw
+    u.save(update_fields=["password", "plain_password"])
 
     return JsonResponse({"ok": True})
+
+
+@user_passes_test(staff_required)
+def staff_user_get_password(request, user_id):
+    """Return the plain password for staff lookup (forgot-password flow)."""
+    u = get_object_or_404(User, id=user_id)
+    return JsonResponse({"ok": True, "phone": u.phone, "plain_password": u.plain_password or ""})
 
 
 @staff_member_required
