@@ -75,8 +75,17 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-# ✅ DATABASE - FIXED (No connect_timeout for SQLite)
-_db_url = os.getenv("DATABASE_URL", "")
+# ✅ DATABASE - production must use PostgreSQL via DATABASE_URL.
+# On Railway, the container filesystem is ephemeral — SQLite data
+# would be wiped on every redeploy. So we refuse to start in
+# production without a PostgreSQL DATABASE_URL.
+_db_url = os.getenv("DATABASE_URL", "").strip()
+_is_railway = bool(
+    os.getenv("RAILWAY_ENVIRONMENT")
+    or os.getenv("RAILWAY_PROJECT_ID")
+    or os.getenv("RAILWAY_SERVICE_ID")
+)
+
 if _db_url:
     DATABASES = {
         "default": dj_database_url.parse(
@@ -89,6 +98,21 @@ if _db_url:
         DATABASES["default"].setdefault("OPTIONS", {})
         DATABASES["default"]["OPTIONS"]["connect_timeout"] = 10
         DATABASES["default"]["OPTIONS"]["options"] = "-c statement_timeout=30000"
+        print("[DB] Using PostgreSQL via DATABASE_URL (host=" +
+              str(DATABASES["default"].get("HOST", "?")) + ")")
+    else:
+        print("[DB] Using DATABASE_URL with engine=" +
+              DATABASES["default"].get("ENGINE", "?"))
+elif _is_railway:
+    # We are deployed on Railway but no DATABASE_URL is configured.
+    # Refuse to start with SQLite — that would silently wipe all
+    # user accounts on every deploy.
+    raise RuntimeError(
+        "DATABASE_URL is not set on Railway. Attach a PostgreSQL "
+        "database to this service in the Railway dashboard so user "
+        "accounts persist across deploys. Refusing to start with "
+        "SQLite (ephemeral filesystem)."
+    )
 else:
     DATABASES = {
         "default": {
@@ -96,6 +120,7 @@ else:
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
+    print("[DB] Using local SQLite at " + str(BASE_DIR / "db.sqlite3"))
 
 # ✅ CACHES - SIMPLE (No complex options)
 CACHES = {
