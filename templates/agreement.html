@@ -540,11 +540,21 @@
       -webkit-backdrop-filter: none !important;
     }
     .agree-card {
-      background: linear-gradient(180deg, rgba(15,23,42,.92) 0%, rgba(10,16,32,.88) 100%) !important;
       animation: none !important;
       opacity: 1 !important;
     }
-    .article-item {
+    /* Light mode: white card on mobile */
+    html:not([data-theme="dark"]) .agree-card {
+      background: #ffffff !important;
+    }
+    html:not([data-theme="dark"]) .article-item {
+      background: #f7f8fb !important;
+    }
+    /* Dark mode: dark navy card on mobile */
+    html[data-theme="dark"] .agree-card {
+      background: linear-gradient(180deg, rgba(15,23,42,.92) 0%, rgba(10,16,32,.88) 100%) !important;
+    }
+    html[data-theme="dark"] .article-item {
       background: rgba(30,41,59,.75) !important;
     }
   }

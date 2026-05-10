@@ -36,6 +36,28 @@ body, body *, body button, body input, body select, body textarea, body a {
   font-family: "Lato", "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
 }
 
+/* ============================================================
+   DARK MODE — Contact Us labels & inputs readable
+   ============================================================ */
+html[data-theme="dark"] label{
+  color:#ffffff !important;
+}
+html[data-theme="dark"] input,
+html[data-theme="dark"] textarea{
+  background: rgba(255,255,255,.06) !important;
+  border: 1.5px solid rgba(255,255,255,.18) !important;
+  color:#eaf2ff !important;
+}
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder{
+  color: rgba(234,242,255,.50) !important;
+}
+html[data-theme="dark"] input:focus,
+html[data-theme="dark"] textarea:focus{
+  border-color: #7fb6ff !important;
+  background: rgba(255,255,255,.08) !important;
+}
+
 .wrap { padding-top: 0 !important; align-items: flex-start !important; justify-content: center !important; }
 
 @keyframes fadeInUp {

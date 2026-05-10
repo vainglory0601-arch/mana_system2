@@ -215,6 +215,13 @@ body, .w-wrap, .w-wrap * {
   border: 1px solid rgba(0,50,160,.35);
   color: var(--ph-blue-dark);
 }
+/* Dark mode: make PHP / OTP / count pills clearly visible */
+html[data-theme="dark"] .pill{
+  background: rgba(127,182,255,.18) !important;
+  border: 1px solid rgba(127,182,255,.55) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 10px rgba(127,182,255,.18);
+}
 .cardx.card-diamond .pill {
   background: rgba(254,209,65,.18);
   color: var(--ph-gold);

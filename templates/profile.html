@@ -251,6 +251,27 @@
     color: var(--ph-blue-dark);
     -webkit-text-fill-color: var(--ph-blue-dark);
   }
+
+  /* Dark mode: balance / loan-limit text → white */
+  html[data-theme="dark"] .stat-value{
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+  }
+  html[data-theme="dark"] .stat-value [data-balance]{
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+  }
+  html[data-theme="dark"] .stat-value .peso{
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+  }
+  html[data-theme="dark"] .stat-label,
+  html[data-theme="dark"] .stat-sub{
+    color: rgba(255,255,255,.85) !important;
+  }
+  html[data-theme="dark"] .stat-sub.ok{
+    color: #4ade80 !important;
+  }
   .stat-sub {
     font-size: 10.5px;
     color: var(--mut);
@@ -369,6 +390,10 @@
     stroke-linejoin: round;
   }
   #logoutBtn .ico svg { stroke: var(--ph-red); fill: none; }
+
+  /* Dark mode: make menu icons white for clarity */
+  html[data-theme="dark"] .ico svg { stroke: #ffffff !important; }
+  html[data-theme="dark"] #logoutBtn .ico svg { stroke: var(--ph-red) !important; }
 
   /* ── Text block ── */
   .txt { min-width: 0; }

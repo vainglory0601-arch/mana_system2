@@ -14,11 +14,26 @@
   /* Apply theme early to prevent flash */
   (function(){
     try {
-      var t = localStorage.getItem("ofl-theme");
-      if (t === "dark") document.documentElement.setAttribute("data-theme", "dark");
-    } catch(e) {}
+      var t = localStorage.getItem("ofl-theme") || "light";
+      document.documentElement.setAttribute("data-theme", t);
+      // Set inline bg on <html> so the page paints in the correct
+      // color BEFORE any stylesheet finishes parsing — kills the
+      // white flash during page navigation.
+      document.documentElement.style.backgroundColor = (t === "dark") ? "#0a132e" : "#ffffff";
+    } catch(e) {
+      document.documentElement.setAttribute("data-theme","light");
+      document.documentElement.style.backgroundColor = "#ffffff";
+    }
   })();
 </script>
+<style>
+  /* Backup early-paint bg for html element so transition between
+     pages does not flash white in dark mode. */
+  html { background-color: #ffffff; }
+  html[data-theme="dark"] { background-color: #0a132e; }
+  /* Make .wrap transparent so html bg shows during page-enter fade-in */
+  .wrap { background: transparent; }
+</style>
 {% block extra_css %}
 <style>
 :root{

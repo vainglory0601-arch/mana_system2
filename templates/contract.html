@@ -30,7 +30,7 @@ html, body { width: 100%; overflow-x: hidden; }
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Lato", "Open Sans", "Ovelion", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif !important;
+  font-family: "Lato", "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
   color: var(--ink) !important;
   background:
     radial-gradient(800px 600px at 15% 20%, rgba(0,50,160,.10) 0%, transparent 60%),
@@ -39,6 +39,33 @@ body {
     linear-gradient(180deg, #fafbff 0%, #eef2fb 100%) !important;
   background-attachment: fixed !important;
 }
+body, body *, body button, body input, body select, body textarea, body a {
+  font-family: "Lato", "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+}
+
+/* ============================================================
+   DARK MODE — Contract page readable text
+   ============================================================ */
+html[data-theme="dark"] .body{ color:#eaf2ff !important; }
+html[data-theme="dark"] .k{ color: rgba(255,255,255,.70) !important; }
+html[data-theme="dark"] .v{ color:#ffffff !important; }
+html[data-theme="dark"] .para,
+html[data-theme="dark"] .para b,
+html[data-theme="dark"] .para.muted,
+html[data-theme="dark"] .para.muted b{
+  color:#eaf2ff !important;
+}
+html[data-theme="dark"] .para .hl{ color:#7fb6ff !important; }
+html[data-theme="dark"] .subject{ color:#ff6b8a !important; }
+html[data-theme="dark"] .sig .muted{ color: rgba(255,255,255,.70) !important; }
+html[data-theme="dark"] .foot{
+  background: linear-gradient(180deg, rgba(15,23,42,.85), rgba(10,16,32,.90)) !important;
+  border-top: 1px solid rgba(255,255,255,.10) !important;
+  color:#eaf2ff !important;
+}
+html[data-theme="dark"] .foot .muted{ color:#ffffff !important; }
+html[data-theme="dark"] .ct-pagetitle{ color:#ffffff !important; }
+html[data-theme="dark"] .ct-pagetitle small{ color: rgba(255,255,255,.75) !important; }
 
 .wrap { padding-top: 0 !important; }
 
@@ -538,11 +565,21 @@ body {
     -webkit-backdrop-filter: none !important;
   }
   .paper {
-    background: linear-gradient(180deg, rgba(15,23,42,.92) 0%, rgba(10,16,32,.88) 100%) !important;
     animation: none !important;
     opacity: 1 !important;
   }
-  .box {
+  /* Light mode: keep white card on mobile */
+  html:not([data-theme="dark"]) .paper {
+    background: #ffffff !important;
+  }
+  html:not([data-theme="dark"]) .box {
+    background: #f7f8fb !important;
+  }
+  /* Dark mode: dark navy card on mobile */
+  html[data-theme="dark"] .paper {
+    background: linear-gradient(180deg, rgba(15,23,42,.92) 0%, rgba(10,16,32,.88) 100%) !important;
+  }
+  html[data-theme="dark"] .box {
     background: linear-gradient(180deg, rgba(15,23,42,.90) 0%, rgba(10,16,32,.85) 100%) !important;
   }
 }

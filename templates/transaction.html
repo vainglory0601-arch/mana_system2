@@ -60,6 +60,15 @@ body, body *, body button, body input, body select, body textarea, body a {
   background-clip: initial !important;
   -webkit-text-fill-color: var(--ph-blue-dark) !important;
 }
+
+/* Dark mode: Balance value → white for visibility */
+html[data-theme="dark"] .tx-sum-tile.bal .tx-sum-value{
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+html[data-theme="dark"] .tx-sum-label{
+  color: rgba(255,255,255,.75) !important;
+}
 .tx-sum-tile.ok { border-color: rgba(22,163,74,.40) !important; }
 .tx-sum-tile.ok::before { background: linear-gradient(90deg, transparent, #16a34a, transparent) !important; }
 .tx-sum-tile.ok .tx-sum-value { color: #16a34a !important; }
@@ -502,7 +511,16 @@ body, body *, body button, body input, body select, body textarea, body a {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
   }
-  .tx-sum-tile, .tx-item, .tx-empty {
+  /* Light mode: keep cards white on mobile */
+  html:not([data-theme="dark"]) .tx-sum-tile,
+  html:not([data-theme="dark"]) .tx-item,
+  html:not([data-theme="dark"]) .tx-empty {
+    background: #ffffff !important;
+  }
+  /* Dark mode: dark navy on mobile */
+  html[data-theme="dark"] .tx-sum-tile,
+  html[data-theme="dark"] .tx-item,
+  html[data-theme="dark"] .tx-empty {
     background: linear-gradient(180deg, rgba(15,23,42,.90) 0%, rgba(10,16,32,.85) 100%) !important;
   }
 }

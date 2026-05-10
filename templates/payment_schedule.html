@@ -517,7 +517,14 @@ body, body *, body button, body input, body select, body textarea, body a {
     animation: none !important;
     opacity: 1 !important;
   }
-  .ps-item, .ps-empty {
+  /* Light mode: white cards on mobile */
+  html:not([data-theme="dark"]) .ps-item,
+  html:not([data-theme="dark"]) .ps-empty {
+    background: #ffffff !important;
+  }
+  /* Dark mode: dark navy cards on mobile */
+  html[data-theme="dark"] .ps-item,
+  html[data-theme="dark"] .ps-empty {
     background: linear-gradient(180deg, rgba(15,23,42,.90) 0%, rgba(10,16,32,.85) 100%) !important;
   }
 }

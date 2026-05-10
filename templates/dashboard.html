@@ -25,6 +25,9 @@ body{
   min-height: 100vh;
   font-family: "Lato", "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
   color: var(--ink) !important;
+}
+/* Light mode body bg (don't fight base.html dark mode) */
+html:not([data-theme="dark"]) body{
   background: #ffffff !important;
   background-attachment: fixed !important;
 }
@@ -113,6 +116,15 @@ body, body *, body button, body input, body select, body textarea, body a {
   -webkit-text-fill-color: #ffffff !important;
 }
 .balance-sub { color: rgba(255,255,255,.65) !important; font-weight: 600 !important; }
+
+/* Account status text — color only (no background), matches staff "Select Status" groups */
+.acct-status-text{
+  font-weight: 900;
+  letter-spacing: .04em;
+}
+.acct-status-text.green{ color: #22c55e !important; }
+.acct-status-text.yellow{ color: #facc15 !important; }
+.acct-status-text.red{ color: #ef4444 !important; }
 
 .balance-grid { border-top: 1px solid rgba(255,255,255,.12) !important; }
 .balance-grid .divider { background: rgba(255,255,255,.12) !important; }
@@ -1916,7 +1928,14 @@ html[data-theme="dark"] .android-no-blur .qa-circle {
     </div>
     <div class="balance-sub">
       {% with color_key=request.user.account_status|default:"ACTIVE"|upper display_text=request.user.dashboard_status_label|default:request.user.account_status|default:"ACTIVE" %}
-        Account #OFL-{{ request.user.id|default:"00000" }} · {{ display_text }}
+        Account #OFL-{{ request.user.id|default:"00000" }} ·
+        {% if color_key == 'ACTIVE' or color_key == 'APPROVED' or color_key == 'LOAN_PAID' or color_key == 'WITHDRAWAL_SUCCESSFUL' or color_key == 'ACCOUNT_UPDATED' %}
+          <span class="acct-status-text green">{{ display_text }}</span>
+        {% elif color_key == 'APP_MAINTENANCE' or color_key == 'INVALID_DETAIL' or color_key == 'RENEW_DOCUMENT_REQUIRED' %}
+          <span class="acct-status-text yellow">{{ display_text }}</span>
+        {% else %}
+          <span class="acct-status-text red">{{ display_text }}</span>
+        {% endif %}
       {% endwith %}
     </div>
 

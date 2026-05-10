@@ -112,6 +112,11 @@ body, body *, body button, body input, body select, body textarea, body a {
 
 .pm-label { color: var(--ph-blue-dark) !important; }
 
+/* Dark mode: Bank Details title icon + Account labels → white */
+html[data-theme="dark"] .pm-sec-title{ color:#ffffff !important; }
+html[data-theme="dark"] .pm-sec-title svg{ stroke:#ffffff !important; }
+html[data-theme="dark"] .pm-label{ color:#ffffff !important; }
+
 /* Inputs */
 .pm-form input,
 .pm-form input[type="text"],
@@ -525,9 +530,16 @@ body, body *, body button, body input, body select, body textarea, body a {
   }
   .pm-hero::after { animation: none !important; }
   .pm-form {
-    background: linear-gradient(180deg, rgba(15,23,42,.92) 0%, rgba(10,16,32,.88) 100%) !important;
     animation: none !important;
     opacity: 1 !important;
+  }
+  /* Light mode: white form card on mobile */
+  html:not([data-theme="dark"]) .pm-form {
+    background: #ffffff !important;
+  }
+  /* Dark mode: dark navy form card on mobile */
+  html[data-theme="dark"] .pm-form {
+    background: linear-gradient(180deg, rgba(15,23,42,.92) 0%, rgba(10,16,32,.88) 100%) !important;
   }
 }
 

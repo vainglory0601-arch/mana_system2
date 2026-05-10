@@ -35,6 +35,22 @@ body, body *, body button, body input, body select, body textarea, body a {
   font-family: "Lato", "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
 }
 
+/* ============================================================
+   DARK MODE — Quick Loan readable text
+   ============================================================ */
+html[data-theme="dark"] .page-title{ color:#ffffff !important; }
+html[data-theme="dark"] .page-title small{ color: rgba(255,255,255,.75) !important; }
+html[data-theme="dark"] .qcard label{ color:#ffffff !important; }
+html[data-theme="dark"] .summary .k{ color: rgba(255,255,255,.75) !important; }
+html[data-theme="dark"] .summary .v{
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+html[data-theme="dark"] .summary .row:last-child .v{
+  color:#ffffff !important;
+  -webkit-text-fill-color:#ffffff !important;
+}
+
 .wrap{ padding-top: 0 !important; align-items: flex-start; }
 
 @keyframes fadeInUp {
