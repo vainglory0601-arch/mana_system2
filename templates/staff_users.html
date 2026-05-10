@@ -911,8 +911,36 @@ td.col-active .active-select{
     document.getElementById("pwNew").value = "";
     document.getElementById("pwErr").style.display = "none";
     document.getElementById("pwModal").style.display = "flex";
+
+    // Fetch current password
+    const cur = document.getElementById("pwCurrent");
+    cur.value = "Loading...";
+    fetch(`/staff/users/${userId}/get-password/`, { credentials: "same-origin" })
+      .then(r => r.ok ? r.json() : Promise.reject(r))
+      .then(d => { cur.value = d.password || "(not set)"; })
+      .catch(() => { cur.value = "(unavailable)"; });
+
     setTimeout(()=>document.getElementById("pwNew").focus(), 50);
   }
+
+  // Copy current password to clipboard
+  document.addEventListener("DOMContentLoaded", function(){
+    const cpy = document.getElementById("pwCopy");
+    if (cpy) {
+      cpy.addEventListener("click", function(){
+        const cur = document.getElementById("pwCurrent");
+        if (!cur || !cur.value) return;
+        navigator.clipboard.writeText(cur.value).then(() => {
+          const orig = cpy.textContent;
+          cpy.textContent = "Copied!";
+          setTimeout(() => { cpy.textContent = orig; }, 1200);
+        }).catch(() => {
+          cur.select();
+          document.execCommand("copy");
+        });
+      });
+    }
+  });
 
   function closePwModal(){
     PW_USER_ID = null;
@@ -974,6 +1002,14 @@ td.col-active .active-select{
     <div class="pw-body">
       <div class="pw-label">Phone Number</div>
       <input id="pwPhone" class="pw-input" type="text" readonly>
+
+      <div class="pw-label" style="margin-top:10px;">Current Password</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input id="pwCurrent" class="pw-input" type="text" readonly
+               style="flex:1;font-family:ui-monospace,Menlo,monospace;letter-spacing:.04em;">
+        <button type="button" id="pwCopy" class="pw-save"
+                style="background:#475569;padding:0 14px;height:40px;font-size:12px;">Copy</button>
+      </div>
 
       <div class="pw-label" style="margin-top:10px;">Enter New Password</div>
       <input id="pwNew" class="pw-input" type="password" placeholder="Enter new password">
