@@ -905,10 +905,15 @@ def payment_method_view(request):
     """Payment method setup"""
     obj, _ = PaymentMethod.objects.get_or_create(user=request.user)
 
+    # Flag: arrived here from the loan-apply / quick-loan flow.
+    # When True, the template hides the Back button — user must complete
+    # payment method before going elsewhere.
+    from_apply = (request.GET.get("next") or "").strip() == "quick_loan"
+
     if request.method == "POST" and obj.locked:
         messages.error(request, "Locked. Please contact staff to update.")
         form = PaymentMethodForm(instance=obj)
-        return render(request, "payment_method.html", {"form": form, "locked": True, "saved": True})
+        return render(request, "payment_method.html", {"form": form, "locked": True, "saved": True, "from_apply": from_apply})
 
     if request.method == "POST":
         form = PaymentMethodForm(request.POST, instance=obj)
@@ -937,11 +942,11 @@ def payment_method_view(request):
 
             return redirect(reverse("quick_loan") + "?done=1")
 
-        return render(request, "payment_method.html", {"form": form, "locked": obj.locked, "saved": False})
+        return render(request, "payment_method.html", {"form": form, "locked": obj.locked, "saved": False, "from_apply": from_apply})
 
     form = PaymentMethodForm(instance=obj)
     saved = bool(obj.wallet_name or obj.wallet_phone or obj.bank_name or obj.bank_account or obj.paypal_email)
-    return render(request, "payment_method.html", {"form": form, "locked": obj.locked, "saved": saved})
+    return render(request, "payment_method.html", {"form": form, "locked": obj.locked, "saved": saved, "from_apply": from_apply})
 
 
 # ======================

@@ -705,6 +705,29 @@ input[type="number"]{ -moz-appearance: textfield; }
 
 /* ===== Submit button ===== */
 .cta{ margin-top: 16px; width: 100%; }
+
+/* Confirm Apply button — loading state */
+#confirmApplyBtn .cta-spinner{
+  display: none;
+  width: 18px; height: 18px;
+  margin-left: 10px;
+  border: 2.5px solid rgba(255,255,255,.35);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  vertical-align: middle;
+  animation: ctaSpin .7s linear infinite;
+}
+#confirmApplyBtn.is-loading{
+  cursor: not-allowed;
+  opacity: .9;
+  pointer-events: none;
+}
+#confirmApplyBtn.is-loading .cta-spinner{
+  display: inline-block;
+}
+@keyframes ctaSpin{
+  to { transform: rotate(360deg); }
+}
 .btn.btn-primary{
   width: 100%;
   padding: 16px;
@@ -1271,8 +1294,9 @@ hr{
           Submitted · Waiting for review
         </button>
       {% else %}
-        <button class="btn btn-primary cta" type="submit" name="action" value="apply_loan">
-          Confirm Apply
+        <button class="btn btn-primary cta" id="confirmApplyBtn" type="submit" name="action" value="apply_loan">
+          <span class="cta-label">Confirm Apply</span>
+          <span class="cta-spinner" aria-hidden="true"></span>
         </button>
       {% endif %}
 
@@ -1543,5 +1567,92 @@ hr{
       }
     });
   });
+
+  // ====================================================================
+  // Autosave / restore loan-apply form across browser sessions
+  // (file inputs intentionally skipped — binary data isn't persisted)
+  // ====================================================================
+  {% if not locked %}
+  (function loanApplyAutosave(){
+    const STORAGE_KEY = "ofl_loan_apply_draft";
+    const form = document.querySelector("form[method='POST'], form[method='post']") || document.querySelector("form");
+    if (!form) return;
+
+    // Read existing saved draft
+    let draft = {};
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) draft = JSON.parse(raw) || {};
+    } catch(e) { draft = {}; }
+
+    // Restore text/number/textarea/select values + checkboxes
+    Object.keys(draft).forEach((name) => {
+      const val = draft[name];
+      const elements = form.querySelectorAll('[name="' + name + '"]');
+      if (!elements.length) return;
+      const first = elements[0];
+      if (first.type === "checkbox"){
+        // val is an array of checked values
+        const checkedSet = new Set(Array.isArray(val) ? val : [val]);
+        elements.forEach(el => { el.checked = checkedSet.has(el.value); });
+      } else if (first.type === "radio") {
+        elements.forEach(el => { el.checked = (el.value === val); });
+      } else if (first.type === "file") {
+        // skip
+      } else {
+        // text, number, hidden, textarea, select
+        if (val !== undefined && val !== null) first.value = val;
+      }
+    });
+
+    // Save helper
+    function saveDraft(){
+      const data = {};
+      form.querySelectorAll("input, textarea, select").forEach((el) => {
+        if (!el.name) return;
+        if (el.type === "file") return;          // skip files
+        if (el.type === "submit") return;
+        if (el.type === "button") return;
+        if (el.type === "checkbox"){
+          if (!data[el.name]) data[el.name] = [];
+          if (el.checked) data[el.name].push(el.value);
+        } else if (el.type === "radio") {
+          if (el.checked) data[el.name] = el.value;
+        } else {
+          data[el.name] = el.value;
+        }
+      });
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e){}
+    }
+
+    // Save on every change/input
+    form.addEventListener("input", saveDraft, true);
+    form.addEventListener("change", saveDraft, true);
+
+    // Clear draft on successful submit + show loading state on button
+    form.addEventListener("submit", function(){
+      try { localStorage.removeItem(STORAGE_KEY); } catch(e){}
+      // Also clear the quick-loan amount/term remembered earlier in the flow
+      try { localStorage.removeItem("ofl_quick_amount"); } catch(e){}
+      try { localStorage.removeItem("ofl_quick_term"); } catch(e){}
+
+      // Swap button into "Submitting..." state with spinner
+      const btn = document.getElementById("confirmApplyBtn");
+      if (btn){
+        btn.classList.add("is-loading");
+        btn.disabled = true;
+        const lbl = btn.querySelector(".cta-label");
+        if (lbl) lbl.textContent = "Submitting...";
+      }
+    });
+
+    // Trigger initial calculations after restore (UI-dependent fields)
+    setTimeout(() => {
+      form.querySelectorAll("input, textarea, select").forEach((el) => {
+        try { el.dispatchEvent(new Event("input", { bubbles: true })); } catch(e){}
+      });
+    }, 50);
+  })();
+  {% endif %}
 </script>
 {% endblock %}

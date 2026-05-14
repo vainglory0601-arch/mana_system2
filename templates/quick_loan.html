@@ -585,9 +585,40 @@ input[type="number"]{ -moz-appearance: textfield; }
   if (amountEl){
     amountEl.addEventListener("input", ()=>{
       {% if loan %} return; {% endif %}
+      try { localStorage.setItem("ofl_quick_amount", amountEl.value || ""); } catch(e){}
       update();
     });
   }
+
+  // ===== Persist & restore quick-loan fields across browser sessions =====
+  {% if not loan %}
+  (function restoreQuickLoan(){
+    try {
+      // Prefer ?amount= / ?term= query params if present (from another flow),
+      // otherwise fall back to whatever the user last typed.
+      const params = new URLSearchParams(window.location.search);
+      const qAmt = params.get("amount") || localStorage.getItem("ofl_quick_amount") || "";
+      const qTrm = params.get("term") || localStorage.getItem("ofl_quick_term") || "";
+      if (amountEl && qAmt) amountEl.value = qAmt;
+      if (termEl && qTrm) {
+        termEl.value = qTrm;
+        btns.forEach((b) => {
+          if ((b.dataset.term || "") === String(qTrm)){
+            b.classList.add("active");
+            if (hint) hint.textContent = qTrm + " months";
+          }
+        });
+      }
+      update();
+    } catch(e){}
+  })();
+  // Save term when buttons clicked
+  btns.forEach((b) => {
+    b.addEventListener("click", () => {
+      try { localStorage.setItem("ofl_quick_term", b.dataset.term || ""); } catch(e){}
+    });
+  });
+  {% endif %}
 
   {% if loan %}
     if (amountEl) amountEl.value = "{{ loan.amount }}";

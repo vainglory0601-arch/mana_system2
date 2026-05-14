@@ -1183,20 +1183,31 @@ html[data-theme="dark"] .android-no-blur .qa-circle {
   margin-top: 2px;
 }
 .apply-btn{
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 10px 18px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 12px;
+  padding: 16px 36px;
+  min-width: 180px;
   border-radius: 999px;
   background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 60%, #6366f1 100%);
   color: #fff;
   font-weight: 900;
-  font-size: 13px;
-  letter-spacing: .04em;
+  font-size: 16px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
   text-decoration: none;
-  box-shadow: 0 8px 22px rgba(59,130,246,.45), inset 0 1px 0 rgba(255,255,255,.25);
-  transition: transform .22s ease;
+  box-shadow: 0 10px 28px rgba(59,130,246,.50), inset 0 1px 0 rgba(255,255,255,.28);
+  transition: transform .22s ease, box-shadow .22s ease;
+  animation: applyPulse 2.2s ease-in-out infinite;
 }
-.apply-btn:hover{ transform: translateY(-2px); }
-.apply-btn svg{ width: 13px; height: 13px; stroke: #fff; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.apply-btn:hover{
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 14px 34px rgba(59,130,246,.65), inset 0 1px 0 rgba(255,255,255,.35);
+}
+.apply-btn svg{ width: 18px; height: 18px; stroke: #fff; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+
+@keyframes applyPulse{
+  0%, 100% { box-shadow: 0 10px 28px rgba(191,13,62,.45), inset 0 1px 0 rgba(255,255,255,.28); }
+  50%      { box-shadow: 0 14px 36px rgba(191,13,62,.75), inset 0 1px 0 rgba(255,255,255,.35); }
+}
 
 /* ===== Currency table (compact) ===== */
 .currency-card{
@@ -1834,7 +1845,7 @@ html[data-theme="dark"] .android-no-blur .qa-circle {
       </div>
       <div class="ab-divider"></div>
       <div class="ab-stat">
-        <div class="ab-stat-num"><span data-counter="98">0</span>%</div>
+        <div class="ab-stat-num"><span data-counter="73">0</span>%</div>
         <div class="ab-stat-lbl">Approved Rate</div>
       </div>
     </div>

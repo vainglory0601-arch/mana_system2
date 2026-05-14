@@ -465,6 +465,13 @@ html[data-theme="dark"] .pm-label{ color:#ffffff !important; }
   opacity: 0;
   animation: fadeInUp .5s ease-out .28s forwards;
 }
+.pm-actions.only-save{
+  justify-content: center;
+}
+.pm-actions.only-save .pm-btn{
+  flex: 0 1 auto;
+  min-width: 220px;
+}
 .pm-btn {
   flex: 1;
   padding: 15px 20px;
@@ -620,8 +627,10 @@ html[data-theme="dark"] .pm-label{ color:#ffffff !important; }
     </div>
 
     <!-- Actions -->
-    <div class="pm-actions">
-      <a class="pm-btn pm-btn-ghost" href="/profile/">Back</a>
+    <div class="pm-actions{% if from_apply %} only-save{% endif %}">
+      {% if not from_apply %}
+        <a class="pm-btn pm-btn-ghost" href="/profile/">Back</a>
+      {% endif %}
       {% if locked %}
         <button class="pm-btn pm-btn-primary" type="button" disabled>Saved</button>
       {% else %}
