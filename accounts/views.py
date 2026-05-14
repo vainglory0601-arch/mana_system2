@@ -761,39 +761,13 @@ def contract_view(request):
 @login_required(login_url="login")
 def loan_apply_view(request):
     """Apply for loan"""
-    # Only treat the form as "locked" when the loan is actually submitted
-    # (PENDING / REVIEW / APPROVED / etc.). A DRAFT means the user filled
-    # the form but never completed payment method — they should be able to
-    # come back and continue, not see "Submitted · Waiting for review".
     existing = (
         LoanApplication.objects
         .filter(user=request.user)
-        .exclude(status__in=["REJECTED", "DRAFT"])
+        .exclude(status="REJECTED")
         .order_by("-id")
         .first()
     )
-
-    # ============================================================
-    # STEP-SKIP GUARD (only on GET; allow POST so the form submits)
-    # ============================================================
-    # Step 1 (quick-loan) must be done first: we need amount + term
-    # either passed via URL params (?amount=...&term=...) or already
-    # present on an in-progress DRAFT. Otherwise send the user back
-    # to /quick-loan/ to choose amount and term.
-    if request.method == "GET" and existing is None:
-        has_url_params = bool(
-            (request.GET.get("amount") or "").strip()
-            and (request.GET.get("term") or "").strip()
-        )
-        draft = (
-            LoanApplication.objects
-            .filter(user=request.user, status="DRAFT")
-            .order_by("-id")
-            .first()
-        )
-        if not has_url_params and not draft:
-            messages.info(request, "Please choose your loan amount and term first.")
-            return redirect("quick_loan")
 
     if request.method != "POST":
         return render(request, "loan_apply.html", {"locked": existing is not None, "loan": existing})
@@ -930,21 +904,6 @@ def loan_apply_view(request):
 def payment_method_view(request):
     """Payment method setup"""
     obj, _ = PaymentMethod.objects.get_or_create(user=request.user)
-
-    # ============================================================
-    # STEP-SKIP GUARD: when arriving via the loan flow
-    # (`?next=quick_loan`), the user must already have a DRAFT loan
-    # — that's the apply-loan step. If they skipped step 2, send
-    # them back there to complete it first.
-    # ============================================================
-    is_loan_flow = (request.GET.get("next") or "").strip() == "quick_loan"
-    if is_loan_flow and request.method == "GET":
-        has_draft = LoanApplication.objects.filter(
-            user=request.user, status="DRAFT"
-        ).exists()
-        if not has_draft:
-            messages.info(request, "Please complete your loan application first.")
-            return redirect("loan_apply")
 
     if request.method == "POST" and obj.locked:
         messages.error(request, "Locked. Please contact staff to update.")
