@@ -153,6 +153,14 @@ FILE_UPLOAD_HANDLERS = [
 WHITENOISE_MANIFEST_STRICT = False
 WHITENOISE_MAX_AGE = 31536000
 
+# ✅ Global socket timeout so Cloudinary (or any external HTTP call)
+# can't hang a gunicorn worker indefinitely. Without this, a single
+# unreachable Cloudinary upload pinned a worker until the 120s
+# gunicorn timeout, starving every other request and making the
+# staff control site feel slow.
+import socket
+socket.setdefaulttimeout(30)
+
 # ✅ CLOUDINARY
 import cloudinary
 cloudinary.config(
@@ -160,6 +168,10 @@ cloudinary.config(
     api_key=os.getenv("CLOUDINARY_API_KEY", ""),
     api_secret=os.getenv("CLOUDINARY_API_SECRET", ""),
     secure=True,
+    # Explicit per-call timeout for Cloudinary HTTP uploads (seconds).
+    # Cloudinary's library reads this from the config and applies it
+    # to each upload/api call.
+    timeout=20,
 )
 
 CLOUDINARY_STORAGE = {

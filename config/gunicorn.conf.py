@@ -3,13 +3,18 @@ import multiprocessing
 import os
 
 # Worker configuration
-workers = 2
+# 4 workers × 4 threads = 16 concurrent requests. With only 2 workers
+# (the previous setting), a single slow Cloudinary upload could pin
+# both workers and stall the entire site.
+workers = 4
 threads = 4
 worker_class = "gthread"
 
-# Timeout settings - INCREASED for image processing
-timeout = 120  # ពី 30 មក 120 វិនាទី
-graceful_timeout = 120
+# Timeout settings — request must finish within 60s. Cloudinary
+# itself has a 20s timeout (settings.py), so a hung upload will die
+# fast and not eat the whole worker budget.
+timeout = 60
+graceful_timeout = 30
 keep_alive = 5
 
 # Memory optimization
