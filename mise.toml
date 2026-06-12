@@ -1,0 +1,8 @@
+[settings]
+# Skip GitHub attestation verification when installing Python.
+# Railway's build runner (Nixpacks → mise 2026.x) tries to verify
+# attestations that don't exist for older Python releases, which
+# breaks builds with: "No GitHub artifact attestations found for
+# python@3.12.8". Disabling the check is the workaround mise itself
+# suggests in the error message.
+python.github_attestations = false
