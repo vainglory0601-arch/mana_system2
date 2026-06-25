@@ -5,12 +5,9 @@
 
 {% block extra_css %}
 {{ block.super }}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;900&family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Override base.html Lato — register page uses Noto Sans + Hind stack */
-body,body *,button,input,select,textarea,a{
+html body,html body *,html body button,html body input,
+html body select,html body textarea,html body a,html body th,html body td{
   font-family:'Noto Sans','Hind','Lato',system-ui,sans-serif!important;
 }
 </style>
@@ -200,6 +197,7 @@ input:-webkit-autofill{-webkit-text-fill-color:var(--ink)!important;-webkit-box-
   height:38px;padding:0 18px;border:2px solid var(--navy);border-radius:999px;
   background:transparent;color:var(--navy);font-size:13px;font-weight:800;
   cursor:pointer;font-family:inherit;letter-spacing:.04em;
+  display:inline-flex;align-items:center;justify-content:center;
   transition:background .15s,color .15s;
 }
 .cb-back:hover{background:var(--navy);color:#fff;}
