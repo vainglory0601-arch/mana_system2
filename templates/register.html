@@ -142,18 +142,17 @@ input:-webkit-autofill{-webkit-text-fill-color:var(--ink)!important;-webkit-box-
   border-bottom:1px solid #f0f2f8;
 }
 
-/* Mini staff character in header */
+/* Mini staff character in header — 500×500 square image */
 .cb-char-wrap{
-  width:64px;height:40px;
+  width:52px;height:34px;
   overflow:hidden;flex-shrink:0;
   position:relative;
   border-radius:6px;
 }
 .cb-char-mini{
   position:absolute;
-  width:112px;height:auto;
-  left:50%;transform:translateX(-50%);
-  top:0;display:block;
+  width:52px;height:auto;
+  left:0;top:0;display:block;
 }
 .cb-step{font-size:10.5px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);}
 .cb-dots{display:flex;gap:5px;align-items:center;}
@@ -348,7 +347,7 @@ var STEPS=[
   {
     sp:'sp1',inp:'inp_phone',
     step:'Step 1 of 4',label:'STEP 1 OF 4',next:'Next →',
-    body:_ico[0]+' Musta! Please enter your <b>phone number</b> below — we\'ll use this to contact you. Any format works!',
+    body:_ico[0]+' Hi! Please enter your <b>phone number</b> below. We\'ll use this to reach you — any format is fine!',
     validate:function(){
       var v=(document.getElementById('inp_phone')||{}).value||'';
       if(v.trim().length<6){show('e_phone');return false;}
