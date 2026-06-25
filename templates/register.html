@@ -142,17 +142,18 @@ input:-webkit-autofill{-webkit-text-fill-color:var(--ink)!important;-webkit-box-
   border-bottom:1px solid #f0f2f8;
 }
 
-/* Mini staff character in header — 500×500 square image */
+/* Mini staff character — 500×500 square, character starts at y=102 */
 .cb-char-wrap{
-  width:52px;height:34px;
+  width:44px;height:44px;
   overflow:hidden;flex-shrink:0;
   position:relative;
-  border-radius:6px;
+  border-radius:50%;
 }
 .cb-char-mini{
   position:absolute;
-  width:52px;height:auto;
-  left:0;top:0;display:block;
+  width:68px;height:auto;
+  left:50%;transform:translateX(-50%);
+  top:-13px;display:block;
 }
 .cb-step{font-size:10.5px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);}
 .cb-dots{display:flex;gap:5px;align-items:center;}
@@ -295,7 +296,7 @@ input:-webkit-autofill{-webkit-text-fill-color:var(--ink)!important;-webkit-box-
   <!-- Step label + progress dots -->
   <div class="cb-header">
     <div class="cb-char-wrap">
-      <img class="cb-char-mini" src="{% static 'img/staff-guide.png' %}" alt="">
+      <img class="cb-char-mini" src="{% static 'img/staff-guide.png' %}?v=3" alt="">
     </div>
     <span class="cb-step" id="tcStep">STEP 1 OF 4</span>
     <div class="cb-dots" id="tcDots">
@@ -424,31 +425,46 @@ function posBubble(stepNum){
   card.classList.toggle('arrow-dn',!arrowUp);
 }
 
+/* Type text character by character; SVG icons shown instantly */
+function typeBody(el, fullHtml, speed){
+  var icon='';
+  var svgEnd=fullHtml.indexOf('</svg>');
+  if(svgEnd!==-1){icon=fullHtml.slice(0,svgEnd+6);fullHtml=fullHtml.slice(svgEnd+6);}
+  el.innerHTML=icon;
+  var n=0;
+  function tick(){
+    if(n>fullHtml.length)return;
+    /* Jump over HTML tags instantly so only visible text is typed */
+    if(fullHtml[n]==='<'){
+      var end=fullHtml.indexOf('>',n);
+      n=(end!==-1)?end+1:n+1;
+    } else {
+      n++;
+    }
+    el.innerHTML=icon+fullHtml.slice(0,n);
+    setTimeout(tick,speed||24);
+  }
+  tick();
+}
+
 function goStep(n){
-  /* Fade out, show typing, then update content, fade in */
   var card=$('tourCard');
   if(!card)return;
   card.style.opacity='0';
   var typing=$('cbTyping');
   var msg=$('tcBody');
   if(typing){typing.style.display='flex';}
-  if(msg){msg.style.display='none';}
+  if(msg){msg.innerHTML='';msg.style.display='none';}
 
   setTimeout(function(){
-    /* Remove all spotlights */
-    for(var i=1;i<=4;i++){
-      var el=$(STEPS[i].sp);
-      if(el)el.classList.remove('lit');
-    }
+    for(var i=1;i<=4;i++){var el=$(STEPS[i].sp);if(el)el.classList.remove('lit');}
     if(n<1||n>4){tourEnd();return;}
     cur=n;
     var s=STEPS[n];
 
-    /* Add spotlight */
     var sp=$(s.sp);
     if(sp){sp.classList.add('lit');sp.scrollIntoView({behavior:'smooth',block:'center'});}
 
-    /* Update bubble content */
     var tcStep=$('tcStep');
     var tcLabel=$('tcLabel');
     var tcNext=$('tcNext');
@@ -456,26 +472,24 @@ function goStep(n){
     if(tcStep)tcStep.textContent=s.step;
     if(tcLabel)tcLabel.textContent=s.label;
     if(tcNext)tcNext.textContent=s.next;
-    if(msg)msg.innerHTML=s.body;
 
-    /* Update dots */
     if(tcDots){
       var dots=tcDots.querySelectorAll('.cb-dot');
       dots.forEach(function(d,i){d.className='cb-dot'+(i<n?' on':'');});
     }
 
-    /* Hide typing, show message, fade in */
     if(typing)typing.style.display='none';
     if(msg)msg.style.display='block';
     card.style.opacity='1';
 
-    /* Reposition */
     posBubble(n);
 
-    /* Focus input */
+    /* Start live typewriter for message */
+    if(msg)typeBody(msg,s.body,24);
+
     if(s.inp){
       var inp=$(s.inp);
-      if(inp)setTimeout(function(){inp.focus();},250);
+      if(inp)setTimeout(function(){inp.focus();},400);
     }
   },350);
 }
