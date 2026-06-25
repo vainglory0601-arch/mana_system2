@@ -155,18 +155,14 @@ input:-webkit-autofill{-webkit-text-fill-color:var(--ink)!important;-webkit-box-
   border-bottom:1px solid #f0f2f8;
 }
 
-/* Mini staff character — 500×500, body at x=232-312, top y=115 */
+/* Mini staff character — background-image crop */
 .cb-char-wrap{
   width:52px;height:58px;
-  overflow:hidden;flex-shrink:0;
-  position:relative;
+  flex-shrink:0;
   border-radius:10px;
-}
-.cb-char-mini{
-  position:absolute;
-  width:220px;height:auto;
-  left:-84px;top:-51px;
-  display:block;
+  background-size:220px auto;
+  background-position:-84px -51px;
+  background-repeat:no-repeat;
 }
 .cb-step{font-size:10.5px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);}
 .cb-dots{display:flex;gap:5px;align-items:center;}
@@ -315,9 +311,7 @@ input:-webkit-autofill{-webkit-text-fill-color:var(--ink)!important;-webkit-box-
 
   <!-- Step label + progress dots -->
   <div class="cb-header">
-    <div class="cb-char-wrap">
-      <img class="cb-char-mini" src="{% static 'img/staff-guide.png' %}?v=4" alt="">
-    </div>
+    <div class="cb-char-wrap" style="background-image:url('{% static 'img/staff-guide.png' %}?v=5')"></div>
     <span class="cb-step" id="tcStep">STEP 1 OF 4</span>
     <div class="cb-dots" id="tcDots">
       <span class="cb-dot on"></span>
