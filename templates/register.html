@@ -3,15 +3,25 @@
 {% load static %}
 {% block nav %}{% endblock %}
 
-{% block content %}
+{% block extra_css %}
+{{ block.super }}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;900&family=Hind:wght@400;500;600;700&family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;900&family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Override base.html Lato — register page uses Noto Sans + Hind stack */
+body,body *,button,input,select,textarea,a{
+  font-family:'Noto Sans','Hind','Lato',system-ui,sans-serif!important;
+}
+</style>
+{% endblock %}
+
+{% block content %}
 <style>
 #pageRoot.wrap{max-width:100%!important;width:100%!important;padding:0!important;display:block!important;}
 body{padding-bottom:0!important;overflow-x:hidden!important;min-height:100vh;
   background:linear-gradient(160deg,#071540 0%,#0c1f5c 60%,#0a1a4a 100%)!important;
-  color:#0a1a3a;font-family:'Noto Sans','Hind','Lato',system-ui,sans-serif!important;}
+  color:#0a1a3a;}
 body,body *{font-family:inherit!important;box-sizing:border-box;}
 *{margin:0;padding:0;box-sizing:border-box;}
 
@@ -145,7 +155,7 @@ input:-webkit-autofill{-webkit-text-fill-color:var(--ink)!important;-webkit-box-
   border-bottom:1px solid #f0f2f8;
 }
 
-/* Mini staff character — 500×500 square, character starts at y=150 */
+/* Mini staff character — 500×500, character center_x=328, top y=102 */
 .cb-char-wrap{
   width:52px;height:58px;
   overflow:hidden;flex-shrink:0;
@@ -155,8 +165,8 @@ input:-webkit-autofill{-webkit-text-fill-color:var(--ink)!important;-webkit-box-
 .cb-char-mini{
   position:absolute;
   width:104px;height:auto;
-  left:50%;transform:translateX(-50%);
-  top:-31px;display:block;
+  left:-42px;top:-21px;
+  display:block;
 }
 .cb-step{font-size:10.5px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);}
 .cb-dots{display:flex;gap:5px;align-items:center;}
