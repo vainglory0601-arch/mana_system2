@@ -74,6 +74,43 @@ The script loads into whatever DATABASE_URL points to in `backup_config.ps1`. To
 
 `backup_db.ps1` keeps the **last 30 days** of dumps and deletes older ones. Adjust the `$Cutoff` line if you want a different window.
 
+## Cloud backup (GitHub Actions — runs even when your PC is off)
+
+Local Task Scheduler only fires when this PC is on. To guarantee a daily dump even when the laptop is closed, a **separate private repo** runs the workflow on GitHub's own servers every day at 02:00 Asia/Manila and commits the dump there.
+
+Why a separate repo: this `mana_system2` repo is public, so committing user data into it would leak passwords/phone numbers/balances. The dedicated backup repo is private and holds only the dumps.
+
+### One-time setup
+
+1. **Create the private companion repo** on GitHub:
+   - Name: `mana_system2_backup`
+   - Visibility: **Private**
+   - Do NOT initialize with a README (we already have one locally).
+
+2. **Push the local backup-repo folder** (already prepared at `c:\Mana_system2_backup\`):
+
+   ```powershell
+   cd C:\Mana_system2_backup
+   git remote add origin https://github.com/vainglory0601-arch/mana_system2_backup.git
+   git push -u origin main
+   ```
+
+3. **Add the DATABASE_URL secret** to the backup repo:
+   GitHub → `mana_system2_backup` Settings → *Secrets and variables* → **Actions** → *New repository secret*
+   - Name: `DATABASE_URL`
+   - Value: the **External Database URL** from Render.
+
+4. **Run the workflow once** to verify:
+   GitHub → `mana_system2_backup` → *Actions* tab → *Daily DB Backup* → *Run workflow* → main → green tick → a new `backups/backup-…json` appears in the repo.
+
+### Pulling cloud backups down to this PC
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\sync_backups.ps1
+```
+
+This clones (first run) or pulls the private backup repo into `%LOCALAPPDATA%\OFL-Backup-Cache\` and copies any new dump files into `c:\Mana_system2\backups\`. Run it any time, or schedule it daily in Task Scheduler.
+
 ## What's in git vs. not in git
 
 | File | In git? |
