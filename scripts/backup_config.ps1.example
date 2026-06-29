@@ -1,0 +1,18 @@
+# ============================================================
+# Backup config template
+# ============================================================
+# Copy this file to  backup_config.ps1  (in the same folder)
+# and paste your EXTERNAL DATABASE URL from Render between
+# the quotes.
+#
+# You can find this URL at:
+#   Render dashboard → ofl-postgres → Connect → External
+#   Database URL
+#
+# Format: postgresql://USER:PASSWORD@HOST.singapore-postgres.render.com/DBNAME
+#
+# backup_config.ps1 is gitignored — your credentials never
+# leave your machine.
+# ============================================================
+
+$env:DATABASE_URL = "postgresql://USER:PASSWORD@HOST.singapore-postgres.render.com/DBNAME"

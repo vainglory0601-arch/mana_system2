@@ -47,3 +47,7 @@ prompt.txt
 fix_credit_score.py
 approve
 .txt
+
+# Local database backups (sensitive — never commit)
+backups/
+scripts/backup_config.ps1
