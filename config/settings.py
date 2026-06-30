@@ -77,7 +77,10 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 # ✅ DATABASE - PostgreSQL via DATABASE_URL when available, else SQLite locally.
 _db_url = os.getenv("DATABASE_URL", "").strip()
-if _db_url:
+_VALID_SCHEMES = ("postgres://", "postgresql://", "postgis://", "redshift://")
+_db_valid = bool(_db_url) and any(_db_url.startswith(s) for s in _VALID_SCHEMES)
+
+if _db_valid:
     DATABASES = {
         "default": dj_database_url.parse(
             _db_url,
@@ -85,21 +88,20 @@ if _db_url:
             conn_health_checks=True,
         )
     }
-    if "postgresql" in DATABASES["default"].get("ENGINE", ""):
-        DATABASES["default"].setdefault("OPTIONS", {})
-        DATABASES["default"]["OPTIONS"]["connect_timeout"] = 10
-        DATABASES["default"]["OPTIONS"]["options"] = "-c statement_timeout=30000"
-        print("[DB] Using PostgreSQL via DATABASE_URL")
-    else:
-        print("[DB] Using DATABASE_URL engine=" + DATABASES["default"].get("ENGINE", "?"))
+    DATABASES["default"].setdefault("OPTIONS", {})
+    DATABASES["default"]["OPTIONS"]["connect_timeout"] = 10
+    DATABASES["default"]["OPTIONS"]["options"] = "-c statement_timeout=30000"
+    print("[DB] Using PostgreSQL via DATABASE_URL")
 else:
+    if _db_url:
+        print(f"[DB] WARNING: DATABASE_URL set but invalid scheme — falling back to SQLite. Value starts with: {_db_url[:30]!r}")
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
         }
     }
-    print("[DB] Using local SQLite (no DATABASE_URL set)")
+    print("[DB] Using local SQLite (no valid DATABASE_URL)")
 
 # ✅ CACHES - SIMPLE (No complex options)
 CACHES = {
