@@ -5,1314 +5,782 @@
 
 {% block content %}
 <style>
-/* ===== Overseas FilipinoLoan Loan Application — Filipino Flag Style ===== */
-
+/* ===== OFL Loan Application — Navy / Orange / White Culture ===== */
 :root {
-  --ph-blue: #0032A0;
-  --ph-blue-dark: #00226e;
-  --ph-red: #BF0D3E;
-  --ph-red-dark: #8b0628;
-  --ph-gold: #FED141;
-  --ph-gold-dark: #e6b820;
-  --ink: #0a1a3a;
-  --mut: #5a6378;
-  --line: #e3e8f1;
+  --navy:#0A2463; --navy-dk:#061540; --navy-lt:#1a3a8a; --navy-mid:#0d2b75;
+  --orange:#FF8C00; --orange-dk:#D97200; --orange-lt:#FFA733;
+  --bg:#f0f3f9; --card:#ffffff;
+  --ink:#0d1b3e; --ink2:#5a6680; --ink3:#9aa3b8; --line:#e6eaf4;
+  --green:#16a34a; --red:#dc2626; --red-dk:#b91c1c;
 }
 
-html, body { width: 100%; overflow-x: hidden; }
+html:not([data-theme="dark"]) body { background:var(--bg) !important; }
+html, body { width:100%; overflow-x:hidden; }
+html body, html body * {
+  font-family:"Lato","Open Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif !important;
+}
+.wrap { padding-top:0 !important; }
 
-body{
-  margin: 0;
-  min-height: 100vh;
-  font-family: "Lato", "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
-  color: var(--ink) !important;
-  background:
-    radial-gradient(800px 600px at 15% 20%, rgba(0,50,160,.10) 0%, transparent 60%),
-    radial-gradient(700px 500px at 85% 80%, rgba(191,13,62,.08) 0%, transparent 60%),
-    radial-gradient(500px 400px at 50% 50%, rgba(254,209,65,.10) 0%, transparent 65%),
-    linear-gradient(180deg, #fafbff 0%, #eef2fb 100%) !important;
-  background-attachment: fixed !important;
-}
-body, body *, body button, body input, body select, body textarea, body a {
-  font-family: "Lato", "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
-}
-
-/* ============================================================
-   DARK MODE — make Loan Application cards consistent
-   (so phone in dark mode does not show white inner cards over
-    dark outer card)
-   ============================================================ */
-html[data-theme="dark"] .apply-card{
-  background: #0a132e !important;
-  border: 1px solid rgba(255,255,255,.08) !important;
-}
-html[data-theme="dark"] .sec-head h3{ color:#eaf2ff !important; }
-html[data-theme="dark"] .sec-head p{ color: rgba(234,242,255,.7) !important; }
-
-html[data-theme="dark"] .type-card{
-  background: rgba(255,255,255,.04) !important;
-  border: 1px solid rgba(255,255,255,.10) !important;
-}
-html[data-theme="dark"] .type-card:hover{
-  background: rgba(255,255,255,.07) !important;
-}
-html[data-theme="dark"] .type-icon{
-  background: rgba(0,50,160,.25) !important;
-  border: 1px solid rgba(0,80,200,.35) !important;
-}
-html[data-theme="dark"] .type-icon svg{ stroke:#7fb6ff !important; }
-html[data-theme="dark"] .type-name{ color:#eaf2ff !important; }
-html[data-theme="dark"] .type-desc{ color: rgba(234,242,255,.65) !important; }
-html[data-theme="dark"] .type-check{
-  border-color: rgba(255,255,255,.20) !important;
-  background: transparent !important;
-}
-html[data-theme="dark"] .type-card:has(input:checked){
-  background: rgba(191,13,62,.18) !important;
-  border-color: var(--ph-red) !important;
-}
-html[data-theme="dark"] .type-card:has(input:checked) .type-name,
-html[data-theme="dark"] .type-card:has(input:checked) .type-desc{
-  color:#ffffff !important;
-}
-
-/* Inputs in dark mode */
-html[data-theme="dark"] .field label{ color:#eaf2ff !important; }
+/* dark mode */
+html[data-theme="dark"] .la-card  { background:#0a132e !important; border-color:rgba(255,255,255,.08) !important; }
+html[data-theme="dark"] .la-card-title { color:#eaf2ff !important; }
+html[data-theme="dark"] .la-card-sub   { color:rgba(234,242,255,.55) !important; }
+html[data-theme="dark"] .type-tile { background:rgba(255,255,255,.04) !important; border-color:rgba(255,255,255,.10) !important; }
+html[data-theme="dark"] .type-tile:hover { background:rgba(255,255,255,.07) !important; }
+html[data-theme="dark"] .type-tile-name { color:#eaf2ff !important; }
+html[data-theme="dark"] .type-tile-desc { color:rgba(234,242,255,.45) !important; }
+html[data-theme="dark"] .type-tile-ico { background:rgba(255,255,255,.08) !important; border-color:rgba(255,255,255,.15) !important; }
+html[data-theme="dark"] .type-tile:has(input:checked) { background:linear-gradient(135deg,var(--orange-lt),var(--orange-dk)) !important; border-color:var(--orange-dk) !important; }
 html[data-theme="dark"] input[type="text"],
 html[data-theme="dark"] input[type="number"],
 html[data-theme="dark"] input[type="tel"],
 html[data-theme="dark"] input[type="email"],
 html[data-theme="dark"] textarea,
-html[data-theme="dark"] select{
-  background: rgba(255,255,255,.06) !important;
-  border: 1.5px solid rgba(255,255,255,.14) !important;
-  color:#eaf2ff !important;
+html[data-theme="dark"] select { background:rgba(255,255,255,.06) !important; border-color:rgba(255,255,255,.14) !important; color:#eaf2ff !important; }
+html[data-theme="dark"] .field label { color:rgba(234,242,255,.55) !important; }
+html[data-theme="dark"] .section-title { color:var(--orange-lt) !important; }
+html[data-theme="dark"] .summary .k { color:rgba(234,242,255,.65) !important; }
+html[data-theme="dark"] .summary .v { color:#fff !important; -webkit-text-fill-color:#fff !important; }
+html[data-theme="dark"] .summary .row:last-child .v { color:var(--orange-lt) !important; -webkit-text-fill-color:var(--orange-lt) !important; }
+html[data-theme="dark"] .idbox { background:rgba(255,255,255,.04) !important; border-color:rgba(255,255,255,.15) !important; }
+html[data-theme="dark"] .sig-canvas { background:#0d1b3e !important; }
+
+/* keyframes */
+@keyframes laFadeUp  { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+@keyframes laShimmer { 0%{transform:translateX(-120%) skewX(-15deg)} 100%{transform:translateX(300%) skewX(-15deg)} }
+@keyframes laPulse   { 0%,100%{box-shadow:0 8px 24px rgba(255,140,0,.38),inset 0 1px 0 rgba(255,255,255,.18)} 50%{box-shadow:0 12px 32px rgba(255,140,0,.60),inset 0 1px 0 rgba(255,255,255,.18)} }
+@keyframes dotBlink  { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.45;transform:scale(.65)} }
+@keyframes orbFloat  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+@keyframes ctaSpin   { to{transform:rotate(360deg)} }
+
+/* ─── HERO ─── */
+.la-hero {
+  position:relative;
+  background:linear-gradient(150deg,var(--navy-dk) 0%,var(--navy) 52%,var(--navy-mid) 100%);
+  padding:max(22px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-left)) 30px max(18px,env(safe-area-inset-left));
+  margin:0 -14px; overflow:hidden;
 }
-html[data-theme="dark"] input::placeholder,
-html[data-theme="dark"] textarea::placeholder{ color: rgba(234,242,255,.45) !important; }
-html[data-theme="dark"] input:focus,
-html[data-theme="dark"] textarea:focus,
-html[data-theme="dark"] select:focus{
-  border-color: #7fb6ff !important;
+.la-hero-orb  { position:absolute; top:-55px; right:-55px; width:210px; height:210px; border-radius:50%; background:radial-gradient(circle,rgba(255,140,0,.28) 0%,transparent 68%); animation:orbFloat 7s ease-in-out infinite; pointer-events:none; }
+.la-hero-orb2 { position:absolute; bottom:-40px; left:-40px; width:170px; height:170px; border-radius:50%; background:radial-gradient(circle,rgba(26,58,138,.50) 0%,transparent 70%); pointer-events:none; }
+.la-dot-grid  { position:absolute; inset:0; z-index:0; background-image:radial-gradient(rgba(255,255,255,.06) 1px,transparent 1px); background-size:22px 22px; pointer-events:none; }
+
+.la-nav { position:relative; z-index:4; display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+.la-nav-back { width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,.11); border:1px solid rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; text-decoration:none; flex-shrink:0; transition:background .18s; }
+.la-nav-back:hover { background:rgba(255,255,255,.22); }
+.la-nav-back svg { width:16px; height:16px; fill:none; stroke:#fff; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+
+.la-hero-eyebrow { position:relative; z-index:3; font-size:10px; font-weight:900; color:rgba(255,255,255,.50); letter-spacing:.24em; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.la-hero-eyebrow::before { content:""; display:block; width:24px; height:2px; background:var(--orange); border-radius:1px; }
+.la-hero-title { position:relative; z-index:3; font-size:28px; font-weight:900; color:#fff; letter-spacing:-.4px; line-height:1.05; margin:0 0 6px; }
+.la-hero-sub   { position:relative; z-index:3; font-size:13px; color:rgba(255,255,255,.50); font-weight:600; }
+
+/* ─── PAGE ─── */
+.la-page { width:min(540px,96vw); max-width:540px; margin:0 auto; padding:0 14px 70px; box-sizing:border-box; }
+.la-body { margin-top:-22px; }
+
+/* ─── LOAN PREVIEW / REMINDER CARD ─── */
+.la-preview {
+  overflow:hidden; border-radius:20px; margin-bottom:14px;
+  background:#fff; border:1px solid var(--line);
+  box-shadow:0 8px 28px rgba(10,36,99,.13), 0 2px 6px rgba(0,0,0,.06);
+  opacity:0; animation:laFadeUp .42s ease-out .06s both;
+}
+.lpb-top {
+  position:relative; overflow:hidden;
+  background:linear-gradient(130deg,var(--orange-lt) 0%,var(--orange) 52%,var(--orange-dk) 100%);
+  padding:14px 18px 13px;
+}
+.lpb-top::before { content:""; position:absolute; inset:0; background-image:radial-gradient(rgba(255,255,255,.14) 1px,transparent 1px); background-size:16px 16px; pointer-events:none; }
+.lpb-top::after  { content:""; position:absolute; bottom:-22px; right:-22px; width:90px; height:90px; border-radius:50%; background:rgba(255,255,255,.10); pointer-events:none; }
+.lpb-top > * { position:relative; z-index:2; }
+
+.lpb-label { font-size:8px; font-weight:900; color:rgba(255,255,255,.82); letter-spacing:.22em; text-transform:uppercase; margin-bottom:7px; display:flex; align-items:center; gap:7px; }
+.lpb-dot   { width:5px; height:5px; border-radius:50%; background:#fff; opacity:.9; animation:dotBlink 1.6s ease-in-out infinite; flex:0 0 auto; }
+
+.lpb-amount-row { display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; }
+.lpb-currency   { font-size:15px; font-weight:900; color:rgba(255,255,255,.85); }
+.lpb-amount     { font-size:30px; font-weight:900; color:#fff; letter-spacing:-1px; line-height:1; text-shadow:0 2px 8px rgba(0,0,0,.18); }
+
+/* stats strip — white */
+.lpb-stats { display:flex; align-items:stretch; background:#fff; padding:12px 8px; gap:0; }
+.lpb-stat { flex:1; text-align:center; padding:0 6px; }
+.lpb-stat-sep { width:1px; background:var(--line); flex:0 0 auto; margin:2px 0; }
+.lpb-stat-lbl { font-size:8px; font-weight:900; color:var(--ink3); letter-spacing:.16em; text-transform:uppercase; margin-bottom:5px; }
+.lpb-stat-val { font-size:13px; font-weight:900; color:var(--navy); letter-spacing:.01em; }
+.lpb-stat-hi .lpb-stat-val { color:var(--orange-dk); }
+
+/* ─── SECTION CARDS ─── */
+.la-card {
+  position:relative; background:var(--card); border-radius:24px;
+  padding:22px; margin-bottom:14px; overflow:hidden;
+  box-shadow:0 8px 30px rgba(10,36,99,.09), 0 2px 6px rgba(0,0,0,.04);
+  border:1px solid var(--line);
+  opacity:0; animation:laFadeUp .42s ease-out both;
+}
+.la-card::before { content:""; position:absolute; top:18px; left:0; width:4px; height:calc(100% - 36px); border-radius:0 4px 4px 0; background:linear-gradient(180deg,var(--orange-lt),var(--orange-dk)); }
+.la-card:nth-child(2) { animation-delay:.12s; }
+.la-card:nth-child(3) { animation-delay:.18s; }
+.la-card:nth-child(4) { animation-delay:.24s; }
+.la-card:nth-child(5) { animation-delay:.30s; }
+
+.la-card-head  { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
+.la-card-ico   { width:46px; height:46px; border-radius:15px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
+.la-card-ico svg { width:22px; height:22px; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+.la-ico-orange { background:linear-gradient(135deg,var(--orange-lt),var(--orange-dk)); box-shadow:0 4px 14px rgba(255,140,0,.32); }
+.la-ico-orange svg { stroke:#fff; fill:none; }
+.la-ico-navy   { background:rgba(10,36,99,.10); border:1.5px solid rgba(10,36,99,.18); }
+.la-ico-navy svg { stroke:var(--navy); fill:none; }
+html[data-theme="dark"] .la-ico-navy { background:rgba(255,255,255,.10) !important; border-color:rgba(255,255,255,.18) !important; }
+html[data-theme="dark"] .la-ico-navy svg { stroke:rgba(200,220,255,.80) !important; }
+.la-card-info  { flex:1; min-width:0; }
+.la-card-title { font-size:15.5px; font-weight:900; color:var(--ink); letter-spacing:-.1px; }
+.la-card-sub   { font-size:12px; color:var(--ink2); font-weight:600; margin-top:2px; }
+
+.section-title { font-size:9.5px; font-weight:900; color:var(--orange); letter-spacing:.22em; text-transform:uppercase; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--line); }
+
+/* ─── Loan purpose tile grid ─── */
+.type-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:12px; }
+.type-tile {
+  position:relative; display:flex; flex-direction:column;
+  align-items:center; justify-content:flex-start;
+  gap:0; padding:20px 12px 16px;
+  border-radius:20px; border:1.5px solid var(--line); background:#fff;
+  cursor:pointer; user-select:none; text-align:center;
+  min-height:120px; transition:all .26s ease;
+}
+.type-tile:hover {
+  border-color:rgba(10,36,99,.28); background:rgba(10,36,99,.03);
+  box-shadow:0 8px 22px rgba(10,36,99,.11); transform:translateY(-2px);
+}
+.type-tile:active { transform:translateY(0) scale(.98); }
+.type-tile input { display:none; }
+.type-tile-ico {
+  width:52px; height:52px; border-radius:16px;
+  background:rgba(10,36,99,.09); border:1.5px solid rgba(10,36,99,.16);
+  display:flex; align-items:center; justify-content:center;
+  margin-bottom:10px; transition:all .26s ease;
+}
+.type-tile-ico svg { width:24px; height:24px; stroke:var(--navy); fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; transition:stroke .22s; }
+.type-tile-name { font-size:12px; font-weight:900; color:var(--ink); letter-spacing:.01em; line-height:1.2; margin-bottom:4px; }
+.type-tile-desc { font-size:10px; color:var(--ink2); font-weight:600; line-height:1.35; }
+
+/* selected → full orange gradient tile */
+.type-tile:has(input:checked) {
+  background:linear-gradient(145deg,var(--orange-lt) 0%,var(--orange) 55%,var(--orange-dk) 100%);
+  border-color:var(--orange-dk);
+  box-shadow:0 10px 28px rgba(255,140,0,.42); transform:translateY(-2px);
+}
+.type-tile:has(input:checked) .type-tile-ico {
+  background:rgba(255,255,255,.22); border-color:rgba(255,255,255,.32);
+  box-shadow:0 4px 14px rgba(0,0,0,.14);
+}
+.type-tile:has(input:checked) .type-tile-ico svg { stroke:#fff; }
+.type-tile:has(input:checked) .type-tile-name { color:#fff; }
+.type-tile:has(input:checked) .type-tile-desc { color:rgba(255,255,255,.65); }
+
+/* ─── Fields ─── */
+.field { margin-bottom:12px; }
+label, .field > label { display:block; color:var(--navy); font-weight:900; font-size:10px; letter-spacing:.18em; text-transform:uppercase; margin-bottom:6px; }
+input[type="text"], input[type="number"], input[type="tel"], input[type="email"], input[type="password"], textarea {
+  width:100%; height:44px; min-height:44px; max-height:44px;
+  background:#f7f9fc; border:1.5px solid var(--line); border-radius:12px;
+  color:var(--ink); padding:12px 14px; font-size:14px; font-family:inherit;
+  box-sizing:border-box; outline:none; caret-color:var(--orange); resize:none;
+  transition:border-color .2s, box-shadow .2s, background .2s; appearance:none; -webkit-appearance:none;
+}
+textarea { height:auto; max-height:none; }
+input::placeholder, textarea::placeholder { color:var(--ink3); }
+input:focus, textarea:focus { border-color:var(--orange); background:#fff; box-shadow:0 0 0 4px rgba(255,140,0,.10); }
+input[readonly], textarea[readonly] { opacity:.75; cursor:default; background:#f0f3f9 !important; }
+input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus {
+  -webkit-text-fill-color:var(--ink) !important;
+  -webkit-box-shadow:0 0 0px 1000px #fff inset !important;
+  caret-color:var(--orange) !important;
+  transition:background-color 9999s ease-in-out 0s;
+}
+input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+input[type="number"] { -moz-appearance:textfield; }
+
+.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media (max-width:520px) { .grid-2 { grid-template-columns:1fr; } }
+@media (min-width:900px) {
+  #sigBox { grid-column:1 / span 2; height:auto; padding:14px; }
+  #sigBox .sig-canvas { height:260px; }
+  .sig-clear-wrap { grid-column:1 / span 2; justify-content:flex-end; margin-top:10px; }
 }
 
-/* Page title + subtitle white in dark */
-html[data-theme="dark"] .page-title{ color:#ffffff !important; }
-html[data-theme="dark"] .page-title small{ color: rgba(255,255,255,.75) !important; }
+.term-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:9px; margin-top:10px; }
+.term-btn { padding:12px 8px; border-radius:12px; border:1.5px solid var(--line); background:#f7f9fc; color:var(--ink2); font-weight:900; font-size:14px; font-family:inherit; cursor:pointer; transition:all .22s; }
+.term-btn:hover { color:var(--navy); border-color:rgba(10,36,99,.30); background:#fff; box-shadow:0 4px 12px rgba(10,36,99,.10); }
+.term-btn:active { transform:scale(.97); }
+.term-btn.active { color:#fff; background:linear-gradient(135deg,var(--orange-lt),var(--orange),var(--orange-dk)); border-color:var(--orange-dk); box-shadow:0 6px 18px rgba(255,140,0,.36); }
 
-/* Summary rows: Amount / Interest rate / Loan period values white,
-   Monthly repayment value also white */
-html[data-theme="dark"] .summary .k{ color: rgba(255,255,255,.75) !important; }
-html[data-theme="dark"] .summary .v{ color:#ffffff !important; -webkit-text-fill-color:#ffffff !important; }
-html[data-theme="dark"] .summary .row:last-child .v{
-  color:#ffffff !important;
-  -webkit-text-fill-color:#ffffff !important;
-}
+.hint { margin-top:8px; font-size:12px; font-weight:600; color:var(--ink3); display:flex; align-items:center; gap:5px; }
+.hint::before { content:""; width:4px; height:4px; border-radius:50%; background:var(--orange-lt); flex:0 0 auto; }
+hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
 
-/* ====================================================== */
-/* ===== FILIPINO FLAG THEME OVERRIDES ================== */
-/* ====================================================== */
+/* ID upload */
+.id-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; align-items:stretch; width:100%; margin-top:10px; }
+.id-grid .idbox.selfie-box { grid-column:1/-1; }
+@media (max-width:520px) { .id-grid { grid-template-columns:1fr; } .id-grid .idbox.selfie-box { grid-column:auto; } }
+.idbox { height:180px; padding:14px 10px; border-radius:14px; border:1.5px dashed rgba(10,36,99,.25); background:#f7f9fc; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:8px; cursor:pointer; position:relative; overflow:hidden; color:var(--ink2); transition:border-color .2s, background .2s, box-shadow .2s; }
+.idbox.selfie-box { height:150px; }
+.idbox:hover { border-color:var(--orange); background:rgba(255,140,0,.04); box-shadow:0 0 18px rgba(255,140,0,.18); }
+.idbox small  { color:var(--ink2); font-weight:700; font-size:12px; }
+.idbox strong { color:var(--ink); font-weight:900; }
+.id-text strong { color:var(--ink); font-weight:900; }
+.id-text small  { color:var(--ink2); }
+.id-ico { color:var(--orange); font-size:26px; }
+.id-guide { position:absolute; inset:0; width:100%; height:100%; border-radius:12px; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:12px 10px; box-sizing:border-box; background:transparent; border:none; }
+.id-guide .id-art { width:44px; height:44px; display:block; color:var(--navy); }
+.idbox.selfie-box .id-guide .id-art { width:48px; height:40px; }
+.id-guide .id-caption { text-align:center; line-height:1.4; }
+.id-guide .id-caption strong { color:var(--ink); font-weight:900; font-size:12px; letter-spacing:.03em; text-transform:uppercase; display:block; }
+.id-guide .id-caption span { display:block; font-size:11px; color:var(--ink2); font-weight:600; margin-top:3px; }
+.id-preview { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:12px; z-index:2; display:none; }
+.idbox.has-img { border-style:solid; border-color:var(--orange); box-shadow:0 0 18px rgba(255,140,0,.18); }
+.idbox.has-img .id-preview { display:block; }
+.idbox.has-img .id-guide  { display:none; }
+.idbox.has-img .id-text   { display:none; }
 
-.page-title { color: var(--ph-blue-dark) !important; font-size: 24px !important; font-weight: 950 !important; letter-spacing: -.4px !important; }
-.page-title small { color: var(--mut) !important; font-weight: 600 !important; }
-
-.back-btn {
-  background: #fff !important;
-  border: 2px solid var(--ph-blue) !important;
-  color: var(--ph-blue-dark) !important;
-  border-radius: 999px !important;
-  font-weight: 900 !important;
-  letter-spacing: .08em !important;
-  text-transform: uppercase !important;
-  font-size: 12.5px !important;
-  box-shadow: 0 4px 12px rgba(0,50,160,.12) !important;
-  backdrop-filter: none !important;
-}
-.back-btn:hover {
-  background: var(--ph-blue) !important;
-  color: #fff !important;
-  box-shadow: 0 8px 18px rgba(0,50,160,.30) !important;
-  transform: translateY(-2px) !important;
-}
-
-/* Glass card → white with PH stripe */
-.apply-card {
-  background: #ffffff !important;
-  border: 1px solid var(--line) !important;
-  box-shadow: 0 4px 20px rgba(0,50,160,.08), 0 1px 3px rgba(0,0,0,.04) !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  color: var(--ink) !important;
-}
-.apply-card::before {
-  content: "" !important;
-  position: absolute !important;
-  top: 0 !important; left: 0 !important; right: 0 !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, var(--ph-blue), var(--ph-red), var(--ph-gold)) !important;
-  border-radius: 22px 22px 0 0 !important;
-}
-
-/* Section headers */
-.sec-head h3 { color: var(--ph-blue-dark) !important; }
-.sec-head p { color: var(--mut) !important; }
-.section-title { color: var(--ph-red) !important; }
-
-/* Type cards (loan purpose) — keep functional, recolor base */
-.type-card {
-  background: #fff !important;
-  border-color: var(--line) !important;
-  color: var(--ink) !important;
-  backdrop-filter: none !important;
-}
-.type-card:hover {
-  border-color: var(--ph-blue) !important;
-  background: rgba(0,50,160,.04) !important;
-  box-shadow: 0 6px 18px rgba(0,50,160,.14) !important;
-}
-.type-icon {
-  background: rgba(0,50,160,.08) !important;
-  border: 1px solid rgba(0,50,160,.30) !important;
-}
-.type-icon svg { stroke: var(--ph-blue) !important; }
-.type-name { color: var(--ph-blue-dark) !important; }
-.type-desc { color: var(--mut) !important; }
-.type-check {
-  border-color: var(--line) !important;
-  background: #fff !important;
-}
-/* Selected (uses :has to apply when input checked) */
-.type-card:has(input:checked) {
-  border-color: var(--ph-red) !important;
-  background: rgba(191,13,62,.04) !important;
-  box-shadow: 0 6px 18px rgba(191,13,62,.18) !important;
-}
-.type-card:has(input:checked) .type-icon {
-  background: linear-gradient(135deg, var(--ph-red), var(--ph-red-dark)) !important;
-  border-color: var(--ph-red) !important;
-}
-.type-card:has(input:checked) .type-icon svg { stroke: #fff !important; }
-.type-card:has(input:checked) .type-check {
-  background: var(--ph-red) !important;
-  border-color: var(--ph-red) !important;
-}
-
-/* Inputs */
-.field label { color: var(--ph-blue-dark) !important; }
-input[type="text"], input[type="number"], input[type="tel"], input[type="email"], textarea, select {
-  background: #fff !important;
-  border: 1.5px solid var(--line) !important;
-  color: var(--ink) !important;
-  caret-color: var(--ph-blue) !important;
-  backdrop-filter: none !important;
-}
-input::placeholder, textarea::placeholder { color: #9ca3af !important; }
-input:focus, textarea:focus, select:focus {
-  border-color: var(--ph-blue) !important;
-  box-shadow: 0 0 0 4px rgba(0,50,160,.10) !important;
-}
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus {
-  -webkit-text-fill-color: var(--ink) !important;
-  -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
-}
-
-/* Term buttons */
-.term-btn {
-  background: #fff !important;
-  border: 1.5px solid var(--line) !important;
-  color: var(--ph-blue) !important;
-  font-weight: 900 !important;
-  backdrop-filter: none !important;
-}
-.term-btn:hover {
-  border-color: var(--ph-blue) !important;
-  background: rgba(0,50,160,.04) !important;
-  color: var(--ph-blue-dark) !important;
-}
-.term-btn.active {
-  background: linear-gradient(135deg, var(--ph-blue), var(--ph-blue-dark)) !important;
-  color: #fff !important;
-  border-color: var(--ph-blue) !important;
-  box-shadow: 0 6px 18px rgba(0,50,160,.35) !important;
-}
-
-/* Hint */
-.hint { color: var(--mut) !important; }
-
-/* HR divider */
-hr { border: 0 !important; border-top: 1px dashed var(--line) !important; }
-
-/* ID upload boxes */
-.idbox {
-  background: #f6f8fc !important;
-  border: 1.5px dashed rgba(0,50,160,.35) !important;
-  color: var(--mut) !important;
-}
-.idbox:hover {
-  border-color: var(--ph-blue) !important;
-  background: rgba(0,50,160,.04) !important;
-  box-shadow: 0 4px 14px rgba(0,50,160,.12) !important;
-}
-.idbox.has-img {
-  border-color: var(--ph-blue) !important;
-  border-style: solid !important;
-}
-.idbox small { color: var(--mut) !important; }
-.idbox strong { color: var(--ph-blue-dark) !important; }
-.id-text strong { color: var(--ph-blue-dark) !important; }
-.id-text small { color: var(--mut) !important; }
-.id-ico { color: var(--ph-red) !important; }
-.id-guide {
-  background: transparent !important;
-  border: 0 !important;
-}
-.id-guide .id-art { color: var(--ph-blue) !important; }
-.id-guide .id-caption strong { color: var(--ph-blue-dark) !important; }
-
-/* Signature canvas */
-.sig-canvas {
-  background: #f6f8fc !important;
-  border: 1.5px dashed rgba(0,50,160,.35) !important;
-}
-.sig-clear-wrap .sig-btn {
-  background: #fff !important;
-  border: 1.5px solid var(--line) !important;
-  color: var(--ph-red) !important;
-  font-weight: 900 !important;
-}
-.sig-clear-wrap .sig-btn:hover {
-  background: rgba(191,13,62,.06) !important;
-  border-color: var(--ph-red) !important;
-}
+/* Signature */
+#sigBox { height:220px; padding:12px; justify-content:flex-start !important; align-items:stretch !important; text-align:left !important; gap:10px !important; }
+.sig-canvas { width:100%; height:150px; border-radius:12px; border:1.5px dashed rgba(10,36,99,.25); background:#f7f9fc; box-sizing:border-box; display:block; position:relative; z-index:1; cursor:crosshair; }
+#sigBox { position:relative; }
+#sigBox .sig-canvas { position:relative; z-index:2; }
+#sigBox img#sigPreviewImg { background:#f7f9fc; }
+.sig-clear-wrap { width:100%; display:flex; justify-content:flex-end; margin-top:10px; }
+.sig-clear-wrap .sig-btn { padding:8px 16px; border-radius:10px; border:1.5px solid var(--line); background:#fff; color:var(--red); font-weight:800; font-size:12px; cursor:pointer; font-family:inherit; transition:all .2s; }
+.sig-clear-wrap .sig-btn:hover { background:rgba(220,38,38,.06); border-color:var(--red); }
+.sig-clear-wrap .sig-btn:active { transform:scale(.97); }
 
 /* Summary */
-.summary { border-top-color: var(--line) !important; }
-.summary .row { border-bottom-color: var(--line) !important; }
-.summary .k { color: var(--mut) !important; }
-.summary .v { color: var(--ph-blue-dark) !important; }
-.summary .row:last-child {
-  border-top-color: var(--ph-gold) !important;
+.summary { margin-top:18px; padding-top:14px; border-top:1px solid var(--line); }
+.summary .row { display:flex; align-items:center; justify-content:space-between; gap:10px; border-bottom:1px solid var(--line); padding:11px 0; font-size:13px; }
+.summary .row:last-child { border-bottom:none; border-top:2px solid rgba(255,140,0,.28); margin-top:4px; padding-top:14px; font-size:15px; }
+.summary .k { color:var(--ink2); font-weight:600; }
+.summary .v { color:var(--navy); font-weight:900; }
+.summary .row:last-child .v { color:var(--orange-dk); font-weight:900; font-size:17px; }
+
+/* CTA */
+.cta { margin-top:16px; width:100%; }
+.btn.btn-primary {
+  width:100%; padding:16px;
+  background:linear-gradient(135deg,var(--orange-lt) 0%,var(--orange) 45%,var(--orange-dk) 100%);
+  color:#fff; border:0; border-radius:16px;
+  font-weight:900; font-size:15px; letter-spacing:.10em; text-transform:uppercase;
+  font-family:inherit; cursor:pointer;
+  box-shadow:0 8px 24px rgba(255,140,0,.40), inset 0 1px 0 rgba(255,255,255,.18);
+  animation:laPulse 2.8s ease-in-out infinite;
+  transition:transform .2s, filter .2s; position:relative; overflow:hidden;
 }
-.summary .row:last-child .v {
-  color: var(--ph-red) !important;
-  background: none !important;
-  -webkit-background-clip: initial !important;
-  background-clip: initial !important;
-  -webkit-text-fill-color: var(--ph-red) !important;
+.btn.btn-primary::after { content:""; position:absolute; inset:0; background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.13) 50%,transparent 70%); animation:laShimmer 3.5s ease-in-out 1.2s infinite; }
+.btn.btn-primary:hover  { transform:translateY(-2px); filter:brightness(1.07); }
+.btn.btn-primary:active { transform:translateY(0); }
+.btn.btn-primary:disabled { opacity:.36; cursor:not-allowed; transform:none; animation:none; background:var(--line); color:var(--ink3); box-shadow:none; }
+.btn.btn-primary:disabled::after { animation:none; }
+
+#confirmApplyBtn .cta-spinner { display:none; width:18px; height:18px; margin-left:10px; border:2.5px solid rgba(255,255,255,.35); border-top-color:#fff; border-radius:50%; vertical-align:middle; animation:ctaSpin .7s linear infinite; }
+#confirmApplyBtn.is-loading { cursor:not-allowed; opacity:.9; pointer-events:none; }
+#confirmApplyBtn.is-loading .cta-spinner { display:inline-block; }
+
+.muted { color:var(--ink2); font-size:13px; }
+.top-row  { display:none !important; }
+.back-btn { display:none !important; }
+.page     { display:none !important; }
+
+@media (max-width:768px) {
+  .la-card { animation:none !important; opacity:1 !important; }
+  .la-preview { animation:none !important; opacity:1 !important; }
 }
 
-/* Submit button */
-.submit-btn, button[type="submit"] {
-  background: linear-gradient(135deg, var(--ph-red) 0%, var(--ph-red-dark) 100%) !important;
-  color: #fff !important;
-  border: 0 !important;
-  box-shadow: 0 6px 18px rgba(191,13,62,.40) !important;
-  animation: none !important;
-  letter-spacing: .12em !important;
-  text-transform: uppercase !important;
-  font-weight: 950 !important;
+/* ─── Validation Modal ─── */
+@keyframes valSlideUp { from{opacity:0;transform:translateY(28px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+.val-overlay {
+  position:fixed; inset:0; z-index:10001;
+  background:rgba(6,21,64,.68); backdrop-filter:blur(5px) saturate(1.4);
+  display:flex; align-items:flex-end; justify-content:center;
+  padding:0 0 env(safe-area-inset-bottom,0);
+  opacity:0; visibility:hidden; transition:opacity .25s, visibility .25s;
 }
-.submit-btn:hover, button[type="submit"]:hover {
-  box-shadow: 0 10px 26px rgba(191,13,62,.55) !important;
-  filter: brightness(1.08) !important;
-  transform: translateY(-2px) !important;
+.val-overlay.is-open { opacity:1; visibility:visible; }
+.val-sheet {
+  background:#fff; border-radius:28px 28px 0 0;
+  padding:10px 22px 32px; width:100%; max-width:540px;
+  transform:translateY(100%); transition:transform .32s cubic-bezier(.34,1.3,.64,1);
 }
+.val-overlay.is-open .val-sheet { transform:translateY(0); }
+.val-handle { width:36px; height:4px; border-radius:2px; background:var(--line); margin:0 auto 18px; }
+.val-ico {
+  width:56px; height:56px; border-radius:18px;
+  background:linear-gradient(135deg,#fff4d6,#ffe9a8);
+  border:1.5px solid rgba(255,140,0,.20);
+  display:flex; align-items:center; justify-content:center; margin:0 auto 14px;
+}
+.val-ico svg { width:26px; height:26px; fill:none; stroke:var(--orange-dk); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+.val-title { font-size:19px; font-weight:900; color:var(--ink); text-align:center; margin-bottom:5px; }
+.val-sub { font-size:12.5px; color:var(--ink2); font-weight:600; text-align:center; margin-bottom:18px; }
+.val-list { list-style:none; padding:0; margin:0 0 22px; display:flex; flex-direction:column; gap:8px; }
+.val-list li {
+  display:flex; align-items:center; gap:10px;
+  font-size:13px; font-weight:700; color:var(--ink);
+  background:#f7f9fc; border-radius:12px; padding:11px 14px;
+  border-left:3px solid var(--orange);
+}
+.val-list li::before { content:""; width:6px; height:6px; border-radius:50%; background:var(--orange); flex:0 0 auto; }
+.val-close {
+  width:100%; padding:15px; border:0; border-radius:16px; font-family:inherit;
+  font-size:14.5px; font-weight:900; letter-spacing:.08em; cursor:pointer; color:#fff;
+  background:linear-gradient(135deg,var(--orange-lt),var(--orange),var(--orange-dk));
+  box-shadow:0 8px 22px rgba(255,140,0,.36), inset 0 1px 0 rgba(255,255,255,.18);
+  transition:transform .18s, filter .18s;
+}
+.val-close:hover { filter:brightness(1.06); transform:translateY(-1px); }
+.val-close:active { transform:scale(.98); }
 
-/* Mobile fix — force visibility */
-@media (max-width: 768px) {
-  .apply-card, .top-row {
-    opacity: 1 !important;
-    animation: none !important;
-  }
-}
-
-.wrap{ padding-top: 0 !important; align-items: flex-start; }
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-@keyframes glowPulse {
-  0%, 100% { box-shadow: 0 10px 30px rgba(59,130,246,.35), 0 0 0 1px rgba(59,130,246,.25) inset; }
-  50%      { box-shadow: 0 14px 40px rgba(59,130,246,.55), 0 0 0 1px rgba(96,165,250,.45) inset; }
-}
-
-.page{
-  width: min(520px, 94vw);
-  margin: 0 auto;
-  padding: 22px 14px 40px;
-  box-sizing: border-box;
-}
-
-/* ===== Top row ===== */
-.top-row{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-  opacity: 0;
-  animation: fadeInUp .5s ease-out .05s forwards;
-}
-.page-title{
-  color: #fff;
-  font-size: 22px;
-  font-weight: 900;
-  letter-spacing: -.2px;
-}
-.page-title small{
-  display: block;
-  color: #94a3b8;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: .02em;
-  margin-top: 2px;
-}
-.back-btn{
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 40px;
-  padding: 0 14px;
-  border-radius: 12px;
-  background: rgba(30,41,59,.55);
-  border: 1px solid rgba(56,189,248,.30);
-  color: #93c5fd;
-  font-size: 13px;
-  font-weight: 800;
-  text-decoration: none;
-  letter-spacing: .04em;
-  box-shadow: 0 0 14px rgba(56,189,248,.08);
-  transition: all .22s ease;
-}
-.back-btn:hover{
-  color: #fff;
-  border-color: rgba(56,189,248,.60);
-  background: rgba(56,189,248,.12);
-  box-shadow: 0 0 20px rgba(56,189,248,.22);
-}
-.back-btn svg{ width: 14px; height: 14px; }
-
-/* ===== Glass card ===== */
-.apply-card{
-  position: relative;
-  padding: 22px;
-  margin-bottom: 16px;
-  border-radius: 22px;
-  background: linear-gradient(180deg, rgba(15,23,42,.55) 0%, rgba(10,16,32,.45) 100%);
-  backdrop-filter: blur(24px) saturate(140%);
-  -webkit-backdrop-filter: blur(24px) saturate(140%);
-  border: 1px solid rgba(56,189,248,.45);
-  box-shadow:
-    0 0 0 1px rgba(56,189,248,.08),
-    0 0 24px rgba(56,189,248,.18),
-    0 20px 60px rgba(2,6,23,.55),
-    inset 0 1px 0 rgba(255,255,255,.08);
-  overflow: visible;
-  opacity: 0;
-  animation: fadeInUp .55s ease-out .18s forwards;
-}
-.apply-card::before, .apply-card::after { display: none; }
-
-/* ===== Section header inside card ===== */
-.sec-head{
-  margin-bottom: 6px;
-}
-.sec-head h3{
-  color: #fff;
-  font-size: 18px;
-  font-weight: 900;
-  letter-spacing: -.2px;
-}
-.sec-head p{
-  color: #94a3b8;
-  font-size: 13px;
-  margin-top: 3px;
-  line-height: 1.5;
-}
-
-.section-title{
-  color: #67e8f9;
-  font-weight: 800;
-  font-size: 11px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(56,189,248,.25);
-  margin-bottom: 14px;
-}
-
-/* ===== Form fields ===== */
-.field{ margin-bottom: 12px; }
-label{
-  display: block;
-  color: #67e8f9;
-  font-weight: 800;
-  font-size: 11px;
-  letter-spacing: .15em;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
-
-input[type="text"],
-input[type="number"],
-input[type="tel"],
-input[type="email"],
-input[type="password"],
-textarea{
-  width: 100%;
-  height: 44px;
-  min-height: 44px;
-  max-height: 44px;
-  background: rgba(30,41,59,.45);
-  border: 1px solid rgba(56,189,248,.25);
-  border-radius: 12px;
-  color: #fff;
-  padding: 12px 14px;
-  font-size: 14px;
-  font-family: inherit;
-  box-sizing: border-box;
-  outline: none;
-  resize: none;
-  caret-color: #38bdf8;
-  box-shadow:
-    0 0 12px rgba(56,189,248,.06),
-    inset 0 1px 0 rgba(255,255,255,.04);
-  transition: border-color .2s, box-shadow .2s, background .2s;
-  appearance: none;
-  -webkit-appearance: none;
-}
-textarea{
-  height: 44px;
-  overflow: hidden;
-}
-
-input[type="text"]::placeholder,
-input[type="number"]::placeholder,
-input[type="tel"]::placeholder,
-input[type="email"]::placeholder,
-textarea::placeholder{
-  color: #64748b;
-}
-
-input:focus,
-textarea:focus{
-  outline: none;
-  border-color: rgba(56,189,248,.75);
-  background: rgba(30,41,59,.60);
-  box-shadow:
-    0 0 20px rgba(56,189,248,.22),
-    inset 0 1px 0 rgba(255,255,255,.06);
-}
-
-input[readonly],
-textarea[readonly]{
-  opacity: .85;
-  cursor: default;
-}
-
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus{
-  -webkit-text-fill-color: #fff !important;
-  -webkit-box-shadow: 0 0 0px 1000px rgba(30,41,59,.80) inset !important;
-  caret-color: #38bdf8 !important;
-  transition: background-color 9999s ease-in-out 0s;
-}
-
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button{ -webkit-appearance: none; margin: 0; }
-input[type="number"]{ -moz-appearance: textfield; }
-
-/* ===== 2-column grid ===== */
-.grid-2{
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-@media (max-width: 520px){
-  .grid-2{ grid-template-columns: 1fr; }
-}
-@media (min-width: 900px){
-  #sigBox{
-    grid-column: 1 / span 2;
-    height: auto;
-    padding: 14px;
-  }
-  #sigBox .sig-canvas{ height: 260px; }
-  .sig-clear-wrap{
-    grid-column: 1 / span 2;
-    justify-content: flex-end;
-    margin-top: 10px;
-  }
-}
-
-/* ===== Term grid ===== */
-.term-grid{
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-top: 10px;
-}
-@media (max-width: 520px){
-  .term-grid{ grid-template-columns: repeat(4, 1fr); }
-}
-.term-btn{
-  padding: 12px 8px;
-  border-radius: 12px;
-  border: 1px solid rgba(56,189,248,.30);
-  background: rgba(30,41,59,.45);
-  color: #93c5fd;
-  font-weight: 900;
-  font-size: 14px;
-  font-family: inherit;
-  cursor: pointer;
-  box-shadow:
-    0 0 12px rgba(56,189,248,.06),
-    inset 0 1px 0 rgba(255,255,255,.04);
-  transition: all .22s ease;
-}
-.term-btn:hover{
-  color: #fff;
-  border-color: rgba(56,189,248,.60);
-  background: rgba(56,189,248,.10);
-  box-shadow: 0 0 18px rgba(56,189,248,.18);
-}
-.term-btn:active{ transform: scale(.97); }
-.term-btn.active{
-  color: #fff;
-  background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 60%, #6366f1 100%);
-  border-color: rgba(56,189,248,.85);
-  box-shadow:
-    0 6px 18px rgba(59,130,246,.40),
-    inset 0 1px 0 rgba(255,255,255,.20);
-}
-
-/* ===== Loan type/purpose cards (image 2 style) ===== */
-.type-grid{
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 10px;
-  margin-top: 12px;
-}
-.type-card{
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px;
-  border-radius: 16px;
-  border: 1px solid rgba(56,189,248,.25);
-  background: rgba(30,41,59,.45);
-  box-shadow:
-    0 0 14px rgba(56,189,248,.06),
-    inset 0 1px 0 rgba(255,255,255,.04);
-  cursor: pointer;
-  user-select: none;
-  transition: all .22s ease;
-  position: relative;
-}
-.type-card:hover{
-  border-color: rgba(56,189,248,.55);
-  background: rgba(56,189,248,.06);
-  box-shadow: 0 0 20px rgba(56,189,248,.18);
-}
-.type-card input{ display: none; }
-.type-icon{
-  width: 44px; height: 44px;
-  border-radius: 12px;
-  background: rgba(56,189,248,.12);
-  border: 1px solid rgba(56,189,248,.30);
-  display: flex; align-items: center; justify-content: center;
-  flex: 0 0 auto;
-  transition: all .22s ease;
-}
-.type-icon svg{ width: 20px; height: 20px; stroke: #38bdf8; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.type-body{ flex: 1 1 auto; min-width: 0; }
-.type-name{
-  color: #fff;
-  font-weight: 900;
-  font-size: 14px;
-  margin-bottom: 2px;
-}
-.type-desc{
-  color: #94a3b8;
-  font-size: 12px;
-  line-height: 1.35;
-}
-.type-check{
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  border: 1.5px solid rgba(56,189,248,.35);
-  background: rgba(30,41,59,.60);
-  flex: 0 0 auto;
-  display: flex; align-items: center; justify-content: center;
-  transition: all .22s ease;
-}
-.type-check svg{ width: 12px; height: 12px; stroke: #fff; fill: none; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transition: opacity .18s ease; }
-
-.type-card:has(input:checked){
-  border-color: rgba(56,189,248,.80);
-  background: rgba(56,189,248,.10);
-  box-shadow:
-    0 0 24px rgba(56,189,248,.30),
-    inset 0 1px 0 rgba(255,255,255,.10);
-}
-.type-card:has(input:checked) .type-icon{
-  background: linear-gradient(135deg, #38bdf8, #3b82f6);
-  border-color: rgba(56,189,248,.80);
-  box-shadow: 0 0 14px rgba(56,189,248,.40);
-}
-.type-card:has(input:checked) .type-icon svg{ stroke: #fff; }
-.type-card:has(input:checked) .type-check{
-  background: linear-gradient(135deg, #38bdf8, #3b82f6);
-  border-color: rgba(56,189,248,.80);
-  box-shadow: 0 0 10px rgba(56,189,248,.40);
-}
-.type-card:has(input:checked) .type-check svg{ opacity: 1; }
-
-/* ===== Summary ===== */
-.summary{
-  margin-top: 18px;
-  padding-top: 14px;
-  border-top: 1px solid rgba(56,189,248,.22);
-  display: grid; gap: 0;
-  font-size: 13px;
-}
-.summary .row{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  border-bottom: 1px solid rgba(56,189,248,.12);
-  padding: 11px 0;
-}
-.summary .row:last-child{
-  border-bottom: none;
-  border-top: 2px solid rgba(56,189,248,.35);
-  margin-top: 4px;
-  padding-top: 14px;
-  font-size: 15px;
-}
-.summary .k{ color: #94a3b8; font-weight: 600; }
-.summary .v{ color: #fff; font-weight: 900; }
-.summary .row:last-child .v{
-  background: linear-gradient(135deg, #38bdf8, #818cf8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* ===== Submit button ===== */
-.cta{ margin-top: 16px; width: 100%; }
-
-/* Confirm Apply button — loading state */
-#confirmApplyBtn .cta-spinner{
-  display: none;
-  width: 18px; height: 18px;
-  margin-left: 10px;
-  border: 2.5px solid rgba(255,255,255,.35);
-  border-top-color: #ffffff;
-  border-radius: 50%;
-  vertical-align: middle;
-  animation: ctaSpin .7s linear infinite;
-}
-#confirmApplyBtn.is-loading{
-  cursor: not-allowed;
-  opacity: .9;
-  pointer-events: none;
-}
-#confirmApplyBtn.is-loading .cta-spinner{
-  display: inline-block;
-}
-@keyframes ctaSpin{
-  to { transform: rotate(360deg); }
-}
-.btn.btn-primary{
-  width: 100%;
-  padding: 16px;
-  background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 50%, #6366f1 100%);
-  color: #fff;
-  border: none;
-  border-radius: 14px;
-  font-weight: 950;
-  font-size: 15px;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  font-family: inherit;
-  cursor: pointer;
-  animation: glowPulse 2.6s ease-in-out infinite;
-  transition: transform .2s;
-}
-.btn.btn-primary:hover{ transform: translateY(-2px); }
-.btn.btn-primary:active{ transform: translateY(0); }
-.btn.btn-primary:disabled{
-  opacity: .55;
-  cursor: not-allowed;
-  transform: none;
-  animation: none;
-  background: rgba(30,41,59,.60);
-  color: #64748b;
-}
-
-/* ===== HR divider ===== */
-hr{
-  border: 0;
-  border-top: 1px solid rgba(56,189,248,.22);
-  margin: 18px 0;
-}
-
-/* ===== ID upload ===== */
-.id-grid{
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  align-items: stretch;
-  width: 100%;
-  margin-top: 10px;
-}
-.id-grid .idbox.selfie-box{ grid-column: 1 / -1; }
-@media (max-width: 520px){
-  .id-grid{ grid-template-columns: 1fr; }
-  .id-grid .idbox.selfie-box{ grid-column: auto; }
-}
-
-.idbox{
-  height: 180px;
-  padding: 14px 10px;
-  border-radius: 14px;
-  border: 1.5px dashed rgba(56,189,248,.40);
-  background: rgba(30,41,59,.35);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 8px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  transition: border-color .2s, background .2s, box-shadow .2s;
-  color: #94a3b8;
-}
-.idbox.selfie-box{ height: 150px; }
-.idbox:hover{
-  border-color: rgba(56,189,248,.75);
-  background: rgba(56,189,248,.08);
-  box-shadow: 0 0 18px rgba(56,189,248,.18);
-}
-.idbox small{ color: #94a3b8; font-weight: 700; font-size: 12px; }
-.idbox strong{ color: #fff; font-weight: 900; letter-spacing: .02em; }
-.id-text strong{ color: #fff; font-weight: 900; letter-spacing: .02em; }
-.id-text small{ color: #94a3b8; }
-.id-ico{ color: #38bdf8; font-size: 26px; }
-
-.id-guide{
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border-radius: 12px;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 12px 10px;
-  box-sizing: border-box;
-  background: transparent;
-  border: none;
-}
-.id-guide .id-art{
-  width: 44px;
-  height: 44px;
-  display: block;
-  color: #38bdf8;
-}
-.idbox.selfie-box .id-guide .id-art{ width: 48px; height: 40px; }
-.id-guide .id-caption{
-  text-align: center;
-  line-height: 1.3;
-}
-.id-guide .id-caption strong{
-  color: #e6edf7;
-  font-weight: 800;
-  font-size: 13px;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-  display: block;
-}
-.id-preview{
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 12px;
-  z-index: 2;
-  display: none;
-}
-.idbox.has-img{
-  border-style: solid;
-  border-color: rgba(56,189,248,.65);
-  box-shadow: 0 0 18px rgba(56,189,248,.20);
-}
-.idbox.has-img .id-preview{ display: block; }
-.idbox.has-img .id-guide{ display: none; }
-.idbox.has-img .id-text{ display: none; }
-
-/* ===== Signature box ===== */
-#sigBox{
-  height: 220px;
-  padding: 12px;
-  justify-content: flex-start !important;
-  align-items: stretch !important;
-  text-align: left !important;
-  gap: 10px !important;
-}
-.sig-canvas{
-  width: 100%;
-  height: 150px;
-  border-radius: 12px;
-  border: 1.5px dashed rgba(56,189,248,.40);
-  background: rgba(15,23,42,.55);
-  box-sizing: border-box;
-  display: block;
-  position: relative;
-  z-index: 1;
-  cursor: crosshair;
-}
-#sigBox{ position: relative; }
-#sigBox .sig-canvas{ position: relative; z-index: 2; }
-#sigBox img#sigPreviewImg{ background: rgba(15,23,42,.70); }
-
-.sig-clear-wrap{
-  width: 100%;
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 10px;
-}
-.sig-clear-wrap .sig-btn{
-  padding: 8px 16px;
-  border-radius: 10px;
-  border: 1px solid rgba(56,189,248,.30);
-  background: rgba(30,41,59,.55);
-  color: #93c5fd;
-  font-weight: 800;
-  font-size: 12px;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all .2s ease;
-}
-.sig-clear-wrap .sig-btn:hover{
-  background: rgba(239,68,68,.12);
-  color: #fca5a5;
-  border-color: rgba(239,68,68,.40);
-}
-.sig-clear-wrap .sig-btn:active{ transform: scale(.97); }
-
-/* ===== Muted ===== */
-.muted{ color: #94a3b8; font-size: 13px; }
-.hint{ margin-top: 8px; color: #94a3b8; font-size: 12px; font-weight: 600; }
-
-/* ===== Mobile fallback ===== */
-@media (max-width: 768px){
-  .apply-card, .top-row{
-    opacity: 1 !important;
-    animation: none !important;
-  }
-  .apply-card{
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-  input, textarea, .term-btn, .type-card, .idbox{
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-  /* keep card white in light mode on mobile */
-  html:not([data-theme="dark"]) .apply-card{
-    background: #ffffff !important;
-  }
-  html[data-theme="dark"] .apply-card{
-    background: #0a132e !important;
-  }
-}
+/* ── OFL Coachmark Guide ── */
+@keyframes bubPop{0%{opacity:0;transform:scale(.88) translateY(8px)}70%{transform:scale(1.03) translateY(-2px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes shakeX{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+@keyframes typeDot{0%,80%,100%{transform:scale(0);opacity:.4}40%{transform:scale(1);opacity:1}}
+.sp{position:relative;border-radius:14px;}
+.sp.shake{animation:shakeX .4s ease;}
+.chat-bubble{position:fixed;z-index:10000;background:#fff;border-radius:18px;padding:0;width:min(320px,calc(100vw - 28px));box-shadow:0 16px 48px rgba(0,0,0,.38),0 0 0 1px rgba(0,0,0,.06);display:none;opacity:0;transition:opacity .22s;}
+.chat-bubble::before{content:'';position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:13px solid #0A2463;}
+.chat-bubble.arrow-dn::before{top:auto;bottom:-12px;border-bottom:none;border-top:13px solid #fff;}
+.cb-header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 16px;background:linear-gradient(135deg,#061540,#0A2463);border-bottom:1px solid rgba(255,140,0,.22);border-radius:18px 18px 0 0;}
+.cb-char-wrap{width:54px;height:54px;flex-shrink:0;border-radius:50%;border:2.5px solid rgba(255,140,0,.65);background-size:cover;background-position:center top;background-repeat:no-repeat;background-color:rgba(255,255,255,.08);box-shadow:0 3px 12px rgba(0,0,0,.35);}
+.cb-step{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.65);}
+.cb-dots{display:flex;gap:5px;align-items:center;}
+.cb-dot{height:6px;width:6px;border-radius:99px;background:rgba(255,255,255,.25);transition:all .35s;flex-shrink:0;}
+.cb-dot.on{background:#FF8C00;width:18px;}
+.cb-msg{padding:12px 18px;font-size:14px;font-weight:700;color:#0a1a3a;line-height:1.60;}
+.cb-msg b{color:#0A2463;}
+.cb-typing{display:none;gap:5px;align-items:center;padding:0 18px 12px;}
+.cb-typing span{width:8px;height:8px;border-radius:50%;background:#7a8299;animation:typeDot 1.2s infinite ease-in-out both;}
+.cb-typing span:nth-child(2){animation-delay:.2s;}
+.cb-typing span:nth-child(3){animation-delay:.4s;}
+.cb-foot{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 14px;border-top:1px solid #f0f2f8;}
+.cb-label{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#7a8299;}
+.cb-actions{display:flex;align-items:center;gap:10px;}
+.cb-back{height:38px;padding:0 18px;border:2px solid #0A2463;border-radius:999px;background:transparent;color:#0A2463;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:.04em;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,color .15s;}
+.cb-back:hover{background:#0A2463;color:#fff;}
+.cb-next{height:38px;padding:0 24px;border:none;border-radius:999px;background:linear-gradient(135deg,#FF8C00,#D97200);color:#fff;font-size:13.5px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.05em;box-shadow:0 4px 14px rgba(255,140,0,.42);transition:transform .15s,box-shadow .15s;}
+.cb-next:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,140,0,.60);}
+@media(max-width:600px){.chat-bubble{width:calc(100vw - 20px);}}
 </style>
 
-<div class="page">
+<div class="la-page">
 
-  <!-- Top row -->
-  <div class="top-row">
-    <div class="page-title">
-      Loan Application
-      <small>Complete simple steps</small>
+  <!-- HERO -->
+  <div class="la-hero">
+    <div class="la-dot-grid" aria-hidden="true"></div>
+    <div class="la-hero-orb"  aria-hidden="true"></div>
+    <div class="la-hero-orb2" aria-hidden="true"></div>
+
+    <div class="la-nav">
+      <a class="la-nav-back" href="{% url 'quick_loan' %}" aria-label="Back">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </a>
+      <div style="width:38px;"></div>
     </div>
-    <a class="back-btn" href="{% url 'quick_loan' %}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="15 18 9 12 15 6"/>
-      </svg>
-      Back
-    </a>
+
+    <div class="la-hero-eyebrow">Loan Application</div>
+    <h1 class="la-hero-title">Complete Simple Steps</h1>
+    <div class="la-hero-sub">Review your loan details and confirm below</div>
   </div>
 
-  <div class="apply-card">
+  <!-- legacy top-row (hidden) -->
+  <div class="top-row" aria-hidden="true">
+    <div class="page-title">Loan Application <small>Complete simple steps</small></div>
+    <a class="back-btn" href="{% url 'quick_loan' %}">Back</a>
+  </div>
+
+  <div class="la-body">
     <form method="POST" enctype="multipart/form-data">
       {% csrf_token %}
 
-      <!-- ===== Section: Choose Loan Purpose ===== -->
-      <div class="sec-head">
-        <h3>Choose Loan Purpose</h3>
-        <p>Select the type of loan that best fits your need.</p>
+      <!-- ══ LOAN REMINDER BANNER ══ -->
+      <div class="la-preview sp" id="laSp1">
+
+        <div class="lpb-top">
+          <div class="lpb-label">
+            <span class="lpb-dot"></span>
+            Loan Offer
+          </div>
+          <div class="lpb-amount-row">
+            <span class="lpb-currency">&#8369;</span>
+            <span class="lpb-amount" id="lpbAmount">&#8212;</span>
+          </div>
+        </div>
+
+        <div class="lpb-stats">
+          <div class="lpb-stat">
+            <div class="lpb-stat-lbl">Term</div>
+            <div class="lpb-stat-val" id="lpbTerm">&#8212;</div>
+          </div>
+          <div class="lpb-stat-sep"></div>
+          <div class="lpb-stat">
+            <div class="lpb-stat-lbl">Interest</div>
+            <div class="lpb-stat-val">0.5% / mo</div>
+          </div>
+          <div class="lpb-stat-sep"></div>
+          <div class="lpb-stat lpb-stat-hi">
+            <div class="lpb-stat-lbl">Monthly</div>
+            <div class="lpb-stat-val">&#8369;&nbsp;<span id="lpbMonthly">&#8212;</span></div>
+          </div>
+        </div>
       </div>
 
-      <div class="type-grid">
-        <label class="type-card">
-          <input type="checkbox" name="loan_purposes" value="Personal Loan"
-            {% if loan and "Personal Loan" in loan.loan_purposes %}checked{% endif %}
-            {% if locked %}disabled{% endif %}>
-          <div class="type-icon">
+      <!-- ══ SECTION 1: Loan Purpose ══ -->
+      <div class="sp" id="laSp2">
+      <div class="la-card">
+        <div class="la-card-head">
+          <div class="la-card-ico la-ico-navy">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+          </div>
+          <div class="la-card-info">
+            <div class="la-card-title">Loan Purpose</div>
+            <div class="la-card-sub">Select the type that best fits your need</div>
+          </div>
+        </div>
+
+        <div class="type-grid">
+
+          <label class="type-tile">
+            <input type="checkbox" name="loan_purposes" value="Personal Loan"
+              {% if loan and "Personal Loan" in loan.loan_purposes %}checked{% endif %}
+              {% if locked %}disabled{% endif %}>
+            <div class="type-tile-ico">
+              <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <div class="type-tile-name">Personal</div>
+            <div class="type-tile-desc">Daily expenses &amp; travel</div>
+          </label>
+
+          <label class="type-tile">
+            <input type="checkbox" name="loan_purposes" value="Business"
+              {% if loan and "Business" in loan.loan_purposes %}checked{% endif %}
+              {% if locked %}disabled{% endif %}>
+            <div class="type-tile-ico">
+              <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+            </div>
+            <div class="type-tile-name">Business</div>
+            <div class="type-tile-desc">Expand operations</div>
+          </label>
+
+          <label class="type-tile">
+            <input type="checkbox" name="loan_purposes" value="Medical"
+              {% if loan and "Medical" in loan.loan_purposes %}checked{% endif %}
+              {% if locked %}disabled{% endif %}>
+            <div class="type-tile-ico">
+              <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            </div>
+            <div class="type-tile-name">Medical</div>
+            <div class="type-tile-desc">Healthcare expenses</div>
+          </label>
+
+          <label class="type-tile">
+            <input type="checkbox" name="loan_purposes" value="Education"
+              {% if loan and "Education" in loan.loan_purposes %}checked{% endif %}
+              {% if locked %}disabled{% endif %}>
+            <div class="type-tile-ico">
+              <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+            </div>
+            <div class="type-tile-name">Education</div>
+            <div class="type-tile-desc">Tuition &amp; learning</div>
+          </label>
+
+          <label class="type-tile">
+            <input type="checkbox" name="loan_purposes" value="Home repair"
+              {% if loan and "Home repair" in loan.loan_purposes %}checked{% endif %}
+              {% if locked %}disabled{% endif %}>
+            <div class="type-tile-ico">
+              <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </div>
+            <div class="type-tile-name">Home Repair</div>
+            <div class="type-tile-desc">Property &amp; renovation</div>
+          </label>
+
+          <label class="type-tile">
+            <input type="checkbox" name="loan_purposes" value="Debt consolidation"
+              {% if loan and "Debt consolidation" in loan.loan_purposes %}checked{% endif %}
+              {% if locked %}disabled{% endif %}>
+            <div class="type-tile-ico">
+              <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            </div>
+            <div class="type-tile-name">Debt</div>
+            <div class="type-tile-desc">Combine multiple debts</div>
+          </label>
+
+          <label class="type-tile">
+            <input type="checkbox" name="loan_purposes" value="Emergency"
+              {% if loan and "Emergency" in loan.loan_purposes %}checked{% endif %}
+              {% if locked %}disabled{% endif %}>
+            <div class="type-tile-ico">
+              <svg viewBox="0 0 24 24"><path d="M12 2L3 6v6c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V6L12 2z"/></svg>
+            </div>
+            <div class="type-tile-name">Emergency</div>
+            <div class="type-tile-desc">Urgent financial needs</div>
+          </label>
+
+          <label class="type-tile">
+            <input type="checkbox" name="loan_purposes" value="Other"
+              {% if loan and "Other" in loan.loan_purposes %}checked{% endif %}
+              {% if locked %}disabled{% endif %}>
+            <div class="type-tile-ico">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+            </div>
+            <div class="type-tile-name">Other</div>
+            <div class="type-tile-desc">Other purposes</div>
+          </label>
+
+        </div>
+
+        <div class="hint">Choose one option</div>
+      </div>
+      </div>
+
+      <!-- ══ SECTION 2: Personal Details ══ -->
+      <div class="sp" id="laSp3">
+      <div class="la-card">
+        <div class="la-card-head">
+          <div class="la-card-ico la-ico-orange">
             <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
           </div>
-          <div class="type-body">
-            <div class="type-name">Personal Loan</div>
-            <div class="type-desc">Daily expenses, travel, medical</div>
+          <div class="la-card-info">
+            <div class="la-card-title">Personal Details</div>
+            <div class="la-card-sub">Your information for the application</div>
           </div>
-          <span class="type-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-        </label>
-
-        <label class="type-card">
-          <input type="checkbox" name="loan_purposes" value="Business"
-            {% if loan and "Business" in loan.loan_purposes %}checked{% endif %}
-            {% if locked %}disabled{% endif %}>
-          <div class="type-icon">
-            <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-          </div>
-          <div class="type-body">
-            <div class="type-name">Business</div>
-            <div class="type-desc">Expand or fund operations</div>
-          </div>
-          <span class="type-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-        </label>
-
-        <label class="type-card">
-          <input type="checkbox" name="loan_purposes" value="Medical"
-            {% if loan and "Medical" in loan.loan_purposes %}checked{% endif %}
-            {% if locked %}disabled{% endif %}>
-          <div class="type-icon">
-            <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-          </div>
-          <div class="type-body">
-            <div class="type-name">Medical</div>
-            <div class="type-desc">Healthcare expenses</div>
-          </div>
-          <span class="type-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-        </label>
-
-        <label class="type-card">
-          <input type="checkbox" name="loan_purposes" value="Education"
-            {% if loan and "Education" in loan.loan_purposes %}checked{% endif %}
-            {% if locked %}disabled{% endif %}>
-          <div class="type-icon">
-            <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-          </div>
-          <div class="type-body">
-            <div class="type-name">Education</div>
-            <div class="type-desc">Tuition and learning</div>
-          </div>
-          <span class="type-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-        </label>
-
-        <label class="type-card">
-          <input type="checkbox" name="loan_purposes" value="Home repair"
-            {% if loan and "Home repair" in loan.loan_purposes %}checked{% endif %}
-            {% if locked %}disabled{% endif %}>
-          <div class="type-icon">
-            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-          </div>
-          <div class="type-body">
-            <div class="type-name">Home repair</div>
-            <div class="type-desc">Property purchase or renovation</div>
-          </div>
-          <span class="type-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-        </label>
-
-        <label class="type-card">
-          <input type="checkbox" name="loan_purposes" value="Debt consolidation"
-            {% if loan and "Debt consolidation" in loan.loan_purposes %}checked{% endif %}
-            {% if locked %}disabled{% endif %}>
-          <div class="type-icon">
-            <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-          </div>
-          <div class="type-body">
-            <div class="type-name">Debt consolidation</div>
-            <div class="type-desc">Combine multiple debts</div>
-          </div>
-          <span class="type-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-        </label>
-
-        <label class="type-card">
-          <input type="checkbox" name="loan_purposes" value="Emergency"
-            {% if loan and "Emergency" in loan.loan_purposes %}checked{% endif %}
-            {% if locked %}disabled{% endif %}>
-          <div class="type-icon">
-            <svg viewBox="0 0 24 24"><path d="M12 2L3 6v6c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V6L12 2z"/></svg>
-          </div>
-          <div class="type-body">
-            <div class="type-name">Emergency</div>
-            <div class="type-desc">Urgent financial needs</div>
-          </div>
-          <span class="type-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-        </label>
-
-        <label class="type-card">
-          <input type="checkbox" name="loan_purposes" value="Other"
-            {% if loan and "Other" in loan.loan_purposes %}checked{% endif %}
-            {% if locked %}disabled{% endif %}>
-          <div class="type-icon">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-          </div>
-          <div class="type-body">
-            <div class="type-name">Other</div>
-            <div class="type-desc">Other purposes</div>
-          </div>
-          <span class="type-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-        </label>
-      </div>
-
-      <div class="hint">Choose one option</div>
-
-      <hr>
-
-      <!-- ===== Section: Personal Details ===== -->
-      <div class="section-title">Personal Details</div>
-
-      <div class="grid-2">
-        <div class="field">
-          <label>Full name</label>
-          <input type="text" name="full_name" id="fullName"
-            value="{{ loan.full_name|default:'' }}"
-            {% if locked %}readonly{% endif %}
-            required
-            pattern="[A-Za-z ]+"
-            title="Letters and spaces only">
-        </div>
-        <div class="field">
-          <label>Age</label>
-          <input type="number" name="age" min="18" max="90"
-            value="{{ loan.age|default:'' }}"
-            {% if locked %}readonly{% endif %}
-            required>
         </div>
 
-        <div class="field">
-          <label>Current living</label>
-          <textarea name="current_living" id="currentLiving" rows="2"
-            required {% if locked %}readonly{% endif %}
-            pattern="[A-Za-z0-9 ]+"
-            title="Letters, numbers and spaces only">{{ loan.current_living|default:'' }}</textarea>
-        </div>
-        <div class="field">
-          <label>Hometown</label>
-          <textarea name="hometown" rows="2"
-            required {% if locked %}readonly{% endif %}>{{ loan.hometown|default:'' }}</textarea>
-        </div>
-
-        <div class="field">
-          <label>Income (optional)</label>
-          <input type="text" name="income" id="incomeInput"
-            inputmode="numeric" pattern="[0-9]*"
-            value="{{ loan.income|default:'' }}"
-            {% if locked %}readonly{% endif %}>
-        </div>
-
-        <div class="field">
-          <label>Monthly expenses</label>
-          <input type="text" name="monthly_expenses" id="expensesInput"
-            inputmode="numeric" pattern="[0-9]*"
-            value="{{ loan.monthly_expenses|default:'' }}"
-            {% if locked %}readonly{% endif %}
-            required>
-        </div>
-
-        <div class="field">
-          <label>Identify name</label>
-          <input type="text" name="identity_name" id="identityName"
-            value="{{ loan.identity_name|default:'' }}"
-            placeholder="Identify Name"
-            {% if locked %}readonly{% endif %}
-            required
-            pattern="[A-Za-z0-9 ]+"
-            title="Letters, numbers and spaces only">
-        </div>
-
-        <div class="field">
-          <label>Identify numbers</label>
-          <input type="text" name="identity_number" id="identityNumber"
-            value="{{ loan.identity_number|default:'' }}"
-            placeholder="Identify Number"
-            inputmode="numeric" pattern="[0-9]*"
-            {% if locked %}readonly{% endif %}
-            required>
+        <div class="grid-2">
+          <div class="field">
+            <label>Full name</label>
+            <input type="text" name="full_name" id="fullName"
+              value="{{ loan.full_name|default:'' }}"
+              {% if locked %}readonly{% endif %}
+              required pattern="[A-Za-z ]+" title="Letters and spaces only">
+          </div>
+          <div class="field">
+            <label>Age</label>
+            <input type="number" name="age" id="ageInput" min="18" max="90"
+              value="{{ loan.age|default:'' }}"
+              {% if locked %}readonly{% endif %} required>
+          </div>
+          <div class="field">
+            <label>Current living</label>
+            <textarea name="current_living" id="currentLiving" rows="2"
+              required {% if locked %}readonly{% endif %}
+              pattern="[A-Za-z0-9 ]+" title="Letters, numbers and spaces only">{{ loan.current_living|default:'' }}</textarea>
+          </div>
+          <div class="field">
+            <label>Hometown</label>
+            <textarea name="hometown" id="hometownInput" rows="2"
+              required {% if locked %}readonly{% endif %}>{{ loan.hometown|default:'' }}</textarea>
+          </div>
+          <div class="field">
+            <label>Income (optional)</label>
+            <input type="text" name="income" id="incomeInput"
+              inputmode="numeric" pattern="[0-9]*"
+              value="{{ loan.income|default:'' }}"
+              {% if locked %}readonly{% endif %}>
+          </div>
+          <div class="field">
+            <label>Monthly expenses</label>
+            <input type="text" name="monthly_expenses" id="expensesInput"
+              inputmode="numeric" pattern="[0-9]*"
+              value="{{ loan.monthly_expenses|default:'' }}"
+              {% if locked %}readonly{% endif %} required>
+          </div>
+          <div class="field">
+            <label>Identity name</label>
+            <input type="text" name="identity_name" id="identityName"
+              value="{{ loan.identity_name|default:'' }}"
+              placeholder="Identity Name"
+              {% if locked %}readonly{% endif %}
+              required pattern="[A-Za-z0-9 ]+" title="Letters, numbers and spaces only">
+          </div>
+          <div class="field">
+            <label>Identity number</label>
+            <input type="text" name="identity_number" id="identityNumber"
+              value="{{ loan.identity_number|default:'' }}"
+              placeholder="Identity Number"
+              inputmode="numeric" pattern="[0-9]*"
+              {% if locked %}readonly{% endif %} required>
+          </div>
         </div>
       </div>
 
-      <hr>
+      </div>
 
-      <!-- ===== Section: ID Required ===== -->
-      <div class="section-title">ID Required (Upload)</div>
+      <!-- ══ SECTION 3: ID Upload ══ -->
+      <div class="sp" id="laSp4">
+      <div class="la-card">
+        <div class="la-card-head">
+          <div class="la-card-ico la-ico-navy">
+            <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M13 9h5M13 12h4M13 15h2"/></svg>
+          </div>
+          <div class="la-card-info">
+            <div class="la-card-title">ID Required</div>
+            <div class="la-card-sub">Upload clear photos of your government ID</div>
+          </div>
+        </div>
 
-      <div class="id-grid">
-
-        <!-- FRONT -->
-        <label class="idbox {% if loan and loan.id_front %}has-img{% endif %}" id="boxFront">
-          <img class="id-preview" id="prevFront"
-            {% if loan and loan.id_front %}src="{{ loan.id_front.url }}"{% endif %}
-            alt="ID Front preview">
-          <div class="id-guide" aria-hidden="true">
-            <svg class="id-art" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2.5" y="4" width="27" height="16" rx="2.5"/>
-              <rect x="5.5" y="8" width="6" height="8" rx="1"/>
-              <line x1="14" y1="9" x2="26" y2="9"/>
-              <line x1="14" y1="13" x2="23" y2="13"/>
-              <line x1="14" y1="16" x2="25" y2="16"/>
-            </svg>
-            <div class="id-caption">
-              <strong>ID Card Front</strong>
+        <div class="id-grid">
+          <label class="idbox {% if loan and loan.id_front %}has-img{% endif %}" id="boxFront">
+            <img class="id-preview" id="prevFront"
+              {% if loan and loan.id_front %}src="{{ loan.id_front.url }}"{% endif %}
+              alt="ID Front preview">
+            <div class="id-guide" aria-hidden="true">
+              <svg class="id-art" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2.5" y="4" width="27" height="16" rx="2.5"/>
+                <rect x="5.5" y="8" width="6" height="8" rx="1"/>
+                <line x1="14" y1="9" x2="26" y2="9"/><line x1="14" y1="13" x2="23" y2="13"/><line x1="14" y1="16" x2="25" y2="16"/>
+              </svg>
+              <div class="id-caption"><strong>ID Card Front</strong><span>Tap to upload photo</span></div>
             </div>
-          </div>
-          <input type="file" name="id_front" accept="image/*"
-            class="compress-img"
-            {% if not locked %}required{% endif %}
-            {% if locked %}disabled{% endif %}
-            hidden>
-        </label>
+            <input type="file" name="id_front" accept="image/*" class="compress-img"
+              {% if not locked %}required{% endif %}
+              {% if locked %}disabled{% endif %} hidden>
+          </label>
 
-        <!-- BACK -->
-        <label class="idbox {% if loan and loan.id_back %}has-img{% endif %}" id="boxBack">
-          <img class="id-preview" id="prevBack"
-            {% if loan and loan.id_back %}src="{{ loan.id_back.url }}"{% endif %}
-            alt="ID Back preview">
-          <div class="id-guide" aria-hidden="true">
-            <svg class="id-art" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="2.5" y="4" width="27" height="16" rx="2.5"/>
-              <line x1="2.5" y1="9" x2="29.5" y2="9"/>
-              <line x1="6" y1="14" x2="26" y2="14"/>
-              <line x1="6" y1="17" x2="20" y2="17"/>
-            </svg>
-            <div class="id-caption">
-              <strong>ID Card Back</strong>
+          <label class="idbox {% if loan and loan.id_back %}has-img{% endif %}" id="boxBack">
+            <img class="id-preview" id="prevBack"
+              {% if loan and loan.id_back %}src="{{ loan.id_back.url }}"{% endif %}
+              alt="ID Back preview">
+            <div class="id-guide" aria-hidden="true">
+              <svg class="id-art" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2.5" y="4" width="27" height="16" rx="2.5"/>
+                <line x1="2.5" y1="9" x2="29.5" y2="9"/><line x1="6" y1="14" x2="26" y2="14"/><line x1="6" y1="17" x2="20" y2="17"/>
+              </svg>
+              <div class="id-caption"><strong>ID Card Back</strong><span>Tap to upload photo</span></div>
             </div>
-          </div>
-          <input type="file" name="id_back" accept="image/*"
-            class="compress-img"
-            {% if not locked %}required{% endif %}
-            {% if locked %}disabled{% endif %}
-            hidden>
-        </label>
+            <input type="file" name="id_back" accept="image/*" class="compress-img"
+              {% if not locked %}required{% endif %}
+              {% if locked %}disabled{% endif %} hidden>
+          </label>
 
-        <!-- SELFIE -->
-        <label class="idbox selfie-box {% if loan and loan.selfie_with_id %}has-img{% endif %}" id="boxSelfie">
-          <img class="id-preview" id="prevSelfie"
-            {% if loan and loan.selfie_with_id %}src="{{ loan.selfie_with_id.url }}"{% endif %}
-            alt="Selfie preview">
-          <div class="id-guide" aria-hidden="true">
-            <svg class="id-art" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M10 6 L12.5 3.5 H19.5 L22 6 H27 A2 2 0 0 1 29 8 V18 A2 2 0 0 1 27 20 H5 A2 2 0 0 1 3 18 V8 A2 2 0 0 1 5 6 Z"/>
-              <circle cx="16" cy="13" r="4"/>
-            </svg>
-            <div class="id-caption">
-              <strong>Selfie Holding Your ID Card</strong>
+          <label class="idbox selfie-box {% if loan and loan.selfie_with_id %}has-img{% endif %}" id="boxSelfie">
+            <img class="id-preview" id="prevSelfie"
+              {% if loan and loan.selfie_with_id %}src="{{ loan.selfie_with_id.url }}"{% endif %}
+              alt="Selfie preview">
+            <div class="id-guide" aria-hidden="true">
+              <svg class="id-art" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 6 L12.5 3.5 H19.5 L22 6 H27 A2 2 0 0 1 29 8 V18 A2 2 0 0 1 27 20 H5 A2 2 0 0 1 3 18 V8 A2 2 0 0 1 5 6 Z"/>
+                <circle cx="16" cy="13" r="4"/>
+              </svg>
+              <div class="id-caption"><strong>Selfie with Your ID</strong><span>Face clearly visible</span></div>
             </div>
+            <input type="file" name="selfie_with_id" accept="image/*" class="compress-img"
+              {% if not locked %}required{% endif %}
+              {% if locked %}disabled{% endif %} hidden>
+          </label>
+        </div>
+
+        <div style="margin-top:14px;">
+          <div class="idbox" id="sigBox">
+            <div class="id-text" style="position:relative;z-index:2;display:flex;align-items:center;gap:10px;width:100%;">
+              <div style="width:38px;height:38px;border-radius:11px;background:rgba(255,140,0,.12);border:1.5px solid rgba(255,140,0,.26);display:flex;align-items:center;justify-content:center;flex:0 0 auto;">
+                <svg style="width:19px;height:19px;" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 20h9"/>
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                </svg>
+              </div>
+              <div>
+                <strong style="display:block;font-size:13.5px;font-weight:900;color:var(--ink);">Signature</strong>
+                <small style="font-size:11px;color:var(--ink2);font-weight:600;">Draw your signature below</small>
+              </div>
+            </div>
+            <canvas id="sigCanvas" class="sig-canvas"></canvas>
+            {% if loan and loan.signature_image %}
+              <img id="sigPreviewImg" src="{{ loan.signature_image.url }}"
+                style="width:100%;height:100%;object-fit:contain;border-radius:14px;position:absolute;inset:0;z-index:3;">
+            {% else %}
+              <img id="sigPreviewImg" style="display:none;">
+            {% endif %}
+            <input type="hidden" name="signature_data" id="signatureData" value=""
+              {% if locked %}disabled{% endif %}>
           </div>
-          <input type="file" name="selfie_with_id" accept="image/*"
-            class="compress-img"
-            {% if not locked %}required{% endif %}
-            {% if locked %}disabled{% endif %}
-            hidden>
-        </label>
-
-      </div>
-
-      <!-- SIGNATURE -->
-      <div style="margin-top:14px;">
-        <div class="idbox" id="sigBox">
-          <div class="id-text" style="position:relative; z-index:2;">
-            <div class="id-ico">✍️</div>
-            <strong>Signature</strong>
-            <small>Draw your signature</small>
+          <div class="sig-clear-wrap">
+            <button type="button" class="sig-btn" id="sigClear"
+              {% if locked %}disabled{% endif %}>Clear</button>
           </div>
-
-          <canvas id="sigCanvas" class="sig-canvas"></canvas>
-          {% if loan and loan.signature_image %}
-            <img id="sigPreviewImg" src="{{ loan.signature_image.url }}"
-              style="width:100%;height:100%;object-fit:contain;border-radius:14px;position:absolute;inset:0;z-index:3;">
-          {% else %}
-            <img id="sigPreviewImg" style="display:none;">
-          {% endif %}
-
-          <input type="hidden" name="signature_data" id="signatureData" value=""
-            {% if locked %}disabled{% endif %}>
-        </div>
-        <div class="sig-clear-wrap">
-          <button type="button" class="sig-btn" id="sigClear"
-            {% if locked %}disabled{% endif %}>Clear</button>
         </div>
       </div>
 
-      <hr>
-
-      <!-- ===== Section: Apply Loan ===== -->
-      <div class="section-title">Apply Loan</div>
-
-      <div class="field">
-        <label>Loan amount (Min 80,000 · Max 5,000,000)</label>
-        <input type="number" name="loan_amount" id="loanAmount" min="80000" max="5000000" required>
       </div>
 
-      <div class="field">
-        <label>Loan terms</label>
-        <input type="hidden" name="loan_terms" id="loanTerms" required>
-        <div class="term-grid">
-          <button type="button" class="term-btn" data-term="6">6</button>
-          <button type="button" class="term-btn" data-term="12">12</button>
-          <button type="button" class="term-btn" data-term="24">24</button>
-          <button type="button" class="term-btn" data-term="36">36</button>
-        </div>
-        <div class="hint" id="termHint">Choose months</div>
-      </div>
-
-      <div class="summary" aria-live="polite">
-        <div class="row"><div class="k">Amount of loan</div><div class="v" id="sumAmount">—</div></div>
-        <div class="row"><div class="k">Interest rate</div><div class="v">0.5%</div></div>
-        <div class="row"><div class="k">Loan period</div><div class="v" id="sumTerm">—</div></div>
-        <div class="row"><div class="k">Monthly repayment</div><div class="v" id="sumMonthly">—</div></div>
-      </div>
+      <!-- hidden loan fields — values populated from URL params / autosave -->
+      <input type="hidden" name="loan_amount" id="loanAmount">
+      <input type="hidden" name="loan_terms" id="loanTerms">
+      <!-- hidden summary targets (kept for JS compat) -->
+      <span id="sumAmount" hidden></span>
+      <span id="sumTerm"   hidden></span>
+      <span id="sumMonthly" hidden></span>
+      <span id="termHint"  hidden></span>
 
       {% if locked %}
         <button class="btn btn-primary cta" type="button" disabled>
-          Submitted · Waiting for review
+          Submitted &middot; Waiting for review
         </button>
       {% else %}
+        <div class="sp" id="laSp5">
         <button class="btn btn-primary cta" id="confirmApplyBtn" type="submit" name="action" value="apply_loan">
           <span class="cta-label">Confirm Apply</span>
           <span class="cta-spinner" aria-hidden="true"></span>
         </button>
+        </div>
       {% endif %}
 
     </form>
   </div>
 </div>
 
+<!-- OFL Validation Modal -->
+<div class="val-overlay" id="valOverlay" role="dialog" aria-modal="true" aria-labelledby="valTitle">
+  <div class="val-sheet">
+    <div class="val-handle"></div>
+    <div class="val-ico">
+      <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </div>
+    <div class="val-title" id="valTitle">Incomplete Application</div>
+    <div class="val-sub">Please complete the following before submitting:</div>
+    <ul class="val-list" id="valList"></ul>
+    <button class="val-close" id="valClose">Got it — I'll complete it</button>
+  </div>
+</div>
+
+<!-- ══ LOAN APPLY GUIDE ══ -->
+<div class="chat-bubble" id="laCard">
+  <div class="cb-header">
+    <div class="cb-char-wrap" style="background-image:url('{% static 'img/staff-guide.png' %}?v=5')"></div>
+    <span class="cb-step" id="laStep">STEP 1 OF 5</span>
+    <div class="cb-dots" id="laDots">
+      <span class="cb-dot on"></span>
+      <span class="cb-dot"></span>
+      <span class="cb-dot"></span>
+      <span class="cb-dot"></span>
+      <span class="cb-dot"></span>
+    </div>
+  </div>
+  <div class="cb-msg" id="laBody"></div>
+  <div class="cb-typing" id="laTyping"><span></span><span></span><span></span></div>
+  <div class="cb-foot">
+    <span class="cb-label" id="laLabel">STEP 1 OF 5</span>
+    <div class="cb-actions">
+      <button class="cb-back" id="laBck" style="display:none">&#8592; Back</button>
+      <button class="cb-next" id="laNxt">Next &#8594;</button>
+    </div>
+  </div>
+</div>
+
 <script>
-  // Preview images inside the 3 ID upload cards
   function bindPreview(boxId, inputName, prevId){
     const box = document.getElementById(boxId);
     if(!box) return;
     const input = box.querySelector(`input[name="${inputName}"]`);
     const prev = document.getElementById(prevId);
     if(!input || !prev) return;
-
     input.addEventListener('change', () => {
       const f = input.files && input.files[0];
       if(!f) return;
@@ -1325,12 +793,10 @@ hr{
   bindPreview('boxBack', 'id_back', 'prevBack');
   bindPreview('boxSelfie', 'selfie_with_id', 'prevSelfie');
 
-  // Loan term buttons
   (function(){
     const hidden = document.getElementById("loanTerms");
     const hint = document.getElementById("termHint");
     const btns = document.querySelectorAll(".term-btn");
-
     btns.forEach(b=>{
       b.addEventListener("click", ()=>{
         btns.forEach(x=>x.classList.remove("active"));
@@ -1342,23 +808,17 @@ hr{
     });
   })();
 
-  // Live summary calculator
   function updateSummary(){
     const amountEl = document.getElementById("loanAmount");
     const termEl   = document.getElementById("loanTerms");
-
     const outAmount = document.getElementById("sumAmount");
     const outTerm   = document.getElementById("sumTerm");
     const outMonthly= document.getElementById("sumMonthly");
-
     if(!amountEl || !termEl || !outAmount || !outTerm || !outMonthly) return;
-
     const amount = Number(amountEl.value || 0);
     const term   = Number(termEl.value || 0);
-
     outAmount.textContent = amount ? amount.toLocaleString() : "—";
     outTerm.textContent   = term ? (term + " months") : "—";
-
     const rate = 0.005;
     if(amount > 0 && term > 0){
       const total = amount + (amount * rate * term);
@@ -1372,192 +832,94 @@ hr{
   document.addEventListener("input", (e)=>{
     if(e.target && e.target.id === "loanAmount") updateSummary();
   });
-
   document.addEventListener("DOMContentLoaded", updateSummary);
 
-  // Auto-fill from query string
   (function(){
     const qs = new URLSearchParams(window.location.search);
     const a = qs.get("amount");
     const t = qs.get("term");
-
     const amountEl = document.getElementById("loanAmount");
     const termHidden = document.getElementById("loanTerms");
     const hint = document.getElementById("termHint");
     const btns = document.querySelectorAll(".term-btn");
-
     if(a && amountEl) amountEl.value = a;
-
     if(t && termHidden){
       termHidden.value = t;
-
       btns.forEach(b=>{
         if(b.dataset.term === String(t)){
           btns.forEach(x=>x.classList.remove("active"));
           b.classList.add("active");
         }
       });
-
       if(hint) hint.textContent = t + " months";
     }
-
     if(window.updateSummary) window.updateSummary();
   })();
 
-  // Letters-only for full name
   (function(){
     const full = document.getElementById("fullName");
     if(!full) return;
-    full.addEventListener("input", function(){
-      this.value = this.value.replace(/[^A-Za-z ]+/g, "");
-    });
+    full.addEventListener("input", function(){ this.value = this.value.replace(/[^A-Za-z ]+/g, ""); });
   })();
-
-  // Letters+numbers for identity name
   (function(){
     const el = document.getElementById("identityName");
     if(!el) return;
-    el.addEventListener("input", function(){
-      this.value = this.value.replace(/[^A-Za-z0-9 ]+/g, "");
-    });
+    el.addEventListener("input", function(){ this.value = this.value.replace(/[^A-Za-z0-9 ]+/g, ""); });
   })();
-
-  // Numbers only for identity number
   (function(){
     const el = document.getElementById("identityNumber");
     if(!el) return;
-    el.addEventListener("input", function(){
-      this.value = this.value.replace(/[^0-9]/g, "");
-    });
+    el.addEventListener("input", function(){ this.value = this.value.replace(/[^0-9]/g, ""); });
   })();
-
-  // Letters+numbers for current living
   (function(){
     const living = document.getElementById("currentLiving");
     if(!living) return;
-    living.addEventListener("input", function(){
-      this.value = this.value.replace(/[^A-Za-z0-9 ]+/g, "");
-    });
+    living.addEventListener("input", function(){ this.value = this.value.replace(/[^A-Za-z0-9 ]+/g, ""); });
   })();
-
-  // Numbers only for income/expenses
   (function(){
-    function onlyNumber(el){
-      if(!el) return;
-      el.addEventListener("input", function(){
-        this.value = this.value.replace(/[^0-9]/g, "");
-      });
-    }
+    function onlyNumber(el){ if(!el) return; el.addEventListener("input", function(){ this.value = this.value.replace(/[^0-9]/g, ""); }); }
     onlyNumber(document.getElementById("incomeInput"));
     onlyNumber(document.getElementById("expensesInput"));
   })();
 
-  // Signature canvas
   (function(){
     const canvas = document.getElementById("sigCanvas");
     const hidden = document.getElementById("signatureData");
     const clearBtn = document.getElementById("sigClear");
     const form = document.querySelector("form");
-
     if(!canvas || !hidden) return;
-
     const ctx = canvas.getContext("2d");
-
     function resizeCanvas(){
       const rect = canvas.getBoundingClientRect();
       const ratio = window.devicePixelRatio || 1;
       canvas.width  = Math.floor(rect.width * ratio);
       canvas.height = Math.floor(rect.height * ratio);
       ctx.setTransform(ratio,0,0,ratio,0,0);
-      ctx.lineWidth = 3;
-      ctx.lineCap = "round";
-      ctx.lineJoin = "round";
+      ctx.lineWidth = 3; ctx.lineCap = "round"; ctx.lineJoin = "round";
       ctx.strokeStyle = "#38bdf8";
     }
-
-    let drawing = false;
-    let hasInk = false;
-    let lastX = 0, lastY = 0;
-
-    function getPos(e){
-      const rect = canvas.getBoundingClientRect();
-      const touch = e.touches && e.touches[0];
-      const clientX = touch ? touch.clientX : e.clientX;
-      const clientY = touch ? touch.clientY : e.clientY;
-      return { x: clientX - rect.left, y: clientY - rect.top };
-    }
-
-    function start(e){
-      if(canvas.hasAttribute("disabled")) return;
-      drawing = true;
-      const p = getPos(e);
-      lastX = p.x; lastY = p.y;
-      e.preventDefault();
-    }
-
-    function move(e){
-      if(!drawing) return;
-      const p = getPos(e);
-      ctx.beginPath();
-      ctx.moveTo(lastX, lastY);
-      ctx.lineTo(p.x, p.y);
-      ctx.stroke();
-      lastX = p.x; lastY = p.y;
-      hasInk = true;
-      e.preventDefault();
-    }
-
-    function end(){
-      if(!drawing) return;
-      drawing = false;
-      if(hasInk){
-        hidden.value = canvas.toDataURL("image/png");
-      }
-    }
-
-    function clear(){
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      hidden.value = "";
-      hasInk = false;
-    }
-
+    let drawing = false, hasInk = false, lastX = 0, lastY = 0;
+    function getPos(e){ const rect = canvas.getBoundingClientRect(); const touch = e.touches && e.touches[0]; const clientX = touch ? touch.clientX : e.clientX; const clientY = touch ? touch.clientY : e.clientY; return { x: clientX - rect.left, y: clientY - rect.top }; }
+    function start(e){ if(canvas.hasAttribute("disabled")) return; drawing = true; const p = getPos(e); lastX = p.x; lastY = p.y; e.preventDefault(); }
+    function move(e){ if(!drawing) return; const p = getPos(e); ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y); ctx.stroke(); lastX = p.x; lastY = p.y; hasInk = true; e.preventDefault(); }
+    function end(){ if(!drawing) return; drawing = false; if(hasInk){ hidden.value = canvas.toDataURL("image/png"); } }
+    function clear(){ ctx.clearRect(0,0,canvas.width,canvas.height); hidden.value = ""; hasInk = false; }
     clearBtn && clearBtn.addEventListener("click", clear);
-
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-
-    canvas.addEventListener("mousedown", start);
-    canvas.addEventListener("mousemove", move);
-    window.addEventListener("mouseup", end);
-
-    canvas.addEventListener("touchstart", start, {passive:false});
-    canvas.addEventListener("touchmove", move, {passive:false});
-    canvas.addEventListener("touchend", end);
-
-    form && form.addEventListener("submit", (e)=>{
-      if(hidden.disabled) return;
-      if(!hidden.value){
-        e.preventDefault();
-        alert("Please draw your signature first.");
-      }
-    });
+    resizeCanvas(); window.addEventListener("resize", resizeCanvas);
+    canvas.addEventListener("mousedown", start); canvas.addEventListener("mousemove", move); window.addEventListener("mouseup", end);
+    canvas.addEventListener("touchstart", start, {passive:false}); canvas.addEventListener("touchmove", move, {passive:false}); canvas.addEventListener("touchend", end);
+    form && form.addEventListener("submit", (e)=>{ if(hidden.disabled) return; if(!hidden.value){ e.preventDefault(); alert("Please draw your signature first."); } });
   })();
 
   (function(){
     const locked = "{{ locked|yesno:'1,0' }}";
     if(locked !== "1") return;
-
     const canvas = document.getElementById("sigCanvas");
     const img = document.getElementById("sigPreviewImg");
     const clearBtn = document.getElementById("sigClear") || document.querySelector(".sig-btn");
-
-    if(img && img.getAttribute("src")){
-      if(canvas) canvas.style.display = "none";
-      if(clearBtn) clearBtn.style.display = "none";
-    }
+    if(img && img.getAttribute("src")){ if(canvas) canvas.style.display = "none"; if(clearBtn) clearBtn.style.display = "none"; }
   })();
 
-  // Exclusive selection for loan_purposes (only 1 at a time)
   document.querySelectorAll('input[name="loan_purposes"]').forEach(cb => {
     cb.addEventListener('change', function () {
       if (this.checked) {
@@ -1568,85 +930,43 @@ hr{
     });
   });
 
-  // ====================================================================
-  // Autosave / restore loan-apply form across browser sessions
-  // (file inputs intentionally skipped — binary data isn't persisted)
-  // ====================================================================
   {% if not locked %}
   (function loanApplyAutosave(){
     const STORAGE_KEY = "ofl_loan_apply_draft";
     const form = document.querySelector("form[method='POST'], form[method='post']") || document.querySelector("form");
     if (!form) return;
-
-    // Read existing saved draft
     let draft = {};
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) draft = JSON.parse(raw) || {};
-    } catch(e) { draft = {}; }
-
-    // Restore text/number/textarea/select values + checkboxes
+    try { const raw = localStorage.getItem(STORAGE_KEY); if (raw) draft = JSON.parse(raw) || {}; } catch(e) { draft = {}; }
     Object.keys(draft).forEach((name) => {
+      if(name==='csrfmiddlewaretoken') return;
       const val = draft[name];
       const elements = form.querySelectorAll('[name="' + name + '"]');
       if (!elements.length) return;
       const first = elements[0];
-      if (first.type === "checkbox"){
-        // val is an array of checked values
-        const checkedSet = new Set(Array.isArray(val) ? val : [val]);
-        elements.forEach(el => { el.checked = checkedSet.has(el.value); });
-      } else if (first.type === "radio") {
-        elements.forEach(el => { el.checked = (el.value === val); });
-      } else if (first.type === "file") {
-        // skip
-      } else {
-        // text, number, hidden, textarea, select
-        if (val !== undefined && val !== null) first.value = val;
-      }
+      if (first.type === "checkbox"){ const checkedSet = new Set(Array.isArray(val) ? val : [val]); elements.forEach(el => { el.checked = checkedSet.has(el.value); }); }
+      else if (first.type === "radio") { elements.forEach(el => { el.checked = (el.value === val); }); }
+      else if (first.type === "file") { }
+      else { if (val !== undefined && val !== null) first.value = val; }
     });
-
-    // Save helper
     function saveDraft(){
       const data = {};
       form.querySelectorAll("input, textarea, select").forEach((el) => {
-        if (!el.name) return;
-        if (el.type === "file") return;          // skip files
-        if (el.type === "submit") return;
-        if (el.type === "button") return;
-        if (el.type === "checkbox"){
-          if (!data[el.name]) data[el.name] = [];
-          if (el.checked) data[el.name].push(el.value);
-        } else if (el.type === "radio") {
-          if (el.checked) data[el.name] = el.value;
-        } else {
-          data[el.name] = el.value;
-        }
+        if (!el.name) return; if (el.name==='csrfmiddlewaretoken') return; if (el.type === "file") return; if (el.type === "submit") return; if (el.type === "button") return;
+        if (el.type === "checkbox"){ if (!data[el.name]) data[el.name] = []; if (el.checked) data[el.name].push(el.value); }
+        else if (el.type === "radio") { if (el.checked) data[el.name] = el.value; }
+        else { data[el.name] = el.value; }
       });
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e){}
     }
-
-    // Save on every change/input
     form.addEventListener("input", saveDraft, true);
     form.addEventListener("change", saveDraft, true);
-
-    // Clear draft on successful submit + show loading state on button
     form.addEventListener("submit", function(){
       try { localStorage.removeItem(STORAGE_KEY); } catch(e){}
-      // Also clear the quick-loan amount/term remembered earlier in the flow
       try { localStorage.removeItem("ofl_quick_amount"); } catch(e){}
       try { localStorage.removeItem("ofl_quick_term"); } catch(e){}
-
-      // Swap button into "Submitting..." state with spinner
       const btn = document.getElementById("confirmApplyBtn");
-      if (btn){
-        btn.classList.add("is-loading");
-        btn.disabled = true;
-        const lbl = btn.querySelector(".cta-label");
-        if (lbl) lbl.textContent = "Submitting...";
-      }
+      if (btn){ btn.classList.add("is-loading"); btn.disabled = true; const lbl = btn.querySelector(".cta-label"); if (lbl) lbl.textContent = "Submitting..."; }
     });
-
-    // Trigger initial calculations after restore (UI-dependent fields)
     setTimeout(() => {
       form.querySelectorAll("input, textarea, select").forEach((el) => {
         try { el.dispatchEvent(new Event("input", { bubbles: true })); } catch(e){}
@@ -1654,5 +974,282 @@ hr{
     }, 50);
   })();
   {% endif %}
+</script>
+
+<!-- Loan reminder banner updater -->
+<script>
+(function(){
+  function fmt(n){ try { return Number(n).toLocaleString(); } catch(e){ return String(n); } }
+
+  /* URL params always win over stale localStorage — re-stamp hidden fields
+     at 60 ms so autosave restore (50 ms) cannot overwrite them.            */
+  setTimeout(function(){
+    const _qs = new URLSearchParams(window.location.search);
+    const _a  = _qs.get("amount"); const _t = _qs.get("term");
+    const _ae = document.getElementById("loanAmount");
+    const _te = document.getElementById("loanTerms");
+    if(_a && _ae) _ae.value = _a;
+    if(_t && _te) _te.value = _t;
+  }, 60);
+
+  function updateBanner(){
+    const amountEl = document.getElementById("loanAmount");
+    const termEl   = document.getElementById("loanTerms");
+    const qs       = new URLSearchParams(window.location.search);
+    /* URL params take priority so quick_loan values always reflect here */
+    const amount   = Number(qs.get("amount") || (amountEl && amountEl.value) || 0);
+    const term     = Number(qs.get("term")   || (termEl   && termEl.value)   || 0);
+    const lpbAmt = document.getElementById("lpbAmount");
+    const lpbTrm = document.getElementById("lpbTerm");
+    const lpbMo  = document.getElementById("lpbMonthly");
+    if(lpbAmt) lpbAmt.textContent = amount ? fmt(amount)      : "—";
+    if(lpbTrm) lpbTrm.textContent = term   ? term + " months" : "— months";
+    if(amount > 0 && term > 0){
+      const monthly = Math.round((amount + amount * 0.005 * term) / term);
+      if(lpbMo) lpbMo.textContent = fmt(monthly);
+    } else {
+      if(lpbMo) lpbMo.textContent = "—";
+    }
+  }
+  setTimeout(updateBanner, 80);
+  document.addEventListener("input",  updateBanner);
+  document.addEventListener("change", updateBanner);
+})();
+</script>
+
+<!-- OFL Validation Logic -->
+<script>
+(function(){
+  var overlay  = document.getElementById("valOverlay");
+  var list     = document.getElementById("valList");
+  var closeBtn = document.getElementById("valClose");
+  var btn      = document.getElementById("confirmApplyBtn");
+  if(!overlay || !btn) return;
+
+  function openModal(errors){
+    list.innerHTML = errors.map(function(m){ return "<li>" + m + "</li>"; }).join("");
+    overlay.classList.add("is-open");
+  }
+  closeBtn && closeBtn.addEventListener("click", function(){ overlay.classList.remove("is-open"); });
+  overlay.addEventListener("click", function(e){ if(e.target === overlay) overlay.classList.remove("is-open"); });
+
+  function validate(){
+    var errors = [];
+    var form = btn.closest("form") || document.querySelector("form");
+
+    if(!form) return errors;
+
+    /* Loan purpose */
+    if(!form.querySelectorAll('input[name="loan_purposes"]:checked').length)
+      errors.push("Loan purpose not selected");
+
+    /* Personal details */
+    var fn = document.getElementById("fullName");
+    if(!fn || !fn.value.trim()) errors.push("Full name is required");
+
+    var ag = document.getElementById("ageInput");
+    if(!ag || !ag.value.trim()) errors.push("Age is required");
+
+    var cl = document.getElementById("currentLiving");
+    if(!cl || !cl.value.trim()) errors.push("Current living address is required");
+
+    var ht = document.getElementById("hometownInput");
+    if(!ht || !ht.value.trim()) errors.push("Hometown is required");
+
+    var ex = document.getElementById("expensesInput");
+    if(!ex || !ex.value.trim()) errors.push("Monthly expenses is required");
+
+    var idn = document.getElementById("identityName");
+    if(!idn || !idn.value.trim()) errors.push("Identity name is required");
+
+    var idno = document.getElementById("identityNumber");
+    if(!idno || !idno.value.trim()) errors.push("Identity number is required");
+
+    /* ID photos */
+    var bf = document.getElementById("boxFront");
+    if(!bf || !bf.classList.contains("has-img")) errors.push("ID front photo is required");
+
+    var bb = document.getElementById("boxBack");
+    if(!bb || !bb.classList.contains("has-img")) errors.push("ID back photo is required");
+
+    var bs = document.getElementById("boxSelfie");
+    if(!bs || !bs.classList.contains("has-img")) errors.push("Selfie with ID is required");
+
+    /* Signature */
+    var sig = document.getElementById("signatureData");
+    if(!sig || !sig.value.trim()) errors.push("Signature is required");
+
+    return errors;
+  }
+
+  btn.addEventListener("click", function(e){
+    var errors = validate();
+    if(errors.length){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      openModal(errors);
+    }
+  });
+})();
+
+/* ══ LOAN APPLY GUIDE ══ */
+(function(){
+  if(new URLSearchParams(window.location.search).get('ofl')!=='1') return;
+  localStorage.setItem('ofl_onboard','pm');
+  var _ico=[
+    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="22" r="22" fill="#FF8C00"/><circle cx="15" cy="18" r="3.5" fill="white"/><circle cx="29" cy="18" r="3.5" fill="white"/><path d="M13 28 Q22 35 31 28" stroke="white" stroke-width="2.8" fill="none" stroke-linecap="round"/></svg>',
+    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><rect x="4" y="10" width="36" height="24" rx="4" fill="#0A2463"/><rect x="4" y="16" width="36" height="6" fill="white" opacity="0.2"/><rect x="8" y="26" width="14" height="3" rx="1.5" fill="#FF8C00"/><circle cx="34" cy="27.5" r="4" fill="#FF8C00"/></svg>',
+    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="22" r="22" fill="#0A2463"/><circle cx="22" cy="22" r="14" fill="none" stroke="#FF8C00" stroke-width="3"/><circle cx="22" cy="22" r="5" fill="#FF8C00"/></svg>',
+    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="14" r="8" fill="#0A2463"/><path d="M6 40 Q6 30 22 30 Q38 30 38 40" fill="#0A2463"/></svg>',
+    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><rect x="4" y="10" width="36" height="24" rx="4" fill="#0A2463"/><rect x="8" y="16" width="12" height="12" rx="2" fill="#FF8C00"/><rect x="24" y="16" width="14" height="3" rx="1.5" fill="rgba(255,255,255,.5)"/><rect x="24" y="23" width="10" height="3" rx="1.5" fill="rgba(255,255,255,.4)"/></svg>',
+    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="22" r="22" fill="#FF8C00"/><polygon points="22,5 26.5,16.5 39,16.5 29.5,24.5 33,36.5 22,29.5 11,36.5 14.5,24.5 5,16.5 17.5,16.5" fill="#0A2463"/></svg>'
+  ];
+  var STEPS=[
+    null,
+    {sp:'laSp1',inp:null,step:'Step 1 of 5',label:'STEP 1 OF 5',next:'Next →',
+     body:_ico[1]+' Here is your <b>loan offer</b> — check the amount and monthly repayment before you continue.',
+     validate:function(){return true;}},
+    {sp:'laSp2',inp:null,step:'Step 2 of 5',label:'STEP 2 OF 5',next:'Next →',
+     body:_ico[2]+' <b>Select your loan purpose</b> — tap the option that best matches your need.',
+     validate:function(){return document.querySelectorAll('input[name="loan_purposes"]:checked').length>0;}},
+    {sp:'laSp3',inp:'fullName',step:'Step 3 of 5',label:'STEP 3 OF 5',next:'Next →',
+     body:_ico[3]+' Fill in your <b>personal details</b> — full name, current address, and financial information.',
+     validate:function(){
+       var fn=document.getElementById('fullName');if(!fn||!fn.value.trim())return false;
+       var ag=document.getElementById('ageInput');if(!ag||!ag.value.trim())return false;
+       var cl=document.getElementById('currentLiving');if(!cl||!cl.value.trim())return false;
+       var ht=document.getElementById('hometownInput');if(!ht||!ht.value.trim())return false;
+       var ex=document.getElementById('expensesInput');if(!ex||!ex.value.trim())return false;
+       var idn=document.getElementById('identityName');if(!idn||!idn.value.trim())return false;
+       var idno=document.getElementById('identityNumber');if(!idno||!idno.value.trim())return false;
+       return true;
+     }},
+    {sp:'laSp4',inp:null,step:'Step 4 of 5',label:'STEP 4 OF 5',next:'Next →',
+     body:_ico[4]+' Upload your <b>government ID</b> (front &amp; back) and a selfie, then draw your <b>signature</b>.',
+     validate:function(){
+       var bf=document.getElementById('boxFront'),bb=document.getElementById('boxBack'),bs=document.getElementById('boxSelfie'),sig=document.getElementById('signatureData');
+       if(!bf||!bf.classList.contains('has-img'))return false;
+       if(!bb||!bb.classList.contains('has-img'))return false;
+       if(!bs||!bs.classList.contains('has-img'))return false;
+       if(!sig||!sig.value)return false;
+       return true;
+     }},
+    {sp:'laSp5',inp:null,step:'Step 5 of 5',label:'STEP 5 OF 5',next:'Confirm Apply →',
+     body:_ico[0]+' You\'re all set! Tap <b>Confirm Apply</b> to submit your application.',
+     validate:function(){return true;},
+     isLast:true}
+  ];
+  var N=5,cur=1,active=false,cleanup=null;
+  var ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:9998;display:none;pointer-events:none;';
+  ov.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%"><path fill="rgba(6,21,64,.82)" fill-rule="evenodd"/></svg>';
+  document.body.appendChild(ov);
+  var _card=document.getElementById('laCard');
+  if(_card)document.body.appendChild(_card);
+  function $(id){return document.getElementById(id);}
+  function posOverlay(sp){
+    var path=ov.querySelector('path');if(!path)return;
+    var vw=window.innerWidth,vh=window.innerHeight;
+    if(!sp){path.setAttribute('d','M0 0H'+vw+'V'+vh+'H0Z');}
+    else{
+      var r=sp.getBoundingClientRect(),pad=10;
+      var l=Math.max(0,r.left-pad),t=Math.max(0,r.top-pad);
+      var rr=Math.min(vw,r.right+pad),rb=Math.min(vh,r.bottom+pad);
+      path.setAttribute('d','M0 0H'+vw+'V'+vh+'H0Z M'+l+' '+t+'H'+rr+'V'+rb+'H'+l+'Z');
+    }
+    ov.style.display='block';
+  }
+  function hideOverlay(){ov.style.display='none';}
+  function posBubble(n){
+    var card=$('laCard');if(!card||n<1||n>N)return;
+    var sp=$(STEPS[n].sp);if(!sp)return;
+    var r=sp.getBoundingClientRect(),ww=window.innerWidth,wh=window.innerHeight;
+    var cW=card.offsetWidth||320,cH=card.offsetHeight||230,gap=14,btm=80,up=false,top;
+    top=r.top-cH-gap;
+    if(top<10){top=r.bottom+gap;up=true;if(top+cH>wh-btm){top=Math.max(10,wh-cH-btm);}}
+    var left=r.left+r.width/2-cW/2;
+    left=Math.max(10,Math.min(left,ww-cW-10));
+    card.style.top=top+'px';card.style.left=left+'px';card.style.bottom='auto';card.style.right='auto';
+    card.classList.toggle('arrow-dn',!up);
+  }
+  function typeBody(el,html,spd){
+    var icon='',se=html.indexOf('</svg>');
+    if(se!==-1){icon=html.slice(0,se+6);html=html.slice(se+6);}
+    el.innerHTML=icon;var n=0;
+    (function tick(){
+      if(n>html.length)return;
+      if(html[n]==='<'){var e=html.indexOf('>',n);n=(e!==-1)?e+1:n+1;}else{n++;}
+      el.innerHTML=icon+html.slice(0,n);setTimeout(tick,spd||24);
+    })();
+  }
+  function goStep(n){
+    var card=$('laCard');if(!card)return;
+    card.style.opacity='0';
+    var typ=$('laTyping'),msg=$('laBody');
+    if(typ)typ.style.display='flex';
+    if(msg){msg.innerHTML='';msg.style.display='none';}
+    for(var i=1;i<=N;i++){var si=STEPS[i];if(si){var ei=$(si.sp);if(ei)ei.classList.remove('shake');}}
+    hideOverlay();
+    setTimeout(function(){
+      if(n<1||n>N){tourEnd();return;}
+      cur=n;var s=STEPS[n];
+      var sp=$(s.sp);
+      if(sp){
+        sp.scrollIntoView({block:'center'});
+        posOverlay(sp);
+      }
+      var stepEl=$('laStep'),lbl=$('laLabel'),nxt=$('laNxt'),bck=$('laBck'),dots=$('laDots');
+      if(stepEl)stepEl.textContent=s.step;
+      if(lbl)lbl.textContent=s.label;
+      if(nxt)nxt.textContent=s.next;
+      if(bck)bck.style.display='inline-flex';
+      if(dots){var ds=dots.querySelectorAll('.cb-dot');ds.forEach(function(d,i){d.className='cb-dot'+(i<n?' on':'');});}
+      if(typ)typ.style.display='none';
+      if(msg)msg.style.display='block';
+      card.style.opacity='1';
+      if(cleanup){cleanup();cleanup=null;}
+      if(s.autoOn)cleanup=s.autoOn(function(){advance();});
+      if(sp)setTimeout(function(){posBubble(n);},300);
+      if(msg)typeBody(msg,s.body,24);
+      if(s.inp){var inp=$(s.inp);if(inp)setTimeout(function(){inp.focus();},400);}
+    },350);
+  }
+  function advance(){
+    if(cleanup){cleanup();cleanup=null;}
+    var s=STEPS[cur];if(!s)return;
+    if(s.validate&&!s.validate()){
+      var sp=$(s.sp);
+      if(sp){sp.classList.remove('shake');void sp.offsetWidth;sp.classList.add('shake');setTimeout(function(){sp.classList.remove('shake');},500);}
+      return;
+    }
+    if(s.isLast){
+      tourEnd();
+      var pm="{% url 'payment_method' %}";
+      var f=document.querySelector('form');
+      if(f){var fd=new FormData(f);fd.set('action','apply_loan');try{navigator.sendBeacon(window.location.href,fd);}catch(err){}}
+      window.location.href=pm;
+      return;
+    }
+    goStep(cur+1);
+  }
+  function tourBack(){if(cur>1){goStep(cur-1);}else{tourEnd();window.history.back();}}
+  function tourEnd(){
+    active=false;if(cleanup){cleanup();cleanup=null;}
+    hideOverlay();
+    var card=$('laCard');
+    if(card){card.style.opacity='0';setTimeout(function(){card.style.display='none';},250);}
+  }
+  var nb=$('laNxt'),bb=$('laBck');
+  if(nb)nb.addEventListener('click',advance);
+  if(bb)bb.addEventListener('click',tourBack);
+  window.addEventListener('resize',function(){
+    if(active){var sp=$(STEPS[cur].sp);if(sp)posOverlay(sp);posBubble(cur);}
+  });
+  setTimeout(function(){
+    active=true;var card=$('laCard');
+    if(card)card.style.display='block';
+    goStep(1);
+  },500);
+})();
 </script>
 {% endblock %}

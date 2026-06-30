@@ -1,669 +1,578 @@
 {% extends "base.html" %}
-{% block title %}Login - Overseas FilipinoLoan{% endblock %}
+{% block title %}Login — Overseas FilipinoLoan{% endblock %}
 {% load static %}
 {% block nav %}{% endblock %}
 
+{% block extra_css %}
+{{ block.super }}
+<style>
+html body,html body *,html body button,html body input,
+html body select,html body textarea,html body a{
+  font-family:'Noto Sans','Hind','Lato',system-ui,sans-serif!important;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <style>
-  /* ===== OFL Login — Filipino Flag Style ===== */
-  /* Palette: #0032A0 Blue · #BF0D3E Red · #FED141 Gold · #FFFFFF White */
+/* ════════════════════════════════════════════
+   OFL LOGIN — Dark Navy · Orange Culture
+   Matching register.html design language
+════════════════════════════════════════════ */
+#pageRoot.wrap{max-width:100%!important;width:100%!important;padding:0!important;display:block!important;}
+body{padding-bottom:0!important;overflow-x:hidden!important;min-height:100vh;
+  background:linear-gradient(160deg,#071540 0%,#0c1f5c 60%,#0a1a4a 100%)!important;color:#0a1a3a;}
+body,body *{font-family:inherit!important;box-sizing:border-box;}
+*{margin:0;padding:0;box-sizing:border-box;}
 
-  #pageRoot.wrap {
-    max-width: 100% !important;
-    width: 100% !important;
-    padding: 0 !important;
-    display: block !important;
-  }
+:root{
+  --navy:#0A2463;--navy-dk:#061540;--navy-md:#1a3a7a;
+  --orange:#FF8C00;--orange-dk:#D97200;--orange-lt:#FFA533;
+  --ink:#0a1a3a;--mut:#7a8299;--line:#e2e6f0;
+}
 
-  body {
-    padding-bottom: 0 !important;
-    overflow-x: hidden !important;
-    margin: 0;
-    min-height: 100vh;
-    background: #f6f8fc !important;
-    color: #0a1a3a !important;
-    font-family: "Lato", "Open Sans", "Ovelion", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
-  }
-  body, body * { font-family: inherit !important; }
+/* ── Keyframes ── */
+@keyframes cardPop   {0%{opacity:0;transform:translateY(24px) scale(.95)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes orb1      {0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(45px,-55px) scale(1.14)}}
+@keyframes orb2      {0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,50px) scale(.88)}}
+@keyframes orb3      {0%,100%{transform:translate(0,0)}33%{transform:translate(30px,28px)}66%{transform:translate(-22px,-30px)}}
+@keyframes orb4      {0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-28px,-38px) scale(1.10)}}
+@keyframes orb5      {0%,100%{transform:translate(0,0)}50%{transform:translate(20px,35px) scale(.94)}}
+@keyframes spin      {to{transform:rotate(360deg)}}
+@keyframes ringPop   {0%{transform:scale(.8);opacity:.8}100%{transform:scale(2.2);opacity:0}}
+@keyframes shimmer   {0%{left:-120%}100%{left:220%}}
+@keyframes fadeUp    {0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes pulseOrg  {0%,100%{box-shadow:0 8px 26px rgba(255,140,0,.42)}50%{box-shadow:0 8px 40px rgba(255,140,0,.78)}}
+@keyframes dot       {0%,80%,100%{transform:scale(0);opacity:.4}40%{transform:scale(1);opacity:1}}
+@keyframes starDrift {0%{transform:translateY(0) translateX(0);opacity:.7}100%{transform:translateY(-100vh) translateX(20px);opacity:0}}
 
-  * { box-sizing: border-box; }
+/* ── Page wrapper ── */
+.lp{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:28px 16px;
+  position:relative;overflow:hidden;
+}
 
-  :root {
-    --ph-blue: #0032A0;
-    --ph-blue-dark: #00226e;
-    --ph-red: #BF0D3E;
-    --ph-red-dark: #8b0628;
-    --ph-gold: #FED141;
-    --ph-gold-dark: #e6b820;
-    --ink: #0a1a3a;
-    --mut: #5a6378;
-    --line: #e3e8f1;
-  }
+/* ── Floating orbs ── */
+.orb{position:absolute;border-radius:50%;filter:blur(72px);pointer-events:none;z-index:0;}
+.orb1{width:400px;height:400px;background:rgba(10,36,99,.75);top:-100px;left:-120px;animation:orb1 13s ease-in-out infinite;}
+.orb2{width:320px;height:320px;background:rgba(255,140,0,.20);bottom:-80px;right:-90px;animation:orb2 16s ease-in-out infinite;}
+.orb3{width:220px;height:220px;background:rgba(26,58,122,.65);top:45%;left:55%;animation:orb3 19s ease-in-out infinite;}
+.orb4{width:260px;height:260px;background:rgba(255,140,0,.11);top:15%;right:8%;animation:orb4 11s ease-in-out infinite;}
+.orb5{width:180px;height:180px;background:rgba(6,21,64,.80);bottom:10%;left:5%;animation:orb5 14s ease-in-out infinite;}
 
-  @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes sunSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+/* tiny drifting stars */
+.star{position:absolute;border-radius:50%;background:rgba(255,255,255,.55);pointer-events:none;z-index:0;}
 
-  /* ===== Page wrapper (soft cream/blue background that blends with white card) ===== */
-  .auth-page {
-    min-height: 100vh;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    background:
-      radial-gradient(800px 600px at 15% 20%, rgba(0,50,160,.10) 0%, transparent 60%),
-      radial-gradient(700px 500px at 85% 80%, rgba(191,13,62,.08) 0%, transparent 60%),
-      radial-gradient(500px 400px at 50% 50%, rgba(254,209,65,.10) 0%, transparent 65%),
-      linear-gradient(180deg, #fafbff 0%, #eef2fb 100%);
-    position: relative;
-    overflow: hidden;
-  }
-  .auth-page::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image:
-      radial-gradient(rgba(0,50,160,.05) 1px, transparent 1px);
-    background-size: 22px 22px;
-    pointer-events: none;
-    opacity: .6;
-  }
-  .auth-sun { display: none !important; }
-  .auth-stars {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    z-index: 1;
-    background-image:
-      radial-gradient(2px 2px at 12% 80%, rgba(254,209,65,.55), transparent),
-      radial-gradient(2px 2px at 30% 30%, rgba(255,255,255,.40), transparent),
-      radial-gradient(1.5px 1.5px at 65% 75%, rgba(254,209,65,.40), transparent),
-      radial-gradient(2px 2px at 85% 20%, rgba(255,255,255,.30), transparent);
-  }
+/* ── Card ── */
+.lp-card{
+  position:relative;z-index:1;
+  width:100%;max-width:390px;
+  background:#fff;border-radius:28px;
+  box-shadow:0 36px 90px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.07);
+  overflow:hidden;
+  animation:cardPop .75s cubic-bezier(.22,1,.36,1) .1s both;
+}
 
-  /* ===== Left: Marketing panel ===== */
-  .auth-marketing {
-    position: relative;
-    z-index: 2;
-    padding: 60px 50px;
-    color: var(--ink);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-  .am-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    text-decoration: none;
-    color: var(--ph-blue-dark);
-    margin-bottom: auto;
-    padding-bottom: 40px;
-  }
-  .am-brand-logo {
-    width: 56px; height: 56px;
-    flex: 0 0 auto;
-  }
-  .am-brand-logo img {
-    width: 100%; height: 100%;
-    object-fit: contain;
-    display: block;
-  }
-  .am-brand-name {
-    font-size: 26px;
-    font-weight: 950;
-    letter-spacing: -.4px;
-    color: var(--ph-blue-dark);
-  }
-  .am-brand-name span { color: var(--ph-red); }
+/* ── Top banner ── */
+.lp-banner{
+  position:relative;
+  background:linear-gradient(140deg,var(--navy-dk) 0%,var(--navy) 55%,var(--navy-md) 100%);
+  padding:30px 24px 0;
+  text-align:center;
+  overflow:hidden;
+  min-height:140px;
+}
+/* rotating conic light sweep */
+.lp-banner::before{
+  content:'';position:absolute;inset:0;
+  background:conic-gradient(from 0deg at 75% 40%,
+    transparent 0deg,rgba(255,140,0,.14) 55deg,transparent 110deg);
+  animation:spin 14s linear infinite;
+}
+/* shimmer sweep on load */
+.lp-banner::after{
+  content:'';position:absolute;top:0;width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.09),transparent);
+  animation:shimmer 3.2s ease .9s 1;
+}
 
-  .am-content {
-    max-width: 460px;
-    opacity: 0;
-    animation: fadeInUp .7s ease-out .15s forwards;
-  }
-  .am-tag {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: .22em;
-    text-transform: uppercase;
-    color: var(--ph-red);
-    background: rgba(191,13,62,.08);
-    border: 1px solid rgba(191,13,62,.22);
-    padding: 6px 14px;
-    border-radius: 999px;
-    margin-bottom: 20px;
-  }
-  .am-title {
-    font-size: 42px;
-    font-weight: 950;
-    line-height: 1.05;
-    letter-spacing: -1px;
-    margin-bottom: 18px;
-    color: var(--ph-blue-dark);
-  }
-  .am-title .gold { color: var(--ph-red); }
-  .am-desc {
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--mut);
-    margin-bottom: 28px;
-  }
-  .am-feats {
-    display: grid;
-    gap: 14px;
-  }
-  .am-feat {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    color: var(--ink);
-    font-size: 14px;
-    font-weight: 700;
-  }
-  .am-feat-ico {
-    width: 36px; height: 36px;
-    border-radius: 999px;
-    background: rgba(0,50,160,.08);
-    border: 1px solid rgba(0,50,160,.22);
-    display: flex; align-items: center; justify-content: center;
-    flex: 0 0 auto;
-  }
-  .am-feat-ico svg { width: 16px; height: 16px; color: var(--ph-blue); }
-  .am-feat b { color: var(--ph-blue-dark); font-weight: 900; }
+/* wave bottom of banner */
+.lp-wave{position:absolute;bottom:-1px;left:0;right:0;line-height:0;z-index:2;}
+.lp-wave svg{display:block;width:100%;}
 
-  .am-foot {
-    margin-top: 50px;
-    font-size: 11px;
-    color: var(--mut);
-    letter-spacing: .04em;
-    padding-top: 20px;
-    border-top: 1px solid var(--line);
-  }
-  .am-foot .ft-flag {
-    display: inline-flex;
-    gap: 3px;
-    align-items: center;
-    margin-right: 8px;
-    vertical-align: middle;
-  }
-  .am-foot .ft-flag span {
-    width: 14px; height: 9px;
-    border-radius: 1px;
-  }
-  .am-foot .ft-flag .b1 { background: var(--ph-blue); }
-  .am-foot .ft-flag .b2 { background: var(--ph-red); }
+/* logo rings */
+.lp-logo-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.lp-ring{position:absolute;border-radius:50%;border:2px solid rgba(255,140,0,.55);}
+.lp-ring1{width:72px;height:72px;animation:ringPop 2.4s ease-out 1.1s infinite;}
+.lp-ring2{width:72px;height:72px;animation:ringPop 2.4s ease-out 1.8s infinite;}
+.lp-logo{
+  width:66px;height:66px;border-radius:50%;
+  background:linear-gradient(135deg,var(--orange),var(--orange-dk));
+  border:3px solid rgba(255,140,0,.45);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;position:relative;z-index:1;
+  box-shadow:0 8px 26px rgba(255,140,0,.38);
+}
+.lp-logo img{width:50px;height:50px;object-fit:contain;display:block;}
 
-  /* ===== Right: Form panel ===== */
-  .auth-form-wrap {
-    position: relative;
-    z-index: 2;
-    background: #fff;
-    padding: 60px 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: -20px 0 60px rgba(0,50,160,.10);
-    border-left: 1px solid var(--line);
-  }
-  .auth-card {
-    width: 100%;
-    max-width: 440px;
-    opacity: 0;
-    animation: fadeInUp .7s ease-out .25s forwards;
-  }
+.lp-banner-title{
+  font-size:21px;font-weight:900;color:#fff;
+  letter-spacing:.01em;position:relative;z-index:1;margin-bottom:2px;
+}
+.lp-banner-sub{
+  font-size:11.5px;font-weight:600;letter-spacing:.04em;
+  color:rgba(255,255,255,.58);position:relative;z-index:1;
+  min-height:1.4em;padding-bottom:22px;
+}
+/* cursor blink */
+.lp-cursor{animation:dot .9s ease-in-out infinite;display:inline-block;}
 
-  .auth-mobile-brand {
-    display: none;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
-    text-decoration: none;
-  }
-  .auth-mobile-brand .am-brand-logo { width: 44px; height: 44px; }
-  .auth-mobile-brand .am-brand-name { font-size: 20px; color: var(--ph-blue-dark); }
-  .auth-mobile-brand .am-brand-name span { color: var(--ph-red); }
 
-  .title {
-    font-size: 32px;
-    font-weight: 950;
-    color: var(--ph-blue-dark);
-    letter-spacing: -.6px;
-    margin-bottom: 6px;
-  }
-  .title .red { color: var(--ph-red); }
-  .subtitle {
-    font-size: 14px;
-    color: var(--mut);
-    margin-bottom: 28px;
-    line-height: 1.5;
-  }
+/* ── Form body ── */
+.lp-body{padding:22px 24px 20px;}
 
-  /* Fields */
-  .field { margin-bottom: 16px; }
-  .label {
-    display: block;
-    font-size: 11px;
-    font-weight: 900;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--ph-blue-dark);
-    margin-bottom: 8px;
-  }
+/* section label */
+.lp-slabel{
+  font-size:10.5px;font-weight:900;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--orange);
+  display:flex;align-items:center;gap:8px;margin-bottom:18px;
+}
+.lp-slabel::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,140,0,.4),transparent);}
 
-  .input-wrap {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 4px 14px;
-    border-radius: 12px;
-    background: #fff;
-    border: 1.5px solid var(--line);
-    transition: border-color .18s, box-shadow .18s;
-  }
-  .input-wrap:focus-within {
-    border-color: var(--ph-blue);
-    box-shadow: 0 0 0 4px rgba(0,50,160,.10);
-  }
-  .icon-box svg {
-    width: 18px;
-    height: 18px;
-    color: var(--ph-blue);
-    stroke: var(--ph-blue);
-    fill: none;
-    flex-shrink: 0;
-  }
-  .input {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-    font-size: 14.5px;
-    font-weight: 600;
-    color: var(--ink);
-    padding: 13px 0;
-    font-family: inherit;
-  }
-  .input::placeholder {
-    color: #9ca3af;
-    font-weight: 500;
-  }
+/* error / suspended */
+.lp-err{
+  background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.25);
+  border-left:4px solid #dc2626;border-radius:10px;
+  padding:11px 13px;margin-bottom:14px;
+  font-size:13px;font-weight:700;color:#991b1b;line-height:1.5;
+}
+.lp-suspended{
+  background:linear-gradient(135deg,#dc2626,#991b1b);color:#fff;
+  font-weight:900;text-align:center;padding:11px 14px;
+  border-radius:10px;margin-bottom:14px;
+  font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+}
 
-  input:-webkit-autofill,
-  input:-webkit-autofill:hover,
-  input:-webkit-autofill:focus {
-    -webkit-text-fill-color: var(--ink) !important;
-    -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
-    transition: background-color 9999s ease-in-out 0s;
-  }
+/* fields */
+.f-group{margin-bottom:13px;}
+.f-label{
+  display:block;font-size:10.5px;font-weight:900;
+  letter-spacing:.15em;text-transform:uppercase;
+  color:var(--navy);margin-bottom:7px;
+}
+.f-wrap{
+  display:flex;align-items:center;gap:10px;
+  padding:4px 14px;border-radius:14px;
+  background:#f7f8fc;border:1.5px solid var(--line);
+  transition:border-color .18s,box-shadow .18s,background .18s;
+}
+.f-wrap:focus-within{
+  border-color:var(--orange);
+  box-shadow:0 0 0 4px rgba(255,140,0,.12);
+  background:#fff;
+}
+.f-ico{display:flex;align-items:center;flex-shrink:0;}
+.f-ico svg{width:17px;height:17px;stroke:var(--orange);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.f-inp{
+  flex:1;border:none;outline:none;background:transparent;
+  font-size:14.5px;font-weight:600;color:var(--ink);
+  padding:12px 0;
+}
+.f-inp::placeholder{color:#aab0c0;font-weight:500;}
+.eye-btn{
+  border:none;background:transparent;cursor:pointer;
+  width:30px;height:30px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:background .15s;
+}
+.eye-btn:hover{background:rgba(255,140,0,.10);}
+.eye-btn svg{width:17px;height:17px;stroke:var(--orange);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 
-  .eye-btn {
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: background .15s;
-  }
-  .eye-btn:hover { background: rgba(0,50,160,.08); }
-  .eye-btn svg {
-    width: 18px;
-    height: 18px;
-    color: var(--ph-blue);
-    stroke: var(--ph-blue);
-    fill: none;
-  }
+/* forgot */
+.lp-forgot{text-align:right;margin:-4px 0 16px;}
+.lp-forgot a{font-size:12px;font-weight:800;color:var(--orange);text-decoration:none;transition:color .15s;}
+.lp-forgot a:hover{color:var(--orange-dk);}
 
-  /* Forgot link */
-  .forgot-row {
-    display: flex;
-    justify-content: flex-end;
-    margin: -8px 0 14px;
-  }
-  .forgot-link {
-    font-size: 12px;
-    font-weight: 800;
-    color: var(--ph-red);
-    text-decoration: none;
-    letter-spacing: .02em;
-  }
-  .forgot-link:hover { color: var(--ph-red-dark); }
+/* Login button */
+.lp-btn{
+  width:100%;height:52px;border:none;border-radius:999px;
+  background:linear-gradient(135deg,var(--orange),var(--orange-dk));
+  color:#fff;font-size:14px;font-weight:900;
+  letter-spacing:.10em;text-transform:uppercase;
+  cursor:pointer;position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  box-shadow:0 8px 24px rgba(255,140,0,.44);
+  transition:transform .18s,box-shadow .18s,filter .18s;
+  animation:pulseOrg 2.8s ease-in-out 2s infinite;
+}
+.lp-btn:hover{transform:translateY(-2px);box-shadow:0 14px 34px rgba(255,140,0,.62);filter:brightness(1.06);animation:none;}
+.lp-btn:active{transform:scale(.98);}
+/* ripple layer */
+.lp-btn .lp-ripple{
+  position:absolute;border-radius:50%;
+  background:rgba(255,255,255,.32);
+  transform:scale(0);pointer-events:none;
+  width:200px;height:200px;
+  margin-top:-100px;margin-left:-100px;
+  transition:transform .55s ease,opacity .55s ease;opacity:1;
+}
+.lp-btn .lp-ripple.go{transform:scale(2.5);opacity:0;}
 
-  /* CTA button */
-  .btn {
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-    width: 100%;
-    height: 54px;
-    border: 0;
-    border-radius: 999px;
-    background: linear-gradient(135deg, var(--ph-red) 0%, var(--ph-red-dark) 100%);
-    color: #fff;
-    font-weight: 950;
-    font-size: 14px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    cursor: pointer;
-    box-shadow: 0 8px 22px rgba(191,13,62,.40);
-    transition: transform .18s, box-shadow .18s, filter .18s;
-    font-family: inherit;
-  }
-  .btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(191,13,62,.55);
-    filter: brightness(1.08);
-  }
-  .btn:active { transform: scale(.99); }
-  .btn svg { width: 16px; height: 16px; }
+/* divider */
+.lp-divider{display:flex;align-items:center;gap:10px;margin:18px 0;}
+.lp-divider span:not(.lp-div-txt){flex:1;height:1px;background:var(--line);}
+.lp-div-txt{font-size:10.5px;font-weight:900;color:var(--mut);letter-spacing:.14em;text-transform:uppercase;}
 
-  /* Divider */
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 22px 0;
-  }
-  .divider .line {
-    flex: 1;
-    height: 1px;
-    background: var(--line);
-  }
-  .divider .txt {
-    font-size: 11px;
-    font-weight: 800;
-    color: var(--mut);
-    letter-spacing: .14em;
-    text-transform: uppercase;
-  }
+/* register link */
+.lp-reg{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;height:48px;border-radius:999px;
+  border:2px solid var(--navy);color:var(--navy);
+  background:transparent;font-size:13px;font-weight:800;
+  letter-spacing:.06em;text-transform:uppercase;
+  text-decoration:none;
+  transition:background .18s,color .18s,transform .18s,box-shadow .18s;
+}
+.lp-reg:hover{background:var(--navy);color:#fff;transform:translateY(-2px);box-shadow:0 8px 22px rgba(10,36,99,.35);}
+.lp-reg svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
 
-  /* Register CTA */
-  .register-cta {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    height: 50px;
-    border-radius: 999px;
-    background: #fff;
-    color: var(--ph-blue-dark);
-    border: 2px solid var(--ph-blue);
-    font-weight: 900;
-    font-size: 13px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    text-decoration: none;
-    transition: all .18s;
-  }
-  .register-cta:hover {
-    background: var(--ph-blue);
-    color: #fff;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0,50,160,.30);
-  }
-  .register-cta svg { width: 14px; height: 14px; }
+/* credit */
+.lp-credit{
+  margin-top:16px;padding-top:14px;border-top:1px solid var(--line);
+  text-align:center;font-size:10.5px;font-weight:700;color:var(--mut);
+  letter-spacing:.04em;display:flex;align-items:center;justify-content:center;
+  gap:6px;flex-wrap:wrap;
+}
+.lp-cdot{width:5px;height:5px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--orange));display:inline-block;flex-shrink:0;}
 
-  /* Error / suspended */
-  .err {
-    background: rgba(191,13,62,.06);
-    color: var(--ph-red-dark);
-    border: 1px solid rgba(191,13,62,.30);
-    border-left: 4px solid var(--ph-red);
-    border-radius: 10px;
-    padding: 12px 14px;
-    margin: 0 0 16px;
-    font-size: 13px;
-    font-weight: 700;
-    line-height: 1.5;
-  }
-  .err strong { color: var(--ph-red); }
+/* autofill */
+input:-webkit-autofill,input:-webkit-autofill:hover,input:-webkit-autofill:focus{
+  -webkit-text-fill-color:var(--ink)!important;
+  -webkit-box-shadow:0 0 0 1000px #fff inset!important;
+  transition:background-color 9999s ease-in-out 0s;
+}
 
-  .suspended-box {
-    background: var(--ph-red);
-    color: #fff;
-    font-weight: 950;
-    text-align: center;
-    padding: 14px;
-    border-radius: 12px;
-    margin-bottom: 16px;
-    font-size: 14px;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    box-shadow: 0 6px 18px rgba(191,13,62,.35);
-  }
+/* ── Login button shine sweep ── */
+.lp-btn::before{
+  content:'';position:absolute;top:0;left:-150%;width:55%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);
+  animation:btnShimmer 4.5s ease-in-out 2.5s infinite;
+  border-radius:inherit;pointer-events:none;z-index:0;
+}
+@keyframes btnShimmer{0%{left:-150%}100%{left:200%}}
+.lp-btn>svg,.lp-btn>span{position:relative;z-index:1;}
 
-  /* ===== Credit / footer line ===== */
-  .auth-credit {
-    margin-top: 26px;
-    padding-top: 16px;
-    border-top: 1px solid var(--line);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 8px;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--mut);
-    letter-spacing: .04em;
-  }
-  .auth-credit .ac-brand {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    color: var(--ph-blue-dark);
-    font-weight: 950;
-    letter-spacing: .08em;
-  }
-  .auth-credit .ac-brand .ac-dot {
-    width: 6px; height: 6px;
-    border-radius: 999px;
-    background: linear-gradient(135deg, var(--ph-blue), var(--ph-red));
-    box-shadow: 0 0 8px rgba(0,50,160,.45);
-  }
-  .auth-credit .ac-sep { color: var(--ph-gold-dark); font-weight: 900; }
-  .auth-credit .ac-v {
-    color: var(--ph-red);
-    font-weight: 900;
-  }
-  @media (max-width: 380px) {
-    .auth-credit { font-size: 10px; gap: 6px; }
-  }
+/* ── Create Account gradient border ── */
+.lp-reg{
+  background:linear-gradient(#fff,#fff) padding-box,
+    linear-gradient(135deg,var(--navy) 0%,var(--orange) 100%) border-box!important;
+  border:2.5px solid transparent!important;
+}
+.lp-reg:hover{
+  background:linear-gradient(135deg,var(--navy-dk),var(--navy)) padding-box,
+    linear-gradient(135deg,var(--navy),var(--orange)) border-box!important;
+  color:#fff!important;transform:translateY(-2px)!important;
+  box-shadow:0 8px 22px rgba(10,36,99,.35)!important;
+}
 
-  /* ===== Mobile responsive ===== */
-  @media (max-width: 900px) {
-    .auth-page { grid-template-columns: 1fr; }
-    .auth-marketing { display: none; }
-    .auth-form-wrap {
-      padding: 40px 24px;
-      box-shadow: none;
-      background: transparent;
-      min-height: 100vh;
-    }
-    .auth-card {
-      background: #fff;
-      padding: 32px 24px;
-      border-radius: 22px;
-      border: 1px solid var(--line);
-      box-shadow: 0 20px 50px rgba(0,50,160,.12);
-    }
-    .auth-mobile-brand { display: flex; }
-    .title { font-size: 26px; text-align: center; }
-    .subtitle { text-align: center; }
-  }
+/* ── Forgot link as button ── */
+.fp-link{
+  background:none;border:none;cursor:pointer;padding:0;
+  font-size:12px;font-weight:800;color:var(--orange);
+  font-family:inherit;transition:color .15s;
+}
+.fp-link:hover{color:var(--orange-dk);}
+
+/* ── Forgot Password Modal ── */
+.fp-overlay{
+  position:fixed;inset:0;z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(6,21,64,.82);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  padding:20px;
+}
+.fp-modal{
+  width:100%;max-width:330px;background:#fff;
+  border-radius:24px;overflow:hidden;
+  box-shadow:0 32px 80px rgba(0,0,0,.55);
+  animation:cardPop .35s cubic-bezier(.22,1,.36,1);
+}
+.fp-top{
+  background:linear-gradient(140deg,#061540 0%,#0A2463 55%,#1a3a7a 100%);
+  padding:28px 24px 24px;text-align:center;position:relative;overflow:hidden;
+}
+.fp-top::before{
+  content:'';position:absolute;inset:0;
+  background:conic-gradient(from 0deg at 70% 40%,transparent 0deg,rgba(255,140,0,.13) 55deg,transparent 110deg);
+  animation:spin 12s linear infinite;
+}
+.fp-x{
+  position:absolute;top:12px;right:14px;z-index:2;
+  width:28px;height:28px;border-radius:50%;
+  border:none;background:rgba(255,255,255,.14);color:#fff;
+  font-size:13px;font-weight:900;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background .15s;font-family:inherit;
+}
+.fp-x:hover{background:rgba(255,255,255,.26);}
+.fp-ico{
+  width:64px;height:64px;border-radius:50%;
+  background:linear-gradient(135deg,#FF8C00,#D97200);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 12px;position:relative;z-index:1;
+  box-shadow:0 8px 24px rgba(255,140,0,.5);
+}
+.fp-ico svg{width:30px;height:30px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.fp-modal-title{font-size:17px;font-weight:900;color:#fff;position:relative;z-index:1;margin-bottom:3px;}
+.fp-modal-sub{font-size:11px;font-weight:600;color:rgba(255,255,255,.50);letter-spacing:.04em;position:relative;z-index:1;}
+.fp-bd{padding:22px 22px 24px;text-align:center;}
+.fp-bd p{font-size:14px;line-height:1.75;color:#374151;font-weight:600;margin-bottom:18px;}
+.fp-cs-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,#f0f4ff,#e8ecff);
+  border:1.5px solid #c7d2fe;border-radius:12px;
+  padding:10px 16px;font-size:12.5px;font-weight:800;
+  color:var(--navy);margin-bottom:20px;letter-spacing:.02em;
+}
+.fp-cs-tag svg{width:15px;height:15px;stroke:var(--orange);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+.fp-ok{
+  width:100%;height:48px;border:none;border-radius:999px;
+  background:linear-gradient(135deg,#FF8C00,#D97200);
+  color:#fff;font-size:13.5px;font-weight:900;
+  letter-spacing:.09em;text-transform:uppercase;cursor:pointer;
+  box-shadow:0 6px 20px rgba(255,140,0,.42);
+  transition:transform .15s,box-shadow .15s;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.fp-ok:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,140,0,.58);}
+.fp-ok svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+
+/* mobile */
+@media(max-width:480px){
+  .lp{padding:18px 12px;}
+  .lp-card{border-radius:22px;}
+  .lp-body{padding:18px 16px 16px;}
+  .lp-banner-title{font-size:19px;}
+}
 </style>
 
-<div class="auth-page">
-  <div class="auth-sun" aria-hidden="true">
-    <svg viewBox="0 0 200 200" fill="none">
-      <circle cx="100" cy="100" r="36" fill="#FED141"/>
-      <g stroke="#FED141" stroke-width="6" stroke-linecap="round">
-        <line x1="100" y1="20" x2="100" y2="56"/>
-        <line x1="100" y1="144" x2="100" y2="180"/>
-        <line x1="20" y1="100" x2="56" y2="100"/>
-        <line x1="144" y1="100" x2="180" y2="100"/>
-        <line x1="44" y1="44" x2="68" y2="68"/>
-        <line x1="132" y1="132" x2="156" y2="156"/>
-        <line x1="156" y1="44" x2="132" y2="68"/>
-        <line x1="68" y1="132" x2="44" y2="156"/>
-      </g>
-    </svg>
-  </div>
-  <div class="auth-stars" aria-hidden="true"></div>
+<div class="lp">
+  <!-- Floating orbs -->
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="orb orb4"></div>
+  <div class="orb orb5"></div>
 
-  <!-- LEFT: Marketing -->
-  <aside class="auth-marketing">
-    <a href="/" class="am-brand">
-      <div class="am-brand-logo">
-        <img src="{% static 'img/peso-logo.webp' %}" alt="Overseas FilipinoLoan">
+  <div class="lp-card">
+
+    <!-- ── Banner ── -->
+    <div class="lp-banner">
+      <div class="lp-logo-wrap">
+        <div class="lp-ring lp-ring1"></div>
+        <div class="lp-ring lp-ring2"></div>
+        <div class="lp-logo">
+          <img src="{% static 'img/peso-logo.webp' %}" alt="OFL" onerror="this.style.display='none'">
+        </div>
       </div>
-      <div class="am-brand-name">Overseas Filipino<span>Loan</span></div>
-    </a>
-
-    <div class="am-content">
-      <span class="am-tag">Welcome Back</span>
-      <h1 class="am-title">Para sa <span class="gold">Bawat Filipino</span> — secure access to your loans.</h1>
-      <p class="am-desc">Sign in to manage your loan applications, track repayment schedules, and access exclusive offers built for OFWs and Filipinos worldwide.</p>
-
-      <div class="am-feats">
-        <div class="am-feat">
-          <div class="am-feat-ico"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L3 6v6c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V6L12 2z"/></svg></div>
-          <div><b>Bank-level security</b> · 256-bit encryption</div>
-        </div>
-        <div class="am-feat">
-          <div class="am-feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-          <div><b>24/7 access</b> · manage loans anytime, anywhere</div>
-        </div>
-        <div class="am-feat">
-          <div class="am-feat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-          <div><b>BSP-licensed</b> · regulated and trusted since 2006</div>
-        </div>
+      <div class="lp-banner-title">Welcome Back!</div>
+      <div class="lp-banner-sub"><span id="lpSub"></span><span class="lp-cursor">|</span></div>
+      <!-- wave transition to white card body -->
+      <div class="lp-wave">
+        <svg viewBox="0 0 390 28" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <path d="M0 28 Q50 0 100 14 Q150 28 195 10 Q240 0 290 16 Q340 28 390 8 L390 28 Z" fill="#ffffff"/>
+        </svg>
       </div>
     </div>
 
-    <div class="am-foot">
-      <span class="ft-flag"><span class="b1"></span><span class="b2"></span></span>
-      © 2026 Overseas FilipinoLoan · BSP-Licensed · All rights reserved
-    </div>
-  </aside>
-
-  <!-- RIGHT: Form -->
-  <div class="auth-form-wrap">
-    <div class="auth-card">
-
-      <a href="/" class="auth-mobile-brand">
-        <div class="am-brand-logo">
-          <img src="{% static 'img/peso-logo.webp' %}" alt="Overseas FilipinoLoan">
-        </div>
-        <div class="am-brand-name">Overseas Filipino<span>Loan</span></div>
-      </a>
-
-      <h2 class="title">Sign in to <span class="red">your account</span></h2>
-      <p class="subtitle">Enter your phone number and password to continue.</p>
+    <!-- ── Body ── -->
+    <div class="lp-body">
+      <div class="lp-slabel">Sign In to Your Account</div>
 
       {% if suspended %}
-      <div class="suspended-box">Account Suspended</div>
+        <div class="lp-suspended">⚠ Account Suspended — Contact Support</div>
       {% endif %}
-
       {% if messages %}
         {% for message in messages %}
-          <div class="err"><strong>Login failed:</strong> {{ message }}</div>
+          <div class="lp-err"><strong>Login failed:</strong> {{ message }}</div>
         {% endfor %}
       {% endif %}
-
       {% if form.errors %}
-      <div class="err"><strong>Sign-in error:</strong> Phone or password is incorrect. Please try again.</div>
+        <div class="lp-err"><strong>Incorrect credentials.</strong> Check your phone number and password.</div>
       {% endif %}
 
-      <form method="post" autocomplete="off">
+      <form method="post" autocomplete="off" id="lpForm">
         {% csrf_token %}
 
-        <div class="field">
-          <label class="label">Phone Number</label>
-          <div class="input-wrap">
-            <div class="icon-box" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-              </svg>
+        <div class="f-group">
+          <label class="f-label">Phone Number</label>
+          <div class="f-wrap">
+            <div class="f-ico">
+              <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
             </div>
-            <input class="input" type="text" name="phone" placeholder="e.g. 0917 ** ***" required>
+            <input class="f-inp" type="text" name="phone" placeholder="e.g. 09123456789" required autocomplete="off">
           </div>
         </div>
 
-        <div class="field">
-          <label class="label">Password</label>
-          <div class="input-wrap">
-            <div class="icon-box" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
+        <div class="f-group">
+          <label class="f-label">Password</label>
+          <div class="f-wrap">
+            <div class="f-ico">
+              <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
             </div>
-            <input id="pwd" class="input" type="password" name="password" placeholder="Enter your password" required>
-            <button type="button" class="eye-btn" id="togglePwd" aria-label="Show password">
-              <svg id="eyeOpen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                <circle cx="12" cy="12" r="3"/>
-              </svg>
+            <input class="f-inp" id="lpPwd" type="password" name="password" placeholder="Enter your password" required>
+            <button type="button" class="eye-btn" id="lpEye" aria-label="Toggle password">
+              <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
             </button>
           </div>
         </div>
 
-        <div class="forgot-row">
-          <a href="#" class="forgot-link">Forgot password?</a>
-        </div>
+        <div class="lp-forgot"><button type="button" class="fp-link" onclick="openForgot()">Forgot password?</button></div>
 
-        <button class="btn" type="submit">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-            <polyline points="10 17 15 12 10 7"/>
-            <line x1="15" y1="12" x2="3" y2="12"/>
+        <button type="submit" class="lp-btn" id="lpBtn">
+          <span class="lp-ripple" id="lpRipple"></span>
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2L4 6v6c0 5.25 3.5 10.15 8 11.5 4.5-1.35 8-6.25 8-11.5V6z"/>
+            <path d="M9 12l2 2 4-4"/>
           </svg>
-          Login to Account
+          <span id="lpBtnTxt">Login to Account</span>
         </button>
 
-        <div class="divider">
-          <span class="line"></span>
-          <span class="txt">New here?</span>
-          <span class="line"></span>
+        <div class="lp-divider">
+          <span></span><span class="lp-div-txt">New here?</span><span></span>
         </div>
 
-        <a href="/register/" class="register-cta">
+        <a href="{% url 'register' %}" class="lp-reg">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <line x1="19" y1="8" x2="19" y2="14"/>
+            <line x1="22" y1="11" x2="16" y2="11"/>
+          </svg>
           Create New Account
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </a>
       </form>
 
-      <!-- Credit / Last update -->
-      <div class="auth-credit">
-        <span class="ac-brand"><span class="ac-dot"></span> OFL</span>
-        <span class="ac-sep">·</span>
-        <span class="ac-v">v1.0.0</span>
-        <span class="ac-sep">·</span>
-        <span>© 2026 All rights reserved</span>
-        <span class="ac-sep">·</span>
-        <span>Updated May 2026</span>
+      <div class="lp-credit">
+        <span class="lp-cdot"></span>
+        <span>Overseas FilipinoLoan</span>
+        <span>·</span>
+        <span style="color:var(--orange);font-weight:900;">v1.0.0</span>
+        <span>· © 2026 All rights reserved</span>
       </div>
+    </div>
+  </div>
+</div>
 
+<!-- ── Forgot Password Modal ── -->
+<div class="fp-overlay" id="fpOverlay" style="display:none" onclick="if(event.target===this)closeForgot()">
+  <div class="fp-modal">
+    <div class="fp-top">
+      <button class="fp-x" onclick="closeForgot()">✕</button>
+      <div class="fp-ico">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 18v-6a9 9 0 0118 0v6"/>
+          <path d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3v5z"/>
+          <path d="M3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3v5z"/>
+        </svg>
+      </div>
+      <div class="fp-modal-title">Reset Password</div>
+      <div class="fp-modal-sub">Our support team is ready to help!</div>
+    </div>
+    <div class="fp-bd">
+      <p>Please contact our <strong>customer service</strong> to reset your login password. Our team will assist you right away.</p>
+      <div class="fp-cs-tag">
+        <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        OFL Customer Service
+      </div>
+      <button class="fp-ok" onclick="closeForgot()">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Got it — Thank you!
+      </button>
     </div>
   </div>
 </div>
 
 <script>
-  (function(){
-    const pwd = document.getElementById("pwd");
-    const btn = document.getElementById("togglePwd");
-    if (!pwd || !btn) return;
-    btn.addEventListener("click", () => {
-      pwd.type = (pwd.type === "password") ? "text" : "password";
+(function(){
+'use strict';
+
+/* ── Typewriter subtitle ── */
+var sub = document.getElementById('lpSub');
+var msg = 'Your secure financial gateway...';
+if(sub){
+  var i=0;
+  setTimeout(function tick(){
+    sub.textContent = msg.slice(0,i++);
+    if(i<=msg.length) setTimeout(tick,52);
+  },900);
+}
+
+/* ── Password toggle ── */
+var pwd=document.getElementById('lpPwd');
+var eye=document.getElementById('lpEye');
+if(pwd&&eye){
+  eye.addEventListener('click',function(){
+    pwd.type=(pwd.type==='password')?'text':'password';
+  });
+}
+
+/* ── Button ripple + loading state ── */
+var btn=document.getElementById('lpBtn');
+var ripple=document.getElementById('lpRipple');
+var btnTxt=document.getElementById('lpBtnTxt');
+if(btn&&ripple){
+  btn.addEventListener('click',function(e){
+    /* ripple position */
+    var r=btn.getBoundingClientRect();
+    ripple.style.left=(e.clientX-r.left)+'px';
+    ripple.style.top=(e.clientY-r.top)+'px';
+    ripple.classList.remove('go');
+    void ripple.offsetWidth;
+    ripple.classList.add('go');
+  });
+  /* Loading state on form submit */
+  var form=document.getElementById('lpForm');
+  if(form){
+    form.addEventListener('submit',function(){
+      btn.disabled=true;
+      btnTxt.textContent='Signing in...';
+      btn.style.animation='none';
+      btn.style.opacity='.85';
     });
-  })();
+  }
+}
+
+/* ── Forgot Password Modal ── */
+window.openForgot=function(){
+  document.getElementById('fpOverlay').style.display='flex';
+};
+window.closeForgot=function(){
+  document.getElementById('fpOverlay').style.display='none';
+};
+
+/* ── Floating stars ── */
+(function spawnStars(){
+  var lp=document.querySelector('.lp');
+  if(!lp)return;
+  for(var s=0;s<18;s++){
+    var star=document.createElement('div');
+    star.className='star';
+    var size=Math.random()*2.5+1;
+    star.style.cssText=[
+      'width:'+size+'px',
+      'height:'+size+'px',
+      'left:'+(Math.random()*100)+'%',
+      'top:'+(Math.random()*100+20)+'%',
+      'opacity:'+(Math.random()*.5+.2),
+      'animation:starDrift '+(Math.random()*18+12)+'s linear '+(Math.random()*8)+'s infinite'
+    ].join(';');
+    lp.appendChild(star);
+  }
+})();
+
+})();
 </script>
 {% endblock %}

@@ -41,7 +41,7 @@ body,body *{font-family:inherit!important;box-sizing:border-box;}
   min-height:100vh;
   display:flex;align-items:center;justify-content:center;
   padding:30px 16px 30px;
-  position:relative;
+  position:relative;overflow:hidden;
 }
 
 /* FORM CARD */
@@ -126,7 +126,7 @@ input:-webkit-autofill{-webkit-text-fill-color:var(--ink)!important;-webkit-box-
   transition:opacity .22s;
   animation:bubPop .45s cubic-bezier(.22,1,.36,1) both;
 }
-/* Upward tail — points at the spotlighted field above */
+/* Upward tail — card below field, arrow points UP to field */
 .chat-bubble::before{
   content:'';
   position:absolute;
@@ -134,38 +134,42 @@ input:-webkit-autofill{-webkit-text-fill-color:var(--ink)!important;-webkit-box-
   width:0;height:0;
   border-left:10px solid transparent;
   border-right:10px solid transparent;
-  border-bottom:13px solid #fff;
+  border-bottom:13px solid #0A2463; /* navy — matches header */
 }
-/* Downward tail — when card is above the field */
+/* Downward tail — card above field, arrow points DOWN to field */
 .chat-bubble.arrow-dn::before{
   top:auto;
   bottom:-12px;
   border-bottom:none;
-  border-top:13px solid #fff;
+  border-top:13px solid #fff; /* white — matches footer */
 }
 
-/* Step header */
+/* Step header — navy culture matching banner */
 .cb-header{
   display:flex;align-items:center;justify-content:space-between;
   gap:8px;
-  padding:10px 18px 10px;
-  border-bottom:1px solid #f0f2f8;
+  padding:12px 16px;
+  background:linear-gradient(135deg,#061540,#0A2463);
+  border-bottom:1px solid rgba(255,140,0,.22);
+  border-radius:18px 18px 0 0;
 }
 
-/* Mini staff character — circular avatar */
+/* Mini staff character — matches banner avatar style */
 .cb-char-wrap{
-  width:56px;height:56px;
+  width:54px;height:54px;
   flex-shrink:0;
   border-radius:50%;
-  border:2px solid #f0f2f8;
+  border:2.5px solid rgba(255,140,0,.65);
   background-size:cover;
   background-position:center top;
   background-repeat:no-repeat;
+  background-color:rgba(255,255,255,.08);
+  box-shadow:0 3px 12px rgba(0,0,0,.35);
 }
-.cb-step{font-size:10.5px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--orange);}
+.cb-step{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.65);}
 .cb-dots{display:flex;gap:5px;align-items:center;}
-.cb-dot{height:7px;width:7px;border-radius:99px;background:#dde3f0;transition:all .35s;flex-shrink:0;}
-.cb-dot.on{background:var(--orange);width:20px;}
+.cb-dot{height:6px;width:6px;border-radius:99px;background:rgba(255,255,255,.25);transition:all .35s;flex-shrink:0;}
+.cb-dot.on{background:var(--orange);width:18px;}
 
 /* Message */
 .cb-msg{
@@ -218,30 +222,196 @@ input:-webkit-autofill{-webkit-text-fill-color:var(--ink)!important;-webkit-box-
 @media(max-width:600px){
   .chat-bubble{width:calc(100vw - 20px);}
 }
+
+/* ══════════════════════════════════════
+   REGISTER — Same Design Culture as Login
+   ══════════════════════════════════════ */
+
+/* Extra keyframes */
+@keyframes orb1     {0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(45px,-55px) scale(1.14)}}
+@keyframes orb2     {0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,50px) scale(.88)}}
+@keyframes orb3     {0%,100%{transform:translate(0,0)}33%{transform:translate(30px,28px)}66%{transform:translate(-22px,-30px)}}
+@keyframes orb4     {0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-28px,-38px) scale(1.10)}}
+@keyframes orb5     {0%,100%{transform:translate(0,0)}50%{transform:translate(20px,35px) scale(.94)}}
+@keyframes ringPop  {0%{transform:scale(.8);opacity:.8}100%{transform:scale(2.2);opacity:0}}
+@keyframes shimmer  {0%{left:-120%}100%{left:220%}}
+@keyframes btnShimmer{0%{left:-150%}100%{left:200%}}
+@keyframes starDrift{0%{transform:translateY(0) translateX(0);opacity:.7}100%{transform:translateY(-100vh) translateX(20px);opacity:0}}
+
+/* Orbs */
+.orb{position:absolute;border-radius:50%;filter:blur(72px);pointer-events:none;z-index:0;}
+.orb1{width:400px;height:400px;background:rgba(10,36,99,.75);top:-100px;left:-120px;animation:orb1 13s ease-in-out infinite;}
+.orb2{width:320px;height:320px;background:rgba(255,140,0,.20);bottom:-80px;right:-90px;animation:orb2 16s ease-in-out infinite;}
+.orb3{width:220px;height:220px;background:rgba(26,58,122,.65);top:45%;left:55%;animation:orb3 19s ease-in-out infinite;}
+.orb4{width:260px;height:260px;background:rgba(255,140,0,.11);top:15%;right:8%;animation:orb4 11s ease-in-out infinite;}
+.orb5{width:180px;height:180px;background:rgba(6,21,64,.80);bottom:10%;left:5%;animation:orb5 14s ease-in-out infinite;}
+.star{position:absolute;border-radius:50%;background:rgba(255,255,255,.55);pointer-events:none;z-index:0;}
+
+/* Card */
+.rp-card{border-radius:28px!important;box-shadow:0 36px 90px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.07)!important;overflow:visible!important;}
+
+/* Banner */
+.rp-banner{
+  position:relative;
+  background:linear-gradient(140deg,var(--navy-dk) 0%,var(--navy) 55%,var(--navy-md) 100%);
+  padding:30px 24px 0;text-align:center;overflow:hidden;min-height:145px;
+  border-radius:28px 28px 0 0;
+}
+.rp-banner::before{
+  content:'';position:absolute;inset:0;
+  background:conic-gradient(from 0deg at 75% 40%,transparent 0deg,rgba(255,140,0,.14) 55deg,transparent 110deg);
+  animation:spin 14s linear infinite;
+}
+.rp-banner::after{
+  content:'';position:absolute;top:0;width:50%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.09),transparent);
+  animation:shimmer 3.2s ease .9s 1;
+}
+.rp-wave{position:absolute;bottom:-1px;left:0;right:0;line-height:0;z-index:2;}
+.rp-wave svg{display:block;width:100%;}
+.rp-logo-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px;}
+.rp-ring{position:absolute;border-radius:50%;border:2px solid rgba(255,140,0,.55);}
+.rp-ring1{width:72px;height:72px;animation:ringPop 2.4s ease-out 1.1s infinite;}
+.rp-ring2{width:72px;height:72px;animation:ringPop 2.4s ease-out 1.8s infinite;}
+.rp-logo{
+  width:66px;height:66px;border-radius:50%;
+  background:linear-gradient(135deg,var(--orange),var(--orange-dk));
+  border:3px solid rgba(255,140,0,.45);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;position:relative;z-index:1;
+  box-shadow:0 8px 26px rgba(255,140,0,.38);
+}
+.rp-logo img{width:50px;height:50px;object-fit:contain;display:block;}
+.rp-banner-title{font-size:21px;font-weight:900;color:#fff;letter-spacing:.01em;position:relative;z-index:1;margin-bottom:2px;}
+.rp-banner-sub{font-size:11.5px;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.58);position:relative;z-index:1;padding-bottom:22px;}
+.rp-avatar{
+  position:absolute;bottom:0;right:16px;z-index:3;
+  width:54px;height:54px;border-radius:50%;
+  border:2.5px solid rgba(255,140,0,.55);
+  background-color:rgba(255,255,255,.08);
+  background-size:cover;background-position:center top;background-repeat:no-repeat;
+  box-shadow:0 4px 16px rgba(0,0,0,.35);
+}
+
+/* Section label */
+.rp-slabel{
+  font-size:10.5px;font-weight:900;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--orange);
+  display:flex;align-items:center;gap:8px;margin-bottom:16px;
+}
+.rp-slabel::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,140,0,.4),transparent);}
+
+/* Register button — updated orange */
+.reg-btn{
+  background:linear-gradient(135deg,var(--orange),var(--orange-dk))!important;
+  box-shadow:0 8px 24px rgba(255,140,0,.44)!important;
+  position:relative!important;overflow:hidden!important;
+}
+.reg-btn::before{
+  content:'';position:absolute;top:0;left:-150%;width:55%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);
+  animation:btnShimmer 4.5s ease-in-out 2.5s infinite;
+  border-radius:inherit;pointer-events:none;z-index:0;
+}
+.reg-btn>*{position:relative;z-index:1;}
+.reg-btn:hover{box-shadow:0 14px 34px rgba(255,140,0,.62)!important;}
+
+/* Account-already-created card */
+.acc-created-card{display:flex;flex-direction:column;align-items:center;text-align:center;padding:36px 24px 28px;}
+.acc-check{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#22c55e);display:flex;align-items:center;justify-content:center;margin-bottom:18px;box-shadow:0 8px 24px rgba(22,163,74,.28);}
+.acc-check svg{width:34px;height:34px;stroke:#fff;}
+.acc-created-title{font-size:22px;font-weight:900;color:var(--navy);letter-spacing:-.4px;margin-bottom:6px;}
+.acc-created-sub{font-size:14px;color:var(--mut);font-weight:500;margin-bottom:22px;}
+.acc-phone-row{display:flex;align-items:center;gap:10px;background:#f0f4ff;border:1.5px solid #d0d9f7;border-radius:14px;padding:12px 20px;margin-bottom:28px;width:100%;}
+.acc-phone-row svg{width:18px;height:18px;stroke:var(--navy);flex-shrink:0;}
+.acc-phone-row span{font-size:18px;font-weight:800;color:var(--navy);letter-spacing:.06em;font-family:monospace,monospace;}
+.acc-dashboard-btn{display:block;width:100%;height:52px;line-height:52px;border-radius:999px;background:linear-gradient(135deg,var(--navy),var(--orange));color:#fff;font-size:15px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;text-align:center;box-shadow:0 6px 20px rgba(255,140,0,.3);transition:transform .18s,box-shadow .18s;}
+.acc-dashboard-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,140,0,.4);}
+
+/* ── Register Validation Modal ── */
+.rv-overlay{position:fixed;inset:0;z-index:10001;background:rgba(6,21,64,.68);backdrop-filter:blur(5px) saturate(1.4);display:flex;align-items:flex-end;justify-content:center;padding:0 0 env(safe-area-inset-bottom,0);opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s;}
+.rv-overlay.is-open{opacity:1;visibility:visible;}
+.rv-sheet{background:#fff;border-radius:28px 28px 0 0;padding:10px 22px 32px;width:100%;max-width:540px;transform:translateY(100%);transition:transform .32s cubic-bezier(.34,1.3,.64,1);}
+.rv-overlay.is-open .rv-sheet{transform:translateY(0);}
+.rv-handle{width:36px;height:4px;border-radius:2px;background:#e2e6f0;margin:0 auto 18px;}
+.rv-ico{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#fff4d6,#ffe9a8);border:1.5px solid rgba(255,140,0,.20);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
+.rv-ico svg{width:26px;height:26px;fill:none;stroke:var(--orange-dk);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+.rv-title{font-size:19px;font-weight:900;color:var(--ink);text-align:center;margin-bottom:5px;}
+.rv-sub{font-size:12.5px;color:var(--mut);font-weight:600;text-align:center;margin-bottom:18px;}
+.rv-list{list-style:none;padding:0;margin:0 0 22px;display:flex;flex-direction:column;gap:8px;}
+.rv-list li{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--ink);background:#f7f9fc;border-radius:12px;padding:11px 14px;border-left:3px solid var(--orange);}
+.rv-list li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--orange);flex:0 0 auto;}
+.rv-close{width:100%;padding:15px;border:0;border-radius:16px;font-family:inherit;font-size:14.5px;font-weight:900;letter-spacing:.08em;cursor:pointer;color:#fff;background:linear-gradient(135deg,var(--orange-lt),var(--orange),var(--orange-dk));box-shadow:0 8px 22px rgba(255,140,0,.36),inset 0 1px 0 rgba(255,255,255,.18);transition:transform .18s,filter .18s;}
+.rv-close:hover{filter:brightness(1.06);transform:translateY(-1px);}
+
+/* Back-to-login button */
+.back-login{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;height:48px;border-radius:999px;
+  background:linear-gradient(#fff,#fff) padding-box,
+    linear-gradient(135deg,var(--navy) 0%,var(--orange) 100%) border-box;
+  border:2.5px solid transparent;
+  color:var(--navy);font-size:13px;font-weight:800;
+  letter-spacing:.06em;text-transform:uppercase;
+  text-decoration:none;margin-top:10px;
+  transition:background .18s,color .18s,transform .18s,box-shadow .18s;
+}
+.back-login:hover{
+  background:linear-gradient(135deg,var(--navy-dk),var(--navy)) padding-box,
+    linear-gradient(135deg,var(--navy),var(--orange)) border-box;
+  color:#fff;transform:translateY(-2px);
+  box-shadow:0 8px 22px rgba(10,36,99,.35);
+}
+.back-login svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
 </style>
 
 <!-- ═══ PAGE ═══ -->
 <div class="rp">
+  <!-- Floating orbs -->
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+  <div class="orb orb4"></div>
+  <div class="orb orb5"></div>
+
   <div class="rp-card">
 
-    <div class="rp-head">
-      <div class="shield-ico">
-        <img src="{% static 'img/peso-logo.webp' %}" alt="OFL" onerror="this.style.display='none'">
+    <!-- Banner -->
+    <div class="rp-banner">
+      <div class="rp-logo-wrap">
+        <div class="rp-ring rp-ring1"></div>
+        <div class="rp-ring rp-ring2"></div>
+        <div class="rp-logo">
+          <img src="{% static 'img/peso-logo.webp' %}" alt="OFL" onerror="this.style.display='none'">
+        </div>
       </div>
-      <h1 class="rp-title">Create Account</h1>
-      <p class="rp-sub">Open your OFL account in minutes</p>
+      <div class="rp-banner-title">Create Account</div>
+      <div class="rp-banner-sub">Open your OFL account in minutes</div>
+      <div class="rp-avatar" style="background-image:url('{% static 'img/staff-guide.png' %}?v=5')"></div>
+      <div class="rp-wave">
+        <svg viewBox="0 0 390 28" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <path d="M0 28 Q50 0 100 14 Q150 28 195 10 Q240 0 290 16 Q340 28 390 8 L390 28 Z" fill="#ffffff"/>
+        </svg>
+      </div>
     </div>
 
     <div class="rp-body">
-      {% if messages %}
-        {% for message in messages %}
-          {% if message.tags == "success" %}
-            <div class="msg-ok">✅ <strong>Success!</strong> {{ message }}</div>
-          {% else %}
-            <div class="msg-err">⚠️ <strong>Notice:</strong> {{ message }}</div>
-          {% endif %}
-        {% endfor %}
-      {% endif %}
+
+      {% if already_registered %}
+      <div class="acc-created-card">
+        <div class="acc-check">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="acc-created-title">Account Created</div>
+        <div class="acc-created-sub">You already have an OFL account</div>
+        <div class="acc-phone-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.21 12 19.79 19.79 0 0 1 1.14 3.38 2 2 0 0 1 3.11 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z"/></svg>
+          <span>{{ masked_phone }}</span>
+        </div>
+        <a href="{% url 'dashboard' %}" class="acc-dashboard-btn">Go to Dashboard</a>
+      </div>
+      {% else %}
+      <div class="rp-slabel">Your Information</div>
 
       <form method="post" action="" id="regForm" novalidate>
         {% csrf_token %}
@@ -297,11 +467,28 @@ input:-webkit-autofill{-webkit-text-fill-color:var(--ink)!important;-webkit-box-
           </button>
         </div>
 
-        <div class="login-lnk">
-          Already have an account? <a href="/login/">Back to login</a>
-        </div>
+        <a href="/login/" class="back-login">
+          <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+          Back to Login
+        </a>
       </form>
+      {% endif %}
     </div>
+  </div>
+</div>
+
+{% if not already_registered %}
+<!-- ══ REGISTER VALIDATION MODAL ══ -->
+<div class="rv-overlay" id="rvOverlay">
+  <div class="rv-sheet">
+    <div class="rv-handle"></div>
+    <div class="rv-ico">
+      <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    </div>
+    <div class="rv-title">Incomplete Registration</div>
+    <div class="rv-sub">Please complete the following before continuing:</div>
+    <ul class="rv-list" id="rvList"></ul>
+    <button class="rv-close" id="rvClose">Got it — I'll complete it</button>
   </div>
 </div>
 
@@ -332,7 +519,7 @@ input:-webkit-autofill{-webkit-text-fill-color:var(--ink)!important;-webkit-box-
 
   <!-- Footer -->
   <div class="cb-foot">
-    <span class="cb-label" id="tcLabel">STEP 1 OF 4</span>
+    <button class="cb-skip" id="tcSkip" onclick="tourEnd()">Skip guide</button>
     <div class="cb-actions">
       <button class="cb-back" id="tcBack" onclick="tourBack()" style="display:none">← Back</button>
       <button class="cb-next" id="tcNext" onclick="tourNext()">Next →</button>
@@ -404,7 +591,7 @@ function $(id){return document.getElementById(id);}
 function show(id){var e=$(id);if(e)e.style.display='block';}
 function hide(id){var e=$(id);if(e)e.style.display='none';}
 
-/* Position card near the spotlighted field, never below 62% of viewport */
+/* Position card so it NEVER overlaps the active field */
 function posBubble(stepNum){
   var card=$('tourCard');
   if(!card||stepNum<1||stepNum>4)return;
@@ -414,19 +601,24 @@ function posBubble(stepNum){
   var ww=window.innerWidth;
   var wh=window.innerHeight;
   var cardW=card.offsetWidth||320;
-  var cardH=card.offsetHeight||160;
-
-  /* Try placing below the field */
-  var top=rect.bottom+14;
+  var cardH=card.offsetHeight||220;
+  var gap=14;
   var arrowUp=true;
-  /* Place above if card top exceeds 62% viewport OR card clips screen bottom */
-  if(top > wh*0.62 || top+cardH > wh-16){
-    top=rect.top-cardH-16;
-    arrowUp=false;
-  }
-  top=Math.max(10,top);
+  var top;
 
-  /* Center horizontally under the field */
+  /* ① Try BELOW the field — card top starts at field bottom + gap */
+  top=rect.bottom+gap;
+  if(top+cardH>wh-10){
+    /* ② Doesn't fit below — try ABOVE the field */
+    top=rect.top-cardH-gap;
+    arrowUp=false;
+    if(top<10){
+      /* ③ Doesn't fit above either — clamp below, closest we can get */
+      top=Math.max(10,wh-cardH-10);
+      arrowUp=true;
+    }
+  }
+
   var left=rect.left+(rect.width/2)-(cardW/2);
   left=Math.max(10,Math.min(left,ww-cardW-10));
 
@@ -434,8 +626,6 @@ function posBubble(stepNum){
   card.style.left=left+'px';
   card.style.bottom='auto';
   card.style.right='auto';
-
-  /* Toggle downward-arrow class */
   card.classList.toggle('arrow-dn',!arrowUp);
 }
 
@@ -548,9 +738,9 @@ if(pwEl&&strRow&&strHint){
     if(!v){strHint.textContent='Use at least 8 characters with letters and numbers.';return;}
     var s=0;
     if(v.length>=8)s++;if(/[a-z]/.test(v)&&/[A-Z]/.test(v))s++;if(/\d/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;
-    if(s<=1){strRow.classList.add('weak');strHint.textContent='Mahina pa — dagdag pa!';}
-    else if(s<3){strRow.classList.add('medium');strHint.textContent='Okay — try adding symbols!';}
-    else{strRow.classList.add('strong');strHint.textContent='Strong na! Magaling!';}
+    if(s<=1){strRow.classList.add('weak');strHint.textContent='Too weak — add more characters!';}
+    else if(s<3){strRow.classList.add('medium');strHint.textContent='Getting better — try adding symbols!';}
+    else{strRow.classList.add('strong');strHint.textContent='Strong password — great job!';}
   });
 }
 
@@ -558,6 +748,33 @@ if(pwEl&&strRow&&strHint){
 document.querySelectorAll('.f-inp').forEach(function(inp){
   inp.addEventListener('keydown',function(e){if(e.key==='Enter'&&tourActive){e.preventDefault();window.tourNext();}});
 });
+
+/* Register validation modal */
+(function(){
+  var overlay=document.getElementById('rvOverlay');
+  var list=document.getElementById('rvList');
+  var closeBtn=document.getElementById('rvClose');
+  var sbtn=document.getElementById('submitBtn');
+  if(!overlay||!sbtn) return;
+  function openModal(errors){
+    list.innerHTML=errors.map(function(m){return'<li>'+m+'</li>';}).join('');
+    overlay.classList.add('is-open');
+  }
+  closeBtn&&closeBtn.addEventListener('click',function(){overlay.classList.remove('is-open');});
+  overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.classList.remove('is-open');});
+  sbtn.addEventListener('click',function(e){
+    var errors=[];
+    var phone=(document.getElementById('inp_phone')||{}).value||'';
+    if(!phone.trim()) errors.push('Phone number is required');
+    var pwd=(document.getElementById('inp_pwd')||{}).value||'';
+    if(!pwd.trim()) errors.push('Password is required');
+    else if(pwd.length<8) errors.push('Password must be at least 8 characters');
+    var conf=(document.getElementById('inp_conf')||{}).value||'';
+    if(!conf.trim()) errors.push('Please confirm your password');
+    else if(pwd&&conf&&pwd!==conf) errors.push('Passwords do not match');
+    if(errors.length){e.preventDefault();e.stopImmediatePropagation();openModal(errors);}
+  });
+})();
 
 /* Submit loading state */
 var form=$('regForm'),sbtn=$('submitBtn');
@@ -574,6 +791,26 @@ if(form&&sbtn){
 /* Reposition on resize */
 window.addEventListener('resize',function(){if(tourActive)posBubble(cur);});
 
+/* ── Floating stars ── */
+(function spawnStars(){
+  var rp=document.querySelector('.rp');
+  if(!rp)return;
+  for(var s=0;s<18;s++){
+    var star=document.createElement('div');
+    star.className='star';
+    var size=Math.random()*2.5+1;
+    star.style.cssText=[
+      'width:'+size+'px',
+      'height:'+size+'px',
+      'left:'+(Math.random()*100)+'%',
+      'top:'+(Math.random()*100+20)+'%',
+      'opacity:'+(Math.random()*.5+.2),
+      'animation:starDrift '+(Math.random()*18+12)+'s linear '+(Math.random()*8)+'s infinite'
+    ].join(';');
+    rp.appendChild(star);
+  }
+})();
+
 /* START TOUR — after form card finishes animating in */
 setTimeout(function(){
   tourActive=true;
@@ -584,4 +821,5 @@ setTimeout(function(){
 
 })();
 </script>
+{% endif %}
 {% endblock %}

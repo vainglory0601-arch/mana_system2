@@ -1,1206 +1,929 @@
 {% extends "base.html" %}
-{% block title %}Overseas FilipinoLoan — Fast Loans for Every Filipino{% endblock %}
+{% block title %}Overseas FilipinoLoan — The Bank for Every OFW{% endblock %}
 {% load static %}
+
+{% block extra_css %}{{ block.super }}
+<style>
+html body,html body *,html body button,html body input,
+html body select,html body textarea,html body a,html body th,html body td{
+  font-family:'Noto Sans','Hind','Lato',system-ui,sans-serif!important;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <style>
-/* ============================================================
-   OVERSEAS FILIPINOLOAN — Modern Fintech Landing Page
-   Palette: Navy #0A2463 · Orange #FF8C00 · White #FFF · Bg #F0F4FF
-   ============================================================ */
-
-#pageRoot.wrap { max-width:100%!important; width:100%!important; padding:0!important; display:block!important; }
-body { padding-bottom:0!important; overflow-x:hidden!important; background:#F0F4FF!important; color:#0a1a3a; font-family:"Lato","Open Sans",system-ui,-apple-system,sans-serif!important; }
-body,body * { font-family:inherit!important; box-sizing:border-box; }
-* { margin:0; padding:0; box-sizing:border-box; }
-
-:root {
-  --navy:      #0A2463;
-  --navy-dark: #061540;
-  --navy-mid:  #1a3a7a;
-  --orange:    #FF8C00;
-  --orange-dk: #D97200;
-  --orange-lt: #FFA533;
-  --bg:        #F0F4FF;
-  --bg2:       #E8EEFF;
-  --white:     #ffffff;
-  --ink:       #0a1a3a;
-  --mut:       #5a6880;
-  --line:      #dde3f0;
+#pageRoot.wrap{max-width:100%!important;width:100%!important;padding:0!important;display:block!important;}
+body{padding-bottom:0!important;overflow-x:hidden!important;background:#fff!important;color:#0a1a3a;}
+body,body *{box-sizing:border-box;}
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --navy:#0A2463;--dk:#061540;--md:#1a3a7a;
+  --org:#FF8C00;--ordk:#D97200;--orlt:#FFA533;
+  --bg:#F4F6FB;--line:#e0e5f2;--mut:#5a6880;--ink:#0a1a3a;
 }
 
-@keyframes fadeUp   { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
-@keyframes float    { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-@keyframes floatB   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
-@keyframes ticker   { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-@keyframes pulse    { 0%,100%{box-shadow:0 0 0 0 rgba(255,140,0,.4)} 70%{box-shadow:0 0 0 10px rgba(255,140,0,0)} }
-@keyframes slideIn  { from{opacity:0;transform:translateX(-16px)} to{opacity:1;transform:translateX(0)} }
-@keyframes spin     { from{transform:rotate(0)} to{transform:rotate(360deg)} }
-@keyframes shimmer  { 0%{background-position:200% center} 100%{background-position:0% center} }
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:200% center}100%{background-position:0% center}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,140,0,.45)}70%{box-shadow:0 0 0 12px rgba(255,140,0,0)}}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes glow{0%,100%{opacity:.6}50%{opacity:1}}
 
-/* ─── TOP ADVISORY BAR ─── */
-.top-bar {
-  background: linear-gradient(90deg, var(--navy-dark), var(--navy));
-  color:#fff; font-size:12px;
-  border-bottom: 2px solid var(--orange);
-}
-.tb-inner {
-  max-width:1200px; margin:0 auto; padding:8px 20px;
-  display:flex; justify-content:space-between; align-items:center; gap:12px;
-}
-.tb-left { display:flex; align-items:center; gap:8px; flex:1; min-width:0; overflow:hidden; }
-.tb-tag {
-  display:inline-flex; align-items:center; gap:5px;
-  padding:2px 10px; border-radius:999px;
-  background:var(--orange); color:var(--navy-dark);
-  font-weight:900; font-size:10px; letter-spacing:.12em; flex-shrink:0;
-}
-.tb-ticker { overflow:hidden; flex:1; min-width:0; }
-.tb-track {
-  display:flex; gap:40px; width:max-content;
-  animation:ticker 36s linear infinite; white-space:nowrap;
-}
-.tb-track span { color:rgba(255,255,255,.9); font-weight:600; }
-.tb-track span::before { content:"•"; margin-right:40px; color:var(--orange); }
-.tb-right { display:flex; align-items:center; gap:14px; flex-shrink:0; }
-.tb-right a { color:rgba(255,255,255,.88); text-decoration:none; font-size:11.5px; display:flex; align-items:center; gap:5px; transition:color .15s; }
-.tb-right a:hover { color:var(--orange); }
-.tb-div { width:1px; height:14px; background:rgba(255,255,255,.22); }
-@media(max-width:680px){ .tb-right{display:none} }
+/* ══ TOP BAR ══ */
+.top-bar{background:linear-gradient(90deg,var(--dk),#0d1d52);color:#fff;font-size:12px;border-bottom:2px solid var(--org);}
+.tbi{max-width:1280px;margin:0 auto;padding:7px 24px;display:flex;align-items:center;gap:12px;}
+.tb-tag{display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:999px;background:var(--org);color:var(--dk);font-weight:900;font-size:10px;letter-spacing:.12em;flex-shrink:0;}
+.tb-ticker{overflow:hidden;flex:1;min-width:0;}
+.tb-track{display:flex;gap:40px;width:max-content;animation:ticker 38s linear infinite;white-space:nowrap;}
+.tb-track span{color:rgba(255,255,255,.88);font-weight:600;}
+.tb-track span::before{content:"•";margin-right:40px;color:var(--org);}
 
-/* ─── NAVIGATION ─── */
-.nav {
-  position:sticky; top:0; z-index:100;
-  background:rgba(255,255,255,.96);
-  backdrop-filter:blur(14px);
-  -webkit-backdrop-filter:blur(14px);
-  border-bottom:1px solid var(--line);
-  box-shadow:0 2px 20px rgba(10,36,99,.08);
-}
-.nav-inner {
-  max-width:1200px; margin:0 auto; padding:0 20px;
-  display:flex; align-items:center; gap:16px; height:68px;
-}
-.nav-brand { display:flex; align-items:center; gap:10px; text-decoration:none; flex-shrink:0; }
-.nav-logo {
-  width:46px; height:46px; border-radius:12px;
-  background:linear-gradient(135deg,var(--navy),var(--navy-mid));
-  display:flex; align-items:center; justify-content:center;
-  overflow:hidden;
-}
-.nav-logo img { width:100%; height:100%; object-fit:contain; }
-.nav-name { font-size:20px; font-weight:900; color:var(--navy-dark); letter-spacing:-.4px; }
-.nav-name span { color:var(--orange); }
-.nav-links { display:flex; align-items:center; gap:2px; margin-left:auto; }
-.nav-link {
-  padding:8px 14px; border-radius:8px;
-  color:var(--ink); text-decoration:none;
-  font-size:13px; font-weight:700; transition:all .15s;
-}
-.nav-link:hover { background:rgba(10,36,99,.07); color:var(--navy); }
-.nav-cta { display:flex; align-items:center; gap:8px; margin-left:8px; }
-.btn-outline {
-  padding:9px 20px; border-radius:999px;
-  border:2px solid var(--navy); color:var(--navy);
-  font-weight:900; font-size:12.5px; letter-spacing:.06em; text-transform:uppercase;
-  text-decoration:none; transition:all .18s;
-}
-.btn-outline:hover { background:var(--navy); color:#fff; }
-.btn-solid {
-  padding:9px 22px; border-radius:999px;
-  background:linear-gradient(135deg,var(--orange),var(--orange-dk));
-  color:#fff; font-weight:900; font-size:12.5px;
-  letter-spacing:.06em; text-transform:uppercase;
-  text-decoration:none; box-shadow:0 4px 14px rgba(255,140,0,.40);
-  transition:all .18s;
-}
-.btn-solid:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(255,140,0,.55); }
-@media(max-width:860px){ .nav-links{display:none} }
-@media(max-width:480px){ .btn-outline{display:none} }
+/* ══ NAV ══ */
+.nav{position:sticky;top:0;z-index:200;background:rgba(6,21,64,.96);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.10);}
+.navi{max-width:1280px;margin:0 auto;padding:0 24px;display:flex;align-items:center;height:66px;gap:14px;}
+.nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;}
+.nav-logo{width:42px;height:42px;border-radius:10px;background:linear-gradient(135deg,var(--org),var(--ordk));display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.nav-logo img{width:100%;height:100%;object-fit:contain;}
+.brand-name{font-size:18px;font-weight:900;color:#fff;letter-spacing:-.3px;}
+.brand-name em{color:var(--org);font-style:normal;}
+.nav-links{display:flex;align-items:center;gap:2px;margin-left:auto;}
+.nav-a{padding:7px 13px;border-radius:8px;color:rgba(255,255,255,.78);text-decoration:none;font-size:13px;font-weight:700;transition:all .15s;}
+.nav-a:hover{background:rgba(255,255,255,.10);color:#fff;}
+.nav-cta{display:flex;align-items:center;gap:8px;margin-left:10px;}
+.btn-ghost{padding:8px 18px;border-radius:999px;border:1.5px solid rgba(255,255,255,.35);color:rgba(255,255,255,.88);font-weight:900;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;transition:all .18s;}
+.btn-ghost:hover{border-color:#fff;color:#fff;background:rgba(255,255,255,.08);}
+.btn-cta{padding:9px 22px;border-radius:999px;background:linear-gradient(135deg,var(--org),var(--ordk));color:#fff;font-weight:900;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;box-shadow:0 4px 18px rgba(255,140,0,.45);transition:all .18s;}
+.btn-cta:hover{transform:translateY(-1px);box-shadow:0 6px 26px rgba(255,140,0,.62);}
+@media(max-width:860px){.nav-links{display:none}}
+@media(max-width:480px){.btn-ghost{display:none}}
 
-/* ─── HERO ─── */
-.hero {
-  min-height:88vh;
-  background:
-    radial-gradient(ellipse 800px 600px at 85% 40%, rgba(255,140,0,.12) 0%, transparent 60%),
-    radial-gradient(ellipse 700px 600px at 10% 70%, rgba(10,36,99,.14) 0%, transparent 60%),
-    linear-gradient(160deg, #F0F4FF 0%, #E8EEFF 60%, #ffffff 100%);
-  display:flex; align-items:center;
-  padding:60px 20px 40px;
-  position:relative; overflow:hidden;
+/* ══ HERO ══ */
+.hero{
+  min-height:92vh;
+  background:linear-gradient(150deg,#040f30 0%,var(--dk) 35%,#0c1f52 65%,#102260 100%);
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;
+  padding:80px 24px 70px;
 }
-.hero::before {
-  content:"";
-  position:absolute; inset:0;
-  background-image:radial-gradient(rgba(10,36,99,.04) 1.5px, transparent 1.5px);
-  background-size:28px 28px;
+.hero-grid{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.055) 1px,transparent 1px);background-size:30px 30px;pointer-events:none;}
+.hero-orb1{position:absolute;right:-120px;top:-120px;width:650px;height:650px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,0,.18) 0%,transparent 65%);pointer-events:none;}
+.hero-orb2{position:absolute;left:-80px;bottom:-80px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(10,36,99,.55) 0%,transparent 70%);pointer-events:none;}
+.hero-inner{max-width:1280px;margin:0 auto;width:100%;display:grid;grid-template-columns:1.1fr 1fr;gap:56px;align-items:center;position:relative;z-index:2;}
+
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:999px;background:rgba(255,140,0,.14);border:1px solid rgba(255,140,0,.35);color:var(--orlt);font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;margin-bottom:18px;animation:fadeUp .5s ease-out both;}
+.hero-eyebrow-dot{width:7px;height:7px;border-radius:50%;background:var(--org);animation:pulse 1.6s ease infinite;}
+.hero-h1{font-size:clamp(36px,5.2vw,64px);font-weight:900;color:#fff;line-height:1.06;letter-spacing:-1.8px;margin-bottom:22px;animation:fadeUp .65s ease-out .08s both;}
+.shine{background:linear-gradient(90deg,var(--org) 0%,var(--orlt) 38%,var(--ordk) 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmer 3.2s linear infinite;}
+.hero-sub{font-size:15.5px;line-height:1.75;color:rgba(255,255,255,.68);max-width:520px;margin-bottom:36px;animation:fadeUp .65s ease-out .16s both;}
+.hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:48px;animation:fadeUp .65s ease-out .22s both;}
+.h-btn-primary{display:inline-flex;align-items:center;gap:10px;padding:15px 32px;border-radius:999px;background:linear-gradient(135deg,var(--org),var(--ordk));color:#fff;font-weight:900;font-size:15px;text-decoration:none;letter-spacing:.04em;box-shadow:0 8px 30px rgba(255,140,0,.50);transition:transform .18s,box-shadow .18s;}
+.h-btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(255,140,0,.65);}
+.h-btn-primary svg{width:17px;height:17px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+.h-btn-secondary{display:inline-flex;align-items:center;gap:10px;padding:13px 26px;border-radius:999px;border:1.5px solid rgba(255,255,255,.28);color:rgba(255,255,255,.88);font-weight:900;font-size:15px;text-decoration:none;transition:all .18s;background:rgba(255,255,255,.06);}
+.h-btn-secondary:hover{border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.12);}
+.h-btn-secondary svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+
+.hero-stats{display:flex;gap:0;animation:fadeUp .65s ease-out .30s both;border:1px solid rgba(255,255,255,.10);border-radius:16px;background:rgba(255,255,255,.05);backdrop-filter:blur(10px);overflow:hidden;width:fit-content;}
+.h-stat{padding:16px 24px;text-align:center;}
+.h-stat+.h-stat{border-left:1px solid rgba(255,255,255,.10);}
+.h-stat-n{font-size:24px;font-weight:900;color:#fff;letter-spacing:-1px;line-height:1;}
+.h-stat-n em{color:var(--org);font-style:normal;}
+.h-stat-l{font-size:9.5px;font-weight:700;color:rgba(255,255,255,.52);letter-spacing:.13em;text-transform:uppercase;margin-top:4px;}
+
+/* ══ CARD SHOWCASE ══ */
+.carousel-scene{width:100%;height:440px;position:relative;overflow:hidden;border-radius:24px;box-shadow:0 24px 72px rgba(0,0,0,.30);animation:fadeUp .8s ease-out .12s both;}
+.carousel-stage{position:relative;width:100%;height:100%;}
+.n-slide{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  border-radius:0;overflow:hidden;cursor:default;
+  transition:transform .7s cubic-bezier(0.4,0,0.2,1),opacity .6s ease;
+  will-change:transform,opacity;
+  background:#fff;
+  user-select:none;
+  opacity:0;
+  transform:translateY(22px) scale(0.95);
   pointer-events:none;
 }
-.hero-inner {
-  max-width:1200px; margin:0 auto; width:100%;
-  display:grid; grid-template-columns:1.15fr 1fr;
-  gap:48px; align-items:center; position:relative; z-index:2;
-}
-.hero-left { }
-.hero-badge {
-  display:inline-flex; align-items:center; gap:8px;
-  padding:6px 16px; border-radius:999px;
-  background:linear-gradient(135deg,rgba(255,140,0,.12),rgba(255,140,0,.06));
-  border:1px solid rgba(255,140,0,.40);
-  color:var(--orange-dk); font-size:12px; font-weight:900;
-  letter-spacing:.14em; text-transform:uppercase; margin-bottom:22px;
-  animation:fadeUp .6s ease-out .05s both;
-}
-.hero-badge span { width:7px;height:7px;border-radius:50%;background:var(--orange);animation:pulse 1.5s ease infinite; }
-.hero-h1 {
-  font-size:clamp(36px,5.5vw,62px);
-  font-weight:900; line-height:1.07;
-  color:var(--navy-dark); letter-spacing:-1.5px;
-  margin-bottom:20px;
-  animation:fadeUp .7s ease-out .1s both;
-}
-.hero-h1 .shine {
-  background:linear-gradient(90deg, var(--orange) 0%, var(--orange-lt) 40%, var(--orange-dk) 100%);
-  background-size:200% auto;
-  -webkit-background-clip:text; background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:shimmer 3s linear infinite;
-}
-.hero-sub {
-  font-size:16px; line-height:1.7; color:var(--mut);
-  max-width:500px; margin-bottom:32px;
-  animation:fadeUp .7s ease-out .18s both;
-}
-.hero-actions {
-  display:flex; gap:14px; flex-wrap:wrap; margin-bottom:42px;
-  animation:fadeUp .7s ease-out .24s both;
-}
-.hero-btn-primary {
-  display:inline-flex; align-items:center; gap:10px;
-  padding:16px 34px; border-radius:999px;
-  background:linear-gradient(135deg,var(--orange),var(--orange-dk));
-  color:#fff; font-weight:900; font-size:15px;
-  text-decoration:none; letter-spacing:.04em;
-  box-shadow:0 8px 28px rgba(255,140,0,.45);
-  transition:transform .18s, box-shadow .18s;
-}
-.hero-btn-primary:hover { transform:translateY(-2px); box-shadow:0 12px 36px rgba(255,140,0,.60); }
-.hero-btn-primary svg { width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round; }
-.hero-btn-secondary {
-  display:inline-flex; align-items:center; gap:10px;
-  padding:14px 28px; border-radius:999px;
-  background:#fff; color:var(--navy);
-  font-weight:900; font-size:15px; text-decoration:none;
-  border:2px solid var(--line);
-  box-shadow:0 4px 14px rgba(10,36,99,.10);
-  transition:all .18s;
-}
-.hero-btn-secondary:hover { border-color:var(--navy); box-shadow:0 6px 20px rgba(10,36,99,.18); }
-.hero-btn-secondary svg { width:18px;height:18px;stroke:var(--navy);fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round; }
+.n-slide.s0 {transform:translateY(0) scale(1);z-index:5;opacity:1;pointer-events:auto;}
+.n-slide.sm1 {transform:translateY(-18px) scale(0.97);z-index:4;opacity:0;}
+.n-slide.sp1,.n-slide.sm2,.n-slide.sp2,.n-slide.shd{transform:translateY(22px) scale(0.95);z-index:1;opacity:0;pointer-events:none;}
 
-.hero-stats {
-  display:flex; gap:32px; flex-wrap:wrap;
-  animation:fadeUp .7s ease-out .30s both;
-}
-.h-stat { }
-.h-stat-num { font-size:26px; font-weight:900; color:var(--navy-dark); letter-spacing:-1px; line-height:1; }
-.h-stat-num .accent { color:var(--orange); }
-.h-stat-lbl { font-size:11px; font-weight:700; color:var(--mut); letter-spacing:.10em; text-transform:uppercase; margin-top:4px; }
-.h-stat-sep { width:1px; height:36px; background:var(--line); align-self:center; }
+/* card header — logo centered, tall brand section */
+.slide-hd{padding:30px 20px 24px;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;height:210px;}
+.slide-hd::before{content:"";position:absolute;top:-35%;right:-12%;width:60%;height:150%;background:rgba(255,255,255,.13);border-radius:50%;pointer-events:none;}
+.slide-hd::after{content:"";position:absolute;bottom:-50%;left:-8%;width:52%;height:120%;background:rgba(0,0,0,.10);border-radius:50%;pointer-events:none;}
+.slide-logo-big{height:60px;width:auto;max-width:190px;object-fit:contain;display:block;position:relative;z-index:2;background:rgba(255,255,255,.96);border-radius:12px;padding:10px 18px;box-shadow:0 2px 12px rgba(0,0,0,.18);}
+.p-img{height:26px;width:auto;max-width:88px;object-fit:contain;display:block;}
+.slide-abbr{font-size:11px;font-weight:700;color:rgba(255,255,255,.84);letter-spacing:.08em;text-transform:uppercase;text-align:center;line-height:1.35;position:relative;z-index:2;}
+.slide-bd{padding:14px 18px 16px;}
+.slide-tag{display:inline-block;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;padding:3px 9px;border-radius:999px;margin-bottom:9px;}
+.slide-title{font-size:13px;font-weight:900;color:#0a1a3a;line-height:1.40;margin-bottom:7px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
+.slide-snip{font-size:11px;color:#5a6880;line-height:1.60;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:11px;}
+.slide-ft{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid #e5e9f5;}
+.slide-date{font-size:10px;font-weight:700;color:#8a94a8;}
+.slide-more{font-size:10px;font-weight:900;color:#0A2463;letter-spacing:.07em;text-transform:uppercase;}
 
-/* ─── PHONE MOCKUP (right side) ─── */
-.hero-right {
-  position:relative; display:flex; justify-content:center; align-items:center;
-  animation:fadeUp .8s ease-out .15s both;
-}
-.phone-wrap {
-  position:relative; width:280px;
-  animation:float 5s ease-in-out infinite;
-}
-.phone {
-  width:280px; background:var(--navy-dark);
-  border-radius:38px; padding:12px;
-  box-shadow:
-    0 40px 80px rgba(10,36,99,.45),
-    0 0 0 1px rgba(255,255,255,.10),
-    inset 0 1px 0 rgba(255,255,255,.08);
-}
-.phone-screen {
-  background:#fff; border-radius:28px; overflow:hidden;
-}
-.phone-top {
-  background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 100%);
-  padding:16px 18px 22px;
-}
-.ph-greeting { color:rgba(255,255,255,.70); font-size:11px; font-weight:600; margin-bottom:2px; }
-.ph-name { color:#fff; font-size:16px; font-weight:900; letter-spacing:-.3px; }
-.ph-balance-lbl { color:rgba(255,255,255,.65); font-size:10px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; margin-top:14px; margin-bottom:4px; }
-.ph-balance { color:#fff; font-size:28px; font-weight:950; letter-spacing:-1px; line-height:1; }
-.ph-balance span { color:var(--orange-lt); font-size:18px; }
-.ph-change { margin-top:6px; display:flex; align-items:center; gap:5px; font-size:11px; }
-.ph-up { color:#4ade80; font-weight:800; }
-
-.ph-actions {
-  display:grid; grid-template-columns:repeat(4,1fr); gap:6px;
-  padding:12px 14px 8px;
-}
-.ph-act {
-  display:flex; flex-direction:column; align-items:center; gap:4px;
-}
-.ph-act-ico {
-  width:36px; height:36px; border-radius:12px;
-  display:flex; align-items:center; justify-content:center;
-}
-.ph-act-ico.orange { background:rgba(255,140,0,.12); }
-.ph-act-ico.navy { background:rgba(10,36,99,.10); }
-.ph-act-ico.green { background:rgba(34,197,94,.12); }
-.ph-act-ico.red { background:rgba(239,68,68,.10); }
-.ph-act-ico svg { width:16px;height:16px; }
-.ph-act-lbl { font-size:9px; font-weight:800; color:var(--mut); letter-spacing:.04em; }
-
-.ph-txns { padding:6px 14px 14px; }
-.ph-tx-head { font-size:11px; font-weight:900; color:var(--navy-dark); letter-spacing:.04em; margin-bottom:8px; }
-.ph-tx {
-  display:flex; align-items:center; gap:10px;
-  padding:8px 0; border-bottom:1px solid #f1f5f9;
-}
-.ph-tx:last-child { border-bottom:0; }
-.ph-tx-ico {
-  width:30px; height:30px; border-radius:10px; flex-shrink:0;
-  display:flex; align-items:center; justify-content:center;
-  font-size:14px;
-}
-.ph-tx-info { flex:1; min-width:0; }
-.ph-tx-label { font-size:11px; font-weight:800; color:var(--ink); }
-.ph-tx-date { font-size:9.5px; color:var(--mut); font-weight:600; }
-.ph-tx-amt { font-size:12px; font-weight:900; }
-.ph-tx-amt.pos { color:#16a34a; }
-.ph-tx-amt.neg { color:#dc2626; }
-
-/* Floating cards around phone */
-.float-card {
-  position:absolute;
-  background:#fff;
-  border-radius:14px;
-  padding:12px 16px;
-  box-shadow:0 12px 36px rgba(10,36,99,.18), 0 0 0 1px rgba(10,36,99,.06);
-  min-width:150px;
-}
-.fc-left {
-  left:-90px; top:15%;
-  animation:floatB 4s ease-in-out .8s infinite;
-}
-.fc-right {
-  right:-80px; bottom:20%;
-  animation:floatB 5s ease-in-out 1.2s infinite;
-}
-.fc-top {
-  right:-60px; top:8%;
-  animation:floatB 4.5s ease-in-out .4s infinite;
-}
-.fc-lbl { font-size:9px; font-weight:900; color:var(--mut); letter-spacing:.12em; text-transform:uppercase; margin-bottom:4px; }
-.fc-val { font-size:20px; font-weight:950; color:var(--navy-dark); letter-spacing:-1px; line-height:1; }
-.fc-sub { font-size:10px; color:var(--mut); font-weight:600; margin-top:2px; }
-.fc-bar { height:4px; border-radius:99px; background:var(--line); margin-top:8px; overflow:hidden; }
-.fc-fill { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--orange),var(--orange-lt)); }
-.fc-badge {
-  display:inline-flex; align-items:center; gap:5px;
-  padding:4px 10px; border-radius:999px; font-size:10px; font-weight:900;
-}
-.fc-badge.green { background:rgba(34,197,94,.10); color:#166534; border:1px solid rgba(34,197,94,.30); }
-.fc-badge.orange { background:rgba(255,140,0,.12); color:var(--orange-dk); border:1px solid rgba(255,140,0,.35); }
-.fc-dot { width:6px;height:6px;border-radius:50%; }
-.fc-dot.green { background:#22c55e; }
-.fc-dot.orange { background:var(--orange); }
-
-@media(max-width:1060px){ .fc-left,.fc-right,.fc-top{display:none} }
-@media(max-width:860px){
-  .hero-inner { grid-template-columns:1fr; gap:36px; }
-  .hero-right { order:-1; }
-  .phone-wrap { width:220px; }
-  .phone { width:220px; }
-}
-@media(max-width:480px){ .hero-h1 { letter-spacing:-1px; } }
-
-/* ─── PARTNERS STRIP ─── */
-.partners {
-  background:#fff;
-  border-top:1px solid var(--line);
-  border-bottom:1px solid var(--line);
-  padding:28px 0;
-  overflow:hidden;
-}
-.partners-label {
-  text-align:center;
-  font-size:10px; font-weight:900; color:var(--mut);
-  letter-spacing:.22em; text-transform:uppercase;
-  margin-bottom:20px;
-}
-.partners-track-wrap {
-  overflow:hidden;
-  position:relative;
-}
-.partners-track-wrap::before,
-.partners-track-wrap::after {
-  content:"";
-  position:absolute; top:0; bottom:0; width:80px; z-index:2;
-  pointer-events:none;
-}
-.partners-track-wrap::before { left:0; background:linear-gradient(90deg,#fff,transparent); }
-.partners-track-wrap::after  { right:0; background:linear-gradient(270deg,#fff,transparent); }
-.partners-track {
-  display:flex; gap:18px; width:max-content;
-  animation:ticker 40s linear infinite;
-  align-items:center; padding:0 10px;
-}
-.partner-logo {
-  display:inline-flex; align-items:center; gap:8px;
-  padding:10px 18px; border-radius:12px;
-  border:1.5px solid var(--line);
-  background:#fff;
-  white-space:nowrap; flex-shrink:0;
-  transition:border-color .2s, box-shadow .2s;
-  cursor:default;
-}
-.partner-logo:hover { border-color:var(--orange); box-shadow:0 4px 14px rgba(255,140,0,.14); }
-.partner-dot { width:10px;height:10px;border-radius:50%;flex-shrink:0; }
-.partner-name { font-size:13px; font-weight:900; letter-spacing:-.2px; }
-
-/* ─── ABOUT / FEATURES ─── */
-.about {
-  padding:90px 20px;
-  max-width:1200px; margin:0 auto;
-  display:grid; grid-template-columns:1fr 1fr;
-  gap:60px; align-items:center;
-}
-.about-tag {
-  display:inline-block;
-  font-size:10px; font-weight:900; letter-spacing:.22em; text-transform:uppercase;
-  color:var(--orange-dk); background:rgba(255,140,0,.10);
-  padding:5px 14px; border-radius:999px;
-  border:1px solid rgba(255,140,0,.30);
-  margin-bottom:16px;
-}
-.about-h2 { font-size:36px; font-weight:900; color:var(--navy-dark); letter-spacing:-.8px; line-height:1.15; margin-bottom:14px; }
-.about-h2 span { color:var(--orange); }
-.about-p { color:var(--mut); font-size:15px; line-height:1.75; margin-bottom:30px; }
-.about-feats { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-.af-card {
-  background:#fff; border-radius:16px; padding:18px;
-  border:1px solid var(--line);
-  box-shadow:0 4px 14px rgba(10,36,99,.05);
-  transition:transform .22s, box-shadow .22s;
-}
-.af-card:hover { transform:translateY(-3px); box-shadow:0 10px 26px rgba(10,36,99,.12); }
-.af-ico {
-  width:42px; height:42px; border-radius:12px;
-  display:flex; align-items:center; justify-content:center;
-  margin-bottom:12px;
-}
-.af-ico.navy { background:rgba(10,36,99,.10); }
-.af-ico.orange { background:rgba(255,140,0,.12); }
-.af-ico.green { background:rgba(34,197,94,.12); }
-.af-ico.violet { background:rgba(139,92,246,.12); }
-.af-ico svg { width:20px;height:20px; }
-.af-title { font-size:13.5px; font-weight:900; color:var(--navy-dark); margin-bottom:4px; }
-.af-sub { font-size:12px; color:var(--mut); line-height:1.55; }
-
-.about-mockup {
-  position:relative; display:flex; justify-content:center;
-}
-.about-phone {
-  width:240px;
-  background:var(--navy-dark); border-radius:36px; padding:10px;
-  box-shadow:0 32px 70px rgba(10,36,99,.40);
-  animation:float 5.5s ease-in-out infinite;
-}
-.about-screen {
-  background:#fff; border-radius:28px; overflow:hidden; padding:16px;
-}
-.as-header {
-  display:flex; align-items:center; justify-content:space-between;
-  margin-bottom:14px;
-}
-.as-title { font-size:14px; font-weight:900; color:var(--navy-dark); }
-.as-badge {
-  font-size:9px; font-weight:900; letter-spacing:.1em;
-  padding:3px 8px; border-radius:999px;
-  background:rgba(255,140,0,.12); color:var(--orange-dk);
-  border:1px solid rgba(255,140,0,.30);
-}
-.as-card {
-  background:linear-gradient(135deg,var(--navy),var(--navy-mid));
-  border-radius:14px; padding:14px; color:#fff; margin-bottom:12px;
-  position:relative; overflow:hidden;
-}
-.as-card::after {
-  content:""; position:absolute; top:-30px; right:-30px;
-  width:90px; height:90px; border-radius:50%;
-  background:rgba(255,140,0,.18);
-}
-.as-card-lbl { font-size:9px; font-weight:700; color:rgba(255,255,255,.65); letter-spacing:.12em; text-transform:uppercase; margin-bottom:4px; }
-.as-card-amt { font-size:22px; font-weight:950; letter-spacing:-1px; }
-.as-card-sub { font-size:10px; color:rgba(255,255,255,.65); margin-top:4px; }
-.as-prog { margin-top:10px; }
-.as-prog-bar { height:5px; border-radius:99px; background:rgba(255,255,255,.20); overflow:hidden; }
-.as-prog-fill { height:100%; border-radius:99px; background:linear-gradient(90deg,var(--orange-lt),var(--orange)); width:62%; }
-.as-prog-lbl { display:flex; justify-content:space-between; margin-top:4px; font-size:9px; color:rgba(255,255,255,.65); }
-.as-list { }
-.as-item {
-  display:flex; align-items:center; gap:10px;
-  padding:7px 0; border-bottom:1px solid #f1f5f9;
-}
-.as-item:last-child { border-bottom:0; }
-.as-dot-wrap {
-  width:28px;height:28px;border-radius:9px;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-}
-.as-item-name { flex:1; font-size:11px; font-weight:800; color:var(--ink); }
-.as-item-amt { font-size:11px; font-weight:900; }
-.as-item-amt.pos { color:#16a34a; }
-.as-item-amt.neg { color:#dc2626; }
-.about-float {
-  position:absolute; right:-30px; bottom:15%;
-  background:#fff; border-radius:14px; padding:14px 18px;
-  box-shadow:0 10px 30px rgba(10,36,99,.18);
-  min-width:140px; animation:floatB 4s ease-in-out infinite;
-}
-.ab-fl-lbl { font-size:9px; font-weight:900; color:var(--mut); letter-spacing:.12em; text-transform:uppercase; margin-bottom:4px; }
-.ab-fl-val { font-size:20px; font-weight:950; color:var(--navy-dark); }
-.ab-fl-sub { font-size:10px; color:#22c55e; font-weight:800; margin-top:2px; }
+.c-dots{display:flex;gap:7px;align-items:center;justify-content:center;margin-top:14px;}
+.c-dot{width:7px;height:7px;border-radius:50%;background:rgba(10,36,99,.18);border:none;cursor:pointer;padding:0;transition:all .3s ease;}
+.c-dot.on{background:var(--org);width:26px;border-radius:99px;}
 
 @media(max-width:860px){
-  .about { grid-template-columns:1fr; padding:60px 20px; gap:36px; }
-  .about-feats { grid-template-columns:1fr 1fr; }
-  .about-float { display:none; }
+  .hero-inner{grid-template-columns:1fr;gap:32px;}
+  .carousel-scene{order:-1;height:420px;}
 }
-@media(max-width:480px){ .about-feats { grid-template-columns:1fr; } }
+@media(max-width:480px){
+  .hero-h1{letter-spacing:-1px;}
+  .carousel-scene{height:400px;}
+}
 
-/* ─── WHY TRUST US (stats + cards) ─── */
-.trust {
-  background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy) 100%);
-  padding:70px 20px;
-  position:relative; overflow:hidden;
-}
-.trust::before {
-  content:""; position:absolute; inset:0;
-  background-image:radial-gradient(rgba(255,255,255,.04) 1px, transparent 1px);
-  background-size:24px 24px; pointer-events:none;
-}
-.trust::after {
-  content:""; position:absolute;
-  top:-120px; right:-120px;
-  width:400px; height:400px; border-radius:50%;
-  background:radial-gradient(circle,rgba(255,140,0,.18) 0%,transparent 70%);
-  pointer-events:none;
-}
-.trust-inner { max-width:1200px; margin:0 auto; position:relative; z-index:2; }
-.trust-tag {
-  display:inline-block;
-  font-size:10px; font-weight:900; letter-spacing:.22em; text-transform:uppercase;
-  color:var(--orange-lt); background:rgba(255,165,51,.15);
-  padding:5px 14px; border-radius:999px;
-  border:1px solid rgba(255,165,51,.35);
-  margin-bottom:14px;
-}
-.trust-h2 { font-size:32px; font-weight:900; color:#fff; letter-spacing:-.6px; margin-bottom:8px; }
-.trust-h2 span { color:var(--orange-lt); }
-.trust-sub { color:rgba(255,255,255,.70); font-size:15px; line-height:1.65; max-width:560px; margin-bottom:50px; }
-.trust-stats {
-  display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-bottom:50px;
-}
-.ts-item {
-  text-align:center; padding:24px 16px;
-  background:rgba(255,255,255,.07);
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:16px;
-  transition:background .22s, transform .22s;
-}
-.ts-item:hover { background:rgba(255,255,255,.12); transform:translateY(-3px); }
-.ts-num { font-size:36px; font-weight:950; color:#fff; letter-spacing:-1.5px; line-height:1; }
-.ts-num .acc { color:var(--orange-lt); }
-.ts-lbl { font-size:11px; font-weight:700; color:rgba(255,255,255,.65); letter-spacing:.12em; text-transform:uppercase; margin-top:8px; }
-@media(max-width:720px){ .trust-stats{grid-template-columns:repeat(2,1fr)} }
-@media(max-width:480px){ .trust-stats{grid-template-columns:repeat(2,1fr)} }
+/* ══ STATS BAND ══ */
+.stats-band{background:#fff;border-top:3px solid var(--org);border-bottom:1px solid var(--line);padding:0;}
+.stats-band-inner{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);}
+.sb-item{padding:28px 24px;text-align:center;border-right:1px solid var(--line);position:relative;}
+.sb-item:last-child{border-right:0;}
+.sb-num{font-size:34px;font-weight:900;color:var(--navy);letter-spacing:-1.5px;line-height:1;}
+.sb-num em{color:var(--org);font-style:normal;}
+.sb-lbl{font-size:10px;font-weight:700;color:var(--mut);letter-spacing:.14em;text-transform:uppercase;margin-top:6px;}
+@media(max-width:680px){.stats-band-inner{grid-template-columns:1fr 1fr}.sb-item{border-right:0;border-bottom:1px solid var(--line)}.sb-item:nth-child(1),.sb-item:nth-child(3){border-right:1px solid var(--line)}}
 
-.trust-cards { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
-.tc-card {
-  background:rgba(255,255,255,.07);
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:18px; padding:24px;
-  transition:background .22s, transform .22s;
-}
-.tc-card:hover { background:rgba(255,255,255,.12); transform:translateY(-3px); }
-.tc-ico {
-  width:48px;height:48px;border-radius:14px;
-  background:rgba(255,140,0,.18); border:1px solid rgba(255,140,0,.35);
-  display:flex;align-items:center;justify-content:center;
-  margin-bottom:16px;
-}
-.tc-ico svg { width:22px;height:22px;color:var(--orange-lt);stroke:var(--orange-lt);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
-.tc-title { font-size:16px; font-weight:900; color:#fff; margin-bottom:8px; }
-.tc-desc { font-size:13px; color:rgba(255,255,255,.70); line-height:1.65; }
-@media(max-width:860px){ .trust-cards{grid-template-columns:1fr 1fr} }
-@media(max-width:520px){ .trust-cards{grid-template-columns:1fr} }
+/* ══ PARTNERS ══ */
+.partners{background:var(--bg);border-bottom:1px solid var(--line);padding:26px 0;overflow:hidden;}
+.partners-lbl{text-align:center;font-size:9.5px;font-weight:900;color:var(--mut);letter-spacing:.22em;text-transform:uppercase;margin-bottom:18px;}
+.p-track-wrap{overflow:hidden;position:relative;}
+.p-track-wrap::before,.p-track-wrap::after{content:"";position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none;}
+.p-track-wrap::before{left:0;background:linear-gradient(90deg,var(--bg),transparent);}
+.p-track-wrap::after{right:0;background:linear-gradient(270deg,var(--bg),transparent);}
+.p-track{display:flex;gap:14px;width:max-content;animation:ticker 42s linear infinite;align-items:center;padding:0 10px;}
+.p-logo{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;border-radius:12px;border:1.5px solid var(--line);background:#fff;white-space:nowrap;flex-shrink:0;transition:border-color .2s,box-shadow .2s;cursor:default;}
+.p-logo:hover{border-color:var(--org);box-shadow:0 4px 14px rgba(255,140,0,.14);}
+.p-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.p-name{font-size:13px;font-weight:900;letter-spacing:-.2px;}
 
-/* ─── LOAN PRODUCTS ─── */
-.products { padding:90px 20px; background:#fff; }
-.products-inner { max-width:1200px; margin:0 auto; }
-.section-head { text-align:center; margin-bottom:48px; }
-.sec-tag {
-  display:inline-block;
-  font-size:10px; font-weight:900; letter-spacing:.22em; text-transform:uppercase;
-  color:var(--orange-dk); background:rgba(255,140,0,.10);
-  padding:5px 14px; border-radius:999px;
-  border:1px solid rgba(255,140,0,.28);
-  margin-bottom:12px;
-}
-.sec-h2 { font-size:34px; font-weight:900; color:var(--navy-dark); letter-spacing:-.8px; margin-bottom:10px; }
-.sec-h2 span { color:var(--orange); }
-.sec-sub { color:var(--mut); font-size:15px; max-width:560px; margin:0 auto; line-height:1.65; }
+/* ══ FEATURES ══ */
+.features{padding:90px 24px;background:#fff;}
+.features-inner{max-width:1280px;margin:0 auto;}
+.sec-center{text-align:center;margin-bottom:48px;}
+.sec-tag{display:inline-block;font-size:9.5px;font-weight:900;letter-spacing:.22em;text-transform:uppercase;color:var(--ordk);background:rgba(255,140,0,.09);padding:5px 14px;border-radius:999px;border:1px solid rgba(255,140,0,.28);margin-bottom:12px;}
+.sec-h2{font-size:34px;font-weight:900;color:var(--navy);letter-spacing:-.8px;margin-bottom:10px;}
+.sec-h2 em{color:var(--org);font-style:normal;}
+.sec-sub{color:var(--mut);font-size:15px;max-width:560px;margin:0 auto;line-height:1.68;}
+.feat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+.feat-card{background:var(--bg);border-radius:20px;padding:28px 22px;border:1.5px solid var(--line);transition:transform .25s,box-shadow .25s,border-color .25s;position:relative;overflow:hidden;}
+.feat-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--org),var(--orlt));opacity:0;transition:opacity .25s;}
+.feat-card:hover{transform:translateY(-5px);box-shadow:0 16px 40px rgba(10,36,99,.11);border-color:rgba(255,140,0,.35);}
+.feat-card:hover::before{opacity:1;}
+.feat-ico{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;}
+.feat-ico svg{width:22px;height:22px;}
+.feat-title{font-size:15px;font-weight:900;color:var(--navy);margin-bottom:8px;}
+.feat-desc{font-size:12.5px;color:var(--mut);line-height:1.65;}
+@media(max-width:860px){.feat-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.feat-grid{grid-template-columns:1fr}}
 
-.prod-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
-.prod-card {
-  background:var(--bg); border-radius:20px; padding:26px 22px;
-  border:1.5px solid var(--line);
-  position:relative; overflow:hidden;
-  transition:transform .25s, box-shadow .25s, border-color .25s;
-  text-decoration:none; color:inherit; display:block;
-}
-.prod-card::before {
-  content:""; position:absolute; top:0;left:0;right:0; height:4px;
-  background:linear-gradient(90deg,var(--orange),var(--orange-lt));
-  opacity:0; transition:opacity .25s;
-}
-.prod-card:hover { transform:translateY(-5px); box-shadow:0 18px 40px rgba(10,36,99,.14); border-color:rgba(255,140,0,.40); }
-.prod-card:hover::before { opacity:1; }
-.prod-ico {
-  width:54px; height:54px; border-radius:16px;
-  display:flex;align-items:center;justify-content:center;
-  margin-bottom:18px;
-}
-.prod-ico.navy { background:linear-gradient(135deg,rgba(10,36,99,.12),rgba(10,36,99,.06)); border:1px solid rgba(10,36,99,.15); }
-.prod-ico.orange { background:linear-gradient(135deg,rgba(255,140,0,.14),rgba(255,140,0,.06)); border:1px solid rgba(255,140,0,.25); }
-.prod-ico.green { background:linear-gradient(135deg,rgba(34,197,94,.14),rgba(34,197,94,.06)); border:1px solid rgba(34,197,94,.25); }
-.prod-ico.violet { background:linear-gradient(135deg,rgba(139,92,246,.14),rgba(139,92,246,.06)); border:1px solid rgba(139,92,246,.25); }
-.prod-ico svg { width:24px;height:24px;stroke-width:2;stroke-linecap:round;stroke-linejoin:round; }
-.prod-title { font-size:17px; font-weight:900; color:var(--navy-dark); margin-bottom:8px; }
-.prod-desc { font-size:13px; color:var(--mut); line-height:1.60; margin-bottom:18px; }
-.prod-rate {
-  font-size:12px; font-weight:900; color:var(--orange-dk);
-  display:flex; align-items:center; gap:5px;
-}
-.prod-rate svg { width:13px;height:13px;stroke:var(--orange);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round; }
+/* ══ TRUST ══ */
+.trust{background:linear-gradient(145deg,var(--dk) 0%,var(--navy) 100%);padding:80px 24px;position:relative;overflow:hidden;}
+.trust::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.04) 1px,transparent 1px);background-size:24px 24px;pointer-events:none;}
+.trust::after{content:"";position:absolute;top:-100px;right:-100px;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,0,.16) 0%,transparent 70%);pointer-events:none;}
+.trust-inner{max-width:1280px;margin:0 auto;position:relative;z-index:2;}
+.trust-tag{display:inline-block;font-size:9.5px;font-weight:900;letter-spacing:.22em;text-transform:uppercase;color:var(--orlt);background:rgba(255,165,51,.15);padding:5px 14px;border-radius:999px;border:1px solid rgba(255,165,51,.35);margin-bottom:14px;}
+.trust-h2{font-size:32px;font-weight:900;color:#fff;letter-spacing:-.6px;margin-bottom:8px;}
+.trust-h2 em{color:var(--orlt);font-style:normal;}
+.trust-sub{color:rgba(255,255,255,.65);font-size:15px;line-height:1.65;max-width:560px;margin-bottom:52px;}
+.trust-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+.tc{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.11);border-radius:18px;padding:26px;transition:background .22s,transform .22s;}
+.tc:hover{background:rgba(255,255,255,.11);transform:translateY(-3px);}
+.tc-ico{width:50px;height:50px;border-radius:14px;background:rgba(255,140,0,.16);border:1px solid rgba(255,140,0,.32);display:flex;align-items:center;justify-content:center;margin-bottom:16px;}
+.tc-ico svg{width:22px;height:22px;stroke:var(--orlt);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.tc-title{font-size:16px;font-weight:900;color:#fff;margin-bottom:8px;}
+.tc-desc{font-size:13px;color:rgba(255,255,255,.68);line-height:1.65;}
+@media(max-width:860px){.trust-cards{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.trust-cards{grid-template-columns:1fr}}
 
-@media(max-width:860px){ .prod-grid{grid-template-columns:1fr 1fr} }
-@media(max-width:480px){ .prod-grid{grid-template-columns:1fr} }
+/* ══ PRODUCTS ══ */
+.products{padding:90px 24px;background:var(--bg);}
+.products-inner{max-width:1280px;margin:0 auto;}
+.prod-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+.prod-card{background:#fff;border-radius:20px;padding:26px 22px;border:1.5px solid var(--line);position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s,border-color .25s;text-decoration:none;color:inherit;display:block;}
+.prod-card::after{content:"";position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--org),var(--orlt));opacity:0;transition:opacity .25s;}
+.prod-card:hover{transform:translateY(-5px);box-shadow:0 20px 44px rgba(10,36,99,.13);border-color:rgba(255,140,0,.35);}
+.prod-card:hover::after{opacity:1;}
+.prod-ico{width:52px;height:52px;border-radius:15px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;}
+.prod-ico svg{width:24px;height:24px;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.prod-title{font-size:17px;font-weight:900;color:var(--navy);margin-bottom:8px;}
+.prod-desc{font-size:13px;color:var(--mut);line-height:1.62;margin-bottom:18px;}
+.prod-rate{font-size:12px;font-weight:900;color:var(--ordk);display:flex;align-items:center;gap:5px;}
+.prod-rate svg{width:12px;height:12px;stroke:var(--org);fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+@media(max-width:860px){.prod-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:480px){.prod-grid{grid-template-columns:1fr}}
 
-/* ─── HOW IT WORKS ─── */
-.how { padding:80px 20px; background:var(--bg); }
-.how-inner { max-width:1100px; margin:0 auto; }
-.how-steps { display:grid; grid-template-columns:repeat(4,1fr); gap:24px; margin-top:48px; position:relative; }
-.how-steps::before {
-  content:""; position:absolute;
-  top:32px; left:calc(12.5% + 16px); right:calc(12.5% + 16px);
-  height:2px;
-  background:linear-gradient(90deg,var(--orange),var(--orange-lt));
-  z-index:0;
-}
-.how-step { display:flex; flex-direction:column; align-items:center; text-align:center; position:relative; z-index:1; }
-.how-num {
-  width:64px; height:64px; border-radius:50%;
-  background:linear-gradient(135deg,var(--orange),var(--orange-dk));
-  color:#fff; font-size:22px; font-weight:950;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 8px 24px rgba(255,140,0,.40);
-  margin-bottom:18px; border:4px solid #fff;
-  position:relative;
-}
-.how-step-title { font-size:15px; font-weight:900; color:var(--navy-dark); margin-bottom:6px; }
-.how-step-desc { font-size:12.5px; color:var(--mut); line-height:1.6; }
-@media(max-width:720px){
-  .how-steps { grid-template-columns:1fr 1fr; gap:28px; }
-  .how-steps::before { display:none; }
-}
-@media(max-width:420px){ .how-steps { grid-template-columns:1fr; } }
+/* ══ HOW IT WORKS ══ */
+.how{padding:90px 24px;background:#fff;}
+.how-inner{max-width:1100px;margin:0 auto;}
+.how-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;margin-top:52px;position:relative;}
+.how-steps::before{content:"";position:absolute;top:32px;left:calc(12.5% + 16px);right:calc(12.5% + 16px);height:2px;background:linear-gradient(90deg,var(--org),var(--orlt));z-index:0;}
+.how-step{display:flex;flex-direction:column;align-items:center;text-align:center;position:relative;z-index:1;}
+.how-num{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--org),var(--ordk));color:#fff;font-size:22px;font-weight:950;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(255,140,0,.40);margin-bottom:18px;border:4px solid #fff;}
+.how-step-title{font-size:15px;font-weight:900;color:var(--navy);margin-bottom:6px;}
+.how-step-desc{font-size:12.5px;color:var(--mut);line-height:1.62;}
+@media(max-width:720px){.how-steps{grid-template-columns:1fr 1fr;gap:28px}.how-steps::before{display:none}}
+@media(max-width:420px){.how-steps{grid-template-columns:1fr}}
 
-/* ─── CTA BANNER ─── */
-.cta-banner { padding:70px 20px; background:#fff; }
-.cta-inner {
-  max-width:960px; margin:0 auto;
-  background:linear-gradient(135deg,var(--navy-dark) 0%,var(--navy) 60%,var(--navy-mid) 100%);
-  border-radius:28px; padding:56px 44px;
-  text-align:center; position:relative; overflow:hidden;
-}
-.cta-inner::before {
-  content:""; position:absolute; top:-80px; right:-80px;
-  width:280px;height:280px;border-radius:50%;
-  background:radial-gradient(circle,rgba(255,140,0,.25) 0%,transparent 65%);
-}
-.cta-inner::after {
-  content:""; position:absolute; bottom:-80px; left:-80px;
-  width:280px;height:280px;border-radius:50%;
-  background:radial-gradient(circle,rgba(255,165,51,.18) 0%,transparent 65%);
-}
-.cta-inner .sec-tag { position:relative; z-index:2; color:var(--orange-lt); background:rgba(255,165,51,.15); border-color:rgba(255,165,51,.35); }
-.cta-h2 { position:relative; z-index:2; font-size:36px; font-weight:950; color:#fff; letter-spacing:-.8px; margin-bottom:12px; }
-.cta-h2 span { color:var(--orange-lt); }
-.cta-sub { position:relative; z-index:2; color:rgba(255,255,255,.75); font-size:15px; line-height:1.65; max-width:500px; margin:0 auto 32px; }
-.cta-btns { position:relative; z-index:2; display:flex; gap:14px; justify-content:center; flex-wrap:wrap; }
-.cta-btn-primary {
-  padding:16px 36px; border-radius:999px;
-  background:linear-gradient(135deg,var(--orange),var(--orange-dk));
-  color:#fff; font-weight:900; font-size:15px;
-  text-decoration:none; letter-spacing:.04em;
-  box-shadow:0 8px 28px rgba(255,140,0,.50);
-  transition:transform .18s, box-shadow .18s;
-}
-.cta-btn-primary:hover { transform:translateY(-2px); box-shadow:0 12px 36px rgba(255,140,0,.65); }
-.cta-btn-outline {
-  padding:14px 30px; border-radius:999px;
-  background:rgba(255,255,255,.10);
-  border:2px solid rgba(255,255,255,.40);
-  color:#fff; font-weight:900; font-size:15px;
-  text-decoration:none; transition:all .18s;
-}
-.cta-btn-outline:hover { background:rgba(255,255,255,.20); border-color:rgba(255,255,255,.65); }
+/* ══ NEWS / BALITA ══ */
+.news{padding:90px 24px;background:var(--bg);}
+.news-inner{max-width:1280px;margin:0 auto;}
+.news-grid{display:grid;grid-template-columns:1.45fr 1fr;gap:24px;margin-bottom:24px;}
 
-/* ─── FOOTER ─── */
-.footer {
-  background:var(--navy-dark);
-  color:rgba(255,255,255,.75);
-  padding:52px 20px 0;
-  border-top:3px solid var(--orange);
+.news-feat{background:#fff;border-radius:22px;overflow:hidden;border:1px solid var(--line);box-shadow:0 4px 22px rgba(10,36,99,.07);display:flex;flex-direction:column;text-decoration:none;color:inherit;transition:transform .25s,box-shadow .25s;}
+.news-feat:hover{transform:translateY(-4px);box-shadow:0 20px 48px rgba(10,36,99,.14);}
+.news-feat-img{height:220px;background:linear-gradient(135deg,var(--dk) 0%,var(--md) 55%,rgba(255,140,0,.32) 100%);position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:20px 24px;}
+.news-feat-img::before{content:"";position:absolute;top:-60px;right:-60px;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,0,.22) 0%,transparent 70%);}
+.news-feat-img::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(6,21,64,.78) 0%,rgba(6,21,64,.08) 60%,transparent 100%);}
+.news-feat-img-inner{position:relative;z-index:2;display:flex;flex-direction:column;gap:10px;}
+.ncat{display:inline-flex;align-items:center;padding:3px 10px;border-radius:999px;font-size:9.5px;font-weight:900;letter-spacing:.10em;text-transform:uppercase;width:fit-content;}
+.nc-bsp{background:rgba(255,140,0,.92);color:#fff;}
+.nc-ofw{background:rgba(34,197,94,.92);color:#fff;}
+.nc-mkt{background:rgba(59,130,246,.92);color:#fff;}
+.nc-tip{background:rgba(139,92,246,.92);color:#fff;}
+.nc-reg{background:rgba(204,0,0,.90);color:#fff;}
+.news-feat-headline-bg{font-size:17px;font-weight:900;color:#fff;line-height:1.32;letter-spacing:-.2px;max-width:400px;}
+.news-feat-body{padding:24px 26px;flex:1;display:flex;flex-direction:column;}
+.news-meta{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.news-dt{font-size:11px;font-weight:700;color:var(--mut);}
+.news-sep{color:var(--line);}
+.news-rt{font-size:11px;font-weight:700;color:var(--mut);}
+.news-feat-title{font-size:19px;font-weight:900;color:var(--navy);line-height:1.32;letter-spacing:-.3px;margin-bottom:11px;}
+.news-feat-excerpt{font-size:13.5px;color:var(--mut);line-height:1.72;flex:1;margin-bottom:20px;}
+.news-cta{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:900;color:var(--navy);text-decoration:none;letter-spacing:.08em;text-transform:uppercase;border-bottom:2px solid var(--org);padding-bottom:1px;align-self:flex-start;transition:color .15s;}
+.news-cta:hover{color:var(--ordk);}
+.news-cta svg{width:11px;height:11px;stroke:currentColor;fill:none;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round;}
+
+.news-side{display:flex;flex-direction:column;gap:14px;}
+.news-card{background:#fff;border-radius:14px;border:1px solid var(--line);border-left:4px solid var(--navy);padding:16px 18px;display:flex;flex-direction:column;gap:8px;text-decoration:none;color:inherit;transition:transform .2s,box-shadow .2s;box-shadow:0 2px 10px rgba(10,36,99,.04);}
+.news-card:hover{transform:translateX(4px);box-shadow:0 6px 22px rgba(10,36,99,.10);}
+.news-card.c-bsp{border-left-color:var(--org);}
+.news-card.c-ofw{border-left-color:#22c55e;}
+.news-card.c-mkt{border-left-color:#3b82f6;}
+.news-card.c-reg{border-left-color:#cc0000;}
+.news-card-row{display:flex;align-items:center;gap:8px;justify-content:space-between;}
+.news-card-title{font-size:14px;font-weight:900;color:var(--navy);line-height:1.38;}
+.news-card-meta{font-size:11px;color:var(--mut);font-weight:600;}
+
+.news-row{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.news-sm{background:#fff;border-radius:20px;overflow:hidden;border:1px solid var(--line);box-shadow:0 3px 14px rgba(10,36,99,.05);text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:transform .22s,box-shadow .22s;}
+.news-sm:hover{transform:translateY(-3px);box-shadow:0 14px 36px rgba(10,36,99,.13);}
+.nsm-img,.news-sm-img{height:100px;position:relative;overflow:hidden;flex-shrink:0;}
+.nsm-img::after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.45) 0%,transparent 60%);}
+.nsm-img-cat{position:absolute;bottom:10px;left:12px;z-index:2;}
+.nsm-bg1{background:linear-gradient(135deg,#0A2463,#1a3a7a);}
+.nsm-bg2{background:linear-gradient(135deg,#14532d,#16a34a);}
+.nsm-bg3{background:linear-gradient(135deg,#1e3a8a,#3b82f6);}
+.nsm-body{padding:16px;flex:1;display:flex;flex-direction:column;}
+.nsm-title{font-size:14px;font-weight:900;color:var(--navy);line-height:1.38;margin-bottom:8px;}
+.nsm-excerpt{font-size:12px;color:var(--mut);line-height:1.62;flex:1;}
+.nsm-foot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:10px;border-top:1px solid var(--line);}
+.nsm-date{font-size:10.5px;color:var(--mut);font-weight:600;}
+.nsm-rt{font-size:10.5px;color:var(--mut);font-weight:600;}
+
+.news-viewall{display:flex;align-items:center;justify-content:center;margin:38px auto 0;gap:8px;padding:13px 34px;border-radius:999px;background:#fff;border:2px solid var(--navy);color:var(--navy);font-size:12.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;transition:all .18s;width:fit-content;}
+.news-viewall:hover{background:var(--navy);color:#fff;}
+.news-viewall svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
+
+@media(max-width:900px){.news-grid{grid-template-columns:1fr}.news-row{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.news-row{grid-template-columns:1fr}}
+
+/* ══ OFW STRIP ══ */
+.ofw-strip{background:var(--dk);padding:14px 24px;border-top:2px solid rgba(255,140,0,.22);border-bottom:2px solid rgba(255,140,0,.22);}
+.ofw-strip-in{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:16px;overflow:hidden;}
+.ofw-lbl{font-size:9.5px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:var(--orlt);flex-shrink:0;}
+.ofw-div{width:1px;height:14px;background:rgba(255,255,255,.18);flex-shrink:0;}
+.ofw-flags{display:flex;gap:4px;overflow:hidden;flex:1;}
+.ofw-flag{display:inline-flex;align-items:center;gap:5px;padding:3px 12px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);font-size:11.5px;font-weight:700;color:rgba(255,255,255,.80);white-space:nowrap;flex-shrink:0;}
+@media(max-width:700px){.ofw-flag:nth-child(n+6){display:none}}
+@media(max-width:480px){.ofw-flag:nth-child(n+4){display:none}}
+
+/* ══ CTA ══ */
+.cta-wrap{padding:70px 24px;background:#fff;}
+.cta-box{max-width:1000px;margin:0 auto;background:linear-gradient(145deg,var(--dk) 0%,var(--navy) 55%,var(--md) 100%);border-radius:28px;padding:60px 48px;text-align:center;position:relative;overflow:hidden;}
+.cta-box::before{content:"";position:absolute;top:-80px;right:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,140,0,.24) 0%,transparent 65%);}
+.cta-box::after{content:"";position:absolute;bottom:-80px;left:-80px;width:280px;height:280px;border-radius:50%;background:radial-gradient(circle,rgba(255,165,51,.18) 0%,transparent 65%);}
+.cta-motto{font-size:10px;font-weight:900;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:10px;position:relative;z-index:2;}
+.cta-h{font-size:38px;font-weight:950;color:#fff;letter-spacing:-.8px;margin-bottom:14px;position:relative;z-index:2;}
+.cta-h em{color:var(--orlt);font-style:normal;}
+.cta-sub{color:rgba(255,255,255,.70);font-size:15px;line-height:1.65;max-width:500px;margin:0 auto 34px;position:relative;z-index:2;}
+.cta-btns{position:relative;z-index:2;display:flex;gap:14px;justify-content:center;flex-wrap:wrap;}
+.cta-btn-p{padding:16px 38px;border-radius:999px;background:linear-gradient(135deg,var(--org),var(--ordk));color:#fff;font-weight:900;font-size:15px;text-decoration:none;letter-spacing:.04em;box-shadow:0 8px 28px rgba(255,140,0,.52);transition:transform .18s,box-shadow .18s;}
+.cta-btn-p:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(255,140,0,.68);}
+.cta-btn-s{padding:14px 30px;border-radius:999px;background:rgba(255,255,255,.10);border:2px solid rgba(255,255,255,.36);color:#fff;font-weight:900;font-size:15px;text-decoration:none;transition:all .18s;}
+.cta-btn-s:hover{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.60);}
+
+/* ══ FOOTER ══ */
+.footer{background:var(--dk);color:rgba(255,255,255,.72);padding:52px 24px 0;border-top:3px solid var(--org);}
+.footer-in{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:36px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.10);}
+.ft-brand-name{font-size:21px;font-weight:900;color:#fff;display:block;margin-bottom:12px;}
+.ft-brand-name em{color:var(--org);font-style:normal;}
+.ft-about{font-size:13px;line-height:1.72;color:rgba(255,255,255,.60);max-width:290px;margin-top:10px;}
+.ft-motto{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--orlt);margin-top:14px;display:block;}
+.ft-col h5{color:#fff;font-size:11.5px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;margin-bottom:16px;padding-bottom:8px;border-bottom:2px solid var(--org);display:inline-block;}
+.ft-col ul{list-style:none;display:grid;gap:10px;}
+.ft-col a{color:rgba(255,255,255,.65);text-decoration:none;font-size:13px;transition:color .15s;}
+.ft-col a:hover{color:var(--orlt);}
+.ft-contact-row{display:flex;align-items:center;gap:8px;}
+.ft-contact-row svg{width:14px;height:14px;color:var(--org);flex-shrink:0;}
+.footer-bot{max-width:1280px;margin:0 auto;padding:18px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;font-size:12px;color:rgba(255,255,255,.44);}
+.bsp-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;background:rgba(255,140,0,.14);border:1px solid rgba(255,140,0,.28);color:var(--orlt);font-size:10px;font-weight:900;letter-spacing:.10em;}
+@media(max-width:860px){.footer-in{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.footer-in{grid-template-columns:1fr}.footer-bot{justify-content:center;text-align:center}}
+
+/* ══ MOBILE FIT — ALL DEVICES ══ */
+html,body{max-width:100%;overflow-x:hidden!important;}
+@media(max-width:860px){.hero{min-height:auto;padding:52px 20px 60px;}}
+@media(max-width:480px){
+  .hero-actions{flex-direction:column;align-items:stretch;gap:10px;}
+  .h-btn-primary,.h-btn-secondary{justify-content:center;text-align:center;width:100%;}
 }
-.footer-inner {
-  max-width:1200px; margin:0 auto;
-  display:grid; grid-template-columns:2fr 1fr 1fr 1fr;
-  gap:36px; padding-bottom:40px;
-  border-bottom:1px solid rgba(255,255,255,.10);
+@media(max-width:600px){
+  .hero{padding:36px 16px 44px;}
+  .hero-h1{font-size:clamp(27px,8.5vw,40px);}
+  .hero-sub{font-size:14px;margin-bottom:26px;}
+  .hero-actions{gap:10px;}
+  .h-btn-primary,.h-btn-secondary{font-size:13.5px;padding:13px 22px;}
+  .hero-stats{width:100%;}
+  .h-stat{padding:12px 12px;flex:1;}
+  .h-stat-n{font-size:19px;}
+  .h-stat-l{font-size:8px;}
+  .features,.trust,.products,.how,.news{padding:56px 16px;}
+  .cta-wrap{padding:48px 16px;}
+  .cta-box{padding:40px 18px;border-radius:20px;}
+  .cta-h{font-size:26px;letter-spacing:-.3px;}
+  .cta-sub{font-size:13.5px;}
+  .cta-btns{flex-direction:column;align-items:center;}
+  .cta-btn-p,.cta-btn-s{width:100%;max-width:300px;text-align:center;justify-content:center;}
+  .sec-h2{font-size:24px;letter-spacing:-.3px;}
+  .sec-sub,.trust-sub{font-size:13.5px;}
+  .trust-h2{font-size:26px;}
+  .news-feat-title{font-size:15px;}
+  .footer{padding:36px 16px 0;}
+  .tbi{padding:6px 14px;gap:8px;}
+  .brand-name{font-size:16px;}
+  .nav-logo{width:36px;height:36px;border-radius:8px;}
 }
-.ft-brand .nav-name { font-size:22px; margin-bottom:12px; display:block; }
-.ft-about { font-size:13px; line-height:1.7; color:rgba(255,255,255,.65); max-width:300px; margin-top:10px; }
-.ft-col h5 {
-  color:#fff; font-size:12px; font-weight:900;
-  letter-spacing:.16em; text-transform:uppercase;
-  margin-bottom:16px; padding-bottom:8px;
-  border-bottom:2px solid var(--orange); display:inline-block;
+@media(max-width:400px){
+  .hero{padding:24px 13px 30px;}
+  .hero-h1{font-size:clamp(22px,9vw,30px);}
+  .h-btn-primary,.h-btn-secondary{font-size:13px;padding:11px 16px;}
+  .carousel-scene{height:380px;}
+  .c-dot{width:5px;height:5px;}
+  .c-dot.on{width:14px;}
+  .brand-name{font-size:14px;}
 }
-.ft-col ul { list-style:none; display:grid; gap:10px; }
-.ft-col a { color:rgba(255,255,255,.70); text-decoration:none; font-size:13px; transition:color .15s; }
-.ft-col a:hover { color:var(--orange-lt); }
-.ft-contact { display:flex; align-items:center; gap:8px; }
-.ft-contact svg { width:14px;height:14px;color:var(--orange);flex-shrink:0; }
-.footer-bottom {
-  max-width:1200px; margin:0 auto;
-  padding:18px 0; display:flex;
-  justify-content:space-between; align-items:center;
-  flex-wrap:wrap; gap:10px;
-  font-size:12px; color:rgba(255,255,255,.50);
-}
-@media(max-width:860px){ .footer-inner{grid-template-columns:1fr 1fr} }
-@media(max-width:520px){ .footer-inner{grid-template-columns:1fr}; .footer-bottom{justify-content:center;text-align:center} }
 </style>
 
-<!-- ─── TOP ADVISORY BAR ─── -->
-<div class="top-bar">
-  <div class="tb-inner">
-    <div class="tb-left">
-      <span class="tb-tag">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:10px;height:10px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        Live
-      </span>
-      <div class="tb-ticker">
-        <div class="tb-track">
-          <span>BSP-licensed lending platform serving Filipinos worldwide</span>
-          <span>Same-day approval and disbursement available 24/7</span>
-          <span>OFW Reintegration Loans now open — apply from anywhere</span>
-          <span>Beware of phishing — always verify links before logging in</span>
-          <span>Now accepting GCash, Maya, and UnionBank transfers</span>
-          <span>Customer support: customer.care@ofl.ph · (+632) 8-405-0000</span>
-          <span>BSP-licensed lending platform serving Filipinos worldwide</span>
-          <span>Same-day approval and disbursement available 24/7</span>
-          <span>OFW Reintegration Loans now open — apply from anywhere</span>
-          <span>Beware of phishing — always verify links before logging in</span>
-          <span>Now accepting GCash, Maya, and UnionBank transfers</span>
-          <span>Customer support: customer.care@ofl.ph · (+632) 8-405-0000</span>
-        </div>
-      </div>
-    </div>
-    <div class="tb-right">
-      <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:11px;height:11px"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> Hotline</a>
-      <span class="tb-div"></span>
-      <a href="#">Support</a>
-    </div>
-  </div>
-</div>
 
-<!-- ─── NAVIGATION ─── -->
+<!-- NAV -->
 <nav class="nav">
-  <div class="nav-inner">
+  <div class="navi">
     <a href="#" class="nav-brand">
-      <div class="nav-logo">
-        <img src="{% static 'img/peso-logo.webp' %}" alt="OFL" onerror="this.parentElement.style.background='linear-gradient(135deg,#0A2463,#1a3a7a)';this.style.display='none';">
-      </div>
-      <span class="nav-name">OverseasFilipino<span>Loan</span></span>
+      <div class="nav-logo"><img src="{% static 'img/peso-logo.webp' %}" alt="OFL" onerror="this.parentElement.style.background='linear-gradient(135deg,#FF8C00,#D97200)';this.style.display='none';"></div>
+      <span class="brand-name">OverseasFilipino<em>Loan</em></span>
     </a>
     <div class="nav-links">
-      <a href="#about" class="nav-link">About</a>
-      <a href="#products" class="nav-link">Loans</a>
-      <a href="#how" class="nav-link">How it Works</a>
-      <a href="#contact" class="nav-link">Contact</a>
+      <a href="#features" class="nav-a">About</a>
+      <a href="#products" class="nav-a">Loans</a>
+      <a href="#how" class="nav-a">How it Works</a>
+      <a href="#news" class="nav-a">Balita</a>
     </div>
     <div class="nav-cta">
-      <a href="/login/" class="btn-outline">Sign In</a>
-      <a href="/register/" class="btn-solid">Get Started</a>
+      <a href="/login/" class="btn-ghost">Sign In</a>
+      <a href="/register/" class="btn-cta">Apply Now</a>
     </div>
   </div>
 </nav>
 
-<!-- ─── HERO ─── -->
+<!-- HERO -->
 <section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-orb1"></div>
+  <div class="hero-orb2"></div>
   <div class="hero-inner">
-    <!-- Left: text -->
-    <div class="hero-left">
-      <div class="hero-badge">
-        <span></span>
-        OFW Financial Platform
-      </div>
-      <h1 class="hero-h1">
-        The Future of<br>
-        <span class="shine">Filipino Loans</span><br>
-        is Here.
-      </h1>
-      <p class="hero-sub">
-        Fast approvals, transparent rates, and 100% online — built for Overseas Filipino Workers and their families worldwide. Apply in minutes, get funded today.
-      </p>
+
+    <!-- LEFT TEXT -->
+    <div>
+      <div class="hero-eyebrow"><span class="hero-eyebrow-dot"></span>🇵🇭 OFW Financial Platform</div>
+      <h1 class="hero-h1">The Bank for<br><span class="shine">Every Filipino.</span></h1>
+      <p class="hero-sub">Fast approvals, transparent rates, and 100% online — built for Overseas Filipino Workers and their families worldwide. Apply in minutes, get funded today. <strong style="color:var(--orlt);">Start your application now!</strong></p>
       <div class="hero-actions">
-        <a href="/register/" class="hero-btn-primary">
-          Apply Now
-          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        </a>
-        <a href="/login/" class="hero-btn-secondary">
-          <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-          Sign In
-        </a>
+        <a href="/register/" class="h-btn-primary">Apply Now <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+        <a href="/login/" class="h-btn-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg> Sign In</a>
       </div>
       <div class="hero-stats">
-        <div class="h-stat">
-          <div class="h-stat-num">50K<span class="accent">+</span></div>
-          <div class="h-stat-lbl">Borrowers</div>
-        </div>
-        <div class="h-stat-sep"></div>
-        <div class="h-stat">
-          <div class="h-stat-num">₱8.2<span class="accent">B</span></div>
-          <div class="h-stat-lbl">Disbursed</div>
-        </div>
-        <div class="h-stat-sep"></div>
-        <div class="h-stat">
-          <div class="h-stat-num">98<span class="accent">%</span></div>
-          <div class="h-stat-lbl">Approval Rate</div>
-        </div>
-        <div class="h-stat-sep"></div>
-        <div class="h-stat">
-          <div class="h-stat-num">24<span class="accent">h</span></div>
-          <div class="h-stat-lbl">Fast Funding</div>
-        </div>
+        <div class="h-stat"><div class="h-stat-n">50K<em>+</em></div><div class="h-stat-l">Borrowers</div></div>
+        <div class="h-stat"><div class="h-stat-n">₱8.2<em>B</em></div><div class="h-stat-l">Disbursed</div></div>
+        <div class="h-stat"><div class="h-stat-n">98<em>%</em></div><div class="h-stat-l">Approval</div></div>
+        <div class="h-stat"><div class="h-stat-n">24<em>h</em></div><div class="h-stat-l">Funding</div></div>
       </div>
     </div>
 
-    <!-- Right: phone mockup -->
-    <div class="hero-right">
-      <!-- Floating card: Approval -->
-      <div class="float-card fc-left">
-        <div class="fc-lbl">Approval Rate</div>
-        <div class="fc-val">98%</div>
-        <div class="fc-sub">Same-day response</div>
-        <div class="fc-bar"><div class="fc-fill" style="width:98%"></div></div>
-      </div>
+    <!-- RIGHT: COVERFLOW CAROUSEL -->
+    <div class="carousel-scene">
+      <div class="carousel-stage">
 
-      <!-- Floating card: Status badge -->
-      <div class="float-card fc-top" style="padding:10px 14px;min-width:130px;">
-        <div class="fc-lbl" style="margin-bottom:6px;">Loan Status</div>
-        <div class="fc-badge green"><span class="fc-dot green"></span>Approved</div>
-      </div>
-
-      <!-- Floating card: Amount -->
-      <div class="float-card fc-right">
-        <div class="fc-lbl">Disbursed Today</div>
-        <div class="fc-val">₱5M</div>
-        <div class="fc-sub">Across 42 borrowers</div>
-        <div class="fc-badge orange" style="margin-top:8px;"><span class="fc-dot orange"></span>Live</div>
-      </div>
-
-      <!-- Main phone -->
-      <div class="phone-wrap">
-        <div class="phone">
-          <div class="phone-screen">
-            <!-- Phone top area -->
-            <div class="phone-top">
-              <div class="ph-greeting">Good morning 👋</div>
-              <div class="ph-name">Maria Santos</div>
-              <div class="ph-balance-lbl">Loan Balance</div>
-              <div class="ph-balance"><span>₱</span>125,000</div>
-              <div class="ph-change">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:12px;height:12px"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-                <span class="ph-up">On track</span>
-                <span style="color:rgba(255,255,255,.55);font-size:10px;">Next due: Jul 15</span>
-              </div>
-            </div>
-
-            <!-- Quick actions -->
-            <div class="ph-actions">
-              <div class="ph-act">
-                <div class="ph-act-ico orange">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#FF8C00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-                </div>
-                <div class="ph-act-lbl">Pay</div>
-              </div>
-              <div class="ph-act">
-                <div class="ph-act-ico navy">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#0A2463" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 1l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><path d="M7 23l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-                </div>
-                <div class="ph-act-lbl">Transfer</div>
-              </div>
-              <div class="ph-act">
-                <div class="ph-act-ico green">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                </div>
-                <div class="ph-act-lbl">Wallet</div>
-              </div>
-              <div class="ph-act">
-                <div class="ph-act-ico red">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                </div>
-                <div class="ph-act-lbl">History</div>
-              </div>
-            </div>
-
-            <!-- Transactions -->
-            <div class="ph-txns">
-              <div class="ph-tx-head">Recent Activity</div>
-              <div class="ph-tx">
-                <div class="ph-tx-ico" style="background:rgba(0,125,255,.12);">💙</div>
-                <div class="ph-tx-info">
-                  <div class="ph-tx-label">GCash Top-up</div>
-                  <div class="ph-tx-date">Today, 9:14 AM</div>
-                </div>
-                <div class="ph-tx-amt pos">+₱5,000</div>
-              </div>
-              <div class="ph-tx">
-                <div class="ph-tx-ico" style="background:rgba(0,200,0,.10);">💚</div>
-                <div class="ph-tx-info">
-                  <div class="ph-tx-label">Loan Payment</div>
-                  <div class="ph-tx-date">Jun 28, 8:00 AM</div>
-                </div>
-                <div class="ph-tx-amt neg">-₱8,500</div>
-              </div>
-              <div class="ph-tx">
-                <div class="ph-tx-ico" style="background:rgba(255,140,0,.12);">🟠</div>
-                <div class="ph-tx-info">
-                  <div class="ph-tx-label">Disbursement</div>
-                  <div class="ph-tx-date">Jun 20, 2:30 PM</div>
-                </div>
-                <div class="ph-tx-amt pos">+₱125,000</div>
-              </div>
-            </div>
+        <!-- 0: BPI -->
+        <div class="n-slide s0">
+          <div class="slide-hd" style="background:#BD2025;">
+            <img src="{% static 'img/BPI Logo.svg' %}" alt="BPI" class="slide-logo-big">
+            <div class="slide-abbr">Bank of the Philippine Islands</div>
+          </div>
+          <div class="slide-bd">
+            <span class="slide-tag" style="background:rgba(189,32,37,.10);color:#BD2025;">Personal Loans</span>
+            <div class="slide-title">BPI Cuts Personal Loan Rate to 1.3% Monthly — Now the Lowest Among Major PH Banks</div>
+            <div class="slide-snip">BPI's new rate reduction puts it ahead of all major Philippine banks heading into Q3 2026, effective immediately.</div>
+            <div class="slide-ft"><span class="slide-date">June 27, 2026</span><span class="slide-more">Read More →</span></div>
           </div>
         </div>
+
+        <!-- 1: BDO -->
+        <div class="n-slide sp1">
+          <div class="slide-hd" style="background:#C8001C;">
+            <img src="{% static 'img/BDO Unibank Logo.svg' %}" alt="BDO" class="slide-logo-big">
+            <div class="slide-abbr">Banco de Oro Unibank</div>
+          </div>
+          <div class="slide-bd">
+            <span class="slide-tag" style="background:rgba(200,0,28,.10);color:#C8001C;">Digital Banking</span>
+            <div class="slide-title">BDO Launches Cardless QR ATM Withdrawal Nationwide — No Card Needed</div>
+            <div class="slide-snip">Over 4,500 BDO ATMs now support QR-code cash withdrawals via the BDO app, fully live nationwide.</div>
+            <div class="slide-ft"><span class="slide-date">June 25, 2026</span><span class="slide-more">Read More →</span></div>
+          </div>
+        </div>
+
+        <!-- 2: GCash -->
+        <div class="n-slide sp2">
+          <div class="slide-hd" style="background:#007DFF;">
+            <img src="{% static 'img/GCash_logo.svg' %}" alt="GCash" class="slide-logo-big">
+            <div class="slide-abbr">G-Xchange Inc. · Mynt</div>
+          </div>
+          <div class="slide-bd">
+            <span class="slide-tag" style="background:rgba(0,125,255,.10);color:#007DFF;">E-Wallet</span>
+            <div class="slide-title">GCash Hits 94 Million Registered Users — 3 in 5 Filipinos Now Digital</div>
+            <div class="slide-snip">GCash celebrates a historic milestone as the most-used digital financial service in the Philippines.</div>
+            <div class="slide-ft"><span class="slide-date">June 23, 2026</span><span class="slide-more">Read More →</span></div>
+          </div>
+        </div>
+
+        <!-- 3: Maya -->
+        <div class="n-slide shd">
+          <div class="slide-hd" style="background:#00875A;">
+            <img src="{% static 'img/Maya_logo.svg' %}" alt="Maya" class="slide-logo-big">
+            <div class="slide-abbr">Maya Bank Inc.</div>
+          </div>
+          <div class="slide-bd">
+            <span class="slide-tag" style="background:rgba(0,135,90,.10);color:#00875A;">Digital Bank</span>
+            <div class="slide-title">Maya Bank Raises Savings Rate to 10% Per Annum — Highest in the Philippines</div>
+            <div class="slide-snip">Maya Bank continues to disrupt traditional banking with industry-leading savings interest rates open to all Filipinos.</div>
+            <div class="slide-ft"><span class="slide-date">June 21, 2026</span><span class="slide-more">Read More →</span></div>
+          </div>
+        </div>
+
+        <!-- 4: UnionBank -->
+        <div class="n-slide shd">
+          <div class="slide-hd" style="background:#0033A0;">
+            <img src="{% static 'img/Unionbank_2018_logo.svg' %}" alt="UnionBank" class="slide-logo-big">
+            <div class="slide-abbr">Union Bank of the Philippines</div>
+          </div>
+          <div class="slide-bd">
+            <span class="slide-tag" style="background:rgba(0,51,160,.10);color:#0033A0;">Remittance</span>
+            <div class="slide-title">UnionBank Partners with Western Union for Free International OFW Remittance</div>
+            <div class="slide-snip">OFW families can now receive international remittances with zero service fees through all UnionBank channels.</div>
+            <div class="slide-ft"><span class="slide-date">June 19, 2026</span><span class="slide-more">Read More →</span></div>
+          </div>
+        </div>
+
+        <!-- 5: Metrobank -->
+        <div class="n-slide shd">
+          <div class="slide-hd" style="background:#003087;">
+            <img src="{% static 'img/Metropolitan_Bank_and_Trust_Company.svg' %}" alt="Metrobank" class="slide-logo-big">
+            <div class="slide-abbr">Metropolitan Bank &amp; Trust Co.</div>
+          </div>
+          <div class="slide-bd">
+            <span class="slide-tag" style="background:rgba(0,48,135,.10);color:#003087;">Awards</span>
+            <div class="slide-title">Metrobank Named Best Bank in the Philippines 2026 by The Banker Magazine</div>
+            <div class="slide-snip">The prestigious London-based award recognizes Metrobank's digital transformation and financial inclusion drive.</div>
+            <div class="slide-ft"><span class="slide-date">June 17, 2026</span><span class="slide-more">Read More →</span></div>
+          </div>
+        </div>
+
+
+        <!-- 7: Security Bank -->
+        <div class="n-slide shd">
+          <div class="slide-hd" style="background:#CC0000;">
+            <img src="{% static 'img/Security Bank Logo.svg' %}" alt="Security Bank" class="slide-logo-big">
+            <div class="slide-abbr">Security Bank Corporation</div>
+          </div>
+          <div class="slide-bd">
+            <span class="slide-tag" style="background:rgba(204,0,0,.10);color:#CC0000;">Credit Cards</span>
+            <div class="slide-title">Security Bank Permanently Waives Annual Fee on All Credit Cards Starting July 2026</div>
+            <div class="slide-snip">The move positions Security Bank as the first major Philippine lender to fully eliminate annual credit card fees.</div>
+            <div class="slide-ft"><span class="slide-date">June 13, 2026</span><span class="slide-more">Read More →</span></div>
+          </div>
+        </div>
+
+        <!-- 7: RCBC -->
+        <div class="n-slide shd">
+          <div class="slide-hd" style="background:#00468B;">
+            <img src="{% static 'img/RCBC_logo.svg' %}" alt="RCBC" class="slide-logo-big">
+            <div class="slide-abbr">Rizal Commercial Banking Corp.</div>
+          </div>
+          <div class="slide-bd">
+            <span class="slide-tag" style="background:rgba(0,70,139,.10);color:#00468B;">Financial Inclusion</span>
+            <div class="slide-title">RCBC DiskarTech Reaches 1 Million First-Time Banked Filipinos in 2026</div>
+            <div class="slide-snip">RCBC's masa-banking app crosses a landmark milestone, bringing formal financial services to underserved communities nationwide.</div>
+            <div class="slide-ft"><span class="slide-date">June 11, 2026</span><span class="slide-more">Read More →</span></div>
+          </div>
+        </div>
+
+
+        <!-- 10: GOtyme Bank -->
+        <div class="n-slide shd">
+          <div class="slide-hd" style="background:#00AA4F;">
+            <img src="{% static 'img/GoTyme_Bank_logo.svg' %}" alt="GOtyme Bank" class="slide-logo-big">
+            <div class="slide-abbr">GOtyme Bank Philippines</div>
+          </div>
+          <div class="slide-bd">
+            <span class="slide-tag" style="background:rgba(0,170,79,.10);color:#008A3E;">Digital Bank</span>
+            <div class="slide-title">GOtyme Bank Rolls Out Cardless Savings — Open Account in Under 60 Seconds</div>
+            <div class="slide-snip">The Robinsons-Tyme digital bank makes account opening faster than ever with no paperwork and instant virtual card issuance.</div>
+            <div class="slide-ft"><span class="slide-date">June 7, 2026</span><span class="slide-more">Read More →</span></div>
+          </div>
+        </div>
+
+        <!-- 9: CIMB Bank -->
+        <div class="n-slide shd">
+          <div class="slide-hd" style="background:#E30613;">
+            <img src="{% static 'img/CIMB_Group_Logo.svg' %}" alt="CIMB" class="slide-logo-big">
+            <div class="slide-abbr">CIMB Bank Philippines</div>
+          </div>
+          <div class="slide-bd">
+            <span class="slide-tag" style="background:rgba(227,6,19,.10);color:#E30613;">Savings</span>
+            <div class="slide-title">CIMB PH Raises Alto Digital Savings Rate to 8% p.a. — No Minimum Balance Required</div>
+            <div class="slide-snip">CIMB's digital savings product remains among the most competitive in the Philippine market for everyday savers.</div>
+            <div class="slide-ft"><span class="slide-date">June 5, 2026</span><span class="slide-more">Read More →</span></div>
+          </div>
+        </div>
+
+
+        <!-- 13: Chinabank -->
+        <div class="n-slide shd">
+          <div class="slide-hd" style="background:#B71C1C;">
+            <img src="{% static 'img/China Bank Logo.svg' %}" alt="Chinabank" class="slide-logo-big">
+            <div class="slide-abbr">China Banking Corporation</div>
+          </div>
+          <div class="slide-bd">
+            <span class="slide-tag" style="background:rgba(183,28,28,.10);color:#B71C1C;">Digital Banking</span>
+            <div class="slide-title">Chinabank Savings Launches Full-Feature Mobile App — Transfers, Bills &amp; QR Pay</div>
+            <div class="slide-snip">China Banking Corporation's digital arm rolls out a unified mobile banking experience for retail and OFW clients nationwide.</div>
+            <div class="slide-ft"><span class="slide-date">June 1, 2026</span><span class="slide-more">Read More →</span></div>
+          </div>
+        </div>
+
+        <!-- 14: PNB -->
+        <div class="n-slide shd">
+          <div class="slide-hd" style="background:#002060;">
+            <img src="{% static 'img/Philippine National Bank Logo (1).svg' %}" alt="PNB" class="slide-logo-big">
+            <div class="slide-abbr">Philippine National Bank</div>
+          </div>
+          <div class="slide-bd">
+            <span class="slide-tag" style="background:rgba(0,32,96,.10);color:#002060;">OFW Banking</span>
+            <div class="slide-title">PNB Expands OFW Priority Banking to 14 New Overseas Branches Across Asia &amp; Europe</div>
+            <div class="slide-snip">Philippine National Bank now serves OFW clients directly at priority counters in Saudi, UAE, Qatar, Kuwait, and the UK.</div>
+            <div class="slide-ft"><span class="slide-date">May 30, 2026</span><span class="slide-more">Read More →</span></div>
+          </div>
+        </div>
+
+        <!-- 12: EastWest Bank -->
+        <div class="n-slide sm2">
+          <div class="slide-hd" style="background:#5A1A82;">
+            <img src="{% static 'img/EastWest_Bank_2011_h-pos_logo.svg' %}" alt="EastWest Bank" class="slide-logo-big">
+            <div class="slide-abbr">EastWest Bank</div>
+          </div>
+          <div class="slide-bd">
+            <span class="slide-tag" style="background:rgba(90,26,130,.10);color:#5A1A82;">Personal Loans</span>
+            <div class="slide-title">EastWest Bank Intro Rate at 0.88% Monthly — Most Aggressive Offer in H1 2026</div>
+            <div class="slide-snip">EastWest's introductory personal loan rate for first-time borrowers is the lowest among all Philippine consumer lenders.</div>
+            <div class="slide-ft"><span class="slide-date">May 28, 2026</span><span class="slide-more">Read More →</span></div>
+          </div>
+        </div>
+
+        <!-- 13: RobinsonsBank -->
+        <div class="n-slide sm1">
+          <div class="slide-hd" style="background:#E31837;">
+            <img src="{% static 'img/Robinsons_Bank_logo.svg' %}" alt="RobinsonsBank" class="slide-logo-big">
+            <div class="slide-abbr">Robinsons Bank · Merged with BPI</div>
+          </div>
+          <div class="slide-bd">
+            <span class="slide-tag" style="background:rgba(227,24,55,.10);color:#E31837;">Merger Update</span>
+            <div class="slide-title">RobinsonsBank–BPI Merger Fully Complete — 1,800+ Combined Branches Nationwide</div>
+            <div class="slide-snip">All former RobinsonsBank accounts are now seamlessly accessible through BPI's network — no action required from clients.</div>
+            <div class="slide-ft"><span class="slide-date">May 26, 2026</span><span class="slide-more">Read More →</span></div>
+          </div>
+        </div>
+
+
+      </div><!-- /carousel-stage -->
+    </div><!-- /carousel-scene -->
+
+    <div class="c-dots">
+      <button class="c-dot on"></button>
+      <button class="c-dot"></button>
+      <button class="c-dot"></button>
+      <button class="c-dot"></button>
+      <button class="c-dot"></button>
+      <button class="c-dot"></button>
+      <button class="c-dot"></button>
+      <button class="c-dot"></button>
+      <button class="c-dot"></button>
+      <button class="c-dot"></button>
+      <button class="c-dot"></button>
+      <button class="c-dot"></button>
+      <button class="c-dot"></button>
+      <button class="c-dot"></button>
+    </div>
+
+  </div><!-- /hero-inner -->
+</section>
+
+<!-- STATS BAND -->
+<div class="stats-band">
+  <div class="stats-band-inner">
+    <div class="sb-item"><div class="sb-num">50K<em>+</em></div><div class="sb-lbl">Borrowers Served</div></div>
+    <div class="sb-item"><div class="sb-num">₱8.2<em>B</em></div><div class="sb-lbl">Total Disbursed</div></div>
+    <div class="sb-item"><div class="sb-num">98<em>%</em></div><div class="sb-lbl">Approval Rate</div></div>
+    <div class="sb-item"><div class="sb-num">20<em>+</em></div><div class="sb-lbl">Years of Service</div></div>
+  </div>
+</div>
+
+<!-- OFW COUNTRIES -->
+<div class="ofw-strip">
+  <div class="ofw-strip-in">
+    <span class="ofw-lbl">Serving OFWs in</span>
+    <span class="ofw-div"></span>
+    <div class="ofw-flags">
+      <span class="ofw-flag">🇸🇦 Saudi Arabia</span>
+      <span class="ofw-flag">🇦🇪 UAE</span>
+      <span class="ofw-flag">🇶🇦 Qatar</span>
+      <span class="ofw-flag">🇭🇰 Hong Kong</span>
+      <span class="ofw-flag">🇸🇬 Singapore</span>
+      <span class="ofw-flag">🇯🇵 Japan</span>
+      <span class="ofw-flag">🇺🇸 USA</span>
+      <span class="ofw-flag">🇬🇧 UK</span>
+      <span class="ofw-flag">🇦🇺 Australia</span>
+      <span class="ofw-flag" style="background:rgba(255,140,0,.15);border-color:rgba(255,140,0,.30);color:var(--orlt);">+130 countries</span>
+    </div>
+  </div>
+</div>
+
+<!-- PARTNERS -->
+<section class="partners">
+  <div class="partners-lbl">Trusted Partners — Philippine Banks &amp; E-Wallets</div>
+  <div class="p-track-wrap">
+    <div class="p-track">
+      <div class="p-logo"><img src="{% static 'img/GCash_logo.svg' %}" alt="GCash" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/Maya_logo.svg' %}" alt="Maya" class="p-img"></div>
+      <div class="p-logo"><span class="p-dot" style="background:#EE4D2D"></span><span class="p-name" style="color:#EE4D2D">ShopeePay</span></div>
+      <div class="p-logo"><span class="p-dot" style="background:#0052CC"></span><span class="p-name" style="color:#0052CC">Coins.ph</span></div>
+      <div class="p-logo"><img src="{% static 'img/BDO Unibank Logo.svg' %}" alt="BDO" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/BPI Logo.svg' %}" alt="BPI" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/Metropolitan_Bank_and_Trust_Company.svg' %}" alt="Metrobank" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/Unionbank_2018_logo.svg' %}" alt="UnionBank" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/RCBC_logo.svg' %}" alt="RCBC" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/Security Bank Logo.svg' %}" alt="Security Bank" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/Philippine National Bank Logo (1).svg' %}" alt="PNB" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/GoTyme_Bank_logo.svg' %}" alt="GOtyme" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/CIMB_Group_Logo.svg' %}" alt="CIMB" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/China Bank Logo.svg' %}" alt="Chinabank" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/EastWest_Bank_2011_h-pos_logo.svg' %}" alt="EastWest" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/Robinsons_Bank_logo.svg' %}" alt="RobinsonsBank" class="p-img"></div>
+      <!-- Duplicate for loop -->
+      <div class="p-logo"><img src="{% static 'img/GCash_logo.svg' %}" alt="GCash" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/Maya_logo.svg' %}" alt="Maya" class="p-img"></div>
+      <div class="p-logo"><span class="p-dot" style="background:#EE4D2D"></span><span class="p-name" style="color:#EE4D2D">ShopeePay</span></div>
+      <div class="p-logo"><span class="p-dot" style="background:#0052CC"></span><span class="p-name" style="color:#0052CC">Coins.ph</span></div>
+      <div class="p-logo"><img src="{% static 'img/BDO Unibank Logo.svg' %}" alt="BDO" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/BPI Logo.svg' %}" alt="BPI" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/Metropolitan_Bank_and_Trust_Company.svg' %}" alt="Metrobank" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/Unionbank_2018_logo.svg' %}" alt="UnionBank" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/RCBC_logo.svg' %}" alt="RCBC" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/Security Bank Logo.svg' %}" alt="Security Bank" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/Philippine National Bank Logo (1).svg' %}" alt="PNB" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/GoTyme_Bank_logo.svg' %}" alt="GOtyme" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/CIMB_Group_Logo.svg' %}" alt="CIMB" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/China Bank Logo.svg' %}" alt="Chinabank" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/EastWest_Bank_2011_h-pos_logo.svg' %}" alt="EastWest" class="p-img"></div>
+      <div class="p-logo"><img src="{% static 'img/Robinsons_Bank_logo.svg' %}" alt="RobinsonsBank" class="p-img"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="features-inner">
+    <div class="sec-center">
+      <span class="sec-tag">About Us</span>
+      <h2 class="sec-h2">Built for <em>Every Filipino</em></h2>
+      <p class="sec-sub">A BSP-licensed platform combining modern fintech with deep understanding of the Filipino financial landscape — for every OFW, every family, every province.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-ico" style="background:rgba(10,36,99,.09);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0A2463" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L4 5.5v5.8C4 16.3 7.6 20.7 12 22c4.4-1.3 8-5.7 8-10.7V5.5z" fill="rgba(10,36,99,.14)"/><polyline points="8.5 12.2 11 14.8 15.5 10" stroke-width="2.2"/></svg>
+        </div>
+        <div class="feat-title">BSP-Licensed &amp; Secure</div>
+        <div class="feat-desc">Fully regulated by the Bangko Sentral ng Pilipinas. Bank-grade encryption on every transaction.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ico" style="background:rgba(255,140,0,.11);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FF8C00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z" fill="rgba(255,140,0,.14)"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div class="feat-title">Apply from Anywhere</div>
+        <div class="feat-desc">100% online — apply from any country, any device, any time. No branch visit required.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ico" style="background:rgba(34,197,94,.11);">
+          <svg viewBox="0 0 24 24" fill="rgba(22,163,74,.2)" stroke="#16a34a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        </div>
+        <div class="feat-title">Same-Day Funding</div>
+        <div class="feat-desc">Approved loans disbursed within hours to your GCash, Maya, or bank account.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-ico" style="background:rgba(139,92,246,.11);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3z" fill="rgba(124,58,237,.14)"/><path d="M3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" fill="rgba(124,58,237,.14)"/></svg>
+        </div>
+        <div class="feat-title">24/7 Filipino Support</div>
+        <div class="feat-desc">Dedicated bilingual support team — always ready for you, wherever you are in the world.</div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ─── PARTNERS / BANKS & WALLETS ─── -->
-<section class="partners" id="partners">
-  <div class="partners-label">Trusted Partners — Philippine Banks &amp; E-Wallets</div>
-  <div class="partners-track-wrap">
-    <div class="partners-track">
-      <!-- E-Wallets -->
-      <div class="partner-logo"><span class="partner-dot" style="background:#007DFF"></span><span class="partner-name" style="color:#007DFF">GCash</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#00C800"></span><span class="partner-name" style="color:#007350">Maya</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#EE4D2D"></span><span class="partner-name" style="color:#EE4D2D">ShopeePay</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#00B14F"></span><span class="partner-name" style="color:#00B14F">GrabPay</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#0066FF"></span><span class="partner-name" style="color:#0052CC">Coins.ph</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#E8001C"></span><span class="partner-name" style="color:#B00015">PayMongo</span></div>
-      <!-- Banks -->
-      <div class="partner-logo"><span class="partner-dot" style="background:#E8001C"></span><span class="partner-name" style="color:#B00015">BDO</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#BD2025"></span><span class="partner-name" style="color:#8B0000">BPI</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#003087"></span><span class="partner-name" style="color:#003087">Metrobank</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#0033A0"></span><span class="partner-name" style="color:#0033A0">UnionBank</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#006633"></span><span class="partner-name" style="color:#006633">Landbank</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#003087"></span><span class="partner-name" style="color:#003087">RCBC</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#CC0000"></span><span class="partner-name" style="color:#CC0000">Security Bank</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#002060"></span><span class="partner-name" style="color:#002060">PNB</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#006699"></span><span class="partner-name" style="color:#006699">EastWest</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#FF6600"></span><span class="partner-name" style="color:#CC4400">Chinabank</span></div>
-      <!-- Duplicate for seamless loop -->
-      <div class="partner-logo"><span class="partner-dot" style="background:#007DFF"></span><span class="partner-name" style="color:#007DFF">GCash</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#00C800"></span><span class="partner-name" style="color:#007350">Maya</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#EE4D2D"></span><span class="partner-name" style="color:#EE4D2D">ShopeePay</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#00B14F"></span><span class="partner-name" style="color:#00B14F">GrabPay</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#0066FF"></span><span class="partner-name" style="color:#0052CC">Coins.ph</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#E8001C"></span><span class="partner-name" style="color:#B00015">PayMongo</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#E8001C"></span><span class="partner-name" style="color:#B00015">BDO</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#BD2025"></span><span class="partner-name" style="color:#8B0000">BPI</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#003087"></span><span class="partner-name" style="color:#003087">Metrobank</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#0033A0"></span><span class="partner-name" style="color:#0033A0">UnionBank</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#006633"></span><span class="partner-name" style="color:#006633">Landbank</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#003087"></span><span class="partner-name" style="color:#003087">RCBC</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#CC0000"></span><span class="partner-name" style="color:#CC0000">Security Bank</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#002060"></span><span class="partner-name" style="color:#002060">PNB</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#006699"></span><span class="partner-name" style="color:#006699">EastWest</span></div>
-      <div class="partner-logo"><span class="partner-dot" style="background:#FF6600"></span><span class="partner-name" style="color:#CC4400">Chinabank</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── ABOUT / FEATURES ─── -->
-<section class="about" id="about" style="padding-top:90px;padding-bottom:90px;">
-  <!-- Left: text + feat cards -->
-  <div>
-    <span class="about-tag">About Us</span>
-    <h2 class="about-h2">Building the Future of<br><span>Filipino Digital</span> Finance</h2>
-    <p class="about-p">
-      We are a BSP-licensed digital lending platform that combines modern technology with deep understanding of the Filipino financial landscape. From OFWs abroad to families back home — we make loans simple, fast, and fair.
-    </p>
-    <div class="about-feats">
-      <div class="af-card">
-        <div class="af-ico navy">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#0A2463" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
-        <div class="af-title">Secure &amp; BSP-Licensed</div>
-        <div class="af-sub">Fully regulated, bank-grade encryption on every transaction.</div>
-      </div>
-      <div class="af-card">
-        <div class="af-ico orange">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#FF8C00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-        </div>
-        <div class="af-title">Apply from Anywhere</div>
-        <div class="af-sub">100% online — apply from any country, any device, any time.</div>
-      </div>
-      <div class="af-card">
-        <div class="af-ico green">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        </div>
-        <div class="af-title">Same-Day Funding</div>
-        <div class="af-sub">Approved loans disbursed within hours directly to your account.</div>
-      </div>
-      <div class="af-card">
-        <div class="af-ico violet">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </div>
-        <div class="af-title">24/7 Filipino Support</div>
-        <div class="af-sub">Dedicated team speaking Tagalog, Bisaya, and English always ready.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Right: phone mockup -->
-  <div class="about-mockup">
-    <div class="about-phone">
-      <div class="about-screen">
-        <div class="as-header">
-          <div class="as-title">Loan Overview</div>
-          <div class="as-badge">Active</div>
-        </div>
-        <div class="as-card">
-          <div class="as-card-lbl">Outstanding Balance</div>
-          <div class="as-card-amt">₱125,000</div>
-          <div class="as-card-sub">36-month term · 0.5% p.a.</div>
-          <div class="as-prog">
-            <div class="as-prog-bar"><div class="as-prog-fill"></div></div>
-            <div class="as-prog-lbl"><span>₱78,000 paid</span><span>₱47,000 left</span></div>
-          </div>
-        </div>
-        <div class="as-list">
-          <div class="as-item">
-            <div class="as-dot-wrap" style="background:rgba(255,140,0,.12);">💰</div>
-            <div class="as-item-name">June Payment</div>
-            <div class="as-item-amt neg">-₱8,500</div>
-          </div>
-          <div class="as-item">
-            <div class="as-dot-wrap" style="background:rgba(34,197,94,.12);">✅</div>
-            <div class="as-item-name">May Payment</div>
-            <div class="as-item-amt pos">Paid</div>
-          </div>
-          <div class="as-item">
-            <div class="as-dot-wrap" style="background:rgba(34,197,94,.12);">✅</div>
-            <div class="as-item-name">Apr Payment</div>
-            <div class="as-item-amt pos">Paid</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="about-float">
-      <div class="ab-fl-lbl">Credit Score</div>
-      <div class="ab-fl-val">820</div>
-      <div class="ab-fl-sub">↑ Excellent</div>
-    </div>
-  </div>
-</section>
-
-<!-- ─── WHY TRUST US ─── -->
+<!-- TRUST -->
 <section class="trust" id="why">
   <div class="trust-inner">
-    <span class="trust-tag">Why Choose Us</span>
-    <h2 class="trust-h2">Why Millions of Filipinos<br><span>Trust Us</span> for Their Loans</h2>
-    <p class="trust-sub">We have been serving OFWs and their families with integrity since 2006. Our numbers speak for themselves.</p>
-
-    <div class="trust-stats">
-      <div class="ts-item">
-        <div class="ts-num">50K<span class="acc">+</span></div>
-        <div class="ts-lbl">Borrowers Served</div>
-      </div>
-      <div class="ts-item">
-        <div class="ts-num">₱8.2<span class="acc">B</span></div>
-        <div class="ts-lbl">Total Disbursed</div>
-      </div>
-      <div class="ts-item">
-        <div class="ts-num">98<span class="acc">%</span></div>
-        <div class="ts-lbl">Approval Rate</div>
-      </div>
-      <div class="ts-item">
-        <div class="ts-num">20<span class="acc">+</span></div>
-        <div class="ts-lbl">Years of Service</div>
-      </div>
-    </div>
-
+    <span class="trust-tag">Why Us</span>
+    <h2 class="trust-h2">Why Millions of Filipinos<br><em>Trust Us</em> for Their Loans</h2>
+    <p class="trust-sub">Serving OFWs and their families with integrity since 2006. From Luzon to Mindanao — and across the world.</p>
     <div class="trust-cards">
-      <div class="tc-card">
-        <div class="tc-ico">
-          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        </div>
-        <div class="tc-title">BSP Regulated</div>
-        <div class="tc-desc">Fully licensed under the Bangko Sentral ng Pilipinas framework. Your money and data are protected by law.</div>
-      </div>
-      <div class="tc-card">
-        <div class="tc-ico">
-          <svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-        </div>
-        <div class="tc-title">Instant Processing</div>
-        <div class="tc-desc">AI-powered credit scoring gives you an answer in minutes — not days. Apply at midnight, get funded by morning.</div>
-      </div>
-      <div class="tc-card">
-        <div class="tc-ico">
-          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4" fill="none" stroke-width="2.5"/></svg>
-        </div>
-        <div class="tc-title">Zero Hidden Fees</div>
-        <div class="tc-desc">Transparent rates from 0.5% p.a. What you see is exactly what you pay — no surprises, ever.</div>
-      </div>
+      <div class="tc"><div class="tc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L4 5.5v5.8C4 16.3 7.6 20.7 12 22c4.4-1.3 8-5.7 8-10.7V5.5z"/><rect x="9.5" y="11" width="5" height="4.5" rx=".8"/><path d="M10.2 11V9.5a1.8 1.8 0 0 1 3.6 0V11"/></svg></div><div class="tc-title">BSP Regulated</div><div class="tc-desc">Fully licensed under the Bangko Sentral ng Pilipinas framework. Your money and data are protected by law.</div></div>
+      <div class="tc"><div class="tc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div class="tc-title">Instant Processing</div><div class="tc-desc">AI-powered credit scoring gives you an answer in minutes — not days. Apply at midnight, funded by morning.</div></div>
+      <div class="tc"><div class="tc-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><polyline points="9 12 11 14 15 10"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></div><div class="tc-title">Zero Hidden Fees</div><div class="tc-desc">Transparent rates from 0.5% p.a. What you see is exactly what you pay — no hidden charges, ever.</div></div>
     </div>
   </div>
 </section>
 
-<!-- ─── LOAN PRODUCTS ─── -->
+<!-- PRODUCTS -->
 <section class="products" id="products">
   <div class="products-inner">
-    <div class="section-head">
-      <span class="sec-tag">Our Products</span>
-      <h2 class="sec-h2">Loan Products for <span>Every Filipino</span></h2>
-      <p class="sec-sub">From personal needs to business growth — we have the right loan with the terms that work for your life.</p>
+    <div class="sec-center">
+      <span class="sec-tag">Aming Produkto</span>
+      <h2 class="sec-h2">Loan Products for <em>Every Filipino</em></h2>
+      <p class="sec-sub">From personal needs to business growth — we have the right loan with terms that fit your life.</p>
     </div>
     <div class="prod-grid">
       <a href="/register/" class="prod-card">
-        <div class="prod-ico orange">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#FF8C00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <div class="prod-ico" style="background:linear-gradient(135deg,rgba(255,140,0,.13),rgba(255,140,0,.05));border:1px solid rgba(255,140,0,.24);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FF8C00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V8a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2"/><path d="M17 12h-8a2 2 0 1 0 0 4h8v-4z" fill="rgba(255,140,0,.14)"/></svg>
         </div>
         <div class="prod-title">Personal Loan</div>
         <div class="prod-desc">Medical, travel, daily needs — no collateral required. Fast cash when you need it most.</div>
-        <div class="prod-rate">
-          <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-          From 0.5% p.a. · Up to ₱5M
-        </div>
+        <div class="prod-rate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>From 0.5% p.a. · Up to ₱5M</div>
       </a>
       <a href="/register/" class="prod-card">
-        <div class="prod-ico navy">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#0A2463" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        <div class="prod-ico" style="background:linear-gradient(135deg,rgba(10,36,99,.12),rgba(10,36,99,.05));border:1px solid rgba(10,36,99,.14);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#0A2463" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21 4 21 4s-2 0-3.5 1.5L14 9 5.8 7.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 3.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
         </div>
         <div class="prod-title">OFW Reintegration</div>
-        <div class="prod-desc">Coming home? Special programs designed for returning workers starting fresh in the Philippines.</div>
-        <div class="prod-rate">
-          <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-          Special OFW Rates · Flexible Terms
-        </div>
+        <div class="prod-desc">Coming home? Special programs for returning OFWs starting fresh in the Philippines.</div>
+        <div class="prod-rate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Special OFW Rates · Flexible Terms</div>
       </a>
       <a href="/register/" class="prod-card">
-        <div class="prod-ico green">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l8-4v18"/><path d="M19 21V11l-6-4"/></svg>
+        <div class="prod-ico" style="background:linear-gradient(135deg,rgba(34,197,94,.13),rgba(34,197,94,.05));border:1px solid rgba(34,197,94,.24);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
         </div>
         <div class="prod-title">Business Loan</div>
-        <div class="prod-desc">Expand operations, buy equipment, or fund your next big idea with our flexible business financing.</div>
-        <div class="prod-rate">
-          <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-          Up to ₱5M · 36-month term
-        </div>
+        <div class="prod-desc">Expand operations, buy equipment, or fund your next big idea with flexible financing.</div>
+        <div class="prod-rate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Up to ₱5M · 36-month term</div>
       </a>
       <a href="/register/" class="prod-card">
-        <div class="prod-ico violet">
+        <div class="prod-ico" style="background:linear-gradient(135deg,rgba(139,92,246,.13),rgba(139,92,246,.05));border:1px solid rgba(139,92,246,.24);">
           <svg viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
         </div>
         <div class="prod-title">Education Loan</div>
-        <div class="prod-desc">Invest in your future — tuition, certifications, abroad studies. Education is the best loan you can take.</div>
-        <div class="prod-rate">
-          <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-          Low rates · Grace period available
-        </div>
+        <div class="prod-desc">Tuition, certifications, abroad studies — education is the best investment you can make.</div>
+        <div class="prod-rate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Low rates · Grace period available</div>
       </a>
     </div>
   </div>
 </section>
 
-<!-- ─── HOW IT WORKS ─── -->
+<!-- HOW IT WORKS -->
 <section class="how" id="how">
   <div class="how-inner">
-    <div class="section-head">
-      <span class="sec-tag">Simple Process</span>
-      <h2 class="sec-h2">Apply in <span>4 Easy Steps</span></h2>
-      <p class="sec-sub">From application to funding — the entire process takes less than 24 hours, fully online.</p>
+    <div class="sec-center">
+      <span class="sec-tag">How to Apply</span>
+      <h2 class="sec-h2">Apply in <em>4 Easy Steps</em></h2>
+      <p class="sec-sub">From application to funding — less than 24 hours, 100% online. Wherever you are in the world.</p>
     </div>
     <div class="how-steps">
-      <div class="how-step">
-        <div class="how-num">1</div>
-        <div class="how-step-title">Register</div>
-        <div class="how-step-desc">Create your account in minutes with just your email and mobile number.</div>
-      </div>
-      <div class="how-step">
-        <div class="how-num">2</div>
-        <div class="how-step-title">Submit Docs</div>
-        <div class="how-step-desc">Upload your ID and employment documents — all done from your phone camera.</div>
-      </div>
-      <div class="how-step">
-        <div class="how-num">3</div>
-        <div class="how-step-title">Get Approved</div>
-        <div class="how-step-desc">Our team reviews your application and gives you a decision within hours.</div>
-      </div>
-      <div class="how-step">
-        <div class="how-num">4</div>
-        <div class="how-step-title">Receive Funds</div>
-        <div class="how-step-desc">Loan credited directly to your GCash, Maya, or bank account. Done!</div>
-      </div>
+      <div class="how-step"><div class="how-num">1</div><div class="how-step-title">Register</div><div class="how-step-desc">Create your account in minutes with your email and mobile number.</div></div>
+      <div class="how-step"><div class="how-num">2</div><div class="how-step-title">Submit Docs</div><div class="how-step-desc">Upload your ID and employment docs from your phone camera.</div></div>
+      <div class="how-step"><div class="how-num">3</div><div class="how-step-title">Get Approved</div><div class="how-step-desc">Our team gives you a loan decision within hours.</div></div>
+      <div class="how-step"><div class="how-num">4</div><div class="how-step-title">Receive Funds</div><div class="how-step-desc">Loan credited to your GCash, Maya, or bank account. You're all set!</div></div>
     </div>
   </div>
 </section>
 
-<!-- ─── CTA BANNER ─── -->
-<section class="cta-banner" id="contact">
-  <div class="cta-inner">
-    <span class="sec-tag">Join 50,000+ Filipinos</span>
-    <h2 class="cta-h2">Ready to Get Your <span>Loan Today?</span></h2>
-    <p class="cta-sub">Register now and get a decision in minutes. No branch visit, no paperwork queues — just fast, fair financing built for Filipinos.</p>
-    <div class="cta-btns">
-      <a href="/register/" class="cta-btn-primary">Start Application</a>
-      <a href="/login/" class="cta-btn-outline">Sign In</a>
+<!-- NEWS / BALITA -->
+<section class="news" id="news">
+  <div class="news-inner">
+    <div class="sec-center">
+      <span class="sec-tag" style="background:rgba(10,36,99,.07);color:var(--navy);border-color:rgba(10,36,99,.18);">Balita · Latest News</span>
+      <h2 class="sec-h2">Financial News &amp; <em>OFW Updates</em></h2>
+      <p class="sec-sub">BSP advisories, remittance trends, and financial literacy resources — curated for Filipinos worldwide.</p>
     </div>
+    <div class="news-grid">
+      <a href="#" class="news-feat">
+        <div class="news-feat-img">
+          <div class="news-feat-img-inner">
+            <span class="ncat nc-bsp">BSP Advisory</span>
+            <div class="news-feat-headline-bg">BSP Raises Remittance Cap for OFWs — New 2026 Guidelines Explained</div>
+          </div>
+        </div>
+        <div class="news-feat-body">
+          <div class="news-meta"><span class="news-dt">June 27, 2026</span><span class="news-sep">·</span><span class="news-rt">6 min read</span></div>
+          <div class="news-feat-title">Bangko Sentral Eases Dollar-to-Peso Transfer Rules: What Every OFW Must Know</div>
+          <div class="news-feat-excerpt">BSP Circular No. 1198 raises the remittance cap and simplifies cross-border peso transfers, reducing documentary requirements and fees for remittances below $5,000 — directly benefiting millions of OFWs in the Middle East, Asia-Pacific, and North America. Key changes take effect July 1, 2026.</div>
+          <span class="news-cta">Read Full Article <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+        </div>
+      </a>
+      <div class="news-side">
+        <a href="#" class="news-card c-ofw">
+          <div class="news-card-row"><span class="ncat nc-ofw">OFW News</span><span class="news-card-meta">June 26, 2026</span></div>
+          <div class="news-card-title">OWWA Announces Free Life Insurance for All Active OFWs Starting July 2026</div>
+          <div class="news-card-meta">4 min read · Overseas Workers Welfare Administration</div>
+        </a>
+        <a href="#" class="news-card c-mkt">
+          <div class="news-card-row"><span class="ncat nc-mkt">Market Watch</span><span class="news-card-meta">June 25, 2026</span></div>
+          <div class="news-card-title">Peso Strengthens to ₱54/$1 — What It Means for Your OFW Remittances</div>
+          <div class="news-card-meta">3 min read · PSE / BSP Exchange Data</div>
+        </a>
+        <a href="#" class="news-card c-bsp">
+          <div class="news-card-row"><span class="ncat nc-bsp">Partnership</span><span class="news-card-meta">June 24, 2026</span></div>
+          <div class="news-card-title">GCash and Maya Now Integrated with OFL for Instant Same-Day Loan Disbursement</div>
+          <div class="news-card-meta">3 min read · OFL Partnership Update</div>
+        </a>
+        <a href="#" class="news-card c-reg">
+          <div class="news-card-row"><span class="ncat nc-reg">Regulatory</span><span class="news-card-meta">June 22, 2026</span></div>
+          <div class="news-card-title">SEC Issues New Guidelines Protecting All Filipino Borrowers from Predatory Lending</div>
+          <div class="news-card-meta">5 min read · Securities &amp; Exchange Commission</div>
+        </a>
+      </div>
+    </div>
+    <div class="news-row">
+      <a href="#" class="news-sm">
+        <div class="news-sm-img nsm-bg1"><div class="nsm-img-cat"><span class="ncat nc-tip">Financial Tips</span></div></div>
+        <div class="nsm-body">
+          <div class="nsm-title">5 Smart Ways to Invest Your OFW Remittance for Long-Term Financial Freedom</div>
+          <div class="nsm-excerpt">From MP2 savings to real estate — how returning OFWs can make their hard-earned money grow back home.</div>
+          <div class="nsm-foot"><span class="nsm-date">June 21, 2026</span><span class="nsm-rt">7 min read</span></div>
+        </div>
+      </a>
+      <a href="#" class="news-sm">
+        <div class="news-sm-img nsm-bg2"><div class="nsm-img-cat"><span class="ncat nc-tip">Financial Literacy</span></div></div>
+        <div class="nsm-body">
+          <div class="nsm-title">Ano ang Credit Score? A Simple Guide for First-Time Filipino Borrowers</div>
+          <div class="nsm-excerpt">Understanding your credit profile in plain Filipino — and how to build a score that opens better loan rates.</div>
+          <div class="nsm-foot"><span class="nsm-date">June 19, 2026</span><span class="nsm-rt">5 min read</span></div>
+        </div>
+      </a>
+      <a href="#" class="news-sm">
+        <div class="news-sm-img nsm-bg3"><div class="nsm-img-cat"><span class="ncat nc-mkt">Market Watch</span></div></div>
+        <div class="nsm-body">
+          <div class="nsm-title">PH Digital Lending Grows 42% in Q1 2026 — OFW Loans Lead the Surge</div>
+          <div class="nsm-excerpt">BSP data shows explosive growth in mobile-first lending, with OFW-backed loans at 38% of all digital disbursements.</div>
+          <div class="nsm-foot"><span class="nsm-date">June 17, 2026</span><span class="nsm-rt">4 min read</span></div>
+        </div>
+      </a>
+    </div>
+    <a href="#" class="news-viewall">View All News &amp; Updates <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
   </div>
 </section>
 
-<!-- ─── FOOTER ─── -->
+
+<!-- FOOTER -->
 <footer class="footer">
-  <div class="footer-inner">
-    <div class="ft-brand">
-      <span class="nav-name">OverseasFilipino<span>Loan</span></span>
-      <p class="ft-about">A BSP-licensed digital lending platform serving Overseas Filipinos and their families with transparent, fast, and fair loan products since 2006.</p>
+  <div class="footer-in">
+    <div>
+      <span class="ft-brand-name">OverseasFilipino<em>Loan</em></span>
+      <p class="ft-about">A BSP-licensed digital lending platform serving Overseas Filipinos and their families with transparent, fast, and fair loan products since 2006. Rooted in the spirit of bayanihan.</p>
+      <span class="ft-motto">🇵🇭 For Every Filipino · Trusted Since 2006</span>
     </div>
     <div class="ft-col">
       <h5>Products</h5>
@@ -1214,34 +937,95 @@ body,body * { font-family:inherit!important; box-sizing:border-box; }
     <div class="ft-col">
       <h5>Company</h5>
       <ul>
-        <li><a href="#about">About Us</a></li>
+        <li><a href="#features">About Us</a></li>
         <li><a href="#why">Why Us</a></li>
+        <li><a href="#news">Balita / News</a></li>
         <li><a href="#how">How it Works</a></li>
-        <li><a href="#">Careers</a></li>
-      </ul>
-    </div>
-    <div class="ft-col">
-      <h5>Contact</h5>
-      <ul>
-        <li class="ft-contact">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          (+632) 8-405-0000
-        </li>
-        <li class="ft-contact">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          customer.care@ofl.ph
-        </li>
-        <li class="ft-contact">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          Manila, Philippines
-        </li>
       </ul>
     </div>
   </div>
-  <div class="footer-bottom">
+  <div class="footer-bot">
     <div>© 2026 Overseas FilipinoLoan · BSP-Licensed · All rights reserved</div>
-    <div>Para sa Bawat Pilipino · Trusted Since 2006</div>
   </div>
 </footer>
+
+<script>
+(function(){
+  var slides = document.querySelectorAll('.n-slide');
+  var dots   = document.querySelectorAll('.c-dot');
+  var total  = slides.length;
+  var cur    = 0;
+
+  function relPos(idx){
+    var d = ((idx - cur) % total + total) % total;
+    if(d > total / 2) d -= total;
+    return d;
+  }
+
+  function cls(d){
+    if(d === 0)  return 's0';
+    if(d === -1) return 'sm1';
+    if(d === 1)  return 'sp1';
+    if(d === -2) return 'sm2';
+    if(d === 2)  return 'sp2';
+    return 'shd';
+  }
+
+  function update(){
+    slides.forEach(function(s, i){
+      s.className = 'n-slide ' + cls(relPos(i));
+    });
+    dots.forEach(function(d, i){
+      d.classList.toggle('on', i === cur);
+    });
+  }
+
+  function advance(){
+    cur = (cur + 1) % total;
+    update();
+  }
+
+  update();
+  var timer = setInterval(advance, 3600);
+
+  slides.forEach(function(s){
+    s.addEventListener('click', function(){
+      clearInterval(timer);
+      cur = (cur + 1) % total;
+      update();
+      timer = setInterval(advance, 3600);
+    });
+  });
+
+  dots.forEach(function(d, i){
+    d.addEventListener('click', function(){
+      clearInterval(timer);
+      cur = i;
+      update();
+      timer = setInterval(advance, 3600);
+    });
+  });
+
+  // Touch swipe
+  var scene = document.querySelector('.carousel-scene');
+  var tx0 = 0;
+  scene.addEventListener('touchstart', function(e){ tx0 = e.touches[0].clientX; }, {passive:true});
+  scene.addEventListener('touchend', function(e){
+    var dx = e.changedTouches[0].clientX - tx0;
+    if(Math.abs(dx) > 40){
+      clearInterval(timer);
+      cur = dx < 0 ? (cur+1)%total : (cur-1+total)%total;
+      update();
+      timer = setInterval(advance, 3600);
+    }
+  });
+
+  // Keyboard
+  document.addEventListener('keydown', function(e){
+    if(e.key==='ArrowRight'){ clearInterval(timer); cur=(cur+1)%total; update(); timer=setInterval(advance,3600); }
+    if(e.key==='ArrowLeft'){  clearInterval(timer); cur=(cur-1+total)%total; update(); timer=setInterval(advance,3600); }
+  });
+})();
+</script>
 
 {% endblock %}

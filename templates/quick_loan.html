@@ -1,570 +1,780 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Quick Loan - Overseas FilipinoLoan{% endblock %}
 
 {% block content %}
 <style>
-/* ===== Overseas FilipinoLoan Quick Loan — Filipino Flag Style ===== */
-
+/* ===================================================
+   OFL Quick Loan — Navy / Orange / White Culture
+   =================================================== */
 :root {
-  --ph-blue: #0032A0;
-  --ph-blue-dark: #00226e;
-  --ph-red: #BF0D3E;
-  --ph-red-dark: #8b0628;
-  --ph-gold: #FED141;
-  --ph-gold-dark: #e6b820;
-  --ink: #0a1a3a;
-  --mut: #5a6378;
-  --line: #e3e8f1;
+  --navy:#0A2463; --navy-dk:#061540; --navy-lt:#1a3a8a; --navy-mid:#0d2b75;
+  --orange:#FF8C00; --orange-dk:#D97200; --orange-lt:#FFA733;
+  --bg:#f0f3f9; --card:#ffffff;
+  --ink:#0d1b3e; --ink2:#5a6680; --ink3:#9aa3b8; --line:#e6eaf4;
+  --green:#16a34a; --green-dk:#15803d;
+  --red:#dc2626; --red-dk:#b91c1c;
 }
 
-html, body { width: 100%; overflow-x: hidden; }
+html:not([data-theme="dark"]) body { background:var(--bg) !important; }
+html, body { width:100%; overflow-x:hidden; }
+html body, html body * {
+  font-family:"Lato","Open Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif !important;
+}
+.wrap { padding-top:0 !important; }
 
-body{
-  margin: 0;
-  min-height: 100vh;
-  font-family: "Lato", "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
-  color: var(--ink) !important;
-  background:
-    radial-gradient(800px 600px at 15% 20%, rgba(0,50,160,.10) 0%, transparent 60%),
-    radial-gradient(700px 500px at 85% 80%, rgba(191,13,62,.08) 0%, transparent 60%),
-    radial-gradient(500px 400px at 50% 50%, rgba(254,209,65,.10) 0%, transparent 65%),
-    linear-gradient(180deg, #fafbff 0%, #eef2fb 100%) !important;
-  background-attachment: fixed !important;
+/* dark-mode text fixes */
+html[data-theme="dark"] .qcard-title   { color:#fff !important; }
+html[data-theme="dark"] .qcard-sub     { color:rgba(255,255,255,.55) !important; }
+html[data-theme="dark"] .qcard label,
+html[data-theme="dark"] .field > label { color:rgba(255,255,255,.55) !important; }
+html[data-theme="dark"] input[type="number"] { background:#1a2440 !important; color:#fff !important; border-color:rgba(255,255,255,.10) !important; }
+html[data-theme="dark"] .term-btn { background:#1a2440 !important; color:rgba(255,255,255,.55) !important; border-color:rgba(255,255,255,.10) !important; }
+html[data-theme="dark"] .term-btn.active { background:linear-gradient(135deg,var(--orange-lt),var(--orange-dk)) !important; color:#fff !important; }
+html[data-theme="dark"] .hint      { color:rgba(255,255,255,.40) !important; }
+html[data-theme="dark"] .summary .k { color:rgba(255,255,255,.45) !important; }
+html[data-theme="dark"] .summary .v { color:#fff !important; }
+html[data-theme="dark"] .summary .row:last-child .v { color:var(--orange-lt) !important; }
+html[data-theme="dark"] .status-title { color:#fff !important; }
+
+/* ── keyframes ── */
+@keyframes qlFadeUp   { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+@keyframes qlShimmer  { 0%{transform:translateX(-120%) skewX(-15deg)} 100%{transform:translateX(300%) skewX(-15deg)} }
+@keyframes qlPulseBtn { 0%,100%{box-shadow:0 8px 24px rgba(255,140,0,.38),inset 0 1px 0 rgba(255,255,255,.18)} 50%{box-shadow:0 12px 32px rgba(255,140,0,.60),inset 0 1px 0 rgba(255,255,255,.18)} }
+@keyframes dotBlink   { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.45;transform:scale(.65)} }
+@keyframes orbFloat   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+/* ─── HERO SHELL ─── */
+.ql-hero {
+  position:relative;
+  background:linear-gradient(150deg,var(--navy-dk) 0%,var(--navy) 52%,var(--navy-mid) 100%);
+  padding:max(22px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-left)) 62px max(18px,env(safe-area-inset-left));
+  margin:0 -14px;
+  overflow:hidden;
 }
-body, body *, body button, body input, body select, body textarea, body a {
-  font-family: "Lato", "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
+/* top-right orange glow orb */
+.ql-hero-orb {
+  position:absolute; top:-55px; right:-55px;
+  width:220px; height:220px; border-radius:50%;
+  background:radial-gradient(circle,rgba(255,140,0,.28) 0%,transparent 68%);
+  animation:orbFloat 7s ease-in-out infinite;
+  pointer-events:none;
+}
+/* bottom-left navy orb */
+.ql-hero-orb2 {
+  position:absolute; bottom:-45px; left:-45px;
+  width:190px; height:190px; border-radius:50%;
+  background:radial-gradient(circle,rgba(26,58,138,.50) 0%,transparent 70%);
+  pointer-events:none;
+}
+/* dot-grid texture */
+.ql-dot-grid {
+  position:absolute; inset:0; z-index:0;
+  background-image:radial-gradient(rgba(255,255,255,.06) 1px,transparent 1px);
+  background-size:22px 22px; pointer-events:none;
 }
 
-/* ============================================================
-   DARK MODE — Quick Loan readable text
-   ============================================================ */
-html[data-theme="dark"] .page-title{ color:#ffffff !important; }
-html[data-theme="dark"] .page-title small{ color: rgba(255,255,255,.75) !important; }
-html[data-theme="dark"] .qcard label{ color:#ffffff !important; }
-html[data-theme="dark"] .summary .k{ color: rgba(255,255,255,.75) !important; }
-html[data-theme="dark"] .summary .v{
-  color:#ffffff !important;
-  -webkit-text-fill-color:#ffffff !important;
+/* nav row */
+.ql-nav {
+  position:relative; z-index:4;
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:22px;
 }
-html[data-theme="dark"] .summary .row:last-child .v{
-  color:#ffffff !important;
-  -webkit-text-fill-color:#ffffff !important;
+.ql-nav-back {
+  width:38px; height:38px; border-radius:50%;
+  background:rgba(255,255,255,.11); border:1px solid rgba(255,255,255,.18);
+  display:flex; align-items:center; justify-content:center;
+  text-decoration:none; flex-shrink:0;
+  transition:background .18s;
 }
-
-.wrap{ padding-top: 0 !important; align-items: flex-start; }
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+.ql-nav-back:hover { background:rgba(255,255,255,.22); }
+.ql-nav-back svg   { width:16px; height:16px; fill:none; stroke:#fff; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+/* OFL badge top-right */
+.ql-nav-badge {
+  background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.18);
+  border-radius:999px; padding:5px 14px;
+  font-size:9.5px; font-weight:900; color:var(--orange);
+  letter-spacing:.18em; text-transform:uppercase;
+  display:flex; align-items:center; gap:6px;
 }
-@keyframes glowPulse {
-  0%, 100% { box-shadow: 0 6px 18px rgba(191,13,62,.35); }
-  50%      { box-shadow: 0 10px 26px rgba(191,13,62,.55); }
-}
-
-.page{
-  width: min(560px, 94vw);
-  margin: 0 auto;
-  padding: 22px 14px 40px;
-  box-sizing: border-box;
+.ql-nav-badge-dot {
+  width:5px; height:5px; border-radius:50%; background:var(--orange);
+  animation:dotBlink 1.6s ease-in-out infinite;
 }
 
-/* ===== Top row ===== */
-.top-row{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 18px;
-  opacity: 0;
-  animation: fadeInUp .5s ease-out .05s forwards;
+/* hero content */
+.ql-hero-content { position:relative; z-index:3; }
+.ql-hero-eyebrow {
+  font-size:10px; font-weight:900; color:rgba(255,255,255,.50);
+  letter-spacing:.24em; text-transform:uppercase;
+  margin-bottom:8px; display:flex; align-items:center; gap:8px;
 }
-.page-title{
-  color: var(--ph-blue-dark);
-  font-size: 24px;
-  font-weight: 950;
-  letter-spacing: -.4px;
+.ql-hero-eyebrow::before {
+  content:""; display:block; width:24px; height:2px;
+  background:var(--orange); border-radius:1px;
 }
-.page-title small{
-  display: block;
-  color: var(--mut);
-  font-size: 12px;
-  font-weight: 600;
-  margin-top: 3px;
-  letter-spacing: .02em;
+.ql-hero-title {
+  font-size:30px; font-weight:950; color:#fff;
+  letter-spacing:-.4px; line-height:1.05; margin:0 0 6px;
 }
-.back-btn{
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 40px;
-  padding: 0 16px;
-  border-radius: 999px;
-  background: #fff;
-  border: 2px solid var(--ph-blue);
-  color: var(--ph-blue-dark);
-  font-size: 12.5px;
-  font-weight: 900;
-  text-decoration: none;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  box-shadow: 0 4px 12px rgba(0,50,160,.12);
-  transition: all .22s ease;
+.ql-hero-sub {
+  font-size:13px; color:rgba(255,255,255,.50);
+  font-weight:600; letter-spacing:.02em;
 }
-.back-btn:hover{
-  color: #fff;
-  background: var(--ph-blue);
-  box-shadow: 0 8px 18px rgba(0,50,160,.30);
-  transform: translateY(-2px);
+/* hero decorative card shape */
+.ql-hero-deco {
+  position:absolute; bottom:14px; right:0; z-index:2;
+  opacity:.12; pointer-events:none;
 }
-.back-btn svg{ width: 14px; height: 14px; }
 
-/* ===== Card (white with PH flag top stripe) ===== */
-.qcard{
-  position: relative;
-  padding: 22px;
-  margin-bottom: 16px;
-  border-radius: 18px;
-  background: #ffffff;
-  border: 1px solid var(--line);
-  box-shadow: 0 4px 20px rgba(0,50,160,.08), 0 1px 3px rgba(0,0,0,.04);
-  overflow: visible;
-  opacity: 0;
-  animation: fadeInUp .55s ease-out .15s forwards;
+/* ─── PAGE WRAP ─── */
+.ql-page {
+  width:min(540px,96vw); max-width:540px;
+  margin:0 auto; padding:0 14px 70px; box-sizing:border-box;
 }
-.qcard::before{
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--ph-blue), var(--ph-red), var(--ph-gold));
-  border-radius: 18px 18px 0 0;
-}
-.qcard::after{ display: none; }
+.ql-body { margin-top:-28px; }
 
-/* ===== Field labels ===== */
-.field{ margin-bottom: 14px; }
+/* ─── CARDS ─── */
+.qcard {
+  position:relative;
+  background:var(--card); border-radius:24px;
+  padding:22px 22px 20px;
+  box-shadow:0 8px 30px rgba(10,36,99,.09), 0 2px 6px rgba(0,0,0,.04);
+  border:1px solid var(--line);
+  margin-bottom:14px; overflow:hidden;
+  opacity:0; animation:qlFadeUp .42s ease-out both;
+}
+/* left orange accent bar */
+.qcard::before {
+  content:""; position:absolute;
+  top:18px; left:0; width:4px; height:calc(100% - 36px);
+  border-radius:0 4px 4px 0;
+  background:linear-gradient(180deg,var(--orange-lt),var(--orange-dk));
+}
+.qcard:nth-child(1) { animation-delay:.07s; }
+.qcard:nth-child(2) { animation-delay:.16s; }
+
+/* ─── Card header ─── */
+.qcard-head {
+  display:flex; align-items:center; gap:14px; margin-bottom:20px;
+}
+.qcard-ico {
+  width:44px; height:44px; border-radius:14px;
+  display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+}
+.qcard-ico svg { width:21px; height:21px; }
+.qcard-ico-orange {
+  background:linear-gradient(135deg,var(--orange-lt) 0%,var(--orange-dk) 100%);
+  box-shadow:0 4px 14px rgba(255,140,0,.32);
+}
+.qcard-ico-orange svg { fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.qcard-ico-navy {
+  background:rgba(10,36,99,.09);
+  box-shadow:0 4px 14px rgba(10,36,99,.10);
+}
+.qcard-ico-navy svg { fill:none; stroke:var(--navy); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+
+.qcard-info     { flex:1; min-width:0; }
+.qcard-title    { font-size:15.5px; font-weight:950; color:var(--ink); letter-spacing:-.1px; }
+.qcard-sub      { font-size:12px; color:var(--ink2); font-weight:600; margin-top:2px; }
+
+/* ─── Field labels ─── */
+.field          { margin-bottom:14px; }
 .field > label,
-.qcard label{
-  display: block;
-  color: var(--ph-blue-dark);
-  font-weight: 900;
-  font-size: 11px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  margin-bottom: 8px;
+.qcard label {
+  display:block; font-size:10px; font-weight:900;
+  color:var(--navy); letter-spacing:.18em; text-transform:uppercase;
+  margin-bottom:8px;
 }
 
-/* ===== Amount input ===== */
-input[type="number"]{
-  width: 100%;
-  background: #fff;
-  border: 1.5px solid var(--line);
-  border-radius: 12px;
-  padding: 14px 16px;
-  font-size: 20px;
-  font-weight: 900;
-  color: var(--ph-blue-dark);
-  text-align: center;
-  font-family: inherit;
-  box-sizing: border-box;
-  outline: none;
-  letter-spacing: .5px;
-  caret-color: var(--ph-blue);
-  transition: border-color .2s, box-shadow .2s, background .2s;
+/* ─── Amount input ─── */
+.ql-amt-wrap    { position:relative; }
+.ql-amt-prefix  {
+  position:absolute; left:16px; top:50%; transform:translateY(-50%);
+  font-size:20px; font-weight:950; color:var(--orange);
+  pointer-events:none; z-index:1;
 }
-input[type="number"]::placeholder{ color: #9ca3af; font-weight: 700; }
-input[type="number"]:focus{
-  border-color: var(--ph-blue);
-  box-shadow: 0 0 0 4px rgba(0,50,160,.10);
+input[type="number"] {
+  width:100%; background:#f7f9fc;
+  border:1.5px solid var(--line); border-radius:14px;
+  padding:14px 16px 14px 38px;
+  font-size:20px; font-weight:950; color:var(--ink);
+  font-family:inherit; box-sizing:border-box; outline:none;
+  letter-spacing:.5px; caret-color:var(--orange);
+  transition:border-color .2s, box-shadow .2s, background .2s;
 }
-input[readonly]{ background: #f6f8fc; opacity: .85; cursor: default; }
+input[type="number"]::placeholder { color:var(--ink3); font-weight:600; font-size:16px; }
+input[type="number"]:focus {
+  border-color:var(--orange); background:#fff;
+  box-shadow:0 0 0 4px rgba(255,140,0,.10);
+}
+input[readonly] { background:#f0f3f9 !important; opacity:.75; cursor:default; }
 input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button{ -webkit-appearance: none; margin: 0; }
-input[type="number"]{ -moz-appearance: textfield; }
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+input[type="number"] { -moz-appearance:textfield; }
 
-/* ===== Term grid ===== */
-.term-grid{
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-top: 10px;
+/* ─── Term grid ─── */
+.term-grid {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:9px;
+  margin-top:10px;
 }
-.term-btn{
-  padding: 14px 8px;
-  border-radius: 10px;
-  border: 1.5px solid var(--line);
-  background: #fff;
-  color: var(--ph-blue);
-  font-weight: 900;
-  font-size: 15px;
-  font-family: inherit;
-  cursor: pointer;
-  letter-spacing: .02em;
-  transition: all .22s ease;
+.term-btn {
+  padding:14px 6px; border-radius:13px;
+  border:1.5px solid var(--line); background:#f7f9fc;
+  color:var(--ink2); font-size:15px; font-weight:950;
+  font-family:inherit; cursor:pointer;
+  transition:all .22s; display:flex; flex-direction:column; align-items:center; gap:2px;
 }
-.term-btn:hover{
-  color: var(--ph-blue-dark);
-  border-color: var(--ph-blue);
-  background: rgba(0,50,160,.04);
-  box-shadow: 0 4px 10px rgba(0,50,160,.10);
+.term-btn:hover {
+  color:var(--navy); border-color:rgba(10,36,99,.30);
+  background:#fff; box-shadow:0 4px 12px rgba(10,36,99,.10);
 }
-.term-btn:active{ transform: scale(.97); }
-.term-btn.active{
-  color: #fff;
-  background: linear-gradient(135deg, var(--ph-blue) 0%, var(--ph-blue-dark) 100%);
-  border-color: var(--ph-blue);
-  box-shadow: 0 6px 18px rgba(0,50,160,.35);
+.term-btn:active { transform:scale(.97); }
+.term-btn.active {
+  color:#fff;
+  background:linear-gradient(135deg,var(--orange-lt) 0%,var(--orange) 50%,var(--orange-dk) 100%);
+  border-color:var(--orange-dk);
+  box-shadow:0 6px 18px rgba(255,140,0,.36);
 }
-.term-btn:disabled{
-  opacity: .45;
-  cursor: not-allowed;
-  transform: none !important;
+.term-btn:disabled {
+  opacity:.42; cursor:not-allowed;
+  transform:none !important; box-shadow:none !important;
+}
+.term-btn-mo {
+  font-size:9px; font-weight:800; letter-spacing:.08em;
+  text-transform:uppercase; opacity:.65;
 }
 
-.hint{ margin-top: 10px; color: var(--mut); font-size: 12px; font-weight: 600; letter-spacing: .02em; }
+.hint {
+  margin-top:10px; font-size:12px; font-weight:600;
+  color:var(--ink3); display:flex; align-items:center; gap:6px;
+}
+.hint::before {
+  content:""; width:5px; height:5px; border-radius:50%;
+  background:var(--orange-lt); flex:0 0 auto;
+}
+.ql-amt-error {
+  display:none; margin-top:8px;
+  background:rgba(220,38,38,.07); border:1px solid rgba(220,38,38,.22);
+  border-left:3px solid #dc2626;
+  border-radius:10px; padding:9px 13px;
+  font-size:12px; font-weight:700; color:#b91c1c;
+  align-items:center; gap:8px;
+}
+.ql-amt-error.is-visible { display:flex; }
+.ql-amt-error::before {
+  content:"!"; flex:0 0 auto;
+  width:18px; height:18px; border-radius:50%;
+  background:#dc2626; color:#fff;
+  font-size:11px; font-weight:900;
+  display:flex; align-items:center; justify-content:center;
+  line-height:1;
+}
+input[type="number"].is-error {
+  border-color:#dc2626 !important;
+  box-shadow:0 0 0 4px rgba(220,38,38,.10) !important;
+}
+html[data-theme="dark"] .ql-amt-error { background:rgba(220,38,38,.12) !important; color:#fca5a5 !important; }
 
-/* ===== Summary ===== */
-.summary{
-  margin-top: 18px;
-  padding-top: 14px;
-  border-top: 1px solid var(--line);
-  display: grid; gap: 0;
-  font-size: 13.5px;
+/* ─── Summary ─── */
+.summary {
+  margin-top:22px; padding-top:16px;
+  border-top:1px solid var(--line);
 }
-.summary .row{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  border-bottom: 1px dashed var(--line);
-  padding: 12px 0;
+.summary .row {
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  border-bottom:1px solid var(--line); padding:11px 0; font-size:13.5px;
 }
-.summary .row:last-child{
-  border-bottom: none;
-  border-top: 2px solid var(--ph-gold);
-  margin-top: 4px;
-  padding-top: 14px;
-  font-size: 16px;
+.summary .row:last-child {
+  border-bottom:none;
+  border-top:2px solid rgba(255,140,0,.28);
+  margin-top:4px; padding-top:14px; font-size:16px;
 }
-.summary .k{ color: var(--mut); font-weight: 600; }
-.summary .v{ color: var(--ph-blue-dark); font-weight: 900; }
-.summary .row:last-child .v{
-  color: var(--ph-red);
-  font-size: 18px;
-}
+.summary .k { color:var(--ink2); font-weight:600; }
+.summary .v { color:var(--navy); font-weight:900; }
+.summary .row:last-child .v { color:var(--orange-dk); font-size:18px; font-weight:950; }
 
-/* ===== CTA ===== */
-.cta{ margin-top: 18px; width: 100%; }
-#goApply{
-  width: 100%;
-  padding: 16px;
-  background: linear-gradient(135deg, var(--ph-red) 0%, var(--ph-red-dark) 100%);
-  color: #fff;
-  border: 0;
-  border-radius: 999px;
-  font-weight: 950;
-  font-size: 14px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  font-family: inherit;
-  cursor: pointer;
-  box-shadow: 0 6px 18px rgba(191,13,62,.35);
-  animation: glowPulse 2.6s ease-in-out infinite;
-  transition: transform .2s, filter .2s;
+/* ─── CTA button ─── */
+#goApply {
+  width:100%; height:56px; margin-top:20px;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  background:linear-gradient(135deg,var(--orange-lt) 0%,var(--orange) 45%,var(--orange-dk) 100%);
+  color:#fff; border:0; border-radius:16px;
+  font-size:13.5px; font-weight:950; letter-spacing:.14em; text-transform:uppercase;
+  font-family:inherit; cursor:pointer;
+  box-shadow:0 8px 24px rgba(255,140,0,.40), inset 0 1px 0 rgba(255,255,255,.18);
+  animation:qlPulseBtn 2.8s ease-in-out infinite;
+  transition:transform .2s, filter .2s, opacity .2s;
+  position:relative; overflow:hidden;
 }
-#goApply:hover{ transform: translateY(-2px); filter: brightness(1.08); }
-#goApply:active{ transform: translateY(0); }
-#goApply:disabled{
-  opacity: .50;
-  cursor: not-allowed;
-  transform: none;
-  animation: none;
-  background: var(--line);
-  color: var(--mut);
-  box-shadow: none;
+#goApply::after {
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.13) 50%,transparent 70%);
+  animation:qlShimmer 3.5s ease-in-out 1.2s infinite;
 }
+#goApply:hover:not(:disabled) { transform:translateY(-2px); filter:brightness(1.07); }
+#goApply:active:not(:disabled) { transform:translateY(0); }
+#goApply:disabled {
+  opacity:.36; cursor:not-allowed; transform:none;
+  animation:none; background:var(--line); color:var(--ink3); box-shadow:none;
+}
+#goApply:disabled::after { animation:none; }
+#goApply svg  { flex:0 0 auto; position:relative; z-index:1; }
+#goApply span { position:relative; z-index:1; }
 
-/* ===== Status card (highlight with gold) ===== */
-#statusCard{
-  border: 1px solid rgba(254,209,65,.55);
-  box-shadow: 0 6px 22px rgba(254,209,65,.18), 0 1px 3px rgba(0,0,0,.04);
+/* ═══════════════════════════════════════════
+   STATUS CARD
+   ═══════════════════════════════════════════ */
+#statusCard {
+  border-color:rgba(255,140,0,.22) !important;
+  box-shadow:0 8px 30px rgba(10,36,99,.12), 0 0 0 1px rgba(255,140,0,.08) !important;
 }
-#statusCard::before{
-  background: linear-gradient(90deg, var(--ph-gold), var(--ph-red), var(--ph-gold));
-}
-.status-head{
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-.status-title{
-  font-size: 18px;
-  font-weight: 950;
-  margin: 0;
-  color: var(--ph-blue-dark);
-  letter-spacing: -.2px;
-}
-.status-sub{
-  margin-top: 6px;
-  color: var(--mut);
-  line-height: 1.55;
-  font-size: 13.5px;
+#statusCard::before {
+  background:linear-gradient(180deg,var(--orange-lt),var(--orange-dk)) !important;
+  top:90px !important; height:calc(100% - 108px) !important;
 }
 
-/* ===== Status pill ===== */
-.mini-pill{
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  border-radius: 999px;
-  font-weight: 900;
-  font-size: 11px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  background: rgba(254,209,65,.15);
-  color: var(--ph-gold-dark);
-  border: 1px solid rgba(254,209,65,.55);
-  white-space: nowrap;
+/* navy gradient header strip inside status card */
+.st-strip {
+  margin:-22px -22px 18px -22px;
+  padding:16px 20px;
+  background:linear-gradient(135deg,var(--navy-dk) 0%,var(--navy) 58%,var(--navy-lt) 100%);
+  border-radius:24px 24px 0 0;
+  display:flex; align-items:center; justify-content:space-between;
+  position:relative; overflow:hidden;
 }
-.mini-pill::before{
-  content: ""; width: 6px; height: 6px; border-radius: 999px;
-  background: var(--ph-gold-dark); box-shadow: 0 0 6px var(--ph-gold);
+.st-strip::after {
+  content:""; position:absolute; top:-25px; right:-25px;
+  width:100px; height:100px; border-radius:50%;
+  background:radial-gradient(circle,rgba(255,140,0,.26) 0%,transparent 70%);
+  pointer-events:none;
 }
-.mini-pill.is-rejected{
-  background: rgba(191,13,62,.10);
-  color: var(--ph-red-dark);
-  border-color: rgba(191,13,62,.45);
+.st-strip > * { position:relative; z-index:2; }
+.st-strip-eyebrow {
+  font-size:9.5px; font-weight:900; color:rgba(255,255,255,.45);
+  letter-spacing:.22em; text-transform:uppercase; margin-bottom:2px;
 }
-.mini-pill.is-rejected::before{ background: var(--ph-red); box-shadow: 0 0 6px var(--ph-red); }
+.st-strip-title {
+  font-size:16px; font-weight:950; color:#fff; letter-spacing:.01em;
+}
+.st-strip-ico {
+  width:40px; height:40px; border-radius:50%;
+  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.20);
+  display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+}
+.st-strip-ico svg { width:18px; height:18px; fill:none; stroke:rgba(255,255,255,.85); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
 
-/* ===== View contract button ===== */
-.status-btn{
-  flex: 0 0 auto;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border-radius: 999px;
-  border: 2px solid var(--ph-blue);
-  background: #fff;
-  color: var(--ph-blue-dark);
-  font-weight: 900;
-  font-size: 12.5px;
-  cursor: pointer;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  transition: all .22s ease;
+/* status head (below the strip) */
+.status-head {
+  display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+  margin-bottom:14px;
 }
-.status-btn:hover{
-  color: #fff;
-  background: var(--ph-blue);
-  box-shadow: 0 6px 16px rgba(0,50,160,.25);
-  transform: translateY(-2px);
+.status-title {
+  font-size:15px; font-weight:950; color:var(--ink);
+  letter-spacing:-.1px; margin:0 0 4px;
+}
+.status-sub {
+  color:var(--ink2); font-size:13px; font-weight:600; line-height:1.55;
 }
 
-/* ===== Progress timeline ===== */
-.step-row{
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 16px;
+/* ─── Status pill ─── */
+.mini-pill {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 14px; border-radius:999px;
+  font-size:10.5px; font-weight:900; letter-spacing:.12em; text-transform:uppercase;
+  background:rgba(255,140,0,.11); color:var(--orange-dk);
+  border:1px solid rgba(255,140,0,.38); white-space:nowrap; flex:0 0 auto;
 }
-.dot{
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 950;
-  font-size: 14px;
-  background: #fff;
-  border: 2px solid var(--line);
-  color: var(--mut);
-  flex-shrink: 0;
-  transition: all .25s ease;
+.mini-pill::before {
+  content:""; width:6px; height:6px; border-radius:50%;
+  background:var(--orange); box-shadow:0 0 6px var(--orange);
+  animation:dotBlink 1.4s ease-in-out infinite;
 }
-.dot.active{
-  background: linear-gradient(135deg, var(--ph-blue), var(--ph-blue-dark));
-  color: #fff;
-  border-color: var(--ph-blue);
-  box-shadow: 0 4px 14px rgba(0,50,160,.40);
+.mini-pill.is-rejected {
+  background:rgba(220,38,38,.09); color:var(--red-dk);
+  border-color:rgba(220,38,38,.34);
 }
-.line{
-  flex: 1; height: 3px; border-radius: 999px;
-  background: var(--line);
-}
-.line.active{
-  background: linear-gradient(90deg, var(--ph-blue), var(--ph-red));
-  box-shadow: 0 0 6px rgba(0,50,160,.30);
+.mini-pill.is-rejected::before {
+  background:var(--red); box-shadow:0 0 6px var(--red); animation:none;
 }
 
-.step-labels{
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-top: 12px;
-  font-size: 11px;
-  color: var(--mut);
-  font-weight: 800;
-  letter-spacing: .04em;
+/* ─── Reject alert ─── */
+.reject-alert {
+  margin-top:14px; border-radius:14px; padding:14px 16px;
+  border:1px solid rgba(220,38,38,.20); border-left:4px solid var(--red);
+  background:rgba(220,38,38,.05);
 }
-.step-labels.three{
-  grid-template-columns: repeat(3, 1fr);
-  text-align: center;
-  margin-top: 12px;
+.reject-alert .ra-title {
+  display:flex; align-items:center; gap:8px;
+  font-size:14px; font-weight:950; color:var(--red);
+}
+.reject-alert .ra-title svg { width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; }
+.reject-alert .ra-text {
+  margin-top:6px; font-size:13px; font-weight:600;
+  color:var(--red-dk); line-height:1.5;
 }
 
-/* ===== Reject alert ===== */
-.reject-alert{
-  margin-top: 14px;
-  border-radius: 12px;
-  padding: 14px;
-  border: 1px solid rgba(191,13,62,.30);
-  border-left: 4px solid var(--ph-red);
-  background: rgba(191,13,62,.05);
-  color: var(--ph-red-dark);
+/* ─── Step progress ─── */
+.step-row {
+  display:flex; align-items:center; gap:8px; margin-top:20px;
 }
-.reject-alert .ra-title{ font-weight: 900; color: var(--ph-red); font-size: 14px; }
-.reject-alert .ra-text{ margin-top: 6px; color: var(--ph-red-dark); font-size: 13px; line-height: 1.5; font-weight: 600; }
+.dot {
+  width:44px; height:44px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:14px; font-weight:950; color:var(--ink3);
+  background:#fff; border:2px solid var(--line); flex:0 0 auto;
+  transition:all .30s ease;
+}
+.dot.active {
+  background:linear-gradient(135deg,var(--navy),var(--navy-lt));
+  color:#fff; border-color:var(--navy);
+  box-shadow:0 4px 16px rgba(10,36,99,.40), 0 0 0 5px rgba(10,36,99,.07);
+}
+.line {
+  flex:1; height:3px; border-radius:999px;
+  background:var(--line); transition:background .35s;
+}
+.line.active {
+  background:linear-gradient(90deg,var(--navy),var(--orange));
+  box-shadow:0 0 8px rgba(10,36,99,.18);
+}
+
+.step-labels {
+  display:grid; margin-top:10px;
+  font-size:10px; font-weight:800; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--ink3);
+}
+.step-labels.three {
+  grid-template-columns:repeat(3,1fr); text-align:center;
+}
+
+/* ─── View contract button ─── */
+.status-btn {
+  display:inline-flex; align-items:center; gap:8px;
+  height:42px; padding:0 20px; border-radius:999px;
+  border:2px solid rgba(10,36,99,.20); background:var(--card);
+  color:var(--navy) !important; font-size:12px; font-weight:900;
+  letter-spacing:.10em; text-transform:uppercase;
+  text-decoration:none; cursor:pointer; margin-top:20px;
+  box-shadow:0 2px 10px rgba(10,36,99,.06);
+  transition:all .22s;
+}
+.status-btn:hover {
+  color:#fff !important; background:var(--navy);
+  border-color:var(--navy); box-shadow:0 6px 16px rgba(10,36,99,.26);
+}
+.status-btn svg { width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+
+/* ─── Hide legacy top-row ─── */
+.top-row { display:none !important; }
+
+@media (max-width:600px) {
+  .qcard { animation:none !important; opacity:1 !important; }
+  .ql-hero-title { font-size:25px; }
+}
+
+/* ── OFL Coachmark Guide ── */
+@keyframes bubPop{0%{opacity:0;transform:scale(.88) translateY(8px)}70%{transform:scale(1.03) translateY(-2px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes shakeX{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+@keyframes typeDot{0%,80%,100%{transform:scale(0);opacity:.4}40%{transform:scale(1);opacity:1}}
+.sp{position:relative;border-radius:14px;}
+.sp.shake{animation:shakeX .4s ease;}
+.chat-bubble{position:fixed;z-index:10000;background:#fff;border-radius:18px;padding:0;width:min(320px,calc(100vw - 28px));box-shadow:0 16px 48px rgba(0,0,0,.38),0 0 0 1px rgba(0,0,0,.06);display:none;opacity:0;transition:opacity .22s;}
+.chat-bubble::before{content:'';position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:13px solid #0A2463;}
+.chat-bubble.arrow-dn::before{top:auto;bottom:-12px;border-bottom:none;border-top:13px solid #fff;}
+.cb-header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 16px;background:linear-gradient(135deg,#061540,#0A2463);border-bottom:1px solid rgba(255,140,0,.22);border-radius:18px 18px 0 0;}
+.cb-char-wrap{width:54px;height:54px;flex-shrink:0;border-radius:50%;border:2.5px solid rgba(255,140,0,.65);background-size:cover;background-position:center top;background-repeat:no-repeat;background-color:rgba(255,255,255,.08);box-shadow:0 3px 12px rgba(0,0,0,.35);}
+.cb-step{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.65);}
+.cb-dots{display:flex;gap:5px;align-items:center;}
+.cb-dot{height:6px;width:6px;border-radius:99px;background:rgba(255,255,255,.25);transition:all .35s;flex-shrink:0;}
+.cb-dot.on{background:#FF8C00;width:18px;}
+.cb-msg{padding:12px 18px;font-size:14px;font-weight:700;color:#0a1a3a;line-height:1.60;}
+.cb-msg b{color:#0A2463;}
+.cb-typing{display:none;gap:5px;align-items:center;padding:0 18px 12px;}
+.cb-typing span{width:8px;height:8px;border-radius:50%;background:#7a8299;animation:typeDot 1.2s infinite ease-in-out both;}
+.cb-typing span:nth-child(2){animation-delay:.2s;}
+.cb-typing span:nth-child(3){animation-delay:.4s;}
+.cb-foot{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 14px;border-top:1px solid #f0f2f8;}
+.cb-label{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#7a8299;}
+.cb-actions{display:flex;align-items:center;gap:10px;}
+.cb-back{height:38px;padding:0 18px;border:2px solid #0A2463;border-radius:999px;background:transparent;color:#0A2463;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:.04em;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,color .15s;}
+.cb-back:hover{background:#0A2463;color:#fff;}
+.cb-next{height:38px;padding:0 24px;border:none;border-radius:999px;background:linear-gradient(135deg,#FF8C00,#D97200);color:#fff;font-size:13.5px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.05em;box-shadow:0 4px 14px rgba(255,140,0,.42);transition:transform .15s,box-shadow .15s;}
+.cb-next:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,140,0,.60);}
+@media(max-width:600px){.chat-bubble{width:calc(100vw - 20px);}}
 </style>
 
-<div class="page">
+<div class="ql-page">
 
-  <!-- Top row -->
-  <div class="top-row">
-    <div class="page-title">
-      Quick Loan
-      <small>Get instant decision in minutes</small>
-    </div>
-    <a class="back-btn" href="{% url 'dashboard' %}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="15 18 9 12 15 6"/>
-      </svg>
-      Back
-    </a>
-  </div>
+  <!-- ═══ HERO ═══ -->
+  <div class="ql-hero">
+    <div class="ql-dot-grid" aria-hidden="true"></div>
+    <div class="ql-hero-orb"  aria-hidden="true"></div>
+    <div class="ql-hero-orb2" aria-hidden="true"></div>
 
-  <!-- ===== Card 1: Amount/Term ===== -->
-  <div class="qcard">
-    <div class="field">
-      <label>Loan amount (Min 80,000 · Max 5,000,000)</label>
-      <input
-        type="number"
-        id="qAmount"
-        min="80000"
-        max="5000000"
-        placeholder="Enter amount"
-        {% if loan %}readonly{% endif %}
-      >
-    </div>
-
-    <div class="field" style="margin-top:16px;">
-      <label>Loan terms</label>
-      <input type="hidden" id="qTerm">
-
-      <div class="term-grid">
-        <button type="button" class="term-btn" data-term="6" {% if loan %}disabled{% endif %}>6</button>
-        <button type="button" class="term-btn" data-term="12" {% if loan %}disabled{% endif %}>12</button>
-        <button type="button" class="term-btn" data-term="24" {% if loan %}disabled{% endif %}>24</button>
-        <button type="button" class="term-btn" data-term="36" {% if loan %}disabled{% endif %}>36</button>
+    <div class="ql-nav">
+      <a class="ql-nav-back" href="{% url 'dashboard' %}" aria-label="Back to dashboard">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </a>
+      <div class="ql-nav-badge">
+        <div class="ql-nav-badge-dot"></div>
+        Instant Decision
       </div>
-
-      <div class="hint" id="qHint">Choose months</div>
     </div>
 
-    <div class="summary" aria-live="polite">
-      <div class="row"><div class="k">Amount of loan</div><div class="v" id="qSumAmount">—</div></div>
-      <div class="row"><div class="k">Interest rate</div><div class="v">0.5%</div></div>
-      <div class="row"><div class="k">Loan period</div><div class="v" id="qSumTerm">—</div></div>
-      <div class="row"><div class="k">Monthly repayment</div><div class="v" id="qSumMonthly">—</div></div>
+    <div class="ql-hero-content">
+      <div class="ql-hero-eyebrow">Quick Loan</div>
+      <h1 class="ql-hero-title">Apply in Minutes</h1>
+      <div class="ql-hero-sub">Get an instant credit decision from our team</div>
     </div>
 
-    <button class="cta" type="button" id="goApply" disabled>
-      Continue to Application
-    </button>
+    <!-- decorative card shape -->
+    <div class="ql-hero-deco" aria-hidden="true">
+      <svg width="160" height="110" viewBox="0 0 160 110" fill="none">
+        <rect x="10" y="10" width="140" height="90" rx="16" stroke="white" stroke-width="2"/>
+        <rect x="24" y="26" width="55" height="7" rx="3.5" fill="white"/>
+        <rect x="24" y="40" width="38" height="5" rx="2.5" fill="white"/>
+        <rect x="24" y="74" width="112" height="12" rx="6" fill="white"/>
+        <circle cx="124" cy="33" r="10" stroke="white" stroke-width="2"/>
+      </svg>
+    </div>
   </div>
 
-  <!-- ===== Card 2: Application Status ===== -->
-  <div class="qcard" id="statusCard" style="display:none;">
-    <div class="status-head">
-      <div>
-        <h2 class="status-title">Application Status</h2>
-        <div class="status-sub" id="statusText">
-          Our team is reviewing your documents. Please wait.
+  <!-- hidden legacy top-row kept for DOM compatibility -->
+  <div class="top-row" aria-hidden="true">
+    <div class="page-title">Quick Loan</div>
+    <a class="back-btn" href="{% url 'dashboard' %}">Back</a>
+  </div>
+
+  <!-- ═══ CARDS BODY ═══ -->
+  <div class="ql-body">
+
+    <!-- ══ Card 1: Loan Calculator ══ -->
+    <div class="qcard">
+      <div class="qcard-head">
+        <div class="qcard-ico qcard-ico-orange">
+          <!-- Banknote / peso icon -->
+          <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="2"/><circle cx="12" cy="12.5" r="2.5"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="2" y1="15" x2="22" y2="15"/></svg>
+        </div>
+        <div class="qcard-info">
+          <div class="qcard-title">Loan Calculator</div>
+          <div class="qcard-sub">Min &#8369;80,000 &nbsp;&middot;&nbsp; Max &#8369;5,000,000</div>
         </div>
       </div>
-      <span class="mini-pill" id="statusPill">Pending</span>
-    </div>
 
-    <div class="reject-alert" id="rejectAlert" style="display:none;">
-      <div class="ra-title">Application Rejected</div>
-      <div class="ra-text">Your application was rejected. You can submit again.</div>
-    </div>
+      <!-- Amount -->
+      <div class="sp" id="qlSp1">
+      <div class="field">
+        <label for="qAmount">Loan amount</label>
+        <div class="ql-amt-wrap">
+          <span class="ql-amt-prefix" aria-hidden="true">&#8369;</span>
+          <input
+            type="number"
+            id="qAmount"
+            min="80000"
+            max="5000000"
+            placeholder="Enter amount"
+            {% if loan %}readonly{% endif %}
+          >
+        </div>
+        <div class="ql-amt-error" id="qAmtError"></div>
+      </div>
+      </div>
 
-    <div class="step-row">
-      <div class="dot active" id="s1">1</div>
-      <div class="line" id="l1"></div>
-      <div class="dot" id="s2">2</div>
-      <div class="line" id="l2"></div>
-      <div class="dot" id="s3">3</div>
-    </div>
+      <!-- Term -->
+      <div class="sp" id="qlSp2">
+      <div class="field" style="margin-top:18px;">
+        <label>Loan term</label>
+        <input type="hidden" id="qTerm">
 
-    <div class="step-labels three">
-      <div>Under review</div>
-      <div>Checking</div>
-      <div>Approved</div>
-    </div>
+        <div class="term-grid">
+          <button type="button" class="term-btn" data-term="6"  {% if loan %}disabled{% endif %}>6<span class="term-btn-mo">mo</span></button>
+          <button type="button" class="term-btn" data-term="12" {% if loan %}disabled{% endif %}>12<span class="term-btn-mo">mo</span></button>
+          <button type="button" class="term-btn" data-term="24" {% if loan %}disabled{% endif %}>24<span class="term-btn-mo">mo</span></button>
+          <button type="button" class="term-btn" data-term="36" {% if loan %}disabled{% endif %}>36<span class="term-btn-mo">mo</span></button>
+        </div>
 
-    <div style="margin-top:14px;">
-      <a class="status-btn" href="{% url 'contract' %}">
-        View contract
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="5" y1="12" x2="19" y2="12"/>
-          <polyline points="12 5 19 12 12 19"/>
+        <div class="hint" id="qHint">Choose your preferred loan term</div>
+      </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="summary sp" id="qlSp3" aria-live="polite">
+        <div class="row">
+          <span class="k">Loan amount</span>
+          <span class="v" id="qSumAmount">&#8212;</span>
+        </div>
+        <div class="row">
+          <span class="k">Interest rate</span>
+          <span class="v">0.5% / month</span>
+        </div>
+        <div class="row">
+          <span class="k">Loan period</span>
+          <span class="v" id="qSumTerm">&#8212;</span>
+        </div>
+        <div class="row">
+          <span class="k">Monthly repayment</span>
+          <span class="v" id="qSumMonthly">&#8212;</span>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="sp" id="qlSp4">
+      <button type="button" id="goApply" disabled>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
         </svg>
-      </a>
+        <span>Continue to Application</span>
+      </button>
+      </div>
+    </div>
+
+    <!-- ══ Card 2: Application Status ══ -->
+    <div class="qcard" id="statusCard" style="display:none;">
+
+      <!-- Navy header strip -->
+      <div class="st-strip">
+        <div>
+          <div class="st-strip-eyebrow">Tracking</div>
+          <div class="st-strip-title">Application Status</div>
+        </div>
+        <div class="st-strip-ico">
+          <!-- Document + magnifier icon -->
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><circle cx="11" cy="14" r="3"/><path d="m13.5 16.5 2 2"/></svg>
+        </div>
+      </div>
+
+      <!-- Status head -->
+      <div class="status-head">
+        <div>
+          <h2 class="status-title">Your Application</h2>
+          <div class="status-sub" id="statusText">Our team is reviewing your documents. Please wait.</div>
+        </div>
+        <span class="mini-pill" id="statusPill">Pending</span>
+      </div>
+
+      <!-- Reject alert -->
+      <div class="reject-alert" id="rejectAlert" style="display:none;">
+        <div class="ra-title">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Application Rejected
+        </div>
+        <div class="ra-text">Your application was not approved. Please contact our department for assistance.</div>
+      </div>
+
+      <!-- Progress steps -->
+      <div class="step-row">
+        <div class="dot active" id="s1">1</div>
+        <div class="line" id="l1"></div>
+        <div class="dot" id="s2">2</div>
+        <div class="line" id="l2"></div>
+        <div class="dot" id="s3">3</div>
+      </div>
+
+      <div class="step-labels three">
+        <div>Submitted</div>
+        <div>Reviewing</div>
+        <div>Approved</div>
+      </div>
+
+      <!-- View contract -->
+      <div>
+        <a class="status-btn" href="{% url 'contract' %}">
+          View Contract
+          <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </div>
+
+  </div><!-- /.ql-body -->
+</div><!-- /.ql-page -->
+
+{% if not loan %}
+<!-- ══ QUICK LOAN GUIDE ══ -->
+<div class="chat-bubble" id="qlCard">
+  <div class="cb-header">
+    <div class="cb-char-wrap" style="background-image:url('{% static 'img/staff-guide.png' %}?v=5')"></div>
+    <span class="cb-step" id="qlStep">STEP 1 OF 4</span>
+    <div class="cb-dots" id="qlDots">
+      <span class="cb-dot on"></span>
+      <span class="cb-dot"></span>
+      <span class="cb-dot"></span>
+      <span class="cb-dot"></span>
+    </div>
+  </div>
+  <div class="cb-msg" id="qlBody"></div>
+  <div class="cb-typing" id="qlTyping"><span></span><span></span><span></span></div>
+  <div class="cb-foot">
+    <span class="cb-label" id="qlLabel">STEP 1 OF 4</span>
+    <div class="cb-actions">
+      <button class="cb-back" id="qlBck" style="display:none">&#8592; Back</button>
+      <button class="cb-next" id="qlNxt">Next &#8594;</button>
     </div>
   </div>
 </div>
+{% endif %}
 
 <script>
   const amountEl = document.getElementById("qAmount");
-  const termEl = document.getElementById("qTerm");
-  const hint = document.getElementById("qHint");
+  const termEl   = document.getElementById("qTerm");
+  const hint     = document.getElementById("qHint");
 
-  const outAmount = document.getElementById("qSumAmount");
-  const outTerm = document.getElementById("qSumTerm");
+  const outAmount  = document.getElementById("qSumAmount");
+  const outTerm    = document.getElementById("qSumTerm");
   const outMonthly = document.getElementById("qSumMonthly");
 
-  const btns = document.querySelectorAll(".term-btn");
+  const btns  = document.querySelectorAll(".term-btn");
   const goBtn = document.getElementById("goApply");
 
   function fmt(n){
-    try { return Number(n).toLocaleString(); } catch (e) { return String(n); }
+    try { return Number(n).toLocaleString(); } catch(e){ return String(n); }
+  }
+
+  const AMT_MIN = 80000;
+  const AMT_MAX = 5000000;
+  const amtError = document.getElementById("qAmtError");
+
+  function setAmtError(msg){
+    if(!amtError) return;
+    if(msg){
+      amtError.textContent = msg;
+      amtError.classList.add("is-visible");
+      if(amountEl) amountEl.classList.add("is-error");
+    } else {
+      amtError.classList.remove("is-visible");
+      if(amountEl) amountEl.classList.remove("is-error");
+    }
   }
 
   function update(){
     const amount = Number(amountEl?.value || 0);
-    const term = Number(termEl?.value || 0);
+    const term   = Number(termEl?.value   || 0);
 
-    if (outAmount) outAmount.textContent = amount > 0 ? ("PHP " + fmt(amount)) : "—";
-    if (outTerm) outTerm.textContent = term > 0 ? (term + " months") : "—";
+    /* Range validation */
+    let amtOk = true;
+    if(amount > 0 && amount < AMT_MIN){
+      setAmtError("Minimum loan amount is ₱80,000. Please enter a higher amount.");
+      amtOk = false;
+    } else if(amount > AMT_MAX){
+      setAmtError("Maximum loan amount is ₱5,000,000. Please enter a lower amount.");
+      amtOk = false;
+    } else {
+      setAmtError(null);
+    }
+
+    if(outAmount) outAmount.textContent = amount > 0 ? ("PHP " + fmt(amount)) : "—";
+    if(outTerm)   outTerm.textContent   = term   > 0 ? (term + " months")     : "—";
 
     const rate = 0.005;
-    if(amount > 0 && term > 0){
-      const total = amount + (amount * rate * term);
+    if(amtOk && amount > 0 && term > 0){
+      const total   = amount + (amount * rate * term);
       const monthly = total / term;
-      if (outMonthly) outMonthly.textContent = "PHP " + fmt(Math.round(monthly));
-
+      if(outMonthly) outMonthly.textContent = "PHP " + fmt(Math.round(monthly));
       {% if not loan %}
         goBtn.disabled = false;
       {% endif %}
     } else {
-      if (outMonthly) outMonthly.textContent = "—";
+      if(outMonthly) outMonthly.textContent = "—";
       {% if not loan %}
         goBtn.disabled = true;
       {% endif %}
@@ -574,15 +784,15 @@ input[type="number"]{ -moz-appearance: textfield; }
   btns.forEach((b)=>{
     b.addEventListener("click", ()=>{
       {% if loan %} return; {% endif %}
-      btns.forEach((x)=>x.classList.remove("active"));
+      btns.forEach((x)=> x.classList.remove("active"));
       b.classList.add("active");
-      if (termEl) termEl.value = b.dataset.term || "";
-      if (hint) hint.textContent = (b.dataset.term || "") + " months";
+      if(termEl) termEl.value = b.dataset.term || "";
+      if(hint)   hint.textContent = (b.dataset.term || "") + " months selected";
       update();
     });
   });
 
-  if (amountEl){
+  if(amountEl){
     amountEl.addEventListener("input", ()=>{
       {% if loan %} return; {% endif %}
       try { localStorage.setItem("ofl_quick_amount", amountEl.value || ""); } catch(e){}
@@ -590,107 +800,103 @@ input[type="number"]{ -moz-appearance: textfield; }
     });
   }
 
-  // ===== Persist & restore quick-loan fields across browser sessions =====
   {% if not loan %}
   (function restoreQuickLoan(){
     try {
-      // Prefer ?amount= / ?term= query params if present (from another flow),
-      // otherwise fall back to whatever the user last typed.
       const params = new URLSearchParams(window.location.search);
       const qAmt = params.get("amount") || localStorage.getItem("ofl_quick_amount") || "";
-      const qTrm = params.get("term") || localStorage.getItem("ofl_quick_term") || "";
-      if (amountEl && qAmt) amountEl.value = qAmt;
-      if (termEl && qTrm) {
+      const qTrm = params.get("term")   || localStorage.getItem("ofl_quick_term")   || "";
+      if(amountEl && qAmt) amountEl.value = qAmt;
+      if(termEl && qTrm){
         termEl.value = qTrm;
-        btns.forEach((b) => {
-          if ((b.dataset.term || "") === String(qTrm)){
+        btns.forEach((b)=>{
+          if((b.dataset.term || "") === String(qTrm)){
             b.classList.add("active");
-            if (hint) hint.textContent = qTrm + " months";
+            if(hint) hint.textContent = qTrm + " months selected";
           }
         });
       }
       update();
     } catch(e){}
   })();
-  // Save term when buttons clicked
-  btns.forEach((b) => {
-    b.addEventListener("click", () => {
+  btns.forEach((b)=>{
+    b.addEventListener("click", ()=>{
       try { localStorage.setItem("ofl_quick_term", b.dataset.term || ""); } catch(e){}
     });
   });
   {% endif %}
 
   {% if loan %}
-    if (amountEl) amountEl.value = "{{ loan.amount }}";
-    if (termEl) termEl.value = "{{ loan.term_months }}";
+    if(amountEl) amountEl.value = "{{ loan.amount }}";
+    if(termEl)   termEl.value   = "{{ loan.term_months }}";
 
     btns.forEach((b)=>{
-      if ((b.dataset.term || "") === "{{ loan.term_months }}"){
+      if((b.dataset.term || "") === "{{ loan.term_months }}"){
         b.classList.add("active");
-        if (hint) hint.textContent = "{{ loan.term_months }} months";
+        if(hint) hint.textContent = "{{ loan.term_months }} months";
       } else {
         b.classList.remove("active");
       }
     });
 
     goBtn.textContent = "Submitted";
-    goBtn.disabled = true;
+    goBtn.disabled    = true;
   {% else %}
     goBtn.addEventListener("click", ()=>{
       const amount = amountEl?.value || "";
-      const term = termEl?.value || "";
+      const term   = termEl?.value   || "";
       if(!amount || !term) return;
-      window.location.href = "{% url 'loan_apply' %}?amount=" + encodeURIComponent(amount) + "&term=" + encodeURIComponent(term);
+      const num = Number(amount);
+      if(num < AMT_MIN || num > AMT_MAX){ update(); amountEl?.focus(); return; }
+      var _laUrl = "{% url 'loan_apply' %}?amount=" + encodeURIComponent(amount) + "&term=" + encodeURIComponent(term);
+      if(new URLSearchParams(window.location.search).get('ofl')==='1') _laUrl += '&ofl=1';
+      window.location.href = _laUrl;
     });
   {% endif %}
 
   update();
 
-  // ===== Status Tracker =====
   function stepFromStatus(st){
     const s = String(st || "").toUpperCase().trim();
-    if(s === "PENDING") return 1;
-    if(s === "REVIEW") return 2;
+    if(s === "PENDING")  return 1;
+    if(s === "REVIEW")   return 2;
     if(s === "APPROVED") return 3;
-    if(s === "PAID") return 3;
+    if(s === "PAID")     return 3;
     return 1;
   }
 
   function applyStep(n, label){
-    const dots = [null, "s1", "s2", "s3"];
-    const lines = [null, "l1", "l2"];
+    const dots  = [null,"s1","s2","s3"];
+    const lines = [null,"l1","l2"];
 
-    for(let i=1;i<=3;i++){
+    for(let i=1; i<=3; i++){
       const d = document.getElementById(dots[i]);
       if(d){
-        const isDone = i < n;
+        const isDone   = i < n;
         const isActive = i <= n;
-
         d.classList.toggle("active", isActive);
-
         if(isDone || (i === 3 && n === 3)){
           d.textContent = "✓";
-        }else{
+        } else {
           d.textContent = String(i);
         }
       }
-
-      if(i<=2){
+      if(i <= 2){
         const ln = document.getElementById(lines[i]);
         if(ln) ln.classList.toggle("active", i < n);
       }
     }
 
     const pill = document.getElementById("statusPill");
-    if (pill) pill.textContent = String(label || "PENDING");
+    if(pill) pill.textContent = String(label || "PENDING");
 
     const text = document.getElementById("statusText");
-    const s = String(label || "").toUpperCase().trim();
+    const s    = String(label || "").toUpperCase().trim();
     if(text){
-      if(s === "REVIEW") text.textContent = "Initial approval in progress. Please wait.";
-      else if(s === "APPROVED") text.textContent = "Final approval. Almost done.";
-      else if(s === "PAID") text.textContent = "Success Paid. Your loan has been completed.";
-      else text.textContent = "Our team is reviewing your documents. Please wait.";
+      if(s === "REVIEW")        text.textContent = "Initial approval in progress. Please wait.";
+      else if(s === "APPROVED") text.textContent = "Final approval complete. Almost done!";
+      else if(s === "PAID")     text.textContent = "Paid successfully. Your loan is complete.";
+      else                      text.textContent = "Our team is reviewing your documents. Please wait.";
     }
   }
 
@@ -709,33 +915,176 @@ input[type="number"]{ -moz-appearance: textfield; }
       }
 
       if(card) card.style.display = "block";
-      const pill = document.getElementById("statusPill");
-      const isRejected = String(j.status || "").toUpperCase() === "REJECTED";
-      if (pill) pill.classList.toggle("is-rejected", isRejected);
 
-      if(String(j.status || "").toUpperCase() === "REJECTED"){
+      const pill       = document.getElementById("statusPill");
+      const isRejected = String(j.status || "").toUpperCase() === "REJECTED";
+      if(pill) pill.classList.toggle("is-rejected", isRejected);
+
+      if(isRejected){
         applyStep(1, "REJECTED");
         const t = document.getElementById("statusText");
-        if (t) t.textContent = "Rejected. Please contact company department.";
+        if(t) t.textContent = "Rejected. Please contact our department for assistance.";
         return;
       }
 
       const n = stepFromStatus(j.status);
       applyStep(n, j.status_label || j.status);
-    } catch (e) {
-      // ignore
+    } catch(e){
+      // ignore network errors silently
     }
   }
 
   pollLoanStatus();
   setInterval(pollLoanStatus, 10000);
 
-  const params = new URLSearchParams(window.location.search);
+  const params   = new URLSearchParams(window.location.search);
   const fromDone = params.get("done") === "1";
   if(fromDone){
     const card = document.getElementById("statusCard");
     if(card) card.style.display = "block";
     applyStep(1, "PENDING");
   }
+
+  {% if not loan %}
+  /* ══ QUICK LOAN GUIDE ══ */
+  (function(){
+    var _ofl=(new URLSearchParams(window.location.search).get('ofl')==='1')||(localStorage.getItem('ofl_onboard')==='ql');
+    if(!_ofl) return;
+    var _ico=[
+      '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="22" r="22" fill="#FF8C00"/><circle cx="15" cy="18" r="3.5" fill="white"/><circle cx="29" cy="18" r="3.5" fill="white"/><path d="M13 28 Q22 35 31 28" stroke="white" stroke-width="2.8" fill="none" stroke-linecap="round"/></svg>',
+      '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><rect x="4" y="10" width="36" height="24" rx="4" fill="#0A2463"/><rect x="4" y="16" width="36" height="6" fill="white" opacity="0.2"/><rect x="8" y="26" width="14" height="3" rx="1.5" fill="#FF8C00"/><circle cx="34" cy="27.5" r="4" fill="#FF8C00"/></svg>',
+      '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><rect x="6" y="8" width="32" height="30" rx="3" fill="#0A2463"/><rect x="6" y="8" width="32" height="9" rx="3" fill="#FF8C00"/><rect x="14" y="2" width="4" height="10" rx="2" fill="#0A2463"/><rect x="26" y="2" width="4" height="10" rx="2" fill="#0A2463"/></svg>',
+      '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="22" r="22" fill="#0A2463"/><path d="M10 22 L18 30 L34 12" stroke="#FF8C00" stroke-width="3.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+      '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="22" r="22" fill="#FF8C00"/><polygon points="22,5 26.5,16.5 39,16.5 29.5,24.5 33,36.5 22,29.5 11,36.5 14.5,24.5 5,16.5 17.5,16.5" fill="#0A2463"/></svg>'
+    ];
+    var STEPS=[
+      null,
+      {sp:'qlSp1',inp:'qAmount',step:'Step 1 of 4',label:'STEP 1 OF 4',next:'Next →',
+       body:_ico[1]+' Type the <b>loan amount</b> you need below — from <b>&#8369;80,000</b> up to <b>&#8369;5,000,000</b>.',
+       validate:function(){var v=parseFloat((document.getElementById('qAmount')||{}).value||'');return v>=80000&&v<=5000000;}},
+      {sp:'qlSp2',inp:null,step:'Step 2 of 4',label:'STEP 2 OF 4',next:'Next →',
+       body:_ico[2]+' Choose your <b>loan term</b> — tap 6, 12, 24 or 36 months. The selected button will highlight.',
+       validate:function(){return !!(document.getElementById('qTerm')||{}).value;},
+       autoOn:function(done){
+         var bs=document.querySelectorAll('.term-btn');
+         function h(){setTimeout(done,500);bs.forEach(function(b){b.removeEventListener('click',h);});}
+         bs.forEach(function(b){b.addEventListener('click',h);});
+         return function(){bs.forEach(function(b){b.removeEventListener('click',h);});};
+       }},
+      {sp:'qlSp3',inp:null,step:'Step 3 of 4',label:'STEP 3 OF 4',next:'Looks Good! →',
+       body:_ico[3]+' Review your <b>loan summary</b> — check the amount, term and monthly repayment, then confirm.',
+       validate:function(){return true;}},
+      {sp:'qlSp4',inp:null,step:'Step 4 of 4',label:'STEP 4 OF 4',next:'Submit →',
+       body:_ico[4]+' All set! Tap <b>Continue to Application</b> to proceed to your full loan application form.',
+       validate:function(){var b=document.getElementById('goApply');return !!(b&&!b.disabled);},
+       isLast:true,
+       onNext:function(){var b=document.getElementById('goApply');if(b&&!b.disabled)b.click();}}
+    ];
+    var N=4,cur=1,active=false,cleanup=null;
+    var ov=document.createElement('div');
+    ov.style.cssText='position:fixed;inset:0;z-index:9998;display:none;pointer-events:none;';
+    ov.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%"><path fill="rgba(6,21,64,.82)" fill-rule="evenodd"/></svg>';
+    document.body.appendChild(ov);
+    var _card=document.getElementById('qlCard');
+    if(_card)document.body.appendChild(_card);
+    function $(id){return document.getElementById(id);}
+    function posOverlay(sp){
+      var path=ov.querySelector('path');if(!path)return;
+      var vw=window.innerWidth,vh=window.innerHeight;
+      if(!sp){path.setAttribute('d','M0 0H'+vw+'V'+vh+'H0Z');}
+      else{
+        var r=sp.getBoundingClientRect(),pad=10;
+        var l=Math.max(0,r.left-pad),t=Math.max(0,r.top-pad);
+        var rr=Math.min(vw,r.right+pad),rb=Math.min(vh,r.bottom+pad);
+        path.setAttribute('d','M0 0H'+vw+'V'+vh+'H0Z M'+l+' '+t+'H'+rr+'V'+rb+'H'+l+'Z');
+      }
+      ov.style.display='block';
+    }
+    function hideOverlay(){ov.style.display='none';}
+    function posBubble(n){
+      var card=$('qlCard');if(!card||n<1||n>N)return;
+      var sp=$(STEPS[n].sp);if(!sp)return;
+      var r=sp.getBoundingClientRect(),ww=window.innerWidth,wh=window.innerHeight;
+      var cW=card.offsetWidth||320,cH=card.offsetHeight||230,gap=14,up=false,top;
+      top=r.top-cH-gap;
+      if(top<10){top=r.bottom+gap;up=true;if(top+cH>wh-10){top=Math.max(10,wh-cH-10);}}
+      var left=r.left+r.width/2-cW/2;
+      left=Math.max(10,Math.min(left,ww-cW-10));
+      card.style.top=top+'px';card.style.left=left+'px';card.style.bottom='auto';card.style.right='auto';
+      card.classList.toggle('arrow-dn',!up);
+    }
+    function typeBody(el,html,spd){
+      var icon='',se=html.indexOf('</svg>');
+      if(se!==-1){icon=html.slice(0,se+6);html=html.slice(se+6);}
+      el.innerHTML=icon;var n=0;
+      (function tick(){
+        if(n>html.length)return;
+        if(html[n]==='<'){var e=html.indexOf('>',n);n=(e!==-1)?e+1:n+1;}else{n++;}
+        el.innerHTML=icon+html.slice(0,n);setTimeout(tick,spd||24);
+      })();
+    }
+    function goStep(n){
+      var card=$('qlCard');if(!card)return;
+      card.style.opacity='0';
+      var typ=$('qlTyping'),msg=$('qlBody');
+      if(typ)typ.style.display='flex';
+      if(msg){msg.innerHTML='';msg.style.display='none';}
+      for(var i=1;i<=N;i++){var si=STEPS[i];if(si){var ei=$(si.sp);if(ei)ei.classList.remove('shake');}}
+      hideOverlay();
+      setTimeout(function(){
+        if(n<1||n>N){tourEnd();return;}
+        cur=n;var s=STEPS[n];
+        var sp=$(s.sp);
+        if(sp){
+          sp.scrollIntoView({block:'center'});
+          posOverlay(sp);
+        }
+        var stepEl=$('qlStep'),lbl=$('qlLabel'),nxt=$('qlNxt'),bck=$('qlBck'),dots=$('qlDots');
+        if(stepEl)stepEl.textContent=s.step;
+        if(lbl)lbl.textContent=s.label;
+        if(nxt)nxt.textContent=s.next;
+        if(bck)bck.style.display='inline-flex';
+        if(dots){var ds=dots.querySelectorAll('.cb-dot');ds.forEach(function(d,i){d.className='cb-dot'+(i<n?' on':'');});}
+        if(typ)typ.style.display='none';
+        if(msg)msg.style.display='block';
+        card.style.opacity='1';
+        if(cleanup){cleanup();cleanup=null;}
+        if(s.autoOn)cleanup=s.autoOn(function(){advance();});
+        if(sp)setTimeout(function(){posBubble(n);},300);
+        if(msg)typeBody(msg,s.body,24);
+        if(s.inp){var inp=$(s.inp);if(inp)setTimeout(function(){inp.focus();},400);}
+      },350);
+    }
+    function advance(){
+      if(cleanup){cleanup();cleanup=null;}
+      var s=STEPS[cur];if(!s)return;
+      if(s.validate&&!s.validate()){
+        var sp=$(s.sp);
+        if(sp){sp.classList.remove('shake');void sp.offsetWidth;sp.classList.add('shake');setTimeout(function(){sp.classList.remove('shake');},500);}
+        return;
+      }
+      if(s.isLast){tourEnd();if(s.onNext)s.onNext();return;}
+      goStep(cur+1);
+    }
+    function tourBack(){if(cur>1){goStep(cur-1);}else{tourEnd();window.history.back();}}
+    function tourEnd(){
+      active=false;if(cleanup){cleanup();cleanup=null;}
+      hideOverlay();
+      var card=$('qlCard');
+      if(card){card.style.opacity='0';setTimeout(function(){card.style.display='none';},250);}
+    }
+    var nb=$('qlNxt'),bb=$('qlBck');
+    if(nb)nb.addEventListener('click',advance);
+    if(bb)bb.addEventListener('click',tourBack);
+    window.addEventListener('resize',function(){
+      if(active){var sp=$(STEPS[cur].sp);if(sp)posOverlay(sp);posBubble(cur);}
+    });
+    setTimeout(function(){
+      active=true;var card=$('qlCard');
+      if(card)card.style.display='block';
+      goStep(1);
+    },500);
+  })();
+  {% endif %}
 </script>
 {% endblock %}

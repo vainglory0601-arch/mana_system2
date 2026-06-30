@@ -1,356 +1,373 @@
 {% extends "base.html" %}
-{% block title %}Notifications - Overseas FilipinoLoan{% endblock %}
+{% block title %}Notifications – Overseas FilipinoLoan{% endblock %}
 
 {% block content %}
 <style>
-/* ===== Overseas FilipinoLoan Notifications — Filipino Flag Style ===== */
+  /* ===== OFL Notifications ===== */
+  :root {
+    --navy:#0A2463; --navy-dk:#061540; --navy-lt:#1a3a8a;
+    --orange:#FF8C00; --orange-dk:#D97200; --orange-lt:#FFA733;
+    --bg:#f0f3f9; --card:#ffffff;
+    --ink:#0d1b3e; --ink2:#5a6680; --ink3:#9aa3b8; --line:#e6eaf4;
+  }
 
-:root {
-  --ph-blue: #0032A0;
-  --ph-blue-dark: #00226e;
-  --ph-red: #BF0D3E;
-  --ph-red-dark: #8b0628;
-  --ph-gold: #FED141;
-  --ph-gold-dark: #e6b820;
-  --ink: #0a1a3a;
-  --mut: #5a6378;
-  --line: #e3e8f1;
-}
+  body, body * { font-family:"Lato","Open Sans",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif !important; }
+  html, body { width:100%; overflow-x:hidden; }
+  body { margin:0; min-height:100vh; background:var(--bg) !important; color:var(--ink) !important; }
+  .wrap { padding-top:0 !important; }
 
-html, body { width: 100%; overflow-x: hidden; }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(18px); }
+    to   { opacity:1; transform:none; }
+  }
+  @keyframes bellRock {
+    0%,100% { transform:rotate(0deg); transform-origin:top center; }
+    15%     { transform:rotate(12deg); transform-origin:top center; }
+    45%     { transform:rotate(-9deg); transform-origin:top center; }
+    70%     { transform:rotate(5deg); transform-origin:top center; }
+    88%     { transform:rotate(-2deg); transform-origin:top center; }
+  }
+  @keyframes ping {
+    0%   { transform:scale(1); opacity:.55; }
+    100% { transform:scale(2.4); opacity:0; }
+  }
 
-body{
-  margin: 0;
-  min-height: 100vh;
-  font-family: "Lato", "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
-  color: var(--ink) !important;
-  background:
-    radial-gradient(800px 600px at 15% 20%, rgba(0,50,160,.10) 0%, transparent 60%),
-    radial-gradient(700px 500px at 85% 80%, rgba(191,13,62,.08) 0%, transparent 60%),
-    radial-gradient(500px 400px at 50% 50%, rgba(254,209,65,.10) 0%, transparent 65%),
-    linear-gradient(180deg, #fafbff 0%, #eef2fb 100%) !important;
-  background-attachment: fixed !important;
-}
-body, body *, body button, body input, body select, body textarea, body a {
-  font-family: "Lato", "Open Sans", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
-}
+  .nf-outer { width:100%; max-width:520px; margin:0 auto; }
 
-/* Dark mode: page title + subtitle white */
-html[data-theme="dark"] .page-title{ color:#ffffff !important; }
-html[data-theme="dark"] .page-title small{ color: rgba(255,255,255,.75) !important; }
+  /* ══ HERO ══ */
+  .nf-hero {
+    position:relative;
+    padding:54px 22px 32px;
+    text-align:center;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse 150% 90% at 8% 5%,  rgba(255,167,51,.18) 0%, transparent 50%),
+      radial-gradient(ellipse 80%  70% at 92% 95%, rgba(26,58,138,.55)  0%, transparent 55%),
+      linear-gradient(148deg, var(--navy-dk) 0%, var(--navy) 55%, var(--navy-lt) 100%);
+  }
+  .nf-hero::before {
+    content:""; position:absolute;
+    bottom:-60px; left:-60px;
+    width:220px; height:220px; border-radius:50%;
+    border:1px solid rgba(255,255,255,.07);
+    pointer-events:none;
+  }
+  .nf-hero::after {
+    content:""; position:absolute;
+    top:-50px; right:-40px;
+    width:200px; height:200px; border-radius:50%;
+    border:1px solid rgba(255,140,0,.18);
+    pointer-events:none;
+  }
 
-.wrap{ padding-top: 0 !important; }
+  /* OFL badge */
+  .nf-badge {
+    position:absolute; top:16px; left:18px;
+    display:flex; align-items:center; gap:6px;
+    background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.18);
+    border-radius:999px; padding:4px 10px 4px 5px; z-index:3;
+  }
+  .nf-badge-dot {
+    width:22px; height:22px; border-radius:50%;
+    background:linear-gradient(135deg,var(--orange-lt),var(--orange));
+    display:flex; align-items:center; justify-content:center;
+    font-size:8px; font-weight:900; color:#fff;
+  }
+  .nf-badge-txt { font-size:9.5px; font-weight:900; color:rgba(255,255,255,.82); letter-spacing:.06em; text-transform:uppercase; }
 
-/* ===== Animations ===== */
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+  /* Back button */
+  .nf-back {
+    position:absolute; top:14px; right:18px;
+    display:inline-flex; align-items:center; gap:5px;
+    height:34px; padding:0 13px; border-radius:999px;
+    background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
+    color:rgba(255,255,255,.88) !important; text-decoration:none;
+    font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+    transition:background .18s; z-index:3;
+  }
+  .nf-back svg { width:13px; height:13px; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+  .nf-back:hover { background:rgba(255,255,255,.22); }
 
-/* ===== Page wrapper ===== */
-.dash-wrap{
-  width: min(560px, 94vw);
-  margin: 0 auto;
-  padding: 22px 14px 40px;
-  box-sizing: border-box;
-}
+  /* Bell */
+  .nf-bell-wrap {
+    position:relative;
+    width:60px; height:60px;
+    margin:0 auto 14px;
+    display:flex; align-items:center; justify-content:center;
+    z-index:2;
+  }
+  .nf-bell-ring {
+    position:absolute; inset:0; border-radius:50%;
+    background:rgba(255,140,0,.35);
+    animation:ping 2s ease-out 1.5s infinite;
+  }
+  .nf-bell-ico {
+    position:relative; z-index:1;
+    width:60px; height:60px; border-radius:20px;
+    background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.24);
+    display:flex; align-items:center; justify-content:center;
+    animation:bellRock 3.8s ease-in-out 1s infinite;
+  }
+  .nf-bell-ico svg { width:28px; height:28px; fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
 
-/* ===== Top row: title + back ===== */
-.top-row{
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 18px;
-  opacity: 0;
-  animation: fadeInUp .5s ease-out .05s forwards;
-}
-.page-title{
-  color: var(--ph-blue-dark);
-  font-size: 24px;
-  font-weight: 950;
-  letter-spacing: -.4px;
-}
-.page-title small{
-  display: block;
-  color: var(--mut);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: .02em;
-  margin-top: 3px;
-}
+  .nf-hero-title { font-size:21px; font-weight:900; color:#fff; letter-spacing:-.2px; margin-bottom:4px; position:relative; z-index:2; }
+  .nf-hero-sub   { font-size:11px; font-weight:700; color:rgba(255,255,255,.50); letter-spacing:.16em; text-transform:uppercase; position:relative; z-index:2; }
 
-.back-btn{
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 40px;
-  padding: 0 16px;
-  border-radius: 999px;
-  background: #fff;
-  border: 2px solid var(--ph-blue);
-  color: var(--ph-blue-dark);
-  font-size: 12.5px;
-  font-weight: 900;
-  text-decoration: none;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  box-shadow: 0 4px 12px rgba(0,50,160,.12);
-  transition: all .22s ease;
-}
-.back-btn:hover{
-  color: #fff;
-  background: var(--ph-blue);
-  box-shadow: 0 8px 18px rgba(0,50,160,.30);
-  transform: translateY(-2px);
-}
-.back-btn svg{ width: 14px; height: 14px; }
+  /* count pill */
+  .nf-count-pill {
+    display:inline-flex; align-items:center; gap:6px;
+    margin-top:14px; padding:6px 16px;
+    border-radius:999px;
+    background:linear-gradient(135deg,var(--orange-dk),var(--orange));
+    font-size:11.5px; font-weight:900; color:#fff; letter-spacing:.06em;
+    box-shadow:0 4px 16px rgba(255,140,0,.42);
+    position:relative; z-index:2;
+  }
+  .nf-count-pill::before {
+    content:""; width:8px; height:8px; border-radius:50%;
+    background:#fff; opacity:.8;
+    display:inline-block;
+  }
 
-/* ===== Main card (white with PH flag top stripe) ===== */
-.glass{
-  position: relative;
-  padding: 22px;
-  border-radius: 18px;
-  background: #ffffff;
-  border: 1px solid var(--line);
-  box-shadow: 0 4px 20px rgba(0,50,160,.08), 0 1px 3px rgba(0,0,0,.04);
-  overflow: hidden;
-  opacity: 0;
-  animation: fadeInUp .55s ease-out .12s forwards;
-}
-.glass::before{
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, var(--ph-blue), var(--ph-red), var(--ph-gold));
-  border-radius: 18px 18px 0 0;
-}
+  /* ══ STREAM ══ */
+  .nf-stream {
+    padding:20px 14px 56px;
+    display:flex; flex-direction:column; gap:14px;
+  }
 
-/* ===== Message boxes ===== */
-.msg-box{
-  position: relative;
-  display: flex;
-  gap: 14px;
-  padding: 16px 18px 16px 22px;
-  margin-bottom: 12px;
-  border-radius: 14px;
-  background: #f6f8fc;
-  border: 1px solid var(--line);
-  transition: all .22s ease;
-  overflow: hidden;
-}
-.msg-box::before{
-  content: "";
-  position: absolute;
-  top: 14px;
-  bottom: 14px;
-  left: 0;
-  width: 4px;
-  border-radius: 0 4px 4px 0;
-  background: var(--ph-blue);
-}
-.msg-box:last-child{ margin-bottom: 0; }
-.msg-box:hover{
-  border-color: var(--ph-blue);
-  box-shadow: 0 6px 18px rgba(0,50,160,.15);
-  transform: translateY(-1px);
-}
+  /* ── Notification card ── */
+  .nf-card {
+    border-radius:20px;
+    overflow:hidden;
+    border:1px solid var(--line);
+    box-shadow:0 4px 22px rgba(10,36,99,.09);
+    animation:fadeUp .5s ease-out both;
+  }
+  .nf-card:nth-child(1) { animation-delay:.08s; }
+  .nf-card:nth-child(2) { animation-delay:.18s; }
 
-.msg-box.success{
-  background: rgba(22,163,74,.04);
-  border-color: rgba(22,163,74,.30);
-}
-.msg-box.success::before{
-  background: linear-gradient(180deg, #16a34a, #15803d);
-  box-shadow: 0 0 8px rgba(22,163,74,.45);
-}
-.msg-box.success:hover{
-  border-color: rgba(22,163,74,.55);
-  box-shadow: 0 6px 18px rgba(22,163,74,.22);
-}
+  /* ── Card header strip ── */
+  .nf-card-head {
+    position:relative;
+    display:flex; align-items:center; gap:10px;
+    padding:12px 16px;
+    overflow:hidden;
+  }
+  /* diagonal hatch texture */
+  .nf-card-head::before {
+    content:""; position:absolute; inset:0;
+    background-image:repeating-linear-gradient(
+      -50deg,
+      rgba(255,255,255,.05) 0px,
+      rgba(255,255,255,.05) 1px,
+      transparent 1px,
+      transparent 9px
+    );
+    pointer-events:none;
+  }
 
-.msg-box.info{
-  background: rgba(0,50,160,.04);
-  border-color: rgba(0,50,160,.30);
-}
-.msg-box.info::before{
-  background: linear-gradient(180deg, var(--ph-blue), var(--ph-blue-dark));
-  box-shadow: 0 0 8px rgba(0,50,160,.45);
-}
+  .nf-success .nf-card-head {
+    background:linear-gradient(135deg, var(--orange-dk) 0%, var(--orange) 55%, var(--orange-lt) 100%);
+  }
+  .nf-alert .nf-card-head {
+    background:linear-gradient(135deg, var(--navy-dk) 0%, var(--navy) 55%, var(--navy-lt) 100%);
+  }
 
-.msg-box.danger{
-  background: rgba(191,13,62,.04);
-  border-color: rgba(191,13,62,.30);
-}
-.msg-box.danger::before{
-  background: linear-gradient(180deg, var(--ph-red), var(--ph-red-dark));
-  box-shadow: 0 0 8px rgba(191,13,62,.45);
-}
-.msg-box.danger:hover{
-  border-color: rgba(191,13,62,.55);
-  box-shadow: 0 6px 18px rgba(191,13,62,.22);
-}
+  /* icon circle */
+  .nf-head-ico {
+    position:relative; z-index:1;
+    width:34px; height:34px; border-radius:50%;
+    background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.32);
+    display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+  }
+  .nf-head-ico svg { width:17px; height:17px; fill:none; stroke:#fff; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
 
-/* ===== Message icon ===== */
-.msg-ico{
-  width: 42px; height: 42px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  background: rgba(0,50,160,.10);
-  border: 1px solid rgba(0,50,160,.35);
-}
-.msg-ico svg{ width: 20px; height: 20px; stroke: var(--ph-blue); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .nf-head-label {
+    flex:1; font-size:10px; font-weight:900; color:#fff;
+    letter-spacing:.16em; text-transform:uppercase; position:relative; z-index:1;
+  }
+  .nf-head-time {
+    font-size:10px; font-weight:700; color:rgba(255,255,255,.68);
+    letter-spacing:.02em; white-space:nowrap; position:relative; z-index:1;
+  }
 
-.msg-box.success .msg-ico{
-  background: rgba(22,163,74,.12);
-  border-color: rgba(22,163,74,.40);
-}
-.msg-box.success .msg-ico svg{ stroke: #16a34a; }
+  /* ── Card body ── */
+  .nf-card-body {
+    background:var(--card);
+    padding:18px 18px 20px;
+  }
 
-.msg-box.danger .msg-ico{
-  background: rgba(191,13,62,.10);
-  border-color: rgba(191,13,62,.40);
-}
-.msg-box.danger .msg-ico svg{ stroke: var(--ph-red); }
+  .nf-card-title {
+    font-size:15.5px; font-weight:900;
+    letter-spacing:-.1px; margin-bottom:8px;
+    line-height:1.25;
+  }
+  .nf-success .nf-card-title { color:var(--orange-dk); }
+  .nf-alert   .nf-card-title { color:var(--navy); }
 
-/* ===== Message body ===== */
-.msg-body{
-  flex: 1 1 auto;
-  min-width: 0;
-}
-.msg-head{
-  font-weight: 900;
-  font-size: 14px;
-  color: var(--ph-blue-dark);
-  letter-spacing: .01em;
-  margin: 0 0 4px;
-}
-.msg-box.success .msg-head{ color: #166534; }
-.msg-box.danger .msg-head{ color: var(--ph-red-dark); }
+  .nf-card-msg {
+    font-size:13.5px; font-weight:500;
+    color:var(--ink2); line-height:1.68;
+    word-break:break-word;
+  }
 
-.msg-text{
-  margin: 0;
-  white-space: normal;
-  word-break: break-word;
-  line-height: 1.55;
-  color: var(--ink);
-  font-size: 13.5px;
-}
-.msg-box.danger .msg-text{ color: var(--ph-red-dark); }
-.msg-box.success .msg-text{ color: #15803d; }
+  /* bottom meta row */
+  .nf-card-meta {
+    display:flex; align-items:center; gap:6px;
+    margin-top:14px;
+    padding-top:12px;
+    border-top:1px solid var(--line);
+    font-size:11px; font-weight:700; color:var(--ink3);
+    letter-spacing:.04em;
+  }
+  .nf-card-meta svg { width:13px; height:13px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .nf-success .nf-card-meta { color:var(--orange-dk); }
+  .nf-alert   .nf-card-meta { color:var(--ink3); }
 
-.msg-meta{
-  margin-top: 8px;
-  font-size: 11px;
-  color: var(--mut);
-  letter-spacing: .02em;
-  font-weight: 600;
-}
+  /* ── Empty state ── */
+  .nf-empty {
+    text-align:center;
+    padding:56px 20px 64px;
+    animation:fadeUp .5s ease-out .08s both;
+  }
+  .nf-empty-ico {
+    width:84px; height:84px; border-radius:28px;
+    background:linear-gradient(135deg,rgba(10,36,99,.06),rgba(255,140,0,.08));
+    border:1px solid rgba(10,36,99,.12);
+    margin:0 auto 22px;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 8px 28px rgba(10,36,99,.09);
+    animation:bellRock 3.5s ease-in-out 1s infinite;
+  }
+  .nf-empty-ico svg { width:36px; height:36px; fill:none; stroke:var(--navy); stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+  .nf-empty-title {
+    font-size:19px; font-weight:900; color:var(--ink);
+    letter-spacing:-.2px; margin-bottom:10px;
+  }
+  .nf-empty-sub {
+    font-size:13.5px; font-weight:500; color:var(--ink2);
+    line-height:1.65; max-width:270px; margin:0 auto;
+  }
 
-/* ===== Empty state ===== */
-.empty-state{
-  padding: 56px 20px;
-  text-align: center;
-}
-.empty-ico{
-  width: 76px; height: 76px;
-  border-radius: 22px;
-  background: linear-gradient(135deg, rgba(0,50,160,.08), rgba(254,209,65,.10));
-  border: 1px solid rgba(0,50,160,.22);
-  margin: 0 auto 18px;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 8px 22px rgba(0,50,160,.12);
-}
-.empty-ico svg{ width: 32px; height: 32px; stroke: var(--ph-blue); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.empty-title{
-  color: var(--ph-blue-dark);
-  font-weight: 950;
-  font-size: 18px;
-  margin-bottom: 8px;
-  letter-spacing: -.2px;
-}
-.empty-sub{
-  color: var(--mut);
-  font-size: 13.5px;
-  line-height: 1.55;
-  font-weight: 500;
-}
+  @media(max-width:480px){
+    .nf-hero { padding:52px 18px 26px; }
+    .nf-hero-title { font-size:19px; }
+    .nf-card-title { font-size:14.5px; }
+    .nf-card-msg { font-size:13px; }
+  }
 </style>
 
-<div class="dash-wrap">
+<div class="nf-outer">
 
-  <!-- Top row: title + back -->
-  <div class="top-row">
-    <div class="page-title">
-      Notifications
-      <small>Your latest updates</small>
+  <!-- ══ HERO ══ -->
+  <div class="nf-hero">
+    <div class="nf-badge">
+      <div class="nf-badge-dot">OFL</div>
+      <span class="nf-badge-txt">Overseas FilipinoLoan</span>
     </div>
 
-    <a class="back-btn" href="{% url 'dashboard' %}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="15 18 9 12 15 6"/>
-      </svg>
+    <a class="nf-back" href="{% url 'dashboard' %}">
+      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
       Back
     </a>
-  </div>
 
-  <!-- Notifications card -->
-  <div class="glass">
+    <div class="nf-bell-wrap">
+      {% if items %}<div class="nf-bell-ring"></div>{% endif %}
+      <div class="nf-bell-ico">
+        <svg viewBox="0 0 24 24">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="nf-hero-title">Notifications</div>
+    <div class="nf-hero-sub">Your latest updates</div>
 
     {% if items %}
+      {% if unread_count %}
+        <div class="nf-count-pill">{{ unread_count }} New Message{{ unread_count|pluralize }}</div>
+      {% else %}
+        <div class="nf-count-pill" style="background:linear-gradient(135deg,#475569,#64748b);box-shadow:0 4px 16px rgba(71,85,105,.35);">
+          {{ items|length }} Message{{ items|length|pluralize }} &nbsp;·&nbsp; Read
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+
+  <!-- ══ STREAM ══ -->
+  <div class="nf-stream">
+
+    {% if items %}
+
       {% for n in items %}
         {% if n.kind == "success" %}
-          <div class="msg-box success">
-            <div class="msg-ico" aria-hidden="true">
-              <svg viewBox="0 0 24 24">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
+
+        <div class="nf-card nf-success">
+          <div class="nf-card-head">
+            <div class="nf-head-ico">
+              <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
-            <div class="msg-body">
-              <div class="msg-head">{{ n.title }}</div>
-              <div class="msg-text">{{ n.msg }}</div>
-              {% if n.at %}
-                <div class="msg-meta">Updated: {{ n.at }}</div>
-              {% endif %}
-            </div>
+            <span class="nf-head-label">Congratulations</span>
+            {% if n.at %}<span class="nf-head-time">{{ n.at|timesince }} ago</span>{% endif %}
           </div>
+          <div class="nf-card-body">
+            <div class="nf-card-title">{{ n.title }}</div>
+            <div class="nf-card-msg">{{ n.msg }}</div>
+            {% if n.at %}
+            <div class="nf-card-meta">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Updated {{ n.at|timesince }} ago
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
         {% else %}
-          <div class="msg-box danger">
-            <div class="msg-ico" aria-hidden="true">
+
+        <div class="nf-card nf-alert">
+          <div class="nf-card-head">
+            <div class="nf-head-ico">
               <svg viewBox="0 0 24 24">
                 <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
                 <line x1="12" y1="9" x2="12" y2="13"/>
                 <line x1="12" y1="17" x2="12.01" y2="17"/>
               </svg>
             </div>
-
-            <div class="msg-body">
-              <div class="msg-head">{{ n.title }}</div>
-              <div class="msg-text">{{ n.msg }}</div>
-              {% if n.at %}
-                <div class="msg-meta">Updated: {{ n.at }}</div>
-              {% endif %}
-            </div>
+            <span class="nf-head-label">Important Notice</span>
+            {% if n.at %}<span class="nf-head-time">{{ n.at|timesince }} ago</span>{% endif %}
           </div>
+          <div class="nf-card-body">
+            <div class="nf-card-title">{{ n.title }}</div>
+            <div class="nf-card-msg">{{ n.msg }}</div>
+            {% if n.at %}
+            <div class="nf-card-meta">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              Updated {{ n.at|timesince }} ago
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
         {% endif %}
       {% endfor %}
+
     {% else %}
-      <div class="empty-state">
-        <div class="empty-ico">
+
+      <div class="nf-empty">
+        <div class="nf-empty-ico">
           <svg viewBox="0 0 24 24">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
             <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
           </svg>
         </div>
-        <div class="empty-title">No notifications yet</div>
-        <div class="empty-sub">You don't have any new messages right now. We'll notify you when something arrives.</div>
+        <div class="nf-empty-title">You're all caught up</div>
+        <div class="nf-empty-sub">No new notifications right now. We'll let you know as soon as something arrives.</div>
       </div>
+
     {% endif %}
 
-  </div>
+  </div><!-- /.nf-stream -->
 
-</div>
+</div><!-- /.nf-outer -->
 {% endblock %}

@@ -1,666 +1,1038 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Payment Method{% endblock %}
 
 {% block content %}
 <style>
-/* ===== Overseas FilipinoLoan Payment Method — Filipino Flag Style ===== */
-
+/* OFL Payment Method — Navy / Orange / White */
 :root {
-  --ph-blue: #0032A0;
-  --ph-blue-dark: #00226e;
-  --ph-red: #BF0D3E;
-  --ph-red-dark: #8b0628;
-  --ph-gold: #FED141;
-  --ph-gold-dark: #e6b820;
-  --ink: #0a1a3a;
-  --mut: #5a6378;
-  --line: #e3e8f1;
+  --navy:#0A2463; --navy-dk:#061540; --navy-lt:#1a3a8a; --navy-mid:#0d2b75;
+  --orange:#FF8C00; --orange-dk:#D97200; --orange-lt:#FFA733;
+  --bg:#f0f3f9; --card:#fff;
+  --ink:#0d1b3e; --ink2:#5a6680; --ink3:#9aa3b8; --line:#e6eaf4;
+}
+html,body { width:100%; overflow-x:hidden; }
+body { margin:0; font-family:"Lato","Open Sans",system-ui,sans-serif; color:var(--ink); background:var(--bg); }
+body,body * { font-family:"Lato","Open Sans",system-ui,sans-serif !important; }
+.wrap { padding-top:0 !important; display:block !important; }
+
+@keyframes pmFadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pmDotBlink { 0%,100%{opacity:.3} 50%{opacity:1} }
+@keyframes pmShine {
+  0%,65%{transform:translateX(-200%)}
+  100%{transform:translateX(200%)}
 }
 
-html, body { width: 100%; overflow-x: hidden; }
+/* ── Page wrap ── */
+.pm-page { width:min(520px,96vw); max-width:520px; margin:0 auto; padding:0 14px 60px; box-sizing:border-box; }
 
-body {
-  margin: 0;
-  min-height: 100vh;
-  font-family: "Lato", "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
-  color: var(--ink) !important;
-  background:
-    radial-gradient(800px 600px at 15% 20%, rgba(0,50,160,.10) 0%, transparent 60%),
-    radial-gradient(700px 500px at 85% 80%, rgba(191,13,62,.08) 0%, transparent 60%),
-    radial-gradient(500px 400px at 50% 50%, rgba(254,209,65,.10) 0%, transparent 65%),
-    linear-gradient(180deg, #fafbff 0%, #eef2fb 100%) !important;
-  background-attachment: fixed !important;
-}
-body, body *, body button, body input, body select, body textarea, body a {
-  font-family: "Lato", "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
-}
-
-.wrap { padding-top: 0 !important; display: block !important; }
-
-/* ====================================================== */
-/* ===== Filipino flag theme overrides ================== */
-/* ====================================================== */
-
-.pm-pagetitle { color: var(--ph-blue-dark) !important; font-size: 24px !important; font-weight: 950 !important; letter-spacing: -.4px !important; }
-.pm-pagetitle small { color: var(--mut) !important; font-weight: 600 !important; }
-
-/* Hero "credit card" preview — keep navy with PH gold accents */
+/* ── Hero ── */
 .pm-hero {
-  background:
-    radial-gradient(140% 100% at 0% 0%, rgba(254,209,65,.18) 0%, transparent 55%) !important,
-    radial-gradient(140% 100% at 100% 100%, rgba(191,13,62,.22) 0%, transparent 55%) !important,
-    linear-gradient(135deg, var(--ph-blue-dark) 0%, var(--ph-blue) 100%) !important;
-  border: 1px solid rgba(254,209,65,.40) !important;
-  box-shadow:
-    0 0 0 1px rgba(254,209,65,.08),
-    0 12px 28px rgba(0,34,110,.30),
-    inset 0 1px 0 rgba(255,255,255,.10) !important;
-  backdrop-filter: none !important;
+  position:relative; overflow:hidden; margin:0 -14px;
+  background:linear-gradient(150deg,var(--navy-dk) 0%,var(--navy) 52%,var(--navy-mid) 100%);
+  padding:max(22px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-left)) 28px max(18px,env(safe-area-inset-left));
+}
+.pm-hero::before {
+  content:""; position:absolute; inset:0;
+  background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);
+  background-size:20px 20px; pointer-events:none;
 }
 .pm-hero::after {
-  background: linear-gradient(120deg, transparent 0%, rgba(254,209,65,.18) 50%, transparent 100%) !important;
+  content:""; position:absolute; bottom:-60px; right:-50px;
+  width:180px; height:180px; border-radius:50%;
+  background:radial-gradient(circle,rgba(255,140,0,.18),transparent 70%);
+  pointer-events:none;
 }
-.pm-hero-chip {
-  background: linear-gradient(135deg, var(--ph-gold), var(--ph-gold-dark)) !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,.30) !important;
-}
-.pm-hero-brandname { color: rgba(255,255,255,.75) !important; }
+.pm-hero > * { position:relative; z-index:2; }
 
-.pm-hero-status.saved {
-  background: rgba(22,163,74,.18) !important;
-  color: #6ee7b7 !important;
-  border-color: rgba(22,163,74,.55) !important;
+.pm-hero-top {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:16px;
+  opacity:0; animation:pmFadeUp .38s ease-out .04s both;
 }
-.pm-hero-status.not-set {
-  background: rgba(254,209,65,.18) !important;
-  color: var(--ph-gold) !important;
-  border-color: rgba(254,209,65,.55) !important;
+.pm-badge {
+  display:flex; align-items:center; gap:7px;
+  background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.15);
+  border-radius:999px; padding:5px 13px;
+  font-size:9px; font-weight:900; color:var(--orange-lt); letter-spacing:.20em; text-transform:uppercase;
 }
+.pm-badge-dot { width:5px; height:5px; border-radius:50%; background:var(--orange-lt); animation:pmDotBlink 1.6s ease-in-out infinite; }
 
-.pm-hero-number .grp {
-  border-bottom: 1px dashed rgba(254,209,65,.45) !important;
-  color: #ffffff !important;
+.pm-status-pill {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:5px 12px; border-radius:999px;
+  font-size:9.5px; font-weight:900; letter-spacing:.12em; text-transform:uppercase;
 }
+.pm-status-pill .sdot { width:5px; height:5px; border-radius:50%; background:currentColor; }
+.pm-status-pill.saved   { background:rgba(22,163,74,.18); color:#86efac; border:1px solid rgba(22,163,74,.45); }
+.pm-status-pill.pending { background:rgba(255,167,51,.15); color:var(--orange-lt); border:1px solid rgba(255,167,51,.35); }
 
-.pm-hero-lbl { color: rgba(255,255,255,.55) !important; }
-.pm-hero-val { color: #ffffff !important; }
-.pm-hero-val.dim { color: rgba(255,255,255,.45) !important; }
-
-/* Form card — white with PH stripe */
-.pm-form {
-  background: #ffffff !important;
-  border: 1px solid var(--line) !important;
-  box-shadow: 0 4px 20px rgba(0,50,160,.08), 0 1px 3px rgba(0,0,0,.04) !important;
-  color: var(--ink) !important;
-  backdrop-filter: none !important;
-  position: relative !important;
+.pm-hero-title {
+  font-size:26px; font-weight:900; color:#fff; letter-spacing:-.3px; margin-bottom:3px;
+  opacity:0; animation:pmFadeUp .38s ease-out .10s both;
 }
-.pm-form::before {
-  content: "" !important;
-  position: absolute !important;
-  top: 0 !important; left: 0 !important; right: 0 !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, var(--ph-blue), var(--ph-red), var(--ph-gold)) !important;
-  border-radius: 22px 22px 0 0 !important;
+.pm-hero-sub {
+  font-size:12px; font-weight:600; color:rgba(255,255,255,.55);
+  margin-bottom:22px;
+  opacity:0; animation:pmFadeUp .38s ease-out .15s both;
 }
 
-.pm-sec-title {
-  color: var(--ph-blue-dark) !important;
-  border-bottom: 1px solid var(--line) !important;
-}
-.pm-sec-title svg { stroke: var(--ph-blue) !important; }
-
-.pm-label { color: var(--ph-blue-dark) !important; }
-
-/* Dark mode: Bank Details title icon + Account labels → white */
-html[data-theme="dark"] .pm-sec-title{ color:#ffffff !important; }
-html[data-theme="dark"] .pm-sec-title svg{ stroke:#ffffff !important; }
-html[data-theme="dark"] .pm-label{ color:#ffffff !important; }
-
-/* Inputs */
-.pm-form input,
-.pm-form input[type="text"],
-.pm-form input[type="number"],
-.pm-form input[type="tel"],
-.pm-form input[type="email"] {
-  background: #ffffff !important;
-  border: 1.5px solid var(--line) !important;
-  color: var(--ink) !important;
-  caret-color: var(--ph-blue) !important;
-}
-.pm-form input::placeholder { color: #9ca3af !important; }
-.pm-form input:focus {
-  border-color: var(--ph-blue) !important;
-  background: #ffffff !important;
-  box-shadow: 0 0 0 4px rgba(0,50,160,.10) !important;
+/* ── Preview card ── */
+.pm-preview {
+  position:relative; border-radius:18px; overflow:hidden;
+  height:170px;
+  box-shadow:0 16px 40px rgba(0,0,0,.32), 0 2px 8px rgba(0,0,0,.14);
+  opacity:0; animation:pmFadeUp .42s ease-out .22s both;
 }
 
-/* Locked inputs */
-.pm-locked input {
-  background: rgba(0,50,160,.05) !important;
-  border-color: rgba(0,50,160,.25) !important;
-  color: var(--ph-blue-dark) !important;
+/* Bank face */
+.pm-face {
+  position:absolute; inset:0;
+  padding:18px 20px 16px;
+  display:flex; flex-direction:column; justify-content:space-between;
+  transition:opacity .28s ease, transform .28s ease;
+}
+.pm-face-bank {
+  background:linear-gradient(130deg,var(--navy-lt) 0%,var(--navy) 55%,var(--navy-dk) 100%);
+}
+.pm-face-bank::after {
+  content:""; position:absolute; top:0; left:0; width:55%; height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);
+  animation:pmShine 6s ease-in-out infinite; pointer-events:none;
+}
+.pm-face-wallet {
+  background:linear-gradient(130deg,var(--orange-lt) 0%,var(--orange) 52%,var(--orange-dk) 100%);
+  opacity:0; pointer-events:none; transform:translateY(8px);
+}
+.pm-face-wallet::before {
+  content:""; position:absolute; inset:0;
+  background-image:radial-gradient(rgba(255,255,255,.16) 1px,transparent 1px);
+  background-size:16px 16px; pointer-events:none;
+}
+.pm-face.is-out  { opacity:0; transform:translateY(-8px); pointer-events:none; }
+.pm-face.is-in   { opacity:1; transform:translateY(0);    pointer-events:auto; }
+.pm-face > * { position:relative; z-index:2; }
+
+.pm-face-top { display:flex; align-items:center; justify-content:space-between; }
+.pm-face-type { font-size:9px; font-weight:900; letter-spacing:.20em; text-transform:uppercase; color:rgba(255,255,255,.65); }
+
+/* Chip */
+.pm-chip {
+  width:34px; height:26px; border-radius:5px;
+  background:linear-gradient(135deg,var(--orange-lt),var(--orange-dk));
+  position:relative;
+}
+.pm-chip::before {
+  content:""; position:absolute; inset:4px; border-radius:3px;
+  background:linear-gradient(135deg,rgba(255,255,255,.38),transparent 60%);
+  border:1px solid rgba(255,255,255,.22);
 }
 
-/* Locked notice */
-.pm-lock-note {
-  background: rgba(254,209,65,.10) !important;
-  border: 1px solid rgba(254,209,65,.45) !important;
-  border-left: 4px solid var(--ph-gold) !important;
-  color: var(--ph-gold-dark) !important;
+/* Wallet badge */
+.pm-wico {
+  width:36px; height:36px; border-radius:10px;
+  background:rgba(255,255,255,.22); border:1px solid rgba(255,255,255,.32);
+  display:flex; align-items:center; justify-content:center;
 }
-.pm-lock-note svg { stroke: var(--ph-gold-dark) !important; }
+.pm-wico svg { width:20px; height:20px; stroke:#fff; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
 
-/* Buttons */
-.pm-btn-primary {
-  background: linear-gradient(135deg, var(--ph-red), var(--ph-red-dark)) !important;
-  color: #fff !important;
-  border: 0 !important;
-  box-shadow: 0 6px 18px rgba(191,13,62,.40) !important;
+.pm-card-num {
+  display:flex; gap:10px; align-items:center;
+  font-size:14px; font-weight:900; letter-spacing:.18em; color:#fff;
 }
-.pm-btn-primary:hover {
-  box-shadow: 0 10px 26px rgba(191,13,62,.55) !important;
-  filter: brightness(1.08) !important;
+.pm-card-phone {
+  font-size:18px; font-weight:900; letter-spacing:.06em; color:#fff; text-align:center;
 }
-.pm-btn-primary:disabled {
-  background: var(--line) !important;
-  color: var(--mut) !important;
-  border: 0 !important;
-  box-shadow: none !important;
-}
-.pm-btn-ghost {
-  background: #ffffff !important;
-  color: var(--ph-blue-dark) !important;
-  border: 2px solid var(--ph-blue) !important;
-  box-shadow: 0 4px 12px rgba(0,50,160,.12) !important;
-  backdrop-filter: none !important;
-}
-.pm-btn-ghost:hover {
-  background: var(--ph-blue) !important;
-  color: #fff !important;
-  box-shadow: 0 8px 18px rgba(0,50,160,.30) !important;
-}
+.pm-face-foot { display:flex; justify-content:space-between; align-items:flex-end; }
+.pm-flbl { font-size:8.5px; font-weight:800; color:rgba(255,255,255,.52); letter-spacing:.16em; text-transform:uppercase; margin-bottom:3px; }
+.pm-fval { font-size:12px; font-weight:900; color:#fff; letter-spacing:.01em; word-break:break-all; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.pm-fval.dim { color:rgba(255,255,255,.38); font-weight:700; font-style:italic; }
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+/* ── Body ── */
+.pm-body { margin-top:14px; }
 
-/* Wrapper */
-.pm-wrap {
-  width: min(520px, 94vw);
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 22px 14px 40px;
-  box-sizing: border-box;
+/* ── Method tiles ── */
+.pm-tiles {
+  display:grid; grid-template-columns:1fr 1fr; gap:12px;
+  margin-bottom:14px;
+  opacity:0; animation:pmFadeUp .40s ease-out .28s both;
 }
+.pm-tile {
+  position:relative; background:#fff; border-radius:18px;
+  border:1.5px solid var(--line);
+  padding:14px 14px 13px; cursor:pointer; user-select:none;
+  transition:border-color .2s, box-shadow .2s, transform .15s;
+  overflow:hidden;
+}
+.pm-tile:active { transform:scale(.97); }
+.pm-tile::before {
+  content:""; position:absolute; top:0; left:0; right:0; height:3px;
+  border-radius:18px 18px 0 0;
+  background:var(--line); transition:background .25s;
+}
+.pm-tile.active { border-color:var(--orange); box-shadow:0 4px 20px rgba(255,140,0,.20); }
+.pm-tile.active::before { background:linear-gradient(90deg,var(--orange-lt),var(--orange-dk)); }
 
-/* Top row */
-.pm-top {
-  margin-bottom: 18px;
-  opacity: 0;
-  animation: fadeInUp .5s ease-out .05s forwards;
+.pm-tile-ico {
+  width:42px; height:42px; border-radius:14px; margin-bottom:10px;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(10,36,99,.08); border:1.5px solid rgba(10,36,99,.12);
+  transition:background .22s, border-color .22s, box-shadow .22s;
 }
-.pm-pagetitle {
-  font-size: 22px;
-  font-weight: 950;
-  color: #fff;
-  letter-spacing: -.2px;
+.pm-tile-ico svg { width:21px; height:21px; stroke:var(--navy); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; transition:stroke .22s; }
+.pm-tile.active .pm-tile-ico {
+  background:linear-gradient(135deg,var(--orange-lt),var(--orange-dk));
+  border-color:var(--orange-dk); box-shadow:0 4px 14px rgba(255,140,0,.34);
 }
-.pm-pagetitle small {
-  display: block;
-  color: #94a3b8;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: .02em;
-  margin-top: 2px;
-}
+.pm-tile.active .pm-tile-ico svg { stroke:#fff; }
 
-/* ===== Hero card (bank visual) ===== */
-.pm-hero {
-  position: relative;
-  padding: 20px !important;
-  border-radius: 22px !important;
-  background:
-    radial-gradient(140% 100% at 0% 0%, rgba(56,189,248,.28) 0%, transparent 60%),
-    radial-gradient(140% 100% at 100% 100%, rgba(139,92,246,.28) 0%, transparent 60%),
-    linear-gradient(180deg, rgba(15,23,42,.60) 0%, rgba(10,16,32,.50) 100%) !important;
-  backdrop-filter: blur(24px) saturate(140%);
-  -webkit-backdrop-filter: blur(24px) saturate(140%);
-  border: 1px solid rgba(56,189,248,.45) !important;
-  box-shadow:
-    0 0 0 1px rgba(56,189,248,.08),
-    0 0 24px rgba(56,189,248,.18),
-    0 20px 60px rgba(2,6,23,.55),
-    inset 0 1px 0 rgba(255,255,255,.08) !important;
-  color: #e6edf7 !important;
-  margin: 0 0 14px;
-  overflow: hidden;
-  animation: fadeInUp .55s ease-out .1s both;
-}
-.pm-hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(120deg, transparent 0%, rgba(56,189,248,.10) 50%, transparent 100%);
-  transform: translateX(-120%);
-  animation: heroShine 4.5s ease-in-out infinite;
-}
-@keyframes heroShine {
-  0%, 55% { transform: translateX(-120%); }
-  100%    { transform: translateX(120%); }
-}
-.pm-hero > * { position: relative; z-index: 2; }
+.pm-tile-name { font-size:13px; font-weight:900; color:var(--ink); letter-spacing:-.1px; margin-bottom:2px; }
+.pm-tile-sub  { font-size:10.5px; font-weight:600; color:var(--ink3); }
+.pm-tile.active .pm-tile-name { color:var(--orange-dk); }
 
-.pm-hero-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+.pm-tile-chk {
+  position:absolute; top:10px; right:10px;
+  width:20px; height:20px; border-radius:50%;
+  background:linear-gradient(135deg,var(--orange-lt),var(--orange-dk));
+  display:flex; align-items:center; justify-content:center;
+  opacity:0; transform:scale(.4); transition:opacity .2s, transform .22s;
 }
-.pm-hero-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.pm-hero-chip {
-  width: 38px;
-  height: 28px;
-  border-radius: 5px;
-  background: linear-gradient(135deg, #fbbf24, #f59e0b);
-  position: relative;
-  box-shadow: 0 2px 8px rgba(0,0,0,.30);
-}
-.pm-hero-chip::before {
-  content: "";
-  position: absolute;
-  inset: 4px;
-  border-radius: 3px;
-  background: linear-gradient(135deg, rgba(255,255,255,.35), transparent 60%);
-  border: 1px solid rgba(255,255,255,.20);
-}
-.pm-hero-brandname {
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: .22em;
-  text-transform: uppercase;
-  color: #cbd5e1;
-}
-.pm-hero-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 900;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-.pm-hero-status.saved {
-  background: rgba(16,185,129,.15);
-  color: #6ee7b7;
-  border: 1px solid rgba(16,185,129,.55);
-  box-shadow: 0 0 12px rgba(16,185,129,.18);
-}
-.pm-hero-status.not-set {
-  background: rgba(234,179,8,.15);
-  color: #fde68a;
-  border: 1px solid rgba(234,179,8,.55);
-  box-shadow: 0 0 12px rgba(234,179,8,.18);
-}
-.pm-hero-status .dot {
-  width: 6px; height: 6px;
-  border-radius: 999px;
-  background: currentColor;
-  box-shadow: 0 0 8px currentColor;
-}
+.pm-tile-chk svg { width:11px; height:11px; stroke:#fff; fill:none; stroke-width:2.8; stroke-linecap:round; stroke-linejoin:round; }
+.pm-tile.active .pm-tile-chk { opacity:1; transform:scale(1); }
 
-.pm-hero-number {
-  margin: 22px 0 14px;
-  display: flex;
-  gap: 14px;
-  font-family: "Lato", "Open Sans", ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 18px;
-  font-weight: 900;
-  letter-spacing: .12em;
-  color: #e6edf7;
-}
-.pm-hero-number .grp {
-  min-width: 58px;
-  padding-bottom: 6px;
-  border-bottom: 1px dashed rgba(56,189,248,.35);
-  text-align: center;
-}
+html[data-theme="dark"] .pm-tile { background:#1a2440; border-color:rgba(255,255,255,.10); }
+html[data-theme="dark"] .pm-tile.active { border-color:var(--orange); }
+html[data-theme="dark"] .pm-tile::before { background:rgba(255,255,255,.08); }
+html[data-theme="dark"] .pm-tile.active::before { background:linear-gradient(90deg,var(--orange-lt),var(--orange-dk)); }
+html[data-theme="dark"] .pm-tile-ico { background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.12); }
+html[data-theme="dark"] .pm-tile-ico svg { stroke:rgba(200,220,255,.80); }
+html[data-theme="dark"] .pm-tile-name { color:#fff; }
+html[data-theme="dark"] .pm-tile-sub  { color:rgba(255,255,255,.40); }
+html[data-theme="dark"] .pm-tile.active .pm-tile-name { color:var(--orange-lt); }
 
-.pm-hero-foot {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
+/* ── Form card ── */
+.pm-card {
+  background:#fff; border-radius:20px;
+  border:1px solid var(--line);
+  box-shadow:0 8px 28px rgba(10,36,99,.09), 0 2px 6px rgba(0,0,0,.04);
+  overflow:hidden; margin-bottom:14px;
+  opacity:0; animation:pmFadeUp .40s ease-out .34s both;
 }
-.pm-hero-lbl {
-  font-size: 10px;
-  font-weight: 800;
-  color: #64748b;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  margin-bottom: 3px;
+.pm-card-hd {
+  display:flex; align-items:center; gap:12px;
+  padding:14px 18px 13px; border-bottom:1px solid var(--line);
 }
-.pm-hero-val {
-  font-size: 13px;
-  font-weight: 900;
-  color: #fff;
-  letter-spacing: .02em;
-  word-break: break-word;
+.pm-hd-ico {
+  width:40px; height:40px; border-radius:13px; flex:0 0 auto;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(135deg,var(--orange-lt),var(--orange-dk));
+  box-shadow:0 4px 14px rgba(255,140,0,.30);
 }
-.pm-hero-val.dim { color: #64748b; font-weight: 700; }
+.pm-hd-ico svg { width:19px; height:19px; stroke:#fff; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+.pm-hd-eyebrow { font-size:8.5px; font-weight:900; color:var(--ink3); letter-spacing:.18em; text-transform:uppercase; margin-bottom:2px; }
+.pm-hd-name { font-size:14.5px; font-weight:900; color:var(--navy); letter-spacing:-.1px; }
 
-/* ===== Form card ===== */
-.pm-form {
-  position: relative;
-  padding: 20px !important;
-  border-radius: 22px !important;
-  background: linear-gradient(180deg, rgba(15,23,42,.55) 0%, rgba(10,16,32,.45) 100%) !important;
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
-  border: 1px solid rgba(56,189,248,.30) !important;
-  box-shadow:
-    0 0 0 1px rgba(56,189,248,.05),
-    0 16px 40px rgba(2,6,23,.45) !important;
-  color: #e6edf7 !important;
-  margin: 0 0 16px;
-  overflow: hidden;
-  animation: fadeInUp .5s ease-out .18s both;
-}
+html[data-theme="dark"] .pm-card { background:#1a2440; border-color:rgba(255,255,255,.10); }
+html[data-theme="dark"] .pm-hd-name { color:#fff; }
+html[data-theme="dark"] .pm-hd-eyebrow { color:rgba(255,255,255,.35); }
+html[data-theme="dark"] .pm-card-hd { border-color:rgba(255,255,255,.08); }
 
-.pm-sec-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #93c5fd;
-  font-weight: 900;
-  font-size: 11px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  margin: 0 0 12px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(56,189,248,.18);
-}
-.pm-sec-title svg { width: 14px; height: 14px; stroke: #38bdf8; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
+.pm-card-body { padding:18px 18px 16px; }
 
-.pm-field { margin-bottom: 14px; }
-.pm-field:last-child { margin-bottom: 0; }
-.pm-label {
-  display: block;
-  font-size: 11px;
-  font-weight: 800;
-  color: #94a3b8;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  margin-bottom: 6px;
-}
+/* ── Sections ── */
+.pm-section { display:none; }
+.pm-section.active { display:block; }
 
-.pm-form input,
-.pm-form input[type="text"],
-.pm-form input[type="number"],
-.pm-form input[type="tel"],
-.pm-form input[type="email"] {
-  width: 100%;
-  padding: 13px 16px;
-  border-radius: 12px;
-  border: 1.5px solid rgba(56,189,248,.28);
-  background: rgba(30,41,59,.60);
-  color: #ffffff;
-  font-size: 14px;
-  font-weight: 700;
-  letter-spacing: .02em;
-  outline: none;
-  box-sizing: border-box;
-  transition: border-color .2s, box-shadow .2s, background .2s;
+/* ── Fields ── */
+.pm-field { margin-bottom:15px; }
+.pm-field:last-child { margin-bottom:0; }
+.pm-lbl {
+  display:block; font-size:10.5px; font-weight:900; color:var(--ink2);
+  letter-spacing:.12em; text-transform:uppercase; margin-bottom:7px;
 }
-.pm-form input::placeholder {
-  color: #64748b;
-  font-weight: 600;
+.pm-iw { position:relative; }
+.pm-iw-ico {
+  position:absolute; left:14px; top:50%; transform:translateY(-50%); pointer-events:none;
 }
-.pm-form input:focus {
-  border-color: rgba(56,189,248,.70);
-  background: rgba(30,41,59,.80);
-  box-shadow: 0 0 0 3px rgba(56,189,248,.18), 0 0 14px rgba(56,189,248,.22);
+.pm-iw-ico svg { width:18px; height:18px; stroke:var(--ink3); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.pm-input {
+  width:100%; box-sizing:border-box;
+  padding:13px 14px 13px 42px;
+  border-radius:13px; border:1.5px solid var(--line);
+  background:#fff; color:var(--ink);
+  font-size:14px; font-weight:700; font-family:inherit;
+  outline:none; transition:border-color .2s, box-shadow .2s;
+  letter-spacing:.01em;
 }
+.pm-input::placeholder { color:var(--ink3); font-weight:600; font-size:13px; }
+.pm-input:focus { border-color:var(--orange); box-shadow:0 0 0 4px rgba(255,140,0,.10); }
+.pm-input:read-only { background:rgba(10,36,99,.04); border-color:rgba(10,36,99,.14); color:var(--navy); cursor:default; }
 
-/* Locked inputs */
-.pm-locked input {
-  background: rgba(56,189,248,.08) !important;
-  border-color: rgba(56,189,248,.25) !important;
-  color: #93c5fd !important;
-  pointer-events: none;
-  cursor: not-allowed;
-}
+html[data-theme="dark"] .pm-input { background:#111927; border-color:rgba(255,255,255,.10); color:#fff; }
+html[data-theme="dark"] .pm-input:focus { border-color:var(--orange); box-shadow:0 0 0 4px rgba(255,140,0,.12); }
+html[data-theme="dark"] .pm-input:read-only { background:rgba(255,255,255,.05); color:rgba(200,220,255,.80); border-color:rgba(255,255,255,.10); }
+html[data-theme="dark"] .pm-iw-ico svg { stroke:rgba(255,255,255,.30); }
+html[data-theme="dark"] .pm-lbl { color:rgba(255,255,255,.45); }
 
-/* Locked notice */
-.pm-lock-note {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 14px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: rgba(234,179,8,.10);
-  border: 1px solid rgba(234,179,8,.35);
-  color: #fde68a;
-  font-size: 12.5px;
-  font-weight: 700;
-  line-height: 1.4;
+/* ── Error banner ── */
+.pm-err {
+  display:flex; align-items:flex-start; gap:10px;
+  background:rgba(220,38,38,.07); border:1px solid rgba(220,38,38,.20);
+  border-left:3px solid #dc2626; border-radius:13px;
+  padding:11px 14px; margin-bottom:14px;
+  font-size:12.5px; font-weight:700; color:#b91c1c; line-height:1.5;
 }
-.pm-lock-note svg { width: 16px; height: 16px; fill: none; stroke: #fde68a; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
+.pm-err svg { flex:0 0 auto; width:16px; height:16px; stroke:#dc2626; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; margin-top:1px; }
+html[data-theme="dark"] .pm-err { color:#fca5a5; }
 
-/* ===== Actions ===== */
-.pm-actions {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 6px;
-  opacity: 0;
-  animation: fadeInUp .5s ease-out .28s forwards;
+/* ── Lock notice (inside card) ── */
+.pm-lock {
+  display:flex; align-items:center; gap:12px;
+  background:rgba(255,140,0,.07); border:1px solid rgba(255,140,0,.22);
+  border-radius:14px; padding:13px 14px; margin-top:15px;
 }
-.pm-actions .pm-btn{
-  flex: 0 1 auto;
-  min-width: 220px;
+.pm-lock-ico {
+  width:36px; height:36px; border-radius:11px; flex:0 0 auto;
+  background:rgba(255,140,0,.14); display:flex; align-items:center; justify-content:center;
 }
+.pm-lock-ico svg { width:17px; height:17px; stroke:var(--orange-dk); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.pm-lock-lbl { font-size:10.5px; font-weight:900; color:var(--orange-dk); letter-spacing:.08em; text-transform:uppercase; margin-bottom:2px; }
+.pm-lock-sub { font-size:11.5px; font-weight:600; color:var(--ink2); line-height:1.4; }
+html[data-theme="dark"] .pm-lock-sub { color:rgba(255,255,255,.45); }
+
+/* ── Actions ── */
+.pm-actions { opacity:0; animation:pmFadeUp .40s ease-out .40s both; }
 .pm-btn {
-  flex: 1;
-  padding: 15px 20px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  text-decoration: none;
-  text-align: center;
-  cursor: pointer;
-  border: 1px solid transparent;
-  font-family: inherit;
-  transition: all 0.2s ease;
+  width:100%; height:56px; border:0; border-radius:16px;
+  background:linear-gradient(135deg,var(--orange-lt) 0%,var(--orange) 45%,var(--orange-dk) 100%);
+  color:#fff; font-size:13.5px; font-weight:900; letter-spacing:.14em; text-transform:uppercase;
+  font-family:inherit; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  box-shadow:0 8px 24px rgba(255,140,0,.36), 0 2px 6px rgba(0,0,0,.08);
+  transition:box-shadow .2s, transform .15s;
 }
-.pm-btn-primary {
-  background: linear-gradient(135deg, #38bdf8 0%, #3b82f6 60%, #6366f1 100%);
-  color: #fff;
-  border: 1px solid rgba(56,189,248,.70);
-  box-shadow: 0 6px 20px rgba(56,189,248,.35), 0 0 18px rgba(59,130,246,.28);
-}
-.pm-btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 28px rgba(56,189,248,.50), 0 0 26px rgba(59,130,246,.40);
-}
-.pm-btn-primary:disabled {
-  background: rgba(30,41,59,.55);
-  color: #64748b;
-  border-color: rgba(56,189,248,.15);
-  box-shadow: none;
-  cursor: not-allowed;
-  transform: none;
-}
-.pm-btn-ghost {
-  background: rgba(30,41,59,.55);
-  color: #93c5fd;
-  border: 1px solid rgba(56,189,248,.35);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
-.pm-btn-ghost:hover {
-  color: #fff;
-  background: rgba(56,189,248,.12);
-  border-color: rgba(56,189,248,.60);
-  box-shadow: 0 0 20px rgba(56,189,248,.22);
-  transform: translateY(-2px);
-}
-.pm-btn:active { transform: scale(.98); }
+.pm-btn:hover { box-shadow:0 12px 32px rgba(255,140,0,.52); transform:translateY(-1px); }
+.pm-btn:active { transform:scale(.98); }
+.pm-btn.is-loading { cursor:not-allowed; opacity:.9; pointer-events:none; }
+.pm-btn svg { width:18px; height:18px; stroke:#fff; fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+.pm-btn-spinner { display:none; width:18px; height:18px; border:2.5px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:pmSpin .7s linear infinite; }
+.pm-btn.is-loading .pm-btn-spinner { display:block; }
+.pm-btn.is-loading .pm-btn-lbl { display:none; }
+@keyframes pmSpin { to{transform:rotate(360deg)} }
 
-/* Mobile overrides */
-@media (max-width: 768px) {
-  .pm-hero, .pm-form, .pm-btn-ghost {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-  .pm-hero {
-    background:
-      radial-gradient(140% 100% at 0% 0%, rgba(56,189,248,.30) 0%, transparent 60%),
-      radial-gradient(140% 100% at 100% 100%, rgba(139,92,246,.30) 0%, transparent 60%),
-      linear-gradient(180deg, rgba(15,23,42,.92) 0%, rgba(10,16,32,.88) 100%) !important;
-    animation: none !important;
-    opacity: 1 !important;
-  }
-  .pm-hero::after { animation: none !important; }
-  .pm-form {
-    animation: none !important;
-    opacity: 1 !important;
-  }
-  /* Light mode: white form card on mobile */
-  html:not([data-theme="dark"]) .pm-form {
-    background: #ffffff !important;
-  }
-  /* Dark mode: dark navy form card on mobile */
-  html[data-theme="dark"] .pm-form {
-    background: linear-gradient(180deg, rgba(15,23,42,.92) 0%, rgba(10,16,32,.88) 100%) !important;
-  }
+.pm-saved-btn {
+  width:100%; height:56px; border-radius:16px;
+  background:rgba(22,163,74,.09); border:2px solid rgba(22,163,74,.28);
+  color:#16a34a; font-size:13px; font-weight:900; letter-spacing:.12em; text-transform:uppercase;
+  font-family:inherit; cursor:default;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+}
+.pm-saved-btn svg { width:19px; height:19px; stroke:#16a34a; fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+
+@media (max-width:380px) {
+  .pm-tile-name { font-size:12px; }
+  .pm-tile-sub  { font-size:9.5px; }
+  .pm-tile-ico  { width:36px; height:36px; }
 }
 
-@media (max-width: 420px) {
-  .pm-hero-number { font-size: 16px; gap: 10px; }
-  .pm-hero-number .grp { min-width: 50px; }
+/* ── Screenshot protection ── */
+.pm-preview { position:relative; }
+.pm-card    { position:relative; }
+.pm-secure-mask {
+  position:absolute; inset:0; z-index:50; border-radius:inherit;
+  backdrop-filter:blur(20px) saturate(1.2);
+  -webkit-backdrop-filter:blur(20px) saturate(1.2);
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+  cursor:pointer; transition:opacity .28s ease, backdrop-filter .28s ease;
 }
+.pm-secure-mask.is-revealed { opacity:0; pointer-events:none; backdrop-filter:blur(0); -webkit-backdrop-filter:blur(0); }
+.pm-preview-mask { background:rgba(6,21,64,.44); }
+.pm-card-mask    { background:rgba(240,243,249,.55); }
+html[data-theme="dark"] .pm-card-mask { background:rgba(10,18,36,.60); }
+.pm-mask-ring {
+  width:48px; height:48px; border-radius:16px; margin-bottom:2px;
+  background:rgba(255,255,255,.16); border:1.5px solid rgba(255,255,255,.28);
+  display:flex; align-items:center; justify-content:center;
+}
+.pm-card-mask .pm-mask-ring {
+  background:rgba(10,36,99,.12); border-color:rgba(10,36,99,.20);
+}
+html[data-theme="dark"] .pm-card-mask .pm-mask-ring { background:rgba(255,255,255,.10); border-color:rgba(255,255,255,.18); }
+.pm-mask-ring svg { width:22px; height:22px; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.pm-preview-mask .pm-mask-ring svg { stroke:#fff; }
+.pm-card-mask .pm-mask-ring svg { stroke:var(--navy); }
+html[data-theme="dark"] .pm-card-mask .pm-mask-ring svg { stroke:rgba(200,220,255,.85); }
+.pm-mask-lbl { font-size:11px; font-weight:900; letter-spacing:.14em; text-transform:uppercase; }
+.pm-preview-mask .pm-mask-lbl { color:#fff; }
+.pm-card-mask    .pm-mask-lbl { color:var(--navy); }
+html[data-theme="dark"] .pm-card-mask .pm-mask-lbl { color:rgba(200,220,255,.90); }
+.pm-mask-sub { font-size:9.5px; font-weight:700; }
+.pm-preview-mask .pm-mask-sub { color:rgba(255,255,255,.62); }
+.pm-card-mask    .pm-mask-sub { color:var(--ink2); }
+html[data-theme="dark"] .pm-card-mask .pm-mask-sub { color:rgba(255,255,255,.45); }
+.pm-mask-timer {
+  display:none; margin-top:2px;
+  font-size:10px; font-weight:900; letter-spacing:.10em;
+  border-radius:999px; padding:3px 12px;
+}
+.pm-preview-mask .pm-mask-timer { color:#fff; background:rgba(255,255,255,.16); }
+.pm-card-mask    .pm-mask-timer { color:var(--navy); background:rgba(10,36,99,.10); }
+html[data-theme="dark"] .pm-card-mask .pm-mask-timer { color:rgba(200,220,255,.90); background:rgba(255,255,255,.10); }
+
+/* Security notice */
+.pm-notice {
+  display:flex; align-items:center; gap:10px;
+  background:rgba(10,36,99,.06); border:1px solid rgba(10,36,99,.13);
+  border-radius:14px; padding:11px 14px; margin-bottom:14px;
+  opacity:0; animation:pmFadeUp .38s ease-out .26s both;
+}
+.pm-notice-ring {
+  width:34px; height:34px; border-radius:10px; flex:0 0 auto;
+  background:rgba(10,36,99,.10); display:flex; align-items:center; justify-content:center;
+}
+.pm-notice-ring svg { width:16px; height:16px; stroke:var(--navy); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.pm-notice-title { font-size:11.5px; font-weight:900; color:var(--navy); margin-bottom:2px; }
+.pm-notice-sub   { font-size:11px; font-weight:600; color:var(--ink2); line-height:1.45; }
+html[data-theme="dark"] .pm-notice { background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.08); }
+html[data-theme="dark"] .pm-notice-ring { background:rgba(255,255,255,.08); }
+html[data-theme="dark"] .pm-notice-ring svg { stroke:rgba(200,220,255,.80); }
+html[data-theme="dark"] .pm-notice-title { color:rgba(200,220,255,.90); }
+html[data-theme="dark"] .pm-notice-sub   { color:rgba(255,255,255,.45); }
+
+/* ── OFL Coachmark Guide ── */
+@keyframes bubPop{0%{opacity:0;transform:scale(.88) translateY(8px)}70%{transform:scale(1.03) translateY(-2px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes shakeX{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
+@keyframes typeDot{0%,80%,100%{transform:scale(0);opacity:.4}40%{transform:scale(1);opacity:1}}
+.sp{position:relative;border-radius:14px;}
+.sp.shake{animation:shakeX .4s ease;}
+.chat-bubble{position:fixed;z-index:10000;background:#fff;border-radius:18px;padding:0;width:min(320px,calc(100vw - 28px));box-shadow:0 16px 48px rgba(0,0,0,.38),0 0 0 1px rgba(0,0,0,.06);display:none;opacity:0;transition:opacity .22s;}
+.chat-bubble::before{content:'';position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:13px solid #0A2463;}
+.chat-bubble.arrow-dn::before{top:auto;bottom:-12px;border-bottom:none;border-top:13px solid #fff;}
+.cb-header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 16px;background:linear-gradient(135deg,#061540,#0A2463);border-bottom:1px solid rgba(255,140,0,.22);border-radius:18px 18px 0 0;}
+.cb-char-wrap{width:54px;height:54px;flex-shrink:0;border-radius:50%;border:2.5px solid rgba(255,140,0,.65);background-size:cover;background-position:center top;background-repeat:no-repeat;background-color:rgba(255,255,255,.08);box-shadow:0 3px 12px rgba(0,0,0,.35);}
+.cb-step{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.65);}
+.cb-dots{display:flex;gap:5px;align-items:center;}
+.cb-dot{height:6px;width:6px;border-radius:99px;background:rgba(255,255,255,.25);transition:all .35s;flex-shrink:0;}
+.cb-dot.on{background:#FF8C00;width:18px;}
+.cb-msg{padding:12px 18px;font-size:14px;font-weight:700;color:#0a1a3a;line-height:1.60;}
+.cb-msg b{color:#0A2463;}
+.cb-typing{display:none;gap:5px;align-items:center;padding:0 18px 12px;}
+.cb-typing span{width:8px;height:8px;border-radius:50%;background:#7a8299;animation:typeDot 1.2s infinite ease-in-out both;}
+.cb-typing span:nth-child(2){animation-delay:.2s;}
+.cb-typing span:nth-child(3){animation-delay:.4s;}
+.cb-foot{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 14px;border-top:1px solid #f0f2f8;}
+.cb-label{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#7a8299;}
+.cb-actions{display:flex;align-items:center;gap:10px;}
+.cb-back{height:38px;padding:0 18px;border:2px solid #0A2463;border-radius:999px;background:transparent;color:#0A2463;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:.04em;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,color .15s;}
+.cb-back:hover{background:#0A2463;color:#fff;}
+.cb-next{height:38px;padding:0 24px;border:none;border-radius:999px;background:linear-gradient(135deg,#FF8C00,#D97200);color:#fff;font-size:13.5px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.05em;box-shadow:0 4px 14px rgba(255,140,0,.42);transition:transform .15s,box-shadow .15s;}
+.cb-next:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,140,0,.60);}
+@media(max-width:600px){.chat-bubble{width:calc(100vw - 20px);}}
 </style>
 
-<div class="pm-wrap pm-page">
+<div class="pm-page">
 
-  <!-- Top row: title only -->
-  <div class="pm-top">
-    <div class="pm-pagetitle">
-      Payment Method
-      <small>Add or update your payout details</small>
-    </div>
-  </div>
-
-  <!-- Hero card: bank visual -->
+  <!-- ═══ HERO ═══ -->
   <div class="pm-hero">
-    <div class="pm-hero-row">
-      <div class="pm-hero-brand">
-        <div class="pm-hero-chip"></div>
-        <div class="pm-hero-brandname">Bank Account</div>
+    <div class="pm-hero-top">
+      <div class="pm-badge">
+        <span class="pm-badge-dot"></span>
+        OFL · Payout
       </div>
-      <span class="pm-hero-status {% if saved %}saved{% else %}not-set{% endif %}">
-        <span class="dot"></span>
-        {% if saved %}Saved{% else %}Not set{% endif %}
+      <span class="pm-status-pill {% if saved %}saved{% else %}pending{% endif %}">
+        <span class="sdot"></span>
+        {% if saved %}Saved{% else %}Pending{% endif %}
       </span>
     </div>
 
-    <div class="pm-hero-number">
-      <span class="grp">••••</span>
-      <span class="grp">••••</span>
-      <span class="grp">••••</span>
-      <span class="grp">••••</span>
-    </div>
+    <div class="pm-hero-title">Payment Method</div>
+    <div class="pm-hero-sub">Where we'll send your loan funds</div>
 
-    <div class="pm-hero-foot">
-      <div style="min-width:0;">
-        <div class="pm-hero-lbl">Account Name</div>
-        <div class="pm-hero-val {% if not form.bank_name.value %}dim{% endif %}" id="heroName">{{ form.bank_name.value|default:"Not provided" }}</div>
+    <!-- Live preview card -->
+    <div class="pm-preview">
+
+      {% if locked %}
+      <div class="pm-secure-mask pm-preview-mask" id="previewMask">
+        <div class="pm-mask-ring">
+          <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        </div>
+        <div class="pm-mask-lbl">Protected</div>
+        <div class="pm-mask-sub">Tap to view for 8 seconds</div>
+        <div class="pm-mask-timer" id="previewTimer"></div>
       </div>
-      <div style="text-align:right; min-width:0;">
-        <div class="pm-hero-lbl">Account No.</div>
-        <div class="pm-hero-val {% if not form.bank_account.value %}dim{% endif %}" id="heroNumber">{{ form.bank_account.value|default:"— — — —" }}</div>
+      {% endif %}
+
+      <!-- Bank face -->
+      <div class="pm-face pm-face-bank is-in" id="faceBank">
+        <div class="pm-face-top">
+          <div class="pm-chip"></div>
+          <div class="pm-face-type">Bank Account</div>
+        </div>
+        <div class="pm-card-num">
+          <span>••••</span>
+          <span>••••</span>
+          <span>••••</span>
+          <span id="prevLast4" class="dim">????</span>
+        </div>
+        <div class="pm-face-foot">
+          <div>
+            <div class="pm-flbl">Account Name</div>
+            <div class="pm-fval dim" id="prevBankName">Not entered</div>
+          </div>
+          <div style="text-align:right">
+            <div class="pm-flbl">Account No.</div>
+            <div class="pm-fval dim" id="prevBankAcc">—</div>
+          </div>
+        </div>
       </div>
+
+      <!-- Wallet face -->
+      <div class="pm-face pm-face-wallet" id="faceWallet">
+        <div class="pm-face-top">
+          <div class="pm-wico">
+            <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          </div>
+          <div class="pm-face-type" style="color:rgba(255,255,255,.82)">Mobile Wallet</div>
+        </div>
+        <div class="pm-card-phone dim" id="prevWPhone">+63 — — — — — —</div>
+        <div class="pm-face-foot">
+          <div>
+            <div class="pm-flbl">Wallet Name</div>
+            <div class="pm-fval dim" id="prevWName">Not entered</div>
+          </div>
+          <div style="text-align:right">
+            <div class="pm-flbl">Network</div>
+            <div class="pm-fval">GCash / Maya</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.pm-preview -->
+  </div><!-- /.pm-hero -->
+
+  <!-- ═══ BODY ═══ -->
+  <div class="pm-body">
+
+    <!-- Security notice (locked state only) -->
+    {% if locked %}
+    <div class="pm-notice">
+      <div class="pm-notice-ring">
+        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div>
+        <div class="pm-notice-title">Screenshot Protected</div>
+        <div class="pm-notice-sub">Your account details are hidden. Tap the card to view them briefly.</div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Error banner -->
+    {% if form.errors %}
+    <div class="pm-err">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div>{% for e in form.non_field_errors %}{{ e }}{% endfor %}{% for f in form %}{% for e in f.errors %}{{ f.label }}: {{ e }} {% endfor %}{% endfor %}</div>
+    </div>
+    {% endif %}
+
+    <!-- Method tiles (hidden when locked) -->
+    {% if not locked %}
+    <div class="sp" id="pmSp1">
+    <div class="pm-tiles">
+
+      <div class="pm-tile" id="tileBank" data-method="bank">
+        <div class="pm-tile-chk">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="pm-tile-ico">
+          <!-- Bank / building icon -->
+          <svg viewBox="0 0 24 24">
+            <line x1="3" y1="22" x2="21" y2="22"/>
+            <line x1="3" y1="11" x2="21" y2="11"/>
+            <polyline points="3 11 12 3 21 11"/>
+            <line x1="6"  y1="11" x2="6"  y2="22"/>
+            <line x1="12" y1="11" x2="12" y2="22"/>
+            <line x1="18" y1="11" x2="18" y2="22"/>
+          </svg>
+        </div>
+        <div class="pm-tile-name">Bank</div>
+        <div class="pm-tile-sub">Bank transfer</div>
+      </div>
+
+      <div class="pm-tile" id="tileWallet" data-method="wallet">
+        <div class="pm-tile-chk">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="pm-tile-ico">
+          <!-- Phone / mobile wallet icon -->
+          <svg viewBox="0 0 24 24">
+            <rect x="5" y="2" width="14" height="20" rx="2"/>
+            <line x1="12" y1="18" x2="12.01" y2="18"/>
+          </svg>
+        </div>
+        <div class="pm-tile-name">Wallet</div>
+        <div class="pm-tile-sub">GCash / Maya</div>
+      </div>
+
+    </div>
+    </div>
+    {% endif %}
+
+    <!-- Form -->
+    <form method="post">
+      {% csrf_token %}
+
+      <!-- Form card -->
+      <div class="sp" id="pmSp2">
+      <div class="pm-card">
+        {% if locked %}
+        <div class="pm-secure-mask pm-card-mask" id="cardMask">
+          <div class="pm-mask-ring">
+            <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+          </div>
+          <div class="pm-mask-lbl">Protected</div>
+          <div class="pm-mask-sub">Tap to view for 8 seconds</div>
+          <div class="pm-mask-timer" id="cardTimer"></div>
+        </div>
+        {% endif %}
+        <div class="pm-card-hd">
+          <div class="pm-hd-ico" id="hdIco">
+            <!-- icon swaps via JS -->
+            <svg id="hdSvgBank" viewBox="0 0 24 24"><line x1="3" y1="22" x2="21" y2="22"/><line x1="3" y1="11" x2="21" y2="11"/><polyline points="3 11 12 3 21 11"/><line x1="6" y1="11" x2="6" y2="22"/><line x1="12" y1="11" x2="12" y2="22"/><line x1="18" y1="11" x2="18" y2="22"/></svg>
+            <svg id="hdSvgWallet" viewBox="0 0 24 24" style="display:none"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+          </div>
+          <div>
+            <div class="pm-hd-eyebrow">Payout Details</div>
+            <div class="pm-hd-name" id="hdName">Bank Account</div>
+          </div>
+        </div>
+
+        <div class="pm-card-body">
+
+          <!-- Bank section -->
+          <div class="pm-section" id="sectionBank">
+            <div class="pm-field">
+              <label class="pm-lbl">Account Name</label>
+              <div class="pm-iw">
+                <div class="pm-iw-ico">
+                  <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <input class="pm-input" type="text" name="bank_name" id="inBankName"
+                       placeholder="Full account name"
+                       value="{{ form.bank_name.value|default:'' }}"
+                       autocomplete="name"
+                       {% if locked %}readonly{% endif %}>
+              </div>
+            </div>
+            <div class="pm-field">
+              <label class="pm-lbl">Account Number</label>
+              <div class="pm-iw">
+                <div class="pm-iw-ico">
+                  <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                </div>
+                <input class="pm-input" type="text" name="bank_account" id="inBankAcc"
+                       placeholder="e.g. 1234 5678 9012"
+                       value="{{ form.bank_account.value|default:'' }}"
+                       inputmode="numeric"
+                       {% if locked %}readonly{% endif %}>
+              </div>
+            </div>
+          </div>
+
+          <!-- Wallet section -->
+          <div class="pm-section" id="sectionWallet">
+            <div class="pm-field">
+              <label class="pm-lbl">Wallet Account Name</label>
+              <div class="pm-iw">
+                <div class="pm-iw-ico">
+                  <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <input class="pm-input" type="text" name="wallet_name" id="inWName"
+                       placeholder="Name on GCash / Maya"
+                       value="{{ form.wallet_name.value|default:'' }}"
+                       autocomplete="name"
+                       {% if locked %}readonly{% endif %}>
+              </div>
+            </div>
+            <div class="pm-field">
+              <label class="pm-lbl">Phone Number</label>
+              <div class="pm-iw">
+                <div class="pm-iw-ico">
+                  <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                </div>
+                <input class="pm-input" type="tel" name="wallet_phone" id="inWPhone"
+                       placeholder="+63 9XX XXX XXXX"
+                       value="{{ form.wallet_phone.value|default:'' }}"
+                       autocomplete="tel"
+                       {% if locked %}readonly{% endif %}>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lock notice -->
+          {% if locked %}
+          <div class="pm-lock">
+            <div class="pm-lock-ico">
+              <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+            </div>
+            <div>
+              <div class="pm-lock-lbl">Locked</div>
+              <div class="pm-lock-sub">Contact staff to update your payout details.</div>
+            </div>
+          </div>
+          {% endif %}
+
+        </div>
+      </div><!-- /.pm-card -->
+      </div>
+
+      <!-- Actions -->
+      <div class="pm-actions">
+        {% if locked %}
+          <div class="pm-saved-btn">
+            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Payment Method Saved
+          </div>
+        {% else %}
+          <div class="sp" id="pmSp3">
+          <button class="pm-btn" type="submit" id="pmBtn">
+            <span class="pm-btn-lbl">Save &amp; Continue</span>
+            <div class="pm-btn-spinner"></div>
+          </button>
+          </div>
+        {% endif %}
+      </div>
+
+    </form>
+  </div><!-- /.pm-body -->
+</div><!-- /.pm-page -->
+
+<!-- ══ PAYMENT METHOD GUIDE ══ -->
+<div class="chat-bubble" id="pmCard">
+  <div class="cb-header">
+    <div class="cb-char-wrap" style="background-image:url('{% static 'img/staff-guide.png' %}?v=5')"></div>
+    <span class="cb-step" id="pmStep">STEP 1 OF 3</span>
+    <div class="cb-dots" id="pmDots">
+      <span class="cb-dot on"></span>
+      <span class="cb-dot"></span>
+      <span class="cb-dot"></span>
     </div>
   </div>
-
-  <!-- Form card -->
-  <form method="post">
-    {% csrf_token %}
-
-    <div class="pm-form {% if saved %}pm-locked{% endif %}">
-      <div class="pm-sec-title">
-        <svg viewBox="0 0 24 24"><path d="M3 10h18"/><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 15h4"/></svg>
-        Bank Details
-      </div>
-
-      <div class="pm-field">
-        <label class="pm-label">Account Name</label>
-        {{ form.bank_name }}
-      </div>
-
-      <div class="pm-field">
-        <label class="pm-label">Account Number</label>
-        {{ form.bank_account }}
-      </div>
-
-      {% if locked %}
-        <div class="pm-lock-note">
-          <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-          Locked: please contact staff to update your payment details.
-        </div>
-      {% endif %}
+  <div class="cb-msg" id="pmBody"></div>
+  <div class="cb-typing" id="pmTyping"><span></span><span></span><span></span></div>
+  <div class="cb-foot">
+    <span class="cb-label" id="pmLabel">STEP 1 OF 3</span>
+    <div class="cb-actions">
+      <button class="cb-back" id="pmBck" style="display:none">&#8592; Back</button>
+      <button class="cb-next" id="pmNxt">Next &#8594;</button>
     </div>
-
-    <!-- Actions -->
-    <div class="pm-actions">
-      {% if locked %}
-        <button class="pm-btn pm-btn-primary" type="button" disabled>Saved</button>
-      {% else %}
-        <button class="pm-btn pm-btn-primary" type="submit">Save</button>
-      {% endif %}
-    </div>
-
-  </form>
+  </div>
 </div>
 
 <script>
 (function(){
-  const nameInput = document.querySelector('input[name="bank_name"]');
-  const numInput  = document.querySelector('input[name="bank_account"]');
-  const heroName  = document.getElementById('heroName');
-  const heroNum   = document.getElementById('heroNumber');
+  const BANK = "bank", WALLET = "wallet";
+  const isLocked = {% if locked %}true{% else %}false{% endif %};
+
+  const tileBank   = document.getElementById("tileBank");
+  const tileWallet = document.getElementById("tileWallet");
+  const secBank    = document.getElementById("sectionBank");
+  const secWallet  = document.getElementById("sectionWallet");
+  const faceBank   = document.getElementById("faceBank");
+  const faceWallet = document.getElementById("faceWallet");
+  const hdName     = document.getElementById("hdName");
+  const hdSvgBank  = document.getElementById("hdSvgBank");
+  const hdSvgWallet= document.getElementById("hdSvgWallet");
+
+  const inBankName = document.getElementById("inBankName");
+  const inBankAcc  = document.getElementById("inBankAcc");
+  const inWName    = document.getElementById("inWName");
+  const inWPhone   = document.getElementById("inWPhone");
+
+  const prevBankName = document.getElementById("prevBankName");
+  const prevBankAcc  = document.getElementById("prevBankAcc");
+  const prevLast4    = document.getElementById("prevLast4");
+  const prevWName    = document.getElementById("prevWName");
+  const prevWPhone   = document.getElementById("prevWPhone");
+
+  const pmBtn = document.getElementById("pmBtn");
 
   function setVal(el, val, fallback){
     if(!el) return;
-    if(val && val.trim()){
-      el.textContent = val.trim();
-      el.classList.remove('dim');
-    } else {
-      el.textContent = fallback;
-      el.classList.add('dim');
-    }
+    if(val && val.trim()){ el.textContent = val.trim(); el.classList.remove("dim"); }
+    else { el.textContent = fallback; el.classList.add("dim"); }
   }
 
-  if(nameInput){
-    nameInput.addEventListener('input', () => setVal(heroName, nameInput.value, 'Not provided'));
+  function updateBankPreview(){
+    const n = inBankName?.value || "";
+    const a = inBankAcc?.value  || "";
+    setVal(prevBankName, n, "Not entered");
+    setVal(prevBankAcc,  a, "—");
+    const last4 = a.replace(/\D/g,"").slice(-4);
+    if(prevLast4){ prevLast4.textContent = last4 || "????"; prevLast4.classList.toggle("dim", !last4); }
   }
-  if(numInput){
-    numInput.addEventListener('input', () => setVal(heroNum, numInput.value, '— — — —'));
+
+  function updateWalletPreview(){
+    const n = inWName?.value  || "";
+    const p = inWPhone?.value || "";
+    setVal(prevWName,  n, "Not entered");
+    setVal(prevWPhone, p, "+63 — — — — — —");
+  }
+
+  function switchMethod(m){
+    /* Tiles */
+    tileBank   && tileBank.classList.toggle("active",   m === BANK);
+    tileWallet && tileWallet.classList.toggle("active", m === WALLET);
+
+    /* Sections */
+    secBank   && secBank.classList.toggle("active",   m === BANK);
+    secWallet && secWallet.classList.toggle("active", m === WALLET);
+
+    /* Disable inactive fields so they don't POST */
+    if(!isLocked){
+      if(inBankName) inBankName.disabled = (m !== BANK);
+      if(inBankAcc)  inBankAcc.disabled  = (m !== BANK);
+      if(inWName)    inWName.disabled    = (m !== WALLET);
+      if(inWPhone)   inWPhone.disabled   = (m !== WALLET);
+    }
+
+    /* Preview card faces */
+    if(faceBank){
+      faceBank.classList.toggle("is-out", m !== BANK);
+      faceBank.classList.toggle("is-in",  m === BANK);
+    }
+    if(faceWallet){
+      faceWallet.classList.toggle("is-in",  m === WALLET);
+      faceWallet.classList.toggle("is-out", m !== WALLET);
+    }
+
+    /* Card header */
+    if(hdName)     hdName.textContent     = m === BANK ? "Bank Account" : "Mobile Wallet";
+    if(hdSvgBank)  hdSvgBank.style.display  = m === BANK   ? "" : "none";
+    if(hdSvgWallet)hdSvgWallet.style.display = m === WALLET ? "" : "none";
+  }
+
+  /* Detect initial method from pre-filled values */
+  const hasBankData   = !!(inBankName?.value || inBankAcc?.value);
+  const hasWalletData = !!(inWName?.value    || inWPhone?.value);
+  const initMethod = (hasWalletData && !hasBankData) ? WALLET : BANK;
+
+  /* Init */
+  switchMethod(initMethod);
+  updateBankPreview();
+  updateWalletPreview();
+
+  /* Tile clicks */
+  tileBank   && tileBank.addEventListener("click",   () => switchMethod(BANK));
+  tileWallet && tileWallet.addEventListener("click", () => switchMethod(WALLET));
+
+  /* Live preview */
+  inBankName && inBankName.addEventListener("input", updateBankPreview);
+  inBankAcc  && inBankAcc.addEventListener("input",  updateBankPreview);
+  inWName    && inWName.addEventListener("input",    updateWalletPreview);
+  inWPhone   && inWPhone.addEventListener("input",   updateWalletPreview);
+
+  /* Submit loading state */
+  pmBtn && pmBtn.closest("form").addEventListener("submit", function(){
+    if(pmBtn){ pmBtn.classList.add("is-loading"); pmBtn.disabled = true; }
+  });
+
+  /* ── Screenshot protection ── */
+  if(isLocked){
+    const previewMask  = document.getElementById("previewMask");
+    const cardMask     = document.getElementById("cardMask");
+    const previewTimer = document.getElementById("previewTimer");
+    const cardTimer    = document.getElementById("cardTimer");
+    const masks        = [previewMask, cardMask].filter(Boolean);
+    const timers       = [previewTimer, cardTimer].filter(Boolean);
+    const REVEAL_SEC   = 8;
+    let revealTO = null;
+    let countIV  = null;
+    let secLeft  = REVEAL_SEC;
+
+    function reBlur(){
+      masks.forEach(m => m.classList.remove("is-revealed"));
+      timers.forEach(t => { t.style.display = "none"; t.textContent = ""; });
+      clearTimeout(revealTO);
+      clearInterval(countIV);
+    }
+
+    function startReveal(){
+      masks.forEach(m => m.classList.add("is-revealed"));
+      secLeft = REVEAL_SEC;
+      timers.forEach(t => { t.textContent = secLeft + "s"; t.style.display = "block"; });
+      clearTimeout(revealTO);
+      clearInterval(countIV);
+      countIV  = setInterval(function(){
+        secLeft--;
+        timers.forEach(t => { t.textContent = secLeft + "s"; });
+        if(secLeft <= 0){ reBlur(); }
+      }, 1000);
+      revealTO = setTimeout(reBlur, REVEAL_SEC * 1000);
+    }
+
+    masks.forEach(m => m.addEventListener("click", startReveal));
+
+    /* Re-blur the instant the user leaves the page / switches apps */
+    document.addEventListener("visibilitychange", function(){
+      if(document.hidden) reBlur();
+    });
+    window.addEventListener("blur", reBlur);
+
+    /* Prevent text selection on sensitive fields */
+    document.querySelectorAll(".pm-section input").forEach(function(el){
+      el.style.userSelect = "none";
+      el.style.webkitUserSelect = "none";
+    });
   }
 })();
-</script>
 
+/* ══ PAYMENT METHOD GUIDE ══ */
+(function(){
+  if(localStorage.getItem('ofl_onboard')!=='pm') return;
+  localStorage.setItem('ofl_onboard','done');
+  var _ico=[
+    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="22" r="22" fill="#FF8C00"/><circle cx="15" cy="18" r="3.5" fill="white"/><circle cx="29" cy="18" r="3.5" fill="white"/><path d="M13 28 Q22 35 31 28" stroke="white" stroke-width="2.8" fill="none" stroke-linecap="round"/></svg>',
+    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><rect x="4" y="10" width="36" height="24" rx="4" fill="#0A2463"/><rect x="4" y="16" width="36" height="6" fill="white" opacity="0.2"/><rect x="8" y="26" width="14" height="3" rx="1.5" fill="#FF8C00"/><circle cx="34" cy="27.5" r="4" fill="#FF8C00"/></svg>',
+    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="14" r="8" fill="#0A2463"/><path d="M6 40 Q6 30 22 30 Q38 30 38 40" fill="#0A2463"/></svg>',
+    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="22" r="22" fill="#FF8C00"/><polygon points="22,5 26.5,16.5 39,16.5 29.5,24.5 33,36.5 22,29.5 11,36.5 14.5,24.5 5,16.5 17.5,16.5" fill="#0A2463"/></svg>'
+  ];
+  var STEPS=[
+    null,
+    {sp:'pmSp1',inp:null,step:'Step 1 of 3',label:'STEP 1 OF 3',next:'Next →',
+     body:_ico[1]+' Choose how you\'d like to receive your funds — tap <b>Bank</b> or <b>Wallet</b> (GCash/Maya).',
+     validate:function(){return !!(document.querySelector('.pm-tile.active'));},
+     autoOn:function(done){
+       var ts=document.querySelectorAll('.pm-tile');
+       function h(){setTimeout(done,600);ts.forEach(function(t){t.removeEventListener('click',h);});}
+       ts.forEach(function(t){t.addEventListener('click',h);});
+       return function(){ts.forEach(function(t){t.removeEventListener('click',h);});};
+     }},
+    {sp:'pmSp2',inp:null,step:'Step 2 of 3',label:'STEP 2 OF 3',next:'Next →',
+     body:_ico[2]+' Enter your <b>account name</b> and <b>account number</b> carefully — this is where your funds will be sent.',
+     validate:function(){
+       var sb=document.getElementById('sectionBank'),sw=document.getElementById('sectionWallet');
+       var bVis=sb&&sb.offsetParent!==null;
+       if(bVis){
+         var bn=document.getElementById('inBankName'),ba=document.getElementById('inBankAcc');
+         if(!bn||!bn.value.trim())return false;
+         if(!ba||!ba.value.trim())return false;
+       } else {
+         var wn=document.getElementById('inWName'),wp=document.getElementById('inWPhone');
+         if(!wn||!wn.value.trim())return false;
+         if(!wp||!wp.value.trim())return false;
+       }
+       return true;
+     }},
+    {sp:'pmSp3',inp:null,step:'Step 3 of 3',label:'STEP 3 OF 3',next:'Save & Continue →',
+     body:_ico[3]+' All done! Tap <b>Save &amp; Continue</b> to finalize your payment method and complete your application.',
+     validate:function(){return true;},
+     isLast:true,
+     onNext:function(){var b=document.getElementById('pmBtn');if(b)b.click();}}
+  ];
+  var N=3,cur=1,active=false,cleanup=null;
+  var ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;z-index:9998;display:none;pointer-events:none;';
+  ov.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%"><path fill="rgba(6,21,64,.82)" fill-rule="evenodd"/></svg>';
+  document.body.appendChild(ov);
+  var _card=document.getElementById('pmCard');
+  if(_card)document.body.appendChild(_card);
+  function $(id){return document.getElementById(id);}
+  function posOverlay(sp){
+    var path=ov.querySelector('path');if(!path)return;
+    var vw=window.innerWidth,vh=window.innerHeight;
+    if(!sp){path.setAttribute('d','M0 0H'+vw+'V'+vh+'H0Z');}
+    else{
+      var r=sp.getBoundingClientRect(),pad=10;
+      var l=Math.max(0,r.left-pad),t=Math.max(0,r.top-pad);
+      var rr=Math.min(vw,r.right+pad),rb=Math.min(vh,r.bottom+pad);
+      path.setAttribute('d','M0 0H'+vw+'V'+vh+'H0Z M'+l+' '+t+'H'+rr+'V'+rb+'H'+l+'Z');
+    }
+    ov.style.display='block';
+  }
+  function hideOverlay(){ov.style.display='none';}
+  function posBubble(n){
+    var card=$('pmCard');if(!card||n<1||n>N)return;
+    var sp=$(STEPS[n].sp);if(!sp)return;
+    var r=sp.getBoundingClientRect(),ww=window.innerWidth,wh=window.innerHeight;
+    var cW=card.offsetWidth||320,cH=card.offsetHeight||230,gap=14,up=false,top;
+    top=r.top-cH-gap;
+    if(top<10){top=r.bottom+gap;up=true;if(top+cH>wh-10){top=Math.max(10,wh-cH-10);}}
+    var left=r.left+r.width/2-cW/2;
+    left=Math.max(10,Math.min(left,ww-cW-10));
+    card.style.top=top+'px';card.style.left=left+'px';card.style.bottom='auto';card.style.right='auto';
+    card.classList.toggle('arrow-dn',!up);
+  }
+  function typeBody(el,html,spd){
+    var icon='',se=html.indexOf('</svg>');
+    if(se!==-1){icon=html.slice(0,se+6);html=html.slice(se+6);}
+    el.innerHTML=icon;var n=0;
+    (function tick(){
+      if(n>html.length)return;
+      if(html[n]==='<'){var e=html.indexOf('>',n);n=(e!==-1)?e+1:n+1;}else{n++;}
+      el.innerHTML=icon+html.slice(0,n);setTimeout(tick,spd||24);
+    })();
+  }
+  function goStep(n){
+    var card=$('pmCard');if(!card)return;
+    card.style.opacity='0';
+    var typ=$('pmTyping'),msg=$('pmBody');
+    if(typ)typ.style.display='flex';
+    if(msg){msg.innerHTML='';msg.style.display='none';}
+    for(var i=1;i<=N;i++){var si=STEPS[i];if(si){var ei=$(si.sp);if(ei)ei.classList.remove('shake');}}
+    hideOverlay();
+    setTimeout(function(){
+      if(n<1||n>N){tourEnd();return;}
+      cur=n;var s=STEPS[n];
+      var sp=$(s.sp);
+      if(sp){
+        sp.scrollIntoView({block:'center'});
+        posOverlay(sp);
+      }
+      var stepEl=$('pmStep'),lbl=$('pmLabel'),nxt=$('pmNxt'),bck=$('pmBck'),dots=$('pmDots');
+      if(stepEl)stepEl.textContent=s.step;
+      if(lbl)lbl.textContent=s.label;
+      if(nxt)nxt.textContent=s.next;
+      if(bck)bck.style.display='inline-flex';
+      if(dots){var ds=dots.querySelectorAll('.cb-dot');ds.forEach(function(d,i){d.className='cb-dot'+(i<n?' on':'');});}
+      if(typ)typ.style.display='none';
+      if(msg)msg.style.display='block';
+      card.style.opacity='1';
+      if(cleanup){cleanup();cleanup=null;}
+      if(s.autoOn)cleanup=s.autoOn(function(){advance();});
+      if(sp)setTimeout(function(){posBubble(n);},300);
+      if(msg)typeBody(msg,s.body,24);
+      if(s.inp){var inp=$(s.inp);if(inp)setTimeout(function(){inp.focus();},400);}
+    },350);
+  }
+  function advance(){
+    if(cleanup){cleanup();cleanup=null;}
+    var s=STEPS[cur];if(!s)return;
+    if(s.validate&&!s.validate()){
+      var sp=$(s.sp);
+      if(sp){sp.classList.remove('shake');void sp.offsetWidth;sp.classList.add('shake');setTimeout(function(){sp.classList.remove('shake');},500);}
+      return;
+    }
+    if(s.isLast){tourEnd();if(s.onNext)s.onNext();return;}
+    goStep(cur+1);
+  }
+  function tourBack(){if(cur>1){goStep(cur-1);}else{tourEnd();window.history.back();}}
+  function tourEnd(){
+    active=false;if(cleanup){cleanup();cleanup=null;}
+    hideOverlay();
+    var card=$('pmCard');
+    if(card){card.style.opacity='0';setTimeout(function(){card.style.display='none';},250);}
+  }
+  var nb=$('pmNxt'),bb=$('pmBck');
+  if(nb)nb.addEventListener('click',advance);
+  if(bb)bb.addEventListener('click',tourBack);
+  window.addEventListener('resize',function(){
+    if(active){var sp=$(STEPS[cur].sp);if(sp)posOverlay(sp);posBubble(cur);}
+  });
+  setTimeout(function(){
+    active=true;var card=$('pmCard');
+    if(card)card.style.display='block';
+    goStep(1);
+  },500);
+})();
+</script>
 {% endblock %}

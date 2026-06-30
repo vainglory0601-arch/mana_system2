@@ -92,6 +92,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     register_user_agent = models.CharField(max_length=255, blank=True, default="")
     off_reason = models.TextField(blank=True, default="")
 
+    profile_photo = models.ImageField(upload_to="profile_photos/", blank=True, null=True)
+
     account_status = models.CharField(
         max_length=50,
         choices=ACCOUNT_STATUS_CHOICES,
@@ -327,6 +329,28 @@ class WithdrawalRequest(models.Model):
 
     def __str__(self):
         return f"{self.user} {self.amount} {self.currency} ({self.status})"
+class ContactMessage(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name="contact_messages",
+    )
+    full_name = models.CharField(max_length=120)
+    email = models.EmailField(blank=True)
+    phone = models.CharField(max_length=40, blank=True)
+    subject = models.CharField(max_length=200, blank=True)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.full_name} — {self.subject or 'No subject'}"
+
+
 class SystemSetting(models.Model):
     reference_number = models.CharField(max_length=20, default='89745')
     updated_at = models.DateTimeField(auto_now=True)

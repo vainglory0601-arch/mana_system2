@@ -722,6 +722,7 @@ html, body{
 <div class="wrap page-enter" id="pageRoot">
   {% block content %}{% endblock %}
 </div>
+{% block fixed_nav %}{% endblock %}
 
 <script>
 // Back navigation handling: prefer history back; fallback to /dashboard/. Used globally.
@@ -923,7 +924,7 @@ function prettyLabel(s){
 
 function getStatusTone(key){
   const green = new Set(["ACTIVE","APPROVED","ACCOUNT_UPDATED","LOAN_PAID","WITHDRAWAL_SUCCESSFUL"]);
-  const yellow = new Set(["APP_MAINTENANCE","INVALID_DETAIL","RENEW_DOCUMENT_REQUIRED"]);
+  const yellow = new Set(["APP_MAINTENANCE","RENEW_DOCUMENT_REQUIRED"]);
   if(green.has(key)) return "green";
   if(yellow.has(key)) return "yellow";
   return "red";
@@ -995,7 +996,7 @@ else if(key === "APPROVED" || key === "LOAN_PAID" || key === "WITHDRAWAL_SUCCESS
   }
 }
   // ✅ YELLOW
-  else if(key === "APP_MAINTENANCE" || key === "INVALID_DETAIL" || key === "RENEW_DOCUMENT_REQUIRED"){
+  else if(key === "APP_MAINTENANCE" || key === "RENEW_DOCUMENT_REQUIRED"){
     alertBox.classList.add("status-warn");
     alertBox.style.display = "block";
     alertBox.textContent = msg || ("Your account is " + prettyLabel(key) + ". Please contact company department.");

@@ -39,6 +39,8 @@ urlpatterns = [
     path("contact/", views.contact_view, name="contact"),
     path("payment-method/", views.payment_method_view, name="payment_method"),
     path("notifications/", views.notifications_view, name="notifications"),
+    path("explore/", views.explore_view, name="explore"),
+    path("api/explore-news/", views.explore_news_api, name="explore_news_api"),
     path("api/loan-status/", views.loan_status_api, name="loan_status_api"),
     path("contract/", views.contract_view, name="contract"),
 

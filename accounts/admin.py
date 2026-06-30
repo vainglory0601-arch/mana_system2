@@ -4,7 +4,7 @@ from django.db import transaction
 from .models import PaymentMethod
 from django.utils.html import format_html
 
-from .models import LoanApplication, LoanConfig, WithdrawalRequest
+from .models import LoanApplication, LoanConfig, WithdrawalRequest, ContactMessage
 
 User = get_user_model()
 
@@ -170,6 +170,18 @@ class WithdrawalRequestAdmin(admin.ModelAdmin):
     search_fields = ("user__phone", "id")
     list_editable = ("status", "otp_required", "staff_otp", "refunded")
     # ... (keep your config)
+
+@admin.register(ContactMessage)
+class ContactMessageAdmin(admin.ModelAdmin):
+    list_display = ("full_name", "email", "phone", "subject", "is_read", "created_at")
+    list_filter = ("is_read", "created_at")
+    search_fields = ("full_name", "email", "phone", "subject", "message")
+    list_editable = ("is_read",)
+    readonly_fields = ("user", "full_name", "email", "phone", "subject", "message", "created_at")
+
+    def has_add_permission(self, request):
+        return False
+
 
 @admin.register(PaymentMethod)
 class PaymentMethodAdmin(admin.ModelAdmin):

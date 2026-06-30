@@ -1,713 +1,536 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Contract{% endblock %}
+{% block title %}Loan Contract — OFL{% endblock %}
 
 {% block content %}
 <style>
-/* ===== Overseas FilipinoLoan Loan Contract — Filipino Flag Style ===== */
-
-:root {
-  --ph-blue: #0032A0;
-  --ph-blue-dark: #00226e;
-  --ph-red: #BF0D3E;
-  --ph-red-dark: #8b0628;
-  --ph-gold: #FED141;
-  --ph-gold-dark: #e6b820;
-  --ink: #0a1a3a;
-  --mut: #5a6378;
-  --line: #e3e8f1;
+/* ═══════════════════════════════════════════════════
+   OFL Loan Contract  ·  Professional Bank Document
+   Brand: Navy #0A2463  ·  Orange #FF8C00
+═══════════════════════════════════════════════════ */
+:root{
+  --navy:#0A2463; --navy-dk:#061540; --navy-lt:#1a3a8a;
+  --orange:#FF8C00; --orange-dk:#D97200; --orange-lt:#FFA733;
+  --bg:#eef1f8; --paper:#ffffff;
+  --ink:#0d1b3e; --ink2:#4a5568; --ink3:#8896a8; --line:#dde3ef;
 }
 
-@font-face {
-  font-family: 'ArialNarrowCustom';
-  src: url("{% static 'fonts/arialnarrow.ttf' %}") format("truetype");
-  font-weight: normal;
-  font-style: normal;
+/* Reset wrap padding from base */
+.wrap,.wrap.page-enter{
+  padding:0!important;
+  max-width:100%!important;
+  overflow-x:hidden!important;
+  animation:none!important;
+  transform:none!important;
+}
+html,body{
+  background:var(--bg)!important;
+  min-height:100vh;
 }
 
-html, body { width: 100%; overflow-x: hidden; }
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  font-family: "Lato", "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
-  color: var(--ink) !important;
-  background:
-    radial-gradient(800px 600px at 15% 20%, rgba(0,50,160,.10) 0%, transparent 60%),
-    radial-gradient(700px 500px at 85% 80%, rgba(191,13,62,.08) 0%, transparent 60%),
-    radial-gradient(500px 400px at 50% 50%, rgba(254,209,65,.10) 0%, transparent 65%),
-    linear-gradient(180deg, #fafbff 0%, #eef2fb 100%) !important;
-  background-attachment: fixed !important;
+/* ── Page shell ── */
+.ct-page{
+  min-height:100vh;
+  padding:20px 12px 56px;
+  box-sizing:border-box;
 }
-body, body *, body button, body input, body select, body textarea, body a {
-  font-family: "Lato", "Open Sans", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
+.ct-inner{
+  width:min(700px,100%);
+  margin:0 auto;
 }
 
-/* ============================================================
-   DARK MODE — Contract page readable text
-   ============================================================ */
-html[data-theme="dark"] .body{ color:#eaf2ff !important; }
-html[data-theme="dark"] .k{ color: rgba(255,255,255,.70) !important; }
-html[data-theme="dark"] .v{ color:#ffffff !important; }
-html[data-theme="dark"] .para,
-html[data-theme="dark"] .para b,
-html[data-theme="dark"] .para.muted,
-html[data-theme="dark"] .para.muted b{
-  color:#eaf2ff !important;
+/* ── Back button ── */
+.ct-back{
+  display:inline-flex;align-items:center;gap:6px;
+  height:36px;padding:0 14px;
+  border-radius:8px;
+  background:#fff;color:var(--navy);
+  font-size:13px;font-weight:800;letter-spacing:.02em;
+  text-decoration:none;
+  border:1.5px solid var(--line);
+  box-shadow:0 1px 4px rgba(10,36,99,.08);
+  margin-bottom:16px;
+  transition:all .18s;
+  -webkit-tap-highlight-color:transparent;
 }
-html[data-theme="dark"] .para .hl{ color:#7fb6ff !important; }
-html[data-theme="dark"] .subject{ color:#ff6b8a !important; }
-html[data-theme="dark"] .sig .muted{ color: rgba(255,255,255,.70) !important; }
-html[data-theme="dark"] .foot{
-  background: linear-gradient(180deg, rgba(15,23,42,.85), rgba(10,16,32,.90)) !important;
-  border-top: 1px solid rgba(255,255,255,.10) !important;
-  color:#eaf2ff !important;
-}
-html[data-theme="dark"] .foot .muted{ color:#ffffff !important; }
-html[data-theme="dark"] .ct-pagetitle{ color:#ffffff !important; }
-html[data-theme="dark"] .ct-pagetitle small{ color: rgba(255,255,255,.75) !important; }
+.ct-back svg{width:14px;height:14px;flex-shrink:0;}
+.ct-back:hover{border-color:var(--navy);background:var(--navy);color:#fff;}
 
-.wrap { padding-top: 0 !important; }
-
-/* ====================================================== */
-/* ===== Filipino flag theme overrides ================== */
-/* ====================================================== */
-
-.ct-pagetitle { color: var(--ph-blue-dark) !important; }
-.ct-pagetitle small { color: var(--mut) !important; }
-
-/* Back button */
-.back-btn {
-  background: #ffffff !important;
-  color: var(--ph-blue-dark) !important;
-  border: 2px solid var(--ph-blue) !important;
-  border-radius: 999px !important;
-  font-weight: 900 !important;
-  letter-spacing: .08em !important;
-  text-transform: uppercase !important;
-  box-shadow: 0 4px 12px rgba(0,50,160,.12) !important;
-  backdrop-filter: none !important;
-}
-.back-btn:hover {
-  background: var(--ph-blue) !important;
-  color: #fff !important;
-  box-shadow: 0 8px 18px rgba(0,50,160,.30) !important;
-}
-
-/* Paper / main contract card — white with PH stripe */
-.paper {
-  background: #ffffff !important;
-  color: var(--ink) !important;
-  border: 1px solid var(--line) !important;
-  box-shadow: 0 4px 20px rgba(0,50,160,.10), 0 1px 3px rgba(0,0,0,.04) !important;
-  backdrop-filter: none !important;
-  position: relative !important;
-}
-.paper::before {
-  content: "" !important;
-  position: absolute !important;
-  top: 0 !important; left: 0 !important; right: 0 !important;
-  height: 3px !important;
-  background: linear-gradient(90deg, var(--ph-blue), var(--ph-red), var(--ph-gold)) !important;
-  border-radius: 22px 22px 0 0 !important;
-  z-index: 5 !important;
-}
-
-/* Header — premium navy with PH gold */
-.head {
-  background:
-    radial-gradient(140% 100% at 0% 0%, rgba(254,209,65,.18) 0%, transparent 55%) !important,
-    radial-gradient(140% 100% at 100% 100%, rgba(191,13,62,.22) 0%, transparent 55%) !important,
-    linear-gradient(135deg, var(--ph-blue-dark) 0%, var(--ph-blue) 100%) !important;
-  border-bottom: 1px solid rgba(254,209,65,.45) !important;
-  color: #fff !important;
-}
-.head::before {
-  background: linear-gradient(90deg, transparent, var(--ph-gold), var(--ph-red), transparent) !important;
-}
-.brand-logo {
-  background: rgba(254,209,65,.18) !important;
-  border: 1px solid rgba(254,209,65,.55) !important;
-  box-shadow: 0 0 18px rgba(254,209,65,.25), inset 0 1px 0 rgba(255,255,255,.15) !important;
-}
-.brand-title { color: #ffffff !important; text-shadow: 0 0 16px rgba(254,209,65,.30) !important; }
-.brand-sub { color: rgba(255,255,255,.65) !important; }
-.contact { color: rgba(255,255,255,.85) !important; }
-.contact b { color: var(--ph-gold) !important; }
-.contact .muted { color: rgba(255,255,255,.80) !important; }
-
-/* Body */
-.body { color: var(--ink) !important; }
-
-/* Details box (TO) */
-.box {
-  background: #f6f8fc !important;
-  border: 1px solid var(--line) !important;
-  box-shadow: 0 4px 14px rgba(0,50,160,.06), inset 0 1px 0 rgba(255,255,255,.50) !important;
-  backdrop-filter: none !important;
-}
-.box::before {
-  background: linear-gradient(90deg, transparent, var(--ph-blue), var(--ph-red), transparent) !important;
-}
-.box h4 {
-  color: var(--ph-red) !important;
-  border-bottom: 1px dashed var(--line) !important;
-}
-
-/* KV pairs */
-.k { color: var(--mut) !important; }
-.v { color: var(--ph-blue-dark) !important; }
-.v::after {
-  background: linear-gradient(90deg, rgba(0,50,160,.20), var(--ph-blue), var(--ph-red)) !important;
-  box-shadow: 0 0 8px rgba(0,50,160,.30) !important;
-}
-
-/* Divider */
-.sep {
-  background: linear-gradient(90deg, transparent, rgba(0,50,160,.45), transparent) !important;
-}
-.sep::before {
-  background: var(--ph-gold) !important;
-  box-shadow: 0 0 10px rgba(254,209,65,.65) !important;
-}
-
-/* Subject */
-.subject { color: var(--ph-red) !important; }
-.subject::before { background: linear-gradient(90deg, var(--ph-blue), transparent) !important; }
-
-/* Paragraphs */
-.para { color: var(--ink) !important; }
-.para b { color: var(--ph-blue-dark) !important; }
-.para.muted { color: var(--mut) !important; }
-.para.muted b { color: var(--ink) !important; }
-.para .hl { color: var(--ph-blue) !important; }
-
-/* Signature */
-.sig .line {
-  border-bottom: 2px solid !important;
-  border-image: linear-gradient(90deg, var(--ph-blue), var(--ph-red)) 1 !important;
-}
-.sig .muted { color: var(--mut) !important; }
-
-/* Footer band */
-.foot {
-  background: linear-gradient(180deg, #f6f8fc, #eef2fb) !important;
-  border-top: 1px solid var(--line) !important;
-  color: var(--mut) !important;
-}
-.foot .badge {
-  background: rgba(254,209,65,.15) !important;
-  color: var(--ph-gold-dark) !important;
-  border: 1px solid rgba(254,209,65,.55) !important;
-  box-shadow: 0 0 12px rgba(254,209,65,.18) !important;
-  backdrop-filter: none !important;
-}
-.foot .muted { color: var(--ink) !important; }
-
-.ct-wrap, .ct-wrap * {
-  font-family: 'ArialNarrowCustom', "Ovelion", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* Container */
-.ct-wrap {
-  width: min(900px, 94vw);
-  margin: 0 auto;
-  padding: 22px 14px 40px;
-  box-sizing: border-box;
-}
-
-/* Top row */
-.ct-top {
-  margin-bottom: 18px;
-  opacity: 0;
-  animation: fadeInUp .5s ease-out .05s forwards;
-}
-.ct-pagetitle {
-  font-size: 22px;
-  font-weight: 950;
-  color: #fff;
-  letter-spacing: -.2px;
-}
-.ct-pagetitle small {
-  display: block;
-  color: #94a3b8;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: .02em;
-  margin-top: 2px;
-}
-
-/* Main paper (glass card) */
-.paper {
-  position: relative;
-  background: linear-gradient(180deg, rgba(15,23,42,.60) 0%, rgba(10,16,32,.50) 100%);
-  backdrop-filter: blur(22px) saturate(140%);
-  -webkit-backdrop-filter: blur(22px) saturate(140%);
-  color: #e6edf7;
-  border-radius: 22px;
-  border: 1px solid rgba(56,189,248,.40);
+/* ══════════════════════════════════════
+   DOCUMENT CARD
+══════════════════════════════════════ */
+.ct-doc{
+  background:var(--paper);
+  border-radius:6px;
   box-shadow:
-    0 0 0 1px rgba(56,189,248,.06),
-    0 0 24px rgba(56,189,248,.15),
-    0 20px 60px rgba(2,6,23,.55),
-    inset 0 1px 0 rgba(255,255,255,.06);
-  overflow: hidden;
-  opacity: 0;
-  animation: fadeInUp .55s ease-out .1s forwards;
+    0 0 0 1px rgba(10,36,99,.08),
+    0 4px 12px rgba(10,36,99,.10),
+    0 20px 48px rgba(10,36,99,.08);
+  overflow:hidden;
 }
 
-/* Header (gradient cyan→indigo) */
-.head {
-  position: relative;
-  padding: 22px 22px 20px;
-  background:
-    radial-gradient(120% 100% at 0% 0%, rgba(56,189,248,.28) 0%, transparent 60%),
-    radial-gradient(120% 100% at 100% 100%, rgba(99,102,241,.28) 0%, transparent 60%),
-    linear-gradient(180deg, rgba(15,23,42,.70) 0%, rgba(10,16,32,.55) 100%);
-  border-bottom: 1px solid rgba(56,189,248,.25);
-  color: #fff;
-  overflow: hidden;
+/* ── 1. Letterhead ── */
+.ct-lh{
+  background:linear-gradient(135deg,var(--navy-dk) 0%,var(--navy) 55%,#1e4db7 100%);
+  padding:24px 26px 22px;
+  display:flex;align-items:flex-start;
+  justify-content:space-between;gap:14px;
+  position:relative;overflow:hidden;
 }
-.head::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #38bdf8, #6366f1, transparent);
+/* Subtle crosshatch */
+.ct-lh::before{
+  content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(
+    -50deg,
+    rgba(255,255,255,.025) 0,rgba(255,255,255,.025) 1px,
+    transparent 1px,transparent 20px
+  );pointer-events:none;
 }
-
-.head-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-.brand-logo {
-  width: 54px; height: 54px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, rgba(56,189,248,.30), rgba(99,102,241,.30));
-  border: 1px solid rgba(56,189,248,.55);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  flex: 0 0 auto;
-  box-shadow: 0 0 18px rgba(56,189,248,.30), inset 0 1px 0 rgba(255,255,255,.15);
-}
-.brand-logo img {
-  width: 100%; height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.brand-title {
-  line-height: 1.05;
-  font-weight: 950;
-  letter-spacing: .06em;
-  font-size: 20px;
-  color: #fff;
-  text-transform: uppercase;
-  text-shadow: 0 0 18px rgba(56,189,248,.35);
-}
-.brand-sub {
-  margin-top: 4px;
-  font-size: 11px;
-  color: #94a3b8;
-  letter-spacing: .14em;
-  font-weight: 800;
-  text-transform: uppercase;
+/* Orange bottom accent */
+.ct-lh::after{
+  content:"";
+  position:absolute;bottom:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--orange-dk) 0%,var(--orange) 40%,var(--orange-lt) 70%,var(--orange-dk) 100%);
 }
 
-.contact {
-  text-align: right;
-  font-size: 12px;
-  line-height: 1.4;
-  max-width: 360px;
-  color: #cbd5e1;
+.ct-lh-left{display:flex;align-items:center;gap:13px;position:relative;z-index:1;}
+.ct-logo-box{
+  width:50px;height:50px;flex-shrink:0;
+  border-radius:10px;overflow:hidden;
+  background:rgba(255,255,255,.12);
+  border:1.5px solid rgba(255,255,255,.22);
 }
-.contact .row { display: flex; gap: 8px; justify-content: flex-end; align-items: center; }
-.contact b { font-weight: 900; color: #67e8f9; letter-spacing: .04em; text-transform: uppercase; font-size: 11px; }
-.contact .muted { color: #cbd5e1; font-weight: 700; }
-
-/* Body */
-.body { padding: 22px; }
-
-.top-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 14px;
-  align-items: start;
+.ct-logo-box img{width:100%;height:100%;object-fit:cover;display:block;}
+.ct-brand{
+  font-size:15px;font-weight:900;color:#fff;
+  letter-spacing:.05em;text-transform:uppercase;line-height:1.1;
+}
+.ct-brand-sub{
+  font-size:9.5px;font-weight:700;
+  color:rgba(255,255,255,.55);
+  letter-spacing:.14em;text-transform:uppercase;margin-top:4px;
 }
 
-/* Details box */
-.box {
-  position: relative;
-  border: 1px solid rgba(56,189,248,.28);
-  border-radius: 16px;
-  padding: 18px;
-  background: linear-gradient(180deg, rgba(15,23,42,.55) 0%, rgba(10,16,32,.45) 100%);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  box-shadow: 0 8px 22px rgba(2,6,23,.30), inset 0 1px 0 rgba(255,255,255,.04);
-  overflow: hidden;
+.ct-lh-right{text-align:right;position:relative;z-index:1;flex-shrink:0;}
+.ct-ref-label{font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:var(--orange-lt);}
+.ct-ref-no{font-size:13px;font-weight:900;color:#fff;letter-spacing:.04em;margin-top:2px;}
+.ct-ref-date{font-size:10.5px;color:rgba(255,255,255,.55);font-weight:700;margin-top:6px;letter-spacing:.03em;}
+
+/* ── 2. Document title band ── */
+.ct-title{
+  border-bottom:1px solid var(--line);
+  padding:0;
+  display:flex;
+  align-items:stretch;
 }
-.box::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #38bdf8, #6366f1, transparent);
-  opacity: .8;
+.ct-title-icon-wrap{
+  width:56px;flex-shrink:0;
+  background:linear-gradient(180deg,var(--navy) 0%,var(--navy-lt) 100%);
+  display:flex;align-items:center;justify-content:center;
+}
+.ct-title-icon-wrap svg{width:22px;height:22px;fill:none;stroke:rgba(255,255,255,.85);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.ct-title-text{padding:16px 20px;}
+.ct-title-main{
+  font-size:14.5px;font-weight:900;color:var(--navy);
+  letter-spacing:.06em;text-transform:uppercase;
+}
+.ct-title-note{
+  font-size:11px;color:var(--ink3);font-weight:600;
+  margin-top:3px;letter-spacing:.01em;
 }
 
-.box h4 {
-  margin: 0 0 14px;
-  font-size: 11px;
-  letter-spacing: .18em;
-  text-transform: uppercase;
-  color: #67e8f9;
-  font-weight: 900;
-  padding-bottom: 10px;
-  border-bottom: 1px dashed rgba(56,189,248,.22);
+/* ── 3. Two-column detail boxes ── */
+.ct-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  border-bottom:1px solid var(--line);
+}
+@media(max-width:480px){.ct-grid{grid-template-columns:1fr;}}
+.ct-box{padding:20px 22px;}
+.ct-box:first-child{border-right:1px solid var(--line);}
+@media(max-width:480px){
+  .ct-box:first-child{border-right:none;border-bottom:1px solid var(--line);}
+}
+.ct-box-label{
+  font-size:9px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--orange-dk);
+  margin-bottom:14px;
+  padding-bottom:8px;
+  border-bottom:1.5px solid rgba(255,140,0,.2);
+  display:flex;align-items:center;gap:6px;
+}
+.ct-box-label svg{width:11px;height:11px;fill:none;stroke:var(--orange-dk);stroke-width:2.5;stroke-linecap:round;flex-shrink:0;}
+.ct-rows{display:flex;flex-direction:column;gap:10px;}
+.ct-kv-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
+.ct-k{font-size:11.5px;color:var(--ink3);font-weight:700;flex-shrink:0;}
+.ct-v{font-size:12.5px;color:var(--ink);font-weight:900;text-align:right;}
+.ct-v.accent{color:var(--navy);font-size:14px;}
+
+/* ── 4. Subject line ── */
+.ct-subject{
+  background:linear-gradient(90deg,rgba(10,36,99,.04) 0%,transparent 100%);
+  border-left:4px solid var(--navy);
+  padding:11px 22px;
+  border-bottom:1px solid var(--line);
+  font-size:11px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--navy);
+  display:flex;align-items:center;gap:10px;
+}
+.ct-subject-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--orange);flex-shrink:0;
 }
 
-.kv {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 12px 18px;
-  font-size: 13.5px;
-  color: #e6edf7;
-  align-items: center;
+/* ── 5. Contract body ── */
+.ct-body{padding:22px 26px;border-bottom:1px solid var(--line);}
+
+.ct-greet{
+  font-size:13.5px;color:var(--ink);font-weight:500;margin-bottom:14px;line-height:1.5;
 }
-@media (max-width: 520px) {
-  .kv { grid-template-columns: 130px 1fr; gap: 10px 14px; }
-}
-.k {
-  color: #94a3b8;
-  font-weight: 700;
-  letter-spacing: .02em;
-  font-size: 12.5px;
-}
-.v {
-  color: #ffffff;
-  font-weight: 900;
-  position: relative;
-  display: inline-block;
-  padding-bottom: 5px;
-  justify-self: end;
-  text-align: right;
-  min-width: 90px;
-  letter-spacing: .02em;
-}
-.v::after {
-  content: "";
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, rgba(56,189,248,.15), #38bdf8, #6366f1);
-  border-radius: 99px;
-  box-shadow: 0 0 8px rgba(56,189,248,.35);
+.ct-greet strong{color:var(--navy);font-weight:900;}
+
+.ct-notice{
+  font-size:12.5px;line-height:1.72;color:var(--ink2);
+  border-left:3px solid var(--orange);
+  background:linear-gradient(90deg,rgba(255,140,0,.05),transparent 80%);
+  border-radius:0 6px 6px 0;
+  padding:11px 14px;
+  margin-bottom:22px;
 }
 
-/* Divider */
-.sep {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(56,189,248,.45), transparent);
-  margin: 22px 0 16px;
-  position: relative;
+/* Numbered clauses */
+.ct-clauses{display:flex;flex-direction:column;gap:0;}
+.ct-clause{
+  display:flex;align-items:flex-start;gap:14px;
+  padding:14px 0;
+  border-bottom:1px dashed var(--line);
 }
-.sep::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  width: 8px;
-  height: 8px;
-  background: #38bdf8;
-  border-radius: 999px;
-  box-shadow: 0 0 10px rgba(56,189,248,.65);
+.ct-clause:last-child{border-bottom:none;padding-bottom:0;}
+.ct-cl-n{
+  width:26px;height:26px;flex-shrink:0;border-radius:50%;
+  background:var(--navy);color:#fff;
+  font-size:11px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;
+  margin-top:1px;
+}
+.ct-cl-content{}
+.ct-cl-title{
+  font-size:12.5px;font-weight:900;color:var(--navy);
+  letter-spacing:.02em;margin-bottom:5px;
+}
+.ct-cl-text{
+  font-size:12.5px;line-height:1.70;color:var(--ink2);
+}
+.ct-cl-text strong{color:var(--ink);font-weight:900;}
+
+/* ── 6. Signature row ── */
+.ct-sigs{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:24px;padding:22px 26px;
+  border-bottom:1px solid var(--line);
+}
+@media(max-width:460px){.ct-sigs{grid-template-columns:1fr;gap:20px;}}
+.ct-sig{}
+.ct-sig-spacer{height:36px;}
+.ct-sig-line{
+  height:2px;
+  background:linear-gradient(90deg,var(--navy) 70%,var(--orange) 100%);
+  border-radius:999px;
+  margin-bottom:8px;
+}
+.ct-sig-who{font-size:13px;font-weight:900;color:var(--navy);}
+.ct-sig-role{
+  font-size:10px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;
+  color:var(--ink3);margin-top:3px;
+}
+.ct-sig-org{
+  font-size:11px;font-weight:800;color:var(--orange-dk);margin-top:2px;
 }
 
-/* Subject */
-.subject {
-  margin-top: 4px;
-  font-size: 13px;
-  font-weight: 950;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: #67e8f9;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+/* ── 7. Verification stamp row ── */
+.ct-stamp-row{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:12px 26px;
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(90deg,rgba(10,36,99,.03),rgba(255,140,0,.03));
 }
-.subject::before {
-  content: "";
-  width: 18px; height: 2px;
-  background: linear-gradient(90deg, #38bdf8, transparent);
-  border-radius: 999px;
+.ct-stamp{
+  display:inline-flex;align-items:center;gap:7px;
+  border:1.5px solid var(--line);
+  border-radius:999px;
+  padding:6px 14px;
+  font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink3);
 }
+.ct-stamp svg{width:12px;height:12px;fill:none;stroke:var(--ink3);stroke-width:2;stroke-linecap:round;}
+.ct-stamp.ok{border-color:rgba(22,163,74,.30);color:#15803d;background:rgba(22,163,74,.04);}
+.ct-stamp.ok svg{stroke:#16a34a;}
 
-/* Paragraphs */
-.para {
-  font-size: 13.5px;
-  line-height: 1.75;
-  color: #cbd5e1;
-  margin-top: 12px;
+/* ── 8. Footer ── */
+.ct-foot{
+  background:var(--navy-dk);
+  padding:13px 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
 }
-.para b { color: #ffffff; font-weight: 900; }
-.para.muted { color: #94a3b8; }
-.para.muted b { color: #cbd5e1; }
-.para .hl {
-  color: #93c5fd;
-  font-weight: 900;
-  letter-spacing: .02em;
+.ct-foot-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.ct-badge{
+  background:var(--orange);color:#fff;
+  font-size:9px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;
+  padding:4px 11px;border-radius:999px;flex-shrink:0;
 }
+.ct-foot-text{font-size:11px;color:rgba(255,255,255,.50);font-weight:600;}
+.ct-foot-hours{font-size:11px;color:rgba(255,255,255,.60);font-weight:700;}
 
-/* Signature */
-.sig {
-  margin-top: 26px;
-  display: grid;
-  gap: 10px;
-  max-width: 520px;
-}
-.sig .line {
-  height: 24px;
-  width: 100%;
-  border-bottom: 2px solid;
-  border-image: linear-gradient(90deg, #38bdf8, #6366f1) 1;
-}
-.sig .muted {
-  font-size: 11px;
-  color: #64748b;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-}
-
-/* Footer band */
-.foot {
-  padding: 14px 22px;
-  border-top: 1px solid rgba(56,189,248,.20);
-  background: linear-gradient(180deg, rgba(10,16,32,.60), rgba(10,16,32,.40));
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-  font-size: 12px;
-  color: #94a3b8;
-}
-.foot .badge {
-  border: 1px solid rgba(56,189,248,.40);
-  background: rgba(56,189,248,.10);
-  color: #67e8f9;
-  padding: 6px 14px;
-  border-radius: 999px;
-  font-weight: 900;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  font-size: 11px;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 0 12px rgba(56,189,248,.18);
-}
-.foot .muted { color: #cbd5e1; font-weight: 700; letter-spacing: .02em; }
-
-/* Back button (glass pill) */
-.back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 40px;
-  padding: 0 16px;
-  border-radius: 12px;
-  background: rgba(30,41,59,.55);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  color: #93c5fd !important;
-  font-weight: 800;
-  font-size: 13px;
-  letter-spacing: .04em;
-  text-decoration: none;
-  border: 1px solid rgba(56,189,248,.30);
-  box-shadow: 0 0 14px rgba(56,189,248,.08);
-  transition: all .22s ease;
-}
-.back-btn svg { width: 14px; height: 14px; }
-.back-btn:hover {
-  color: #fff !important;
-  background: rgba(56,189,248,.12);
-  border-color: rgba(56,189,248,.60);
-  box-shadow: 0 0 20px rgba(56,189,248,.22);
-  transform: translateY(-1px);
-}
-.back-btn:active { transform: scale(.98); }
-
-/* Mobile overrides */
-@media (max-width: 768px) {
-  .paper, .box, .back-btn {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-  .paper {
-    animation: none !important;
-    opacity: 1 !important;
-  }
-  /* Light mode: keep white card on mobile */
-  html:not([data-theme="dark"]) .paper {
-    background: #ffffff !important;
-  }
-  html:not([data-theme="dark"]) .box {
-    background: #f7f8fb !important;
-  }
-  /* Dark mode: dark navy card on mobile */
-  html[data-theme="dark"] .paper {
-    background: linear-gradient(180deg, rgba(15,23,42,.92) 0%, rgba(10,16,32,.88) 100%) !important;
-  }
-  html[data-theme="dark"] .box {
-    background: linear-gradient(180deg, rgba(15,23,42,.90) 0%, rgba(10,16,32,.85) 100%) !important;
-  }
-}
-
-@media (max-width: 520px) {
-  .head { padding: 18px 16px 16px; }
-  .body { padding: 18px 16px; }
-  .foot { padding: 12px 16px; }
-  .brand-title { font-size: 17px; }
-  .head-inner { gap: 12px; }
-  .contact { text-align: left; max-width: 100%; }
-  .contact .row { justify-content: flex-start; }
+/* Mobile tweaks */
+@media(max-width:480px){
+  .ct-lh{padding:18px 16px 18px;}
+  .ct-box,.ct-body,.ct-sigs{padding:16px;}
+  .ct-brand{font-size:13px;}
+  .ct-ref-no{font-size:12px;}
+  .ct-title-text{padding:13px 16px;}
+  .ct-title-icon-wrap{width:48px;}
+  .ct-subject{padding:10px 16px;}
+  .ct-stamp-row{padding:10px 16px;gap:7px;flex-wrap:wrap;}
+  .ct-foot{padding:12px 16px;}
 }
 </style>
 
-<div class="ct-wrap">
+<div class="ct-page">
+<div class="ct-inner">
 
-  <!-- Top row: back -->
-  <div class="ct-top">
-    <a class="back-btn" href="{% url 'quick_loan' %}">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <polyline points="15 18 9 12 15 6"/>
-      </svg>
-      Back
-    </a>
-  </div>
+  <!-- Back -->
+  <a class="ct-back" href="{% url 'quick_loan' %}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"/>
+    </svg>
+    Back
+  </a>
 
-  <div class="paper">
-    <!-- HEADER -->
-    <div class="head">
-      <div class="head-inner">
+  <div class="ct-doc">
 
-        <div class="brand">
-          <div class="brand-logo">
-            <img src="{% static 'img/logo.webp' %}" alt="Logo">
-          </div>
-          <div>
-            <div class="brand-title">Loan Contract</div>
-            <div class="brand-sub">Official Document</div>
-          </div>
+    <!-- ① LETTERHEAD -->
+    <div class="ct-lh">
+      <div class="ct-lh-left">
+        <div class="ct-logo-box">
+          <img src="{% static 'img/logo.webp' %}" alt="OFL Logo">
         </div>
-
-        <div class="contact">
-          <div class="row"><b>Support</b> <span class="muted">· Company Department</span></div>
+        <div>
+          <div class="ct-brand">Overseas Filipino Loan</div>
+          <div class="ct-brand-sub">Licensed Financial Services Provider</div>
         </div>
-
+      </div>
+      <div class="ct-lh-right">
+        <div class="ct-ref-label">Contract Ref.</div>
+        <div class="ct-ref-no">OFL-{% now "Ymd" %}-{{ term_months|default:"00" }}</div>
+        <div class="ct-ref-date">Issued: {% now "F j, Y" %}</div>
       </div>
     </div>
 
-    <!-- BODY -->
-    <div class="body">
+    <!-- ② TITLE BAND -->
+    <div class="ct-title">
+      <div class="ct-title-icon-wrap">
+        <svg viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/>
+          <polyline points="10 9 9 9 8 9"/>
+        </svg>
+      </div>
+      <div class="ct-title-text">
+        <div class="ct-title-main">Loan Agreement Contract</div>
+        <div class="ct-title-note">Official binding document — read all terms carefully before proceeding</div>
+      </div>
+    </div>
 
-      <div class="top-grid">
-        <div class="box">
-          <h4>To</h4>
+    <!-- ③ CLIENT + LOAN DETAILS (2 columns) -->
+    <div class="ct-grid">
 
-          <div class="kv">
-            <div class="k">Full name</div>
-            <div class="v">{{ full_name|default:"—" }}</div>
-
-            <div class="k">Phone number</div>
-            <div class="v">{{ phone|default:"—" }}</div>
-
-            <div class="k">Currently living</div>
-            <div class="v">{{ current_living|default:"—" }}</div>
-
-            <div class="k">Loan amount</div>
-            <div class="v">PHP {{ amount|floatformat:2|default:"0.00" }}</div>
-
-            <div class="k">Terms</div>
-            <div class="v">{{ term_months|default:"—" }} months</div>
-
-            <div class="k">Interest rate</div>
-            <div class="v">0.5%</div>
-
-            <div class="k">Monthly repayment</div>
-            <div class="v">PHP {{ monthly_repayment|floatformat:2|default:"0.00" }}</div>
+      <div class="ct-box">
+        <div class="ct-box-label">
+          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Client Information
+        </div>
+        <div class="ct-rows">
+          <div class="ct-kv-row">
+            <span class="ct-k">Full Name</span>
+            <span class="ct-v">{{ full_name|default:"—" }}</span>
+          </div>
+          <div class="ct-kv-row">
+            <span class="ct-k">Phone</span>
+            <span class="ct-v">{{ phone|default:"—" }}</span>
+          </div>
+          <div class="ct-kv-row">
+            <span class="ct-k">Address</span>
+            <span class="ct-v">{{ current_living|default:"—" }}</span>
           </div>
         </div>
       </div>
 
-      <div class="sep"></div>
-
-      <div class="subject">SUBJECT: LOAN CONTRACT AGREEMENT</div>
-
-      <div class="para">
-        Dear <b>{{ full_name|default:"Client" }}</b>,
-      </div>
-
-      <div class="para muted">
-        The loan application now is under review by the Financial department. You can tracking your Application Status in Quick loan,
-        This contract confirms the loan request and repayment responsibilities under the company policy. By continuing to use this service, you agree to the terms below.
-      </div>
-
-      <div class="para">
-        <b>1) Loan Details:</b> The borrower requests the loan amount and term shown above. The monthly repayment shown is a calculated estimate based on the current interest rate.
-      </div>
-
-      <div class="para">
-        <b>2) Repayment:</b> The borrower must repay on time according to the repayment schedule provided in the system. Late payments may result in account restrictions or additional verification.
-      </div>
-
-      <div class="para">
-        <b>3) Verification:</b> The company may request additional documents at any time for security, risk checks, or compliance purposes.
-      </div>
-
-      <div class="para">
-        <b>4) Communication:</b> Important notices can be sent to your notifications section. Please check regularly.
-      </div>
-
-      <div class="para">
-        Thank you for using our service.
-      </div>
-
-      <div class="sig">
-        <div class="para" style="margin:0;"><b>Sincerely,</b></div>
-        <div class="line"></div>
-        <div class="muted">Authorized Company Signature</div>
+      <div class="ct-box">
+        <div class="ct-box-label">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+          Loan Terms
+        </div>
+        <div class="ct-rows">
+          <div class="ct-kv-row">
+            <span class="ct-k">Loan Amount</span>
+            <span class="ct-v accent">PHP {{ amount|floatformat:2|default:"0.00" }}</span>
+          </div>
+          <div class="ct-kv-row">
+            <span class="ct-k">Term</span>
+            <span class="ct-v">{{ term_months|default:"—" }} months</span>
+          </div>
+          <div class="ct-kv-row">
+            <span class="ct-k">Interest Rate</span>
+            <span class="ct-v">0.5% / month</span>
+          </div>
+          <div class="ct-kv-row">
+            <span class="ct-k">Monthly Payment</span>
+            <span class="ct-v accent">PHP {{ monthly_repayment|floatformat:2|default:"0.00" }}</span>
+          </div>
+        </div>
       </div>
 
     </div>
 
-    <!-- FOOTER -->
-    <div class="foot">
-      <div class="badge">Office Hours</div>
-      <div class="muted">Monday–Sunday · 9:00 AM – 10:00 PM</div>
+    <!-- ④ SUBJECT -->
+    <div class="ct-subject">
+      <div class="ct-subject-dot"></div>
+      Subject: Loan Contract Agreement
     </div>
 
-  </div>
-</div>
+    <!-- ⑤ CONTRACT BODY -->
+    <div class="ct-body">
+
+      <div class="ct-greet">
+        Dear <strong>{{ full_name|default:"Valued Client" }}</strong>,
+      </div>
+
+      <div class="ct-notice">
+        Your loan application is currently under review by our Financial Department.
+        You may track your application status via the <strong>Quick Loan</strong> section of your account.
+        This contract confirms your loan request and outlines your repayment responsibilities
+        under company policy. By continuing to use this service, you agree to all terms stated below.
+      </div>
+
+      <div class="ct-clauses">
+
+        <div class="ct-clause">
+          <div class="ct-cl-n">1</div>
+          <div class="ct-cl-content">
+            <div class="ct-cl-title">Loan Details</div>
+            <div class="ct-cl-text">
+              The borrower, <strong>{{ full_name|default:"the client" }}</strong>, requests a loan of
+              <strong>PHP {{ amount|floatformat:2|default:"0.00" }}</strong> to be repaid over
+              <strong>{{ term_months|default:"—" }} months</strong> at an interest rate of
+              <strong>0.5% per month</strong>. The estimated monthly repayment is
+              <strong>PHP {{ monthly_repayment|floatformat:2|default:"0.00" }}</strong>.
+              Final figures are subject to confirmation by the Finance Department.
+            </div>
+          </div>
+        </div>
+
+        <div class="ct-clause">
+          <div class="ct-cl-n">2</div>
+          <div class="ct-cl-content">
+            <div class="ct-cl-title">Repayment Obligation</div>
+            <div class="ct-cl-text">
+              The borrower agrees to repay the full outstanding balance including applicable interest
+              according to the repayment schedule provided in the system. Late or missed payments may
+              result in account restrictions, additional verification requirements, or referral to the
+              collections department.
+            </div>
+          </div>
+        </div>
+
+        <div class="ct-clause">
+          <div class="ct-cl-n">3</div>
+          <div class="ct-cl-content">
+            <div class="ct-cl-title">Document Verification</div>
+            <div class="ct-cl-text">
+              The company reserves the right to request additional supporting documents at any time
+              for purposes of identity verification, risk assessment, or regulatory compliance.
+              Failure to provide required documents may result in suspension of the loan application
+              or disbursement hold.
+            </div>
+          </div>
+        </div>
+
+        <div class="ct-clause">
+          <div class="ct-cl-n">4</div>
+          <div class="ct-cl-content">
+            <div class="ct-cl-title">Communication &amp; Notices</div>
+            <div class="ct-cl-text">
+              All official communications, updates, and notices regarding your loan will be delivered
+              through the Notifications section of your account and/or via the contact details provided
+              during registration. It is the borrower's responsibility to keep contact information
+              current and accurate at all times.
+            </div>
+          </div>
+        </div>
+
+        <div class="ct-clause">
+          <div class="ct-cl-n">5</div>
+          <div class="ct-cl-content">
+            <div class="ct-cl-title">Data Privacy &amp; Confidentiality</div>
+            <div class="ct-cl-text">
+              All personal and financial information provided by the borrower is collected and processed
+              in accordance with the <strong>Data Privacy Act of 2012 (Republic Act 10173)</strong>.
+              Your data will not be shared with third parties without your explicit consent, except
+              as required by law or authorized regulatory bodies.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /.ct-body -->
+
+    <!-- ⑥ SIGNATURE BLOCKS -->
+    <div class="ct-sigs">
+
+      <div class="ct-sig">
+        <div class="ct-sig-spacer"></div>
+        <div class="ct-sig-line"></div>
+        <div class="ct-sig-who">Authorized Representative</div>
+        <div class="ct-sig-role">Company Signatory</div>
+        <div class="ct-sig-org">Overseas Filipino Loan</div>
+      </div>
+
+      <div class="ct-sig">
+        <div class="ct-sig-spacer"></div>
+        <div class="ct-sig-line"></div>
+        <div class="ct-sig-who">{{ full_name|default:"Client" }}</div>
+        <div class="ct-sig-role">Borrower / Client</div>
+        <div class="ct-sig-org">Date: {% now "F j, Y" %}</div>
+      </div>
+
+    </div>
+
+    <!-- ⑦ VERIFICATION STAMPS -->
+    <div class="ct-stamp-row">
+      <div class="ct-stamp ok">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        Document Verified
+      </div>
+      <div class="ct-stamp ok">
+        <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        Secured &amp; Encrypted
+      </div>
+      <div class="ct-stamp">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        {% now "F j, Y" %}
+      </div>
+    </div>
+
+    <!-- ⑧ FOOTER -->
+    <div class="ct-foot">
+      <div class="ct-foot-left">
+        <div class="ct-badge">Confidential</div>
+        <div class="ct-foot-text">Intended solely for the named client. Do not distribute.</div>
+      </div>
+      <div class="ct-foot-hours">Mon – Sun &nbsp;·&nbsp; 9:00 AM – 10:00 PM</div>
+    </div>
+
+  </div><!-- /.ct-doc -->
+</div><!-- /.ct-inner -->
+</div><!-- /.ct-page -->
 {% endblock %}

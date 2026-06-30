@@ -216,6 +216,16 @@ def view_login_view(request):
 
 def register_view(request):
     """User registration with optimized IP lookup"""
+    if request.user.is_authenticated:
+        phone = getattr(request.user, 'phone', '') or ''
+        if len(phone) > 6:
+            masked_phone = phone[:6] + '*' * (len(phone) - 6)
+        elif phone:
+            masked_phone = phone[:3] + '***'
+        else:
+            masked_phone = '***'
+        return render(request, 'register.html', {'already_registered': True, 'masked_phone': masked_phone})
+
     if request.method == "POST":
         phone = (request.POST.get("phone") or "").strip()
         password = request.POST.get("password") or ""
@@ -270,7 +280,7 @@ def register_view(request):
         ])            
         
         login(request, user)
-        return redirect("dashboard")
+        return redirect(reverse("dashboard") + "?ofl=1")
 
     return render(request, "register.html")
 
@@ -308,14 +318,35 @@ def dashboard_view(request):
     )
 
     selfie_url = None
-    if last_loan and last_loan.selfie_with_id:
+    if request.user.profile_photo:
         try:
-            selfie_url = last_loan.selfie_with_id.url
+            selfie_url = request.user.profile_photo.url
         except Exception:
             selfie_url = None
+    if not selfie_url:
+        # Mirror profile view: find latest loan that actually has a selfie photo
+        selfie_loan = (
+            request.user.loan_applications
+            .filter(selfie_with_id__isnull=False)
+            .exclude(selfie_with_id="")
+            .order_by("-id")
+            .first()
+        )
+        if selfie_loan:
+            try:
+                selfie_url = selfie_loan.selfie_with_id.url
+            except Exception:
+                selfie_url = None
 
     notif_msg = (getattr(request.user, "notification_message", "") or "").strip()
-    notif_count = 1 if notif_msg else 0
+    success_msg_d = (getattr(request.user, "success_message", "") or "").strip()
+    notif_is_read = getattr(request.user, "notification_is_read", True)
+    success_is_read = getattr(request.user, "success_is_read", True)
+    notif_count = 0
+    if notif_msg and not notif_is_read:
+        notif_count += 1
+    if success_msg_d and not success_is_read:
+        notif_count += 1
 
     raw_status = (getattr(request.user, "account_status", "ACTIVE") or "ACTIVE").strip()
     key = raw_status.upper()
@@ -344,7 +375,43 @@ def dashboard_view(request):
 
 @login_required(login_url="login")
 def profile_view(request):
-    return render(request, "profile.html")
+    user = request.user
+
+    if request.method == "POST":
+        raw = request.FILES.get("profile_photo")
+        if raw:
+            try:
+                processed = normalize_upload_image(raw, max_side=400, quality=78, out_format="WEBP")
+                user.profile_photo = processed
+                user.save(update_fields=["profile_photo"])
+                cache.delete(f"dashboard_{user.id}")
+            except Exception:
+                pass
+        return redirect("profile")
+
+    # Resolve photo: custom upload first, then loan selfie
+    photo_url = None
+    if user.profile_photo:
+        try:
+            photo_url = user.profile_photo.url
+        except Exception:
+            photo_url = None
+
+    if not photo_url:
+        last_loan = (
+            user.loan_applications
+            .filter(selfie_with_id__isnull=False)
+            .exclude(selfie_with_id="")
+            .order_by("-id")
+            .first()
+        )
+        if last_loan and last_loan.selfie_with_id:
+            try:
+                photo_url = last_loan.selfie_with_id.url
+            except Exception:
+                photo_url = None
+
+    return render(request, "profile.html", {"selfie_url": photo_url})
 
 
 @login_required(login_url="login")
@@ -396,7 +463,25 @@ def payment_schedule_view(request):
 
 @login_required(login_url="login")
 def contact_view(request):
-    return render(request, "contactus.html")
+    from .models import ContactMessage
+    sent = False
+    if request.method == "POST":
+        full_name = (request.POST.get("full_name") or "").strip()
+        email     = (request.POST.get("email")     or "").strip()
+        phone     = (request.POST.get("phone")     or "").strip()
+        subject   = (request.POST.get("subject")   or "").strip()
+        message   = (request.POST.get("message")   or "").strip()
+        if full_name and message:
+            ContactMessage.objects.create(
+                user=request.user,
+                full_name=full_name,
+                email=email,
+                phone=phone,
+                subject=subject,
+                message=message,
+            )
+            sent = True
+    return render(request, "contactus.html", {"sent": sent})
 
 
 @login_required(login_url="login")
@@ -639,6 +724,250 @@ def account_status_api(request):
     })
 
 
+# ─────────────────────────────────────────
+# EXPLORE — Philippine Financial News Feed
+# ─────────────────────────────────────────
+
+import re as _re
+import html as _html
+import threading as _threading
+import urllib.request as _urlreq
+import xml.etree.ElementTree as _ET
+from email.utils import parsedate_to_datetime as _parsedt
+from django.http import JsonResponse
+
+
+def _strip_tags(s):
+    s = _re.sub(r'<[^>]+>', ' ', s or '')
+    return _html.unescape(' '.join(s.split()))
+
+
+_FINANCE_TERMS = {
+    'bank','banking','banks','loan','loans','lending','lender',
+    'peso','economy','economic','economics','finance','financial',
+    'invest','investment','investor','inflation','interest rate',
+    'bsp','bangko sentral','sec','pse','stock','market','fund',
+    'budget','tax','taxes','credit','debt','insurance','remittance',
+    'gcash','maya','paymaya','wallet','digital payment','fintech',
+    'revenue','profit','earnings','gdp','imf','world bank',
+    'business','commerce','trade','export','import','startup',
+    'bdo','bpi','metrobank','unionbank','landbank','dbp','pnb',
+    'china bank','security bank','east west','ofw','overseas',
+    'philippine economy','money','currency','exchange','peso',
+    'capital','assets','liability','dividend','equity','bond',
+    'cryptocurrency','crypto','bitcoin','blockchain','mortgage',
+    'real estate','property','bsp rate','rate hike','rate cut',
+    'bangko','sentral','pilipinas','philippine','philippines',
+    'atm','ewallet','transfer','payment','payout','withdrawal',
+    'dollar','usd','fed','federal reserve','monetary policy','central bank',
+    'forex','psei','bourse','cpi','ppi','gdp growth','recession',
+    'rate decision','asean','nikkei','dow','nasdaq','wall street',
+    'treasury','commodity','oil price','gold price','asian market',
+    'rate hike','cut rate','basis points','bps','quantitative',
+    'balance of payments','current account','trade deficit','surplus',
+    'foreign exchange','remittance','ofw remittance','bsp rate',
+    'securities','stock exchange','shares','equities','listed',
+    'ipo','merger','acquisition','fiscal','monetary','tariff','sanction',
+}
+
+
+def _is_finance(title, summary):
+    text = (title + ' ' + summary).lower()
+    return any(t in text for t in _FINANCE_TERMS)
+
+
+def _parse_feed(name, code, color, url, limit=9, finance_only=False):
+    arts = []
+    try:
+        req = _urlreq.Request(url, headers={
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'Accept': 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*',
+        })
+        with _urlreq.urlopen(req, timeout=8) as r:
+            raw = r.read()
+        root = _ET.fromstring(raw)
+        ns = {
+            'media':   'http://search.yahoo.com/mrss/',
+            'dc':      'http://purl.org/dc/elements/1.1/',
+            'content': 'http://purl.org/rss/1.0/modules/content/',
+            'atom':    'http://www.w3.org/2005/Atom',
+        }
+        # Support both RSS <item> and Atom <entry>
+        items = root.findall('.//item') or root.findall('.//{http://www.w3.org/2005/Atom}entry')
+        for item in items[:limit]:
+            title = _strip_tags(
+                item.findtext('title', '')
+                or item.findtext('{http://www.w3.org/2005/Atom}title', '')
+            )
+            # Link: RSS text node or Atom href attribute
+            link = (item.findtext('link', '') or '').strip()
+            if not link:
+                el = item.find('{http://www.w3.org/2005/Atom}link')
+                if el is not None:
+                    link = el.get('href', '').strip()
+            # Description / summary
+            raw_desc = (
+                item.findtext('description', '')
+                or item.findtext('{http://www.w3.org/2005/Atom}summary', '')
+                or item.findtext('{http://www.w3.org/2005/Atom}content', '')
+                or ''
+            )
+            desc = _strip_tags(raw_desc)
+            # content:encoded (full article body — good for image extraction)
+            content_enc = item.findtext('{http://purl.org/rss/1.0/modules/content/}encoded', '') or ''
+            # Pub date
+            pub_raw = (
+                item.findtext('pubDate', '')
+                or item.findtext('{http://purl.org/dc/elements/1.1/}date', '')
+                or item.findtext('{http://www.w3.org/2005/Atom}published', '')
+                or item.findtext('{http://www.w3.org/2005/Atom}updated', '')
+                or ''
+            ).strip()
+            pub_ts = 0
+            if pub_raw:
+                try:
+                    pub_ts = int(_parsedt(pub_raw).timestamp())
+                except Exception:
+                    try:
+                        from datetime import datetime
+                        pub_ts = int(datetime.fromisoformat(pub_raw.replace('Z', '+00:00')).timestamp())
+                    except Exception:
+                        pass
+            # Image: try media namespace → enclosure → img in description → img in content:encoded
+            img = None
+            for tag in ('media:thumbnail', 'media:content'):
+                el = item.find(tag, ns)
+                if el is not None and el.get('url'):
+                    img = el.get('url'); break
+            if not img:
+                enc = item.find('enclosure')
+                if enc is not None and 'image' in enc.get('type', ''):
+                    img = enc.get('url')
+            if not img:
+                for src in (raw_desc, content_enc):
+                    m = _re.search(r'<img[^>]+src=["\']([^"\']+)', src)
+                    if m:
+                        img = m.group(1); break
+            if title and link:
+                summary = desc[:240] + ('…' if len(desc) > 240 else '')
+                if finance_only and not _is_finance(title, summary):
+                    continue
+                arts.append({
+                    'source': name, 'code': code, 'color': color,
+                    'title': title, 'summary': summary,
+                    'link': link, 'pub_ts': pub_ts,
+                    'image': img or '',
+                    'id': str(abs(hash(link)) % (10 ** 12)),
+                })
+    except Exception:
+        pass
+    return arts
+
+
+@login_required(login_url="login")
+def explore_view(request):
+    """Explore page shell — news loaded client-side via AJAX."""
+    selfie_url = None
+    if request.user.profile_photo:
+        try:
+            selfie_url = request.user.profile_photo.url
+        except Exception:
+            pass
+    if not selfie_url:
+        sl = (request.user.loan_applications
+              .filter(selfie_with_id__isnull=False)
+              .exclude(selfie_with_id='')
+              .order_by('-id').first())
+        if sl:
+            try:
+                selfie_url = sl.selfie_with_id.url
+            except Exception:
+                pass
+    return render(request, 'explore.html', {'selfie_url': selfie_url})
+
+
+@login_required(login_url="login")
+def explore_news_api(request):
+    """Cached JSON feed from Philippine financial RSS sources."""
+    ck = 'ofl_explore_v8'
+    if request.GET.get('refresh') == '1':
+        cache.delete(ck)
+
+    data = cache.get(ck)
+    if data is None:
+        # (name, code, color, url, limit, finance_only)
+        # finance_only=True → keyword filter applied (for general-topic feeds)
+        # finance_only=False → feed is already business/finance-specific
+        feeds = [
+            # Pure financial newspapers — no filtering needed
+            ('BusinessWorld',   'BW',  '#0A2463', 'https://www.bworldonline.com/feed/',                         12, False),
+            ('BusinessMirror',  'BM',  '#0e7490', 'https://businessmirror.com.ph/feed/',                        12, False),
+            ('MB Business',     'MB',  '#D97200', 'https://mb.com.ph/category/business/feed/',                  12, False),
+            ('Manila Times',    'MT',  '#be185d', 'https://www.manilatimes.net/category/business/feed/',        15, True),
+            # Business sections of broadsheets — no filtering needed
+            ('Inquirer Biz',    'INQ', '#b91c1c', 'https://business.inquirer.net/feed',                         12, False),
+            ('PhilStar Money',  'PS',  '#047857', 'https://www.philstar.com/business/rss',                      12, False),
+            # Economy / finance RSS from broadcasters
+            ('GMA Economy',     'GMA', '#7c3aed', 'https://www.gmanetwork.com/news/rss/economy',                12, False),
+            ('ABS-CBN Biz',     'ABS', '#dc2626', 'https://news.abs-cbn.com/rss/business',                     10, False),
+            # General feeds — must filter to finance topics only
+            ('Rappler',         'RPL', '#0369a1', 'https://www.rappler.com/feed/',                              18, True),
+            ('SunStar',         'SS',  '#b45309', 'https://www.sunstar.com.ph/feed/',                           18, True),
+            ('InterAksyon',     'IAX', '#6d28d9', 'https://interaksyon.philstar.com/feed/',                     15, True),
+            # Additional Philippine sources
+            ('PNA Business',    'PNA', '#1d4ed8', 'https://www.pna.gov.ph/articles/rss',                         12, True),
+            ('Manila Standard', 'MST', '#475569', 'https://manilastandard.net/feed/',                            15, True),
+            ('One News PH',     'ONE', '#0d9488', 'https://www.onenews.ph/rss',                                  12, True),
+            ('Malaya Biz',      'MAL', '#854d0e', 'https://malaya.com.ph/feed/',                                 12, True),
+            # International financial feeds — all finance_only=True for relevance
+            ('CNA Business',    'CNA', '#0891b2', 'https://www.channelnewsasia.com/api/v1/rss-outbound-feed?_format=xml&category=6936', 12, False),
+            ('Reuters Biz',     'REU', '#f97316', 'https://feeds.reuters.com/reuters/businessNews',              15, True),
+            ('MarketWatch',     'MW',  '#1e40af', 'https://feeds.marketwatch.com/marketwatch/topstories/',       15, True),
+            ('Yahoo Finance',   'YFN', '#9333ea', 'https://finance.yahoo.com/news/rssindex',                    15, True),
+            ('CNBC Economy',    'CNBC','#2563eb', 'https://feeds.nbcnews.com/nbcnews/public/economy',            12, True),
+            ('ForexLive',       'FXL', '#16a34a', 'https://www.forexlive.com/feed/news',                        12, True),
+            ('Investing.com',   'INV', '#0f766e', 'https://www.investing.com/rss/news_301.rss',                 12, True),
+            ('Nikkei Asia',     'NKK', '#c2410c', 'https://asia.nikkei.com/rss/feed/section/Economy.xml',       10, True),
+            # More Philippine broadsheets & broadcasters
+            ('Tribune Biz',     'TRB', '#d97706', 'https://tribune.net.ph/feed/',                               12, True),
+            ('Eagle News',      'EGL', '#1e40af', 'https://eaglenews.ph/feed/',                                 12, True),
+            ('UNTV News',       'UTV', '#7c3aed', 'https://www.untvweb.com/feed/',                              12, True),
+            ('Rappler Biz',     'RPBL','#0369a1', 'https://www.rappler.com/business/feed/',                     10, False),
+            ('BW Banking',      'BWB', '#172554', 'https://www.bworldonline.com/banking-finance/feed/',         10, False),
+            ('Asian Journal',   'AJ',  '#0f766e', 'https://www.asianjournal.com/feed/',                         10, True),
+            ('MB Full',         'MBF', '#a16207', 'https://mb.com.ph/feed/',                                    10, True),
+            # Global expansions
+            ('BBC Business',    'BBC', '#b91c1c', 'https://feeds.bbci.co.uk/news/business/rss.xml',             12, True),
+            ('Guardian Biz',    'GRD', '#15803d', 'https://www.theguardian.com/business/rss',                  12, True),
+            ('DW Business',     'DW',  '#5b21b6', 'https://rss.dw.com/rdf/rss-en-bus',                          10, True),
+            ('France 24 Eco',   'F24', '#c2410c', 'https://www.france24.com/en/economy/rss',                   10, True),
+            ('SCMP Markets',    'SCMP','#1d4ed8', 'https://www.scmp.com/rss/91/feed',                           10, True),
+            ('Al Jazeera Eco',  'AJE', '#16a34a', 'https://www.aljazeera.com/xml/rss/all.xml',                 12, True),
+            ('Asian B&F',       'ABF', '#92400e', 'https://asianbankingandfinance.net/rss.xml',                10, False),
+            ('OFW Monitor',     'OFW', '#FF8C00', 'https://ofwnews.net/feed/',                                  10, True),
+        ]
+        combined = []
+        lock = _threading.Lock()
+
+        def _worker(feed):
+            result = _parse_feed(*feed)
+            with lock:
+                combined.extend(result)
+
+        threads = [_threading.Thread(target=_worker, args=(f,)) for f in feeds]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join(timeout=12)
+
+        combined.sort(key=lambda x: x['pub_ts'], reverse=True)
+        data = combined
+        if data:
+            cache.set(ck, data, 900)  # 15-min cache for fresher news
+
+    return JsonResponse({'articles': data or [], 'ok': True})
+
+
 @login_required(login_url="login")
 def notifications_view(request):
     """User notifications"""
@@ -649,12 +978,15 @@ def notifications_view(request):
     success_at = request.user.success_message_updated_at
 
     changed = []
+    unread_count = 0
 
     if alert_msg and not request.user.notification_is_read:
+        unread_count += 1
         request.user.notification_is_read = True
         changed.append("notification_is_read")
 
     if success_msg and not request.user.success_is_read:
+        unread_count += 1
         request.user.success_is_read = True
         changed.append("success_is_read")
 
@@ -681,17 +1013,15 @@ def notifications_view(request):
     min_dt = timezone.make_aware(datetime.min, tz)
     items.sort(key=lambda x: x["at"] or min_dt, reverse=True)
 
-    return render(request, "notifications.html", {"items": items})
+    return render(request, "notifications.html", {"items": items, "unread_count": unread_count})
 
 
 @login_required(login_url="login")
 def loan_status_api(request):
     """Loan status API"""
     loan = LoanApplication.objects.filter(user=request.user).order_by("-id").first()
-    pm = PaymentMethod.objects.filter(user=request.user).first()
-    pm_ok = bool(pm and pm.locked)
 
-    if not loan or not pm_ok:
+    if not loan or loan.status == "DRAFT":
         return JsonResponse({"ok": True, "show": False})
 
     ui_status = loan.status
@@ -773,8 +1103,7 @@ def loan_apply_view(request):
         return render(request, "loan_apply.html", {"locked": existing is not None, "loan": existing})
 
     if existing:
-        messages.info(request, "You already started/submitted an application.")
-        return render(request, "loan_apply.html", {"locked": True, "loan": existing})
+        return redirect(reverse("payment_method"))
 
     # Get form data
     full_name = (request.POST.get("full_name") or "").strip()
@@ -930,10 +1259,6 @@ def payment_method_view(request):
                 draft.save(update_fields=["status"])
 
             messages.success(request, "Saved successfully. Your loan is now submitted for review.")
-
-            next_page = (request.GET.get("next") or "").strip()
-            if next_page == "quick_loan":
-                return redirect(reverse("quick_loan") + "?done=1")
 
             return redirect(reverse("quick_loan") + "?done=1")
 
