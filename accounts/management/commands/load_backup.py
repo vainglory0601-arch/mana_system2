@@ -8,11 +8,10 @@ class Command(BaseCommand):
     help = "Flush database and load data_backup.json if the file exists"
 
     def handle(self, *args, **options):
-        backup_path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)),
-            "..", "..", "..", "..", "data_backup.json"
+        # accounts/management/commands/ → 3 levels up = project root /workspace
+        backup_path = os.path.normpath(
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "..", "data_backup.json")
         )
-        backup_path = os.path.normpath(backup_path)
 
         if not os.path.exists(backup_path):
             self.stdout.write("data_backup.json not found — skipping.")
