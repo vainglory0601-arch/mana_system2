@@ -1124,6 +1124,16 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
        var idn=document.getElementById('identityName');if(!idn||!idn.value.trim())return false;
        var idno=document.getElementById('identityNumber');if(!idno||!idno.value.trim())return false;
        return true;
+     },
+     autoOn:function(done){
+       var ids=['fullName','ageInput','currentLiving','hometownInput','expensesInput','identityName','identityNumber'];
+       function chk(){
+         var ok=ids.every(function(id){var el=document.getElementById(id);return el&&el.value.trim();});
+         if(ok){rmv();setTimeout(done,700);}
+       }
+       function rmv(){ids.forEach(function(id){var el=document.getElementById(id);if(el)el.removeEventListener('input',chk);});}
+       ids.forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('input',chk);});
+       return rmv;
      }},
     {sp:'laSp4',inp:null,step:'Step 4 of 5',label:'STEP 4 OF 5',next:'Next →',
      body:_ico[4]+' Upload your <b>government ID</b> (front &amp; back) and a selfie, then draw your <b>signature</b>.',
@@ -1134,6 +1144,15 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
        if(!bs||!bs.classList.contains('has-img'))return false;
        if(!sig||!sig.value)return false;
        return true;
+     },
+     autoOn:function(done){
+       var t=setInterval(function(){
+         var bf=document.getElementById('boxFront'),bb=document.getElementById('boxBack'),
+             bs=document.getElementById('boxSelfie'),sig=document.getElementById('signatureData');
+         if(bf&&bf.classList.contains('has-img')&&bb&&bb.classList.contains('has-img')&&
+            bs&&bs.classList.contains('has-img')&&sig&&sig.value){clearInterval(t);setTimeout(done,800);}
+       },800);
+       return function(){clearInterval(t);};
      }},
     {sp:'laSp5',inp:null,step:'Step 5 of 5',label:'STEP 5 OF 5',next:'Confirm Apply →',
      body:_ico[0]+' You\'re all set! Tap <b>Confirm Apply</b> to submit your application.',
