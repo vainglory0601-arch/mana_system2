@@ -1004,6 +1004,7 @@ html:not([data-theme="dark"]) body{background:var(--bg)!important;}
   background:#fff;border-radius:26px;padding:26px 22px 20px;
   box-shadow:0 28px 72px rgba(6,21,64,.5),0 6px 24px rgba(0,0,0,.2);
   z-index:2;
+  max-height:calc(100dvh - 60px);overflow-y:auto;
   transition:top .48s cubic-bezier(.22,1,.36,1),bottom .48s cubic-bezier(.22,1,.36,1);
 }
 .og-card.og-ctr{top:50%!important;bottom:auto!important;transform:translateX(-50%) translateY(-50%);}
@@ -1411,6 +1412,33 @@ window.toggleMenu = function(){
           E.card.style.bottom='auto';
           E.arr.className='og-arr up';
         }
+        // Clamp card to viewport — prevents buttons going off-screen on small phones
+        (function(rect,step){
+          requestAnimationFrame(function(){
+            var ch=E.card.offsetHeight, mg=20;
+            if(step.pos==='above'){
+              var bv=parseFloat(E.card.style.bottom)||0;
+              if(bv+ch>window.innerHeight-mg){
+                E.card.style.bottom=(window.innerHeight-ch-mg)+'px';
+              }
+            } else {
+              var tv=parseFloat(E.card.style.top)||0;
+              if(tv+ch>window.innerHeight-mg){
+                // Try flipping above the target
+                var abTop=rect.top-p-14-ch;
+                if(abTop>mg){
+                  E.card.style.top=abTop+'px';
+                  E.arr.className='og-arr dn';
+                } else {
+                  // Fall back to centered
+                  E.card.className='og-card og-ctr';
+                  E.card.style.top='';E.card.style.bottom='';
+                  E.arr.className='og-arr';
+                }
+              }
+            }
+          });
+        })(r,s);
       }
     }
   }
