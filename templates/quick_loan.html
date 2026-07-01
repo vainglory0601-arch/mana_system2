@@ -981,26 +981,9 @@ html[data-theme="dark"] .ql-amt-error { background:rgba(220,38,38,.12) !importan
        onNext:function(){var b=document.getElementById('goApply');if(b&&!b.disabled)b.click();}}
     ];
     var N=4,cur=1,active=false,cleanup=null;
-    var ov=document.createElement('div');
-    ov.style.cssText='position:fixed;inset:0;z-index:9998;display:none;pointer-events:none;';
-    ov.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%"><path fill="rgba(6,21,64,.82)" fill-rule="evenodd"/></svg>';
-    document.body.appendChild(ov);
     var _card=document.getElementById('qlCard');
     if(_card)document.body.appendChild(_card);
     function $(id){return document.getElementById(id);}
-    function posOverlay(sp){
-      var path=ov.querySelector('path');if(!path)return;
-      var vw=window.innerWidth,vh=window.innerHeight;
-      if(!sp){path.setAttribute('d','M0 0H'+vw+'V'+vh+'H0Z');}
-      else{
-        var r=sp.getBoundingClientRect(),pad=10;
-        var l=Math.max(0,r.left-pad),t=Math.max(0,r.top-pad);
-        var rr=Math.min(vw,r.right+pad),rb=Math.min(vh,r.bottom+pad);
-        path.setAttribute('d','M0 0H'+vw+'V'+vh+'H0Z M'+l+' '+t+'H'+rr+'V'+rb+'H'+l+'Z');
-      }
-      ov.style.display='block';
-    }
-    function hideOverlay(){ov.style.display='none';}
     function posBubble(n){
       var card=$('qlCard');if(!card||n<1||n>N)return;
       var ww=window.innerWidth,cW=card.offsetWidth||Math.min(320,ww-20);
@@ -1025,14 +1008,12 @@ html[data-theme="dark"] .ql-amt-error { background:rgba(220,38,38,.12) !importan
       if(typ)typ.style.display='flex';
       if(msg){msg.innerHTML='';msg.style.display='none';}
       for(var i=1;i<=N;i++){var si=STEPS[i];if(si){var ei=$(si.sp);if(ei)ei.classList.remove('shake');}}
-      hideOverlay();
       setTimeout(function(){
         if(n<1||n>N){tourEnd();return;}
         cur=n;var s=STEPS[n];
         var sp=$(s.sp);
         if(sp){
           sp.scrollIntoView({block:'center'});
-          posOverlay(sp);
         }
         var stepEl=$('qlStep'),lbl=$('qlLabel'),nxt=$('qlNxt'),bck=$('qlBck'),dots=$('qlDots');
         if(stepEl)stepEl.textContent=s.step;
@@ -1064,7 +1045,6 @@ html[data-theme="dark"] .ql-amt-error { background:rgba(220,38,38,.12) !importan
     function tourBack(){if(cur>1){goStep(cur-1);}else{tourEnd();window.history.back();}}
     function tourEnd(){
       active=false;if(cleanup){cleanup();cleanup=null;}
-      hideOverlay();
       var card=$('qlCard');
       if(card){card.style.opacity='0';setTimeout(function(){card.style.display='none';},250);}
     }
@@ -1075,7 +1055,7 @@ html[data-theme="dark"] .ql-amt-error { background:rgba(220,38,38,.12) !importan
     window.addEventListener('resize',function(){
       if(!active)return;
       var keyboardOpen=window.innerHeight<_baseVH*0.80;
-      if(!keyboardOpen){_baseVH=window.innerHeight;var sp=$(STEPS[cur].sp);if(sp)posOverlay(sp);}
+      if(!keyboardOpen){_baseVH=window.innerHeight;}
       posBubble(cur);
     });
     setTimeout(function(){
