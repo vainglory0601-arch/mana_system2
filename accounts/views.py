@@ -466,12 +466,9 @@ def change_password_view(request):
     error = None
     success = False
     if request.method == "POST":
-        current = request.POST.get("current_password", "")
         new_pw  = request.POST.get("new_password", "")
         confirm = request.POST.get("confirm_password", "")
-        if not request.user.check_password(current):
-            error = "Current password is incorrect."
-        elif len(new_pw) < 8:
+        if len(new_pw) < 8:
             error = "New password must be at least 8 characters."
         elif new_pw != confirm:
             error = "Passwords do not match."
