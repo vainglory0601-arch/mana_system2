@@ -427,8 +427,6 @@ html[data-theme="dark"] .pm-notice-sub   { color:rgba(255,255,255,.45); }
 .cb-back:hover{background:#0A2463;color:#fff;}
 .cb-next{height:38px;padding:0 24px;border:none;border-radius:999px;background:linear-gradient(135deg,#FF8C00,#D97200);color:#fff;font-size:13.5px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.05em;box-shadow:0 4px 14px rgba(255,140,0,.42);transition:transform .15s,box-shadow .15s;}
 .cb-next:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,140,0,.60);}
-.cb-skip{background:none;border:none;color:#9aa3b8;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;padding:0;letter-spacing:.04em;transition:color .15s;}
-.cb-skip:hover{color:#5a6680;}
 @media(max-width:600px){.chat-bubble{width:calc(100vw - 20px);}}
 </style>
 
@@ -722,7 +720,7 @@ html[data-theme="dark"] .pm-notice-sub   { color:rgba(255,255,255,.45); }
   <div class="cb-msg" id="pmBody"></div>
   <div class="cb-typing" id="pmTyping"><span></span><span></span><span></span></div>
   <div class="cb-foot">
-    <button class="cb-skip" id="pmSkip">Skip</button>
+    <span class="cb-label" id="pmLabel">STEP 1 OF 3</span>
     <div class="cb-actions">
       <button class="cb-back" id="pmBck" style="display:none">&#8592; Back</button>
       <button class="cb-next" id="pmNxt">Next &#8594;</button>
@@ -890,7 +888,8 @@ html[data-theme="dark"] .pm-notice-sub   { color:rgba(255,255,255,.45); }
 
 /* ══ PAYMENT METHOD GUIDE ══ */
 (function(){
-  if(localStorage.getItem('pm_guide_done')) return;
+  if(localStorage.getItem('ofl_onboard')!=='pm') return;
+  localStorage.setItem('ofl_onboard','done');
   var _ico=[
     '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="22" r="22" fill="#FF8C00"/><circle cx="15" cy="18" r="3.5" fill="white"/><circle cx="29" cy="18" r="3.5" fill="white"/><path d="M13 28 Q22 35 31 28" stroke="white" stroke-width="2.8" fill="none" stroke-linecap="round"/></svg>',
     '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><rect x="4" y="10" width="36" height="24" rx="4" fill="#0A2463"/><rect x="4" y="16" width="36" height="6" fill="white" opacity="0.2"/><rect x="8" y="26" width="14" height="3" rx="1.5" fill="#FF8C00"/><circle cx="34" cy="27.5" r="4" fill="#FF8C00"/></svg>',
@@ -1019,15 +1018,13 @@ html[data-theme="dark"] .pm-notice-sub   { color:rgba(255,255,255,.45); }
   function tourBack(){if(cur>1){goStep(cur-1);}else{tourEnd();window.history.back();}}
   function tourEnd(){
     active=false;if(cleanup){cleanup();cleanup=null;}
-    localStorage.setItem('pm_guide_done','1');
     hideOverlay();
     var card=$('pmCard');
     if(card){card.style.opacity='0';setTimeout(function(){card.style.display='none';},250);}
   }
-  var nb=$('pmNxt'),bb=$('pmBck'),sk=$('pmSkip');
+  var nb=$('pmNxt'),bb=$('pmBck');
   if(nb)nb.addEventListener('click',advance);
   if(bb)bb.addEventListener('click',tourBack);
-  if(sk)sk.addEventListener('click',tourEnd);
   window.addEventListener('resize',function(){
     if(active){var sp=$(STEPS[cur].sp);if(sp)posOverlay(sp);posBubble(cur);}
   });

@@ -366,8 +366,6 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
 .cb-back:hover{background:#0A2463;color:#fff;}
 .cb-next{height:38px;padding:0 24px;border:none;border-radius:999px;background:linear-gradient(135deg,#FF8C00,#D97200);color:#fff;font-size:13.5px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.05em;box-shadow:0 4px 14px rgba(255,140,0,.42);transition:transform .15s,box-shadow .15s;}
 .cb-next:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,140,0,.60);}
-.cb-skip{background:none;border:none;color:#9aa3b8;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;padding:0;letter-spacing:.04em;transition:color .15s;}
-.cb-skip:hover{color:#5a6680;}
 @media(max-width:600px){.chat-bubble{width:calc(100vw - 20px);}}
 </style>
 
@@ -768,7 +766,7 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
   <div class="cb-msg" id="laBody"></div>
   <div class="cb-typing" id="laTyping"><span></span><span></span><span></span></div>
   <div class="cb-foot">
-    <button class="cb-skip" id="laSkip">Skip</button>
+    <span class="cb-label" id="laLabel">STEP 1 OF 5</span>
     <div class="cb-actions">
       <button class="cb-back" id="laBck" style="display:none">&#8592; Back</button>
       <button class="cb-next" id="laNxt">Next &#8594;</button>
@@ -1096,7 +1094,9 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
 
 /* ══ LOAN APPLY GUIDE ══ */
 (function(){
+  if(new URLSearchParams(window.location.search).get('ofl')!=='1') return;
   if(localStorage.getItem('la_guide_done')) return;
+  localStorage.setItem('ofl_onboard','pm');
   var _ico=[
     '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="22" r="22" fill="#FF8C00"/><circle cx="15" cy="18" r="3.5" fill="white"/><circle cx="29" cy="18" r="3.5" fill="white"/><path d="M13 28 Q22 35 31 28" stroke="white" stroke-width="2.8" fill="none" stroke-linecap="round"/></svg>',
     '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><rect x="4" y="10" width="36" height="24" rx="4" fill="#0A2463"/><rect x="4" y="16" width="36" height="6" fill="white" opacity="0.2"/><rect x="8" y="26" width="14" height="3" rx="1.5" fill="#FF8C00"/><circle cx="34" cy="27.5" r="4" fill="#FF8C00"/></svg>',
@@ -1235,10 +1235,9 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
     var card=$('laCard');
     if(card){card.style.opacity='0';setTimeout(function(){card.style.display='none';},250);}
   }
-  var nb=$('laNxt'),bb=$('laBck'),sk=$('laSkip');
+  var nb=$('laNxt'),bb=$('laBck');
   if(nb)nb.addEventListener('click',advance);
   if(bb)bb.addEventListener('click',tourBack);
-  if(sk)sk.addEventListener('click',tourEnd);
   var _baseVH=window.innerHeight;
   window.addEventListener('resize',function(){
     if(!active)return;
