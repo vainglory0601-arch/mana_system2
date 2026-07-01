@@ -1401,44 +1401,10 @@ window.toggleMenu = function(){
         E.sp.style.height=(r.height+p*2)+'px';
         E.sp.classList.add('on');
         E.bd.style.display='none';
-        E.card.className='og-card';
-        E.card.style.transform='translateX(-50%)';
-        if(s.pos==='above'){
-          E.card.style.bottom=(window.innerHeight-r.top+p+14)+'px';
-          E.card.style.top='auto';
-          E.arr.className='og-arr dn';
-        } else {
-          E.card.style.top=(r.bottom+p+14)+'px';
-          E.card.style.bottom='auto';
-          E.arr.className='og-arr up';
-        }
-        // Clamp card to viewport — prevents buttons going off-screen on small phones
-        (function(rect,step){
-          requestAnimationFrame(function(){
-            var ch=E.card.offsetHeight, mg=20;
-            if(step.pos==='above'){
-              var bv=parseFloat(E.card.style.bottom)||0;
-              if(bv+ch>window.innerHeight-mg){
-                E.card.style.bottom=(window.innerHeight-ch-mg)+'px';
-              }
-            } else {
-              var tv=parseFloat(E.card.style.top)||0;
-              if(tv+ch>window.innerHeight-mg){
-                // Try flipping above the target
-                var abTop=rect.top-p-14-ch;
-                if(abTop>mg){
-                  E.card.style.top=abTop+'px';
-                  E.arr.className='og-arr dn';
-                } else {
-                  // Fall back to centered
-                  E.card.className='og-card og-ctr';
-                  E.card.style.top='';E.card.style.bottom='';
-                  E.arr.className='og-arr';
-                }
-              }
-            }
-          });
-        })(r,s);
+        // Always center the card so it is never cut off on any phone size
+        E.card.className='og-card og-ctr';
+        E.card.style.top='';E.card.style.bottom='';
+        E.arr.className='og-arr';
       }
     }
   }
