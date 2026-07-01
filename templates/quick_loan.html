@@ -1078,26 +1078,6 @@ html[data-theme="dark"] .ql-amt-error { background:rgba(220,38,38,.12) !importan
       if(!keyboardOpen){_baseVH=window.innerHeight;var sp=$(STEPS[cur].sp);if(sp)posOverlay(sp);}
       posBubble(cur);
     });
-    // Hide step card while typing; restore when keyboard closes
-    var _focusTimer=null;
-    document.addEventListener('focusin',function(e){
-      var el=e.target;if(!el||!el.tagName)return;
-      var t=el.tagName.toLowerCase();
-      if(t!=='input'&&t!=='textarea'&&t!=='select')return;
-      if(_focusTimer){clearTimeout(_focusTimer);_focusTimer=null;}
-      var card=$('qlCard');
-      if(card){card.style.opacity='0';card.style.pointerEvents='none';}
-    });
-    document.addEventListener('focusout',function(){
-      _focusTimer=setTimeout(function(){
-        var f=document.activeElement;
-        if(f){var t=f.tagName.toLowerCase();if(t==='input'||t==='textarea'||t==='select')return;}
-        if(!active)return;
-        var card=$('qlCard');
-        if(card){card.style.opacity='1';card.style.pointerEvents='';}
-        posBubble(cur);
-      },300);
-    });
     setTimeout(function(){
       active=true;var card=$('qlCard');
       if(card)card.style.display='block';
