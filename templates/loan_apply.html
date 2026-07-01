@@ -1094,7 +1094,6 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
 
 /* ══ LOAN APPLY GUIDE ══ */
 (function(){
-  if(localStorage.getItem('la_guide_done')) return;
   localStorage.setItem('ofl_onboard','pm');
   var _ico=[
     '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="22" r="22" fill="#FF8C00"/><circle cx="15" cy="18" r="3.5" fill="white"/><circle cx="29" cy="18" r="3.5" fill="white"/><path d="M13 28 Q22 35 31 28" stroke="white" stroke-width="2.8" fill="none" stroke-linecap="round"/></svg>',
@@ -1230,7 +1229,6 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
   function tourBack(){if(cur>1){goStep(cur-1);}else{tourEnd();window.history.back();}}
   function tourEnd(){
     active=false;if(cleanup){cleanup();cleanup=null;}
-    localStorage.setItem('la_guide_done','1');
     var card=$('laCard');
     if(card){card.style.opacity='0';setTimeout(function(){card.style.display='none';},250);}
   }
