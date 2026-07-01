@@ -367,6 +367,22 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
 .cb-next{height:38px;padding:0 24px;border:none;border-radius:999px;background:linear-gradient(135deg,#FF8C00,#D97200);color:#fff;font-size:13.5px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.05em;box-shadow:0 4px 14px rgba(255,140,0,.42);transition:transform .15s,box-shadow .15s;}
 .cb-next:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,140,0,.60);}
 @media(max-width:600px){.chat-bubble{width:calc(100vw - 20px);}}
+/* ── fill toast ── */
+.la-fill-toast{
+  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.85);
+  background:#fff;border-radius:999px;padding:13px 22px;
+  display:none;align-items:center;gap:10px;
+  box-shadow:0 12px 40px rgba(0,0,0,.22),0 0 0 1px rgba(0,0,0,.06);
+  z-index:20000;white-space:nowrap;
+  font-size:13.5px;font-weight:800;letter-spacing:.01em;
+  opacity:0;transition:opacity .2s,transform .2s;
+}
+.la-fill-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
+.la-fill-toast.loading{color:#0A2463;}
+.la-fill-toast.done{color:#16a34a;}
+.la-fill-toast svg{flex-shrink:0;width:20px;height:20px;}
+@keyframes la-spin{to{transform:rotate(360deg);}}
+.la-fill-toast.loading svg{animation:la-spin .9s linear infinite;}
 </style>
 
 <div class="la-page">
@@ -751,13 +767,16 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
 </div>
 
 <!-- ══ LOAN APPLY GUIDE ══ -->
+<div class="la-fill-toast loading" id="laFillToast">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 0 12 2v2a8 8 0 0 1 5.66 2.34M4.93 4.93A10 10 0 0 0 2 12h2a8 8 0 0 1 2.34-5.66M4.93 19.07A10 10 0 0 0 12 22v-2a8 8 0 0 1-5.66-2.34M19.07 19.07A10 10 0 0 0 22 12h-2a8 8 0 0 1-2.34 5.66"/></svg>
+  <span id="laFillToastMsg">Updating detail, wait a sec...</span>
+</div>
 <div class="chat-bubble" id="laCard">
   <div class="cb-header">
     <div class="cb-char-wrap" style="background-image:url('{% static 'img/staff-guide.png' %}?v=5')"></div>
-    <span class="cb-step" id="laStep">STEP 1 OF 5</span>
+    <span class="cb-step" id="laStep">STEP 1 OF 4</span>
     <div class="cb-dots" id="laDots">
       <span class="cb-dot on"></span>
-      <span class="cb-dot"></span>
       <span class="cb-dot"></span>
       <span class="cb-dot"></span>
       <span class="cb-dot"></span>
@@ -766,7 +785,7 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
   <div class="cb-msg" id="laBody"></div>
   <div class="cb-typing" id="laTyping"><span></span><span></span><span></span></div>
   <div class="cb-foot">
-    <span class="cb-label" id="laLabel">STEP 1 OF 5</span>
+    <span class="cb-label" id="laLabel">STEP 1 OF 4</span>
     <div class="cb-actions">
       <button class="cb-back" id="laBck" style="display:none">&#8592; Back</button>
       <button class="cb-next" id="laNxt">Next &#8594;</button>
@@ -1105,13 +1124,16 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
   ];
   var STEPS=[
     null,
-    {sp:'laSp1',inp:null,step:'Step 1 of 5',label:'STEP 1 OF 5',next:'Next →',
-     body:_ico[1]+' Here is your <b>loan offer</b> — check the amount and monthly repayment before you continue.',
-     validate:function(){return true;}},
-    {sp:'laSp2',inp:null,step:'Step 2 of 5',label:'STEP 2 OF 5',next:'Next →',
+    {sp:'laSp2',inp:null,step:'Step 1 of 4',label:'STEP 1 OF 4',next:'Next →',
      body:_ico[2]+' <b>Select your loan purpose</b> — tap the option that best matches your need.',
-     validate:function(){return document.querySelectorAll('input[name="loan_purposes"]:checked').length>0;}},
-    {sp:'laSp3',inp:'fullName',step:'Step 3 of 5',label:'STEP 3 OF 5',next:'Next →',
+     validate:function(){return document.querySelectorAll('input[name="loan_purposes"]:checked').length>0;},
+     autoOn:function(done){
+       function chk(){if(document.querySelectorAll('input[name="loan_purposes"]:checked').length>0){rmv();setTimeout(done,400);}}
+       function rmv(){document.querySelectorAll('input[name="loan_purposes"]').forEach(function(el){el.removeEventListener('change',chk);});}
+       document.querySelectorAll('input[name="loan_purposes"]').forEach(function(el){el.addEventListener('change',chk);});
+       return rmv;
+     }},
+    {sp:'laSp3',inp:'fullName',step:'Step 2 of 4',label:'STEP 2 OF 4',next:'Next →',
      body:_ico[3]+' Fill in your <b>personal details</b> — full name, current address, and financial information.',
      validate:function(){
        var fn=document.getElementById('fullName');if(!fn||!fn.value.trim())return false;
@@ -1125,15 +1147,27 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
      },
      autoOn:function(done){
        var ids=['fullName','ageInput','currentLiving','hometownInput','expensesInput','identityName','identityNumber'];
+       function showToast(cb){
+         var t=document.getElementById('laFillToast'),msg=document.getElementById('laFillToastMsg');
+         if(!t){cb();return;}
+         t.className='la-fill-toast loading';t.style.display='flex';
+         setTimeout(function(){t.classList.add('show');},20);
+         setTimeout(function(){
+           t.className='la-fill-toast done show';
+           if(msg){msg.textContent='Done!';}
+           t.querySelector('svg').outerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+           setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.style.display='none';if(msg)msg.textContent='Updating detail, wait a sec...';cb();},200);},700);
+         },1500);
+       }
        function chk(){
          var ok=ids.every(function(id){var el=document.getElementById(id);return el&&el.value.trim();});
-         if(ok){rmv();setTimeout(done,700);}
+         if(ok){rmv();showToast(done);}
        }
        function rmv(){ids.forEach(function(id){var el=document.getElementById(id);if(el)el.removeEventListener('input',chk);});}
        ids.forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('input',chk);});
        return rmv;
      }},
-    {sp:'laSp4',inp:null,step:'Step 4 of 5',label:'STEP 4 OF 5',next:'Next →',
+    {sp:'laSp4',inp:null,step:'Step 3 of 4',label:'STEP 3 OF 4',next:'Next →',
      body:_ico[4]+' Upload your <b>government ID</b> (front &amp; back) and a selfie, then draw your <b>signature</b>.',
      validate:function(){
        var bf=document.getElementById('boxFront'),bb=document.getElementById('boxBack'),bs=document.getElementById('boxSelfie'),sig=document.getElementById('signatureData');
@@ -1152,12 +1186,12 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
        },800);
        return function(){clearInterval(t);};
      }},
-    {sp:'laSp5',inp:null,step:'Step 5 of 5',label:'STEP 5 OF 5',next:'Confirm Apply →',
+    {sp:'laSp5',inp:null,step:'Step 4 of 4',label:'STEP 4 OF 4',next:'Confirm Apply →',
      body:_ico[0]+' You\'re all set! Tap <b>Confirm Apply</b> to submit your application.',
      validate:function(){return true;},
      isLast:true}
   ];
-  var N=5,cur=1,active=false,cleanup=null;
+  var N=4,cur=1,active=false,cleanup=null;
   var _card=document.getElementById('laCard');
   if(_card)document.body.appendChild(_card);
   function $(id){return document.getElementById(id);}
