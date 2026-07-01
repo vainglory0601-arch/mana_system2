@@ -501,6 +501,8 @@ html[data-theme="dark"] .ql-amt-error { background:rgba(220,38,38,.12) !importan
 .cb-back:hover{background:#0A2463;color:#fff;}
 .cb-next{height:38px;padding:0 24px;border:none;border-radius:999px;background:linear-gradient(135deg,#FF8C00,#D97200);color:#fff;font-size:13.5px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.05em;box-shadow:0 4px 14px rgba(255,140,0,.42);transition:transform .15s,box-shadow .15s;}
 .cb-next:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,140,0,.60);}
+.cb-skip{background:none;border:none;color:#9aa3b8;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;padding:0;letter-spacing:.04em;transition:color .15s;}
+.cb-skip:hover{color:#5a6680;}
 @media(max-width:600px){.chat-bubble{width:calc(100vw - 20px);}}
 </style>
 
@@ -705,7 +707,7 @@ html[data-theme="dark"] .ql-amt-error { background:rgba(220,38,38,.12) !importan
   <div class="cb-msg" id="qlBody"></div>
   <div class="cb-typing" id="qlTyping"><span></span><span></span><span></span></div>
   <div class="cb-foot">
-    <span class="cb-label" id="qlLabel">STEP 1 OF 4</span>
+    <button class="cb-skip" id="qlSkip">Skip</button>
     <div class="cb-actions">
       <button class="cb-back" id="qlBck" style="display:none">&#8592; Back</button>
       <button class="cb-next" id="qlNxt">Next &#8594;</button>
@@ -1068,9 +1070,10 @@ html[data-theme="dark"] .ql-amt-error { background:rgba(220,38,38,.12) !importan
       var card=$('qlCard');
       if(card){card.style.opacity='0';setTimeout(function(){card.style.display='none';},250);}
     }
-    var nb=$('qlNxt'),bb=$('qlBck');
+    var nb=$('qlNxt'),bb=$('qlBck'),sk=$('qlSkip');
     if(nb)nb.addEventListener('click',advance);
     if(bb)bb.addEventListener('click',tourBack);
+    if(sk)sk.addEventListener('click',tourEnd);
     var _baseVH=window.innerHeight;
     window.addEventListener('resize',function(){
       if(!active)return;
