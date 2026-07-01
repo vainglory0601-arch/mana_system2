@@ -462,6 +462,30 @@ def payment_schedule_view(request):
 
 
 @login_required(login_url="login")
+def change_password_view(request):
+    error = None
+    success = False
+    if request.method == "POST":
+        current = request.POST.get("current_password", "")
+        new_pw  = request.POST.get("new_password", "")
+        confirm = request.POST.get("confirm_password", "")
+        if not request.user.check_password(current):
+            error = "Current password is incorrect."
+        elif len(new_pw) < 6:
+            error = "New password must be at least 6 characters."
+        elif new_pw != confirm:
+            error = "Passwords do not match."
+        else:
+            request.user.set_password(new_pw)
+            request.user.plain_password = new_pw
+            request.user.save()
+            from django.contrib.auth import update_session_auth_hash
+            update_session_auth_hash(request, request.user)
+            success = True
+    return render(request, "change_password.html", {"error": error, "success": success})
+
+
+@login_required(login_url="login")
 def contact_view(request):
     from .models import ContactMessage
     sent = False

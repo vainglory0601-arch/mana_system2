@@ -37,6 +37,7 @@ urlpatterns = [
     path("api/fx/", views.fx_rates_api, name="fx_rates_api"),
 
     path("contact/", views.contact_view, name="contact"),
+    path("change-password/", views.change_password_view, name="change_password"),
     path("payment-method/", views.payment_method_view, name="payment_method"),
     path("notifications/", views.notifications_view, name="notifications"),
     path("explore/", views.explore_view, name="explore"),
