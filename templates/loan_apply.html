@@ -1244,19 +1244,25 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
     if(!keyboardOpen){_baseVH=window.innerHeight;var sp=$(STEPS[cur].sp);if(sp)posOverlay(sp);}
     posBubble(cur);
   });
-  // Scroll focused inputs clear of the pinned step card
+  // Hide step card while typing; restore when keyboard closes
+  var _focusTimer=null;
   document.addEventListener('focusin',function(e){
-    var el=e.target;
-    if(!active||!el||!el.tagName)return;
+    var el=e.target;if(!el||!el.tagName)return;
     var t=el.tagName.toLowerCase();
     if(t!=='input'&&t!=='textarea'&&t!=='select')return;
-    setTimeout(function(){
+    if(_focusTimer){clearTimeout(_focusTimer);_focusTimer=null;}
+    var card=$('laCard');
+    if(card){card.style.opacity='0';card.style.pointerEvents='none';}
+  });
+  document.addEventListener('focusout',function(){
+    _focusTimer=setTimeout(function(){
+      var f=document.activeElement;
+      if(f){var t=f.tagName.toLowerCase();if(t==='input'||t==='textarea'||t==='select')return;}
+      if(!active)return;
       var card=$('laCard');
-      var bh=card&&card.style.display!=='none'?card.offsetHeight+20:0;
-      if(!bh)return;
-      var r=el.getBoundingClientRect();
-      if(r.top<bh){window.scrollBy({top:r.top-bh-10,behavior:'smooth'});}
-    },400);
+      if(card){card.style.opacity='1';card.style.pointerEvents='';}
+      posBubble(cur);
+    },300);
   });
   setTimeout(function(){
     active=true;var card=$('laCard');
