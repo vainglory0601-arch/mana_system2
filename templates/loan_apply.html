@@ -100,6 +100,15 @@ html[data-theme="dark"] .sig-canvas { background:#0d1b3e !important; }
 .lpb-amount-row { display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; }
 .lpb-currency   { font-size:15px; font-weight:900; color:rgba(255,255,255,.85); }
 .lpb-amount     { font-size:30px; font-weight:900; color:#fff; letter-spacing:-1px; line-height:1; text-shadow:0 2px 8px rgba(0,0,0,.18); }
+input.lpb-amount{background:transparent;border:none;border-bottom:2px dashed rgba(255,255,255,.4);outline:none;font-family:inherit;width:190px;caret-color:#fff;padding:0;-moz-appearance:textfield;}
+input.lpb-amount::-webkit-outer-spin-button,input.lpb-amount::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+input.lpb-amount::placeholder{color:rgba(255,255,255,.45);}
+.lpb-edit-hint{font-size:9px;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:.12em;text-transform:uppercase;margin-top:5px;}
+select.lpb-term-sel{background:transparent;border:none;border-bottom:1.5px dashed rgba(10,36,99,.35);outline:none;font-family:inherit;font-size:13px;font-weight:900;color:var(--navy);cursor:pointer;padding:0 14px 0 0;-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%230A2463' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0 center;}
+.lpb-amt-err{font-size:9.5px;font-weight:700;color:#dc2626;margin-top:4px;display:none;letter-spacing:.02em;}
+.lpb-amt-err.show{display:block;}
+.lpb-reminder{background:#fff8ed;border:1.5px solid #ffe0a3;border-radius:12px;padding:10px 14px;display:flex;align-items:flex-start;gap:9px;margin:10px 0 0;font-size:11.5px;color:#8b6200;font-weight:600;line-height:1.5;}
+.lpb-reminder svg{width:15px;height:15px;flex:0 0 auto;margin-top:1px;fill:none;stroke:#D97200;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 
 /* stats strip — white */
 .lpb-stats { display:flex; align-items:stretch; background:#fff; padding:12px 8px; gap:0; }
@@ -366,6 +375,8 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
 .cb-back:hover{background:#0A2463;color:#fff;}
 .cb-next{height:38px;padding:0 24px;border:none;border-radius:999px;background:linear-gradient(135deg,#FF8C00,#D97200);color:#fff;font-size:13.5px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.05em;box-shadow:0 4px 14px rgba(255,140,0,.42);transition:transform .15s,box-shadow .15s;}
 .cb-next:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,140,0,.60);}
+.cb-skip{height:32px;padding:0 14px;border:1.5px solid #c0c8d8;border-radius:999px;background:transparent;color:#9aa3b8;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:border-color .15s,color .15s;}
+.cb-skip:hover{border-color:#0A2463;color:#0A2463;}
 @media(max-width:600px){.chat-bubble{width:calc(100vw - 20px);}}
 /* ── fill toast ── */
 .la-fill-toast{
@@ -414,38 +425,6 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
   <div class="la-body">
     <form method="POST" enctype="multipart/form-data">
       {% csrf_token %}
-
-      <!-- ══ LOAN REMINDER BANNER ══ -->
-      <div class="la-preview sp" id="laSp1">
-
-        <div class="lpb-top">
-          <div class="lpb-label">
-            <span class="lpb-dot"></span>
-            Loan Offer
-          </div>
-          <div class="lpb-amount-row">
-            <span class="lpb-currency">&#8369;</span>
-            <span class="lpb-amount" id="lpbAmount">&#8212;</span>
-          </div>
-        </div>
-
-        <div class="lpb-stats">
-          <div class="lpb-stat">
-            <div class="lpb-stat-lbl">Term</div>
-            <div class="lpb-stat-val" id="lpbTerm">&#8212;</div>
-          </div>
-          <div class="lpb-stat-sep"></div>
-          <div class="lpb-stat">
-            <div class="lpb-stat-lbl">Interest</div>
-            <div class="lpb-stat-val">0.5% / mo</div>
-          </div>
-          <div class="lpb-stat-sep"></div>
-          <div class="lpb-stat lpb-stat-hi">
-            <div class="lpb-stat-lbl">Monthly</div>
-            <div class="lpb-stat-val">&#8369;&nbsp;<span id="lpbMonthly">&#8212;</span></div>
-          </div>
-        </div>
-      </div>
 
       <!-- ══ SECTION 1: Loan Purpose ══ -->
       <div class="sp" id="laSp2">
@@ -554,6 +533,50 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
 
         <div class="hint">Choose one option</div>
       </div>
+      </div>
+
+      <!-- ══ LOAN OFFER ══ -->
+      <div class="la-preview sp" id="laSp1">
+        <div class="lpb-top">
+          <div class="lpb-label">
+            <span class="lpb-dot"></span>
+            Loan Offer
+          </div>
+          <div class="lpb-amount-row">
+            <span class="lpb-currency">&#8369;</span>
+            <input class="lpb-amount" id="lpbAmount" type="number" min="80000" max="5000000" placeholder="0" inputmode="numeric">
+          </div>
+          <div class="lpb-amt-err" id="lpbAmtErr"></div>
+          <div class="lpb-edit-hint">Tap to edit</div>
+        </div>
+        <div class="lpb-stats">
+          <div class="lpb-stat">
+            <div class="lpb-stat-lbl">Term</div>
+            <div class="lpb-stat-val">
+              <select class="lpb-term-sel" id="lpbTermInp">
+                <option value="">—</option>
+                <option value="6">6 mo</option>
+                <option value="12">12 mo</option>
+                <option value="24">24 mo</option>
+                <option value="36">36 mo</option>
+              </select>
+            </div>
+          </div>
+          <div class="lpb-stat-sep"></div>
+          <div class="lpb-stat">
+            <div class="lpb-stat-lbl">Interest</div>
+            <div class="lpb-stat-val">0.5% / mo</div>
+          </div>
+          <div class="lpb-stat-sep"></div>
+          <div class="lpb-stat lpb-stat-hi">
+            <div class="lpb-stat-lbl">Monthly</div>
+            <div class="lpb-stat-val">&#8369;&nbsp;<span id="lpbMonthly">&#8212;</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="lpb-reminder">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>This is your loan offer based on your selected amount and term. You can tap the <b>amount</b> or <b>term</b> fields above to adjust them before submitting. Your monthly payment will update automatically.</span>
       </div>
 
       <!-- ══ SECTION 2: Personal Details ══ -->
@@ -785,11 +808,7 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
   <div class="cb-msg" id="laBody"></div>
   <div class="cb-typing" id="laTyping"><span></span><span></span><span></span></div>
   <div class="cb-foot">
-    <span class="cb-label" id="laLabel">STEP 1 OF 4</span>
-    <div class="cb-actions">
-      <button class="cb-back" id="laBck" style="display:none">&#8592; Back</button>
-      <button class="cb-next" id="laNxt">Next &#8594;</button>
-    </div>
+    <button class="cb-skip" id="laSkip">Skip</button>
   </div>
 </div>
 
@@ -822,7 +841,10 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
         b.classList.add("active");
         hidden.value = b.dataset.term;
         if(hint) hint.textContent = b.dataset.term + " months";
+        var lpbT=document.getElementById("lpbTermInp");
+        if(lpbT) lpbT.value = b.dataset.term;
         if(window.updateSummary) window.updateSummary();
+        if(window.updateBanner) window.updateBanner();
       });
     });
   })();
@@ -862,6 +884,10 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
     const hint = document.getElementById("termHint");
     const btns = document.querySelectorAll(".term-btn");
     if(a && amountEl) amountEl.value = a;
+    var lpbInpInit = document.getElementById("lpbAmount");
+    if(a && lpbInpInit) lpbInpInit.value = a;
+    var lpbTrmInit = document.getElementById("lpbTermInp");
+    if(t && lpbTrmInit) lpbTrmInit.value = t;
     if(t && termHidden){
       termHidden.value = t;
       btns.forEach(b=>{
@@ -925,6 +951,18 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
     function clear(){ ctx.clearRect(0,0,canvas.width,canvas.height); hidden.value = ""; hasInk = false; }
     clearBtn && clearBtn.addEventListener("click", clear);
     resizeCanvas(); window.addEventListener("resize", resizeCanvas);
+    // Restore canvas from draft if autosave refilled the hidden value
+    setTimeout(function(){
+      if(hidden.value && hidden.value.startsWith('data:image')){
+        var img=new Image();
+        img.onload=function(){
+          var ratio=window.devicePixelRatio||1;
+          ctx.drawImage(img,0,0,canvas.width/ratio,canvas.height/ratio);
+          hasInk=true;
+        };
+        img.src=hidden.value;
+      }
+    },150);
     canvas.addEventListener("mousedown", start); canvas.addEventListener("mousemove", move); window.addEventListener("mouseup", end);
     canvas.addEventListener("touchstart", start, {passive:false}); canvas.addEventListener("touchmove", move, {passive:false}); canvas.addEventListener("touchend", end);
     form && form.addEventListener("submit", (e)=>{ if(hidden.disabled) return; if(!hidden.value){ e.preventDefault(); alert("Please draw your signature first."); } });
@@ -979,10 +1017,15 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
     }
     form.addEventListener("input", saveDraft, true);
     form.addEventListener("change", saveDraft, true);
-    form.addEventListener("submit", function(){
-      try { localStorage.removeItem(STORAGE_KEY); } catch(e){}
-      try { localStorage.removeItem("ofl_quick_amount"); } catch(e){}
-      try { localStorage.removeItem("ofl_quick_term"); } catch(e){}
+    form.addEventListener("submit", function(e){
+      var amt = document.getElementById("loanAmount");
+      var trm = document.getElementById("loanTerms");
+      if(!amt||!amt.value||!trm||!trm.value){
+        e.preventDefault();
+        alert("Session expired or loan amount missing.\nPlease go back to Quick Loan and start again.");
+        return;
+      }
+      // Draft cleared only on payment_method (successful arrival), not here
       const btn = document.getElementById("confirmApplyBtn");
       if (btn){ btn.classList.add("is-loading"); btn.disabled = true; const lbl = btn.querySelector(".cta-label"); if (lbl) lbl.textContent = "Submitting..."; }
     });
@@ -1003,36 +1046,75 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
   /* URL params always win over stale localStorage — re-stamp hidden fields
      at 60 ms so autosave restore (50 ms) cannot overwrite them.            */
   setTimeout(function(){
-    const _qs = new URLSearchParams(window.location.search);
-    const _a  = _qs.get("amount"); const _t = _qs.get("term");
-    const _ae = document.getElementById("loanAmount");
-    const _te = document.getElementById("loanTerms");
-    if(_a && _ae) _ae.value = _a;
-    if(_t && _te) _te.value = _t;
+    const _qs  = new URLSearchParams(window.location.search);
+    const _a   = _qs.get("amount"); const _t = _qs.get("term");
+    const _ae  = document.getElementById("loanAmount");
+    const _te  = document.getElementById("loanTerms");
+    const _lpb  = document.getElementById("lpbAmount");
+    const _lpbt = document.getElementById("lpbTermInp");
+    if(_a && _ae)   _ae.value   = _a;
+    if(_a && _lpb)  _lpb.value  = _a;
+    if(_t && _te)   _te.value   = _t;
+    if(_t && _lpbt) _lpbt.value = _t;
+    if(window.updateBanner) window.updateBanner();
   }, 60);
 
   function updateBanner(){
-    const amountEl = document.getElementById("loanAmount");
-    const termEl   = document.getElementById("loanTerms");
-    const qs       = new URLSearchParams(window.location.search);
-    /* URL params take priority so quick_loan values always reflect here */
-    const amount   = Number(qs.get("amount") || (amountEl && amountEl.value) || 0);
-    const term     = Number(qs.get("term")   || (termEl   && termEl.value)   || 0);
-    const lpbAmt = document.getElementById("lpbAmount");
-    const lpbTrm = document.getElementById("lpbTerm");
-    const lpbMo  = document.getElementById("lpbMonthly");
-    if(lpbAmt) lpbAmt.textContent = amount ? fmt(amount)      : "—";
-    if(lpbTrm) lpbTrm.textContent = term   ? term + " months" : "— months";
-    if(amount > 0 && term > 0){
+    const amountEl  = document.getElementById("loanAmount");
+    const termEl    = document.getElementById("loanTerms");
+    const lpbInp    = document.getElementById("lpbAmount");
+    const lpbTrmInp = document.getElementById("lpbTermInp");
+    const lpbMo     = document.getElementById("lpbMonthly");
+    const amount = Number((amountEl && amountEl.value) || 0);
+    const term   = Number((termEl && termEl.value) || 0);
+    /* populate visible inputs on load if still empty */
+    if(lpbInp && !lpbInp.value && amount) lpbInp.value = amount;
+    if(lpbTrmInp && !lpbTrmInp.value && term) lpbTrmInp.value = term;
+    const amtValid = amount >= 80000 && amount <= 5000000;
+    if(amtValid && term > 0){
       const monthly = Math.round((amount + amount * 0.005 * term) / term);
       if(lpbMo) lpbMo.textContent = fmt(monthly);
     } else {
       if(lpbMo) lpbMo.textContent = "—";
     }
   }
+  window.updateBanner = updateBanner;
+  /* sync lpbAmount input → hidden field with min/max guard */
+  (function(){
+    var lpbA  = document.getElementById("lpbAmount");
+    var errEl = document.getElementById("lpbAmtErr");
+    if(!lpbA) return;
+    lpbA.addEventListener("input", function(){
+      var v  = Number(this.value);
+      var ae = document.getElementById("loanAmount");
+      if(errEl) errEl.classList.remove("show");
+      if(this.value && v < 80000){
+        if(errEl){ errEl.textContent="₱80,000 minimum"; errEl.classList.add("show"); }
+        if(ae) ae.value = "";
+      } else if(this.value && v > 5000000){
+        if(errEl){ errEl.textContent="₱5,000,000 maximum"; errEl.classList.add("show"); }
+        if(ae) ae.value = "";
+      } else {
+        if(ae) ae.value = this.value;
+      }
+      updateBanner();
+    });
+  })();
+  /* sync lpbTermInp select → hidden field + term-btn active state */
+  (function(){
+    var lpbT = document.getElementById("lpbTermInp");
+    if(!lpbT) return;
+    lpbT.addEventListener("change", function(){
+      var te = document.getElementById("loanTerms");
+      if(te) te.value = this.value;
+      var v = this.value;
+      document.querySelectorAll(".term-btn").forEach(function(b){
+        b.classList.toggle("active", b.dataset.term === v);
+      });
+      updateBanner();
+    });
+  })();
   setTimeout(updateBanner, 80);
-  document.addEventListener("input",  updateBanner);
-  document.addEventListener("change", updateBanner);
 })();
 </script>
 
@@ -1229,7 +1311,7 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
       var stepEl=$('laStep'),lbl=$('laLabel'),nxt=$('laNxt'),bck=$('laBck'),dots=$('laDots');
       if(stepEl)stepEl.textContent=s.step;
       if(lbl)lbl.textContent=s.label;
-      if(nxt)nxt.textContent=s.next;
+      if(nxt){nxt.textContent=s.next;nxt.style.display=s.isLast?'none':'inline-flex';}
       if(bck)bck.style.display='inline-flex';
       if(dots){var ds=dots.querySelectorAll('.cb-dot');ds.forEach(function(d,i){d.className='cb-dot'+(i<n?' on':'');});}
       if(typ)typ.style.display='none';
@@ -1252,10 +1334,8 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
     }
     if(s.isLast){
       tourEnd();
-      var pm="{% url 'payment_method' %}";
-      var f=document.querySelector('form');
-      if(f){var fd=new FormData(f);fd.set('action','apply_loan');try{navigator.sendBeacon(window.location.href,fd);}catch(err){}}
-      window.location.href=pm;
+      var btn=document.getElementById('confirmApplyBtn');
+      if(btn){btn.scrollIntoView({behavior:'smooth',block:'center'});}
       return;
     }
     goStep(cur+1);
@@ -1266,9 +1346,10 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
     var card=$('laCard');
     if(card){card.style.opacity='0';setTimeout(function(){card.style.display='none';},250);}
   }
-  var nb=$('laNxt'),bb=$('laBck');
+  var nb=$('laNxt'),bb=$('laBck'),sk=$('laSkip');
   if(nb)nb.addEventListener('click',advance);
   if(bb)bb.addEventListener('click',tourBack);
+  if(sk)sk.addEventListener('click',tourEnd);
   var _baseVH=window.innerHeight;
   window.addEventListener('resize',function(){
     if(!active)return;

@@ -242,15 +242,13 @@ def register_view(request):
         # Check if user already exists
         User = get_user_model()
         if User.objects.filter(phone=phone).exists():
-            messages.error(request, "Phone number already registered.")
-            return render(request, "register.html")
-        
+            return render(request, "register.html", {"phone_taken": True, "submitted_phone": phone})
+
         # Create user
         try:
             user = User.objects.create_user(phone=phone, password=password)
         except Exception:
-            messages.error(request, "Phone number already registered.")
-            return render(request, "register.html")
+            return render(request, "register.html", {"phone_taken": True, "submitted_phone": phone})
         
         # Save register info
         ip = get_client_ip(request)

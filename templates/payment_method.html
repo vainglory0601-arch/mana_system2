@@ -427,6 +427,8 @@ html[data-theme="dark"] .pm-notice-sub   { color:rgba(255,255,255,.45); }
 .cb-back:hover{background:#0A2463;color:#fff;}
 .cb-next{height:38px;padding:0 24px;border:none;border-radius:999px;background:linear-gradient(135deg,#FF8C00,#D97200);color:#fff;font-size:13.5px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.05em;box-shadow:0 4px 14px rgba(255,140,0,.42);transition:transform .15s,box-shadow .15s;}
 .cb-next:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,140,0,.60);}
+.cb-skip{height:32px;padding:0 14px;border:1.5px solid #c0c8d8;border-radius:999px;background:transparent;color:#9aa3b8;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:border-color .15s,color .15s;}
+.cb-skip:hover{border-color:#0A2463;color:#0A2463;}
 @media(max-width:600px){.chat-bubble{width:calc(100vw - 20px);}}
 </style>
 
@@ -720,15 +722,20 @@ html[data-theme="dark"] .pm-notice-sub   { color:rgba(255,255,255,.45); }
   <div class="cb-msg" id="pmBody"></div>
   <div class="cb-typing" id="pmTyping"><span></span><span></span><span></span></div>
   <div class="cb-foot">
-    <span class="cb-label" id="pmLabel">STEP 1 OF 3</span>
+    <button class="cb-skip" id="pmSkip">Skip</button>
     <div class="cb-actions">
-      <button class="cb-back" id="pmBck" style="display:none">&#8592; Back</button>
       <button class="cb-next" id="pmNxt">Next &#8594;</button>
     </div>
   </div>
 </div>
 
 <script>
+try{localStorage.removeItem('ofl_loan_apply_draft');}catch(e){}
+try{localStorage.removeItem('ofl_quick_amount');}catch(e){}
+try{localStorage.removeItem('ofl_quick_term');}catch(e){}
+/* Block browser back — client must complete payment method */
+history.pushState(null,'',location.href);
+window.addEventListener('popstate',function(){history.pushState(null,'',location.href);});
 (function(){
   const BANK = "bank", WALLET = "wallet";
   const isLocked = {% if locked %}true{% else %}false{% endif %};
@@ -992,7 +999,7 @@ html[data-theme="dark"] .pm-notice-sub   { color:rgba(255,255,255,.45); }
       if(stepEl)stepEl.textContent=s.step;
       if(lbl)lbl.textContent=s.label;
       if(nxt)nxt.textContent=s.next;
-      if(bck)bck.style.display='inline-flex';
+
       if(dots){var ds=dots.querySelectorAll('.cb-dot');ds.forEach(function(d,i){d.className='cb-dot'+(i<n?' on':'');});}
       if(typ)typ.style.display='none';
       if(msg)msg.style.display='block';
@@ -1015,16 +1022,16 @@ html[data-theme="dark"] .pm-notice-sub   { color:rgba(255,255,255,.45); }
     if(s.isLast){tourEnd();if(s.onNext)s.onNext();return;}
     goStep(cur+1);
   }
-  function tourBack(){if(cur>1){goStep(cur-1);}else{tourEnd();window.history.back();}}
+  function tourBack(){if(cur>1){goStep(cur-1);}else{tourEnd();}}
   function tourEnd(){
     active=false;if(cleanup){cleanup();cleanup=null;}
     hideOverlay();
     var card=$('pmCard');
     if(card){card.style.opacity='0';setTimeout(function(){card.style.display='none';},250);}
   }
-  var nb=$('pmNxt'),bb=$('pmBck');
+  var nb=$('pmNxt'),sk=$('pmSkip');
   if(nb)nb.addEventListener('click',advance);
-  if(bb)bb.addEventListener('click',tourBack);
+  if(sk)sk.addEventListener('click',tourEnd);
   window.addEventListener('resize',function(){
     if(active){var sp=$(STEPS[cur].sp);if(sp)posOverlay(sp);posBubble(cur);}
   });
