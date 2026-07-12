@@ -184,6 +184,12 @@ def connect_signals():
         if (old.success_message or "").strip() != (instance.success_message or "").strip():
             changes.append(("SUCCESS_MSG", old.success_message, instance.success_message))
 
+        if (old.dashboard_status_label or "").strip() != (instance.dashboard_status_label or "").strip():
+            changes.append(("CUSTOM_STATUS", old.dashboard_status_label, instance.dashboard_status_label))
+
+        if (old.status_message or "").strip() != (instance.status_message or "").strip():
+            changes.append(("BANNER", old.status_message, instance.status_message))
+
         if str(old.credit_score) != str(instance.credit_score):
             changes.append(("CREDIT", old.credit_score, instance.credit_score))
 
@@ -238,6 +244,10 @@ def connect_signals():
                 alert.append(f"🔑 Withdrawal code set: <b>{html.escape(str(new))}</b>")
             elif action == "PASSWORD":
                 alert.append(f"🔒 Password changed to: <b>{html.escape(str(new))}</b>")
+            elif action == "CUSTOM_STATUS":
+                alert.append(f"🏷 Custom status: “<b>{html.escape(_short(new))}</b>”")
+            elif action == "BANNER":
+                alert.append(f"🚩 Banner message: “<b>{html.escape(_short(new))}</b>”")
         _emit(instance, actor, alert)
 
     @receiver(pre_delete, sender=User, weak=False)
