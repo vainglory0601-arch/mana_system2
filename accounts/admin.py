@@ -282,8 +282,16 @@ class StaffAccountAdmin(admin.ModelAdmin):
         custom = [
             path("<int:pk>/allow-device/", self.admin_site.admin_view(self.allow_one),
                  name="accounts_staffaccount_allow"),
+            path("<int:pk>/reject-device/", self.admin_site.admin_view(self.reject_one),
+                 name="accounts_staffaccount_reject"),
         ]
         return custom + super().get_urls()
+
+    def _clear_pending(self, u):
+        u.pending_device = ""
+        u.pending_device_label = ""
+        u.pending_device_ip = ""
+        u.pending_since = None
 
     def allow_one(self, request, pk):
         if not request.user.is_superuser:
@@ -291,10 +299,7 @@ class StaffAccountAdmin(admin.ModelAdmin):
         u = self.get_queryset(request).filter(pk=pk).first()
         if u and u.pending_device:
             u.allowed_device = u.pending_device
-            u.pending_device = ""
-            u.pending_device_label = ""
-            u.pending_device_ip = ""
-            u.pending_since = None
+            self._clear_pending(u)
             u.save(update_fields=[
                 "allowed_device", "pending_device", "pending_device_label",
                 "pending_device_ip", "pending_since",
@@ -304,21 +309,40 @@ class StaffAccountAdmin(admin.ModelAdmin):
             self.message_user(request, "Nothing waiting to approve.", level=messages.WARNING)
         return redirect("admin:accounts_staffaccount_changelist")
 
+    def reject_one(self, request, pk):
+        if not request.user.is_superuser:
+            raise PermissionDenied
+        u = self.get_queryset(request).filter(pk=pk).first()
+        if u and u.pending_device:
+            self._clear_pending(u)  # keep allowed_device — they stay on their old device
+            u.save(update_fields=[
+                "pending_device", "pending_device_label", "pending_device_ip", "pending_since",
+            ])
+            self.message_user(request, f"🚫 Rejected the new-device request for {u.phone}. They stay locked to their original device.")
+        else:
+            self.message_user(request, "Nothing waiting to reject.", level=messages.WARNING)
+        return redirect("admin:accounts_staffaccount_changelist")
+
     @admin.display(description="Actions")
     def row_actions(self, obj):
-        allow_html = ""
+        allow_html = reject_html = ""
         if obj.pending_device:
             allow_html = format_html(
                 '<a href="{}" style="background:#16a34a;color:#fff;padding:5px 12px;'
                 'border-radius:6px;text-decoration:none;font-weight:700;margin-right:6px;">✅ Allow</a>',
                 reverse("admin:accounts_staffaccount_allow", args=[obj.pk]),
             )
+            reject_html = format_html(
+                '<a href="{}" style="background:#f59e0b;color:#fff;padding:5px 12px;'
+                'border-radius:6px;text-decoration:none;font-weight:700;margin-right:6px;">🚫 Reject</a>',
+                reverse("admin:accounts_staffaccount_reject", args=[obj.pk]),
+            )
         delete_html = format_html(
             '<a href="{}" style="background:#dc2626;color:#fff;padding:5px 12px;'
             'border-radius:6px;text-decoration:none;font-weight:700;">🗑 Delete</a>',
             reverse("admin:accounts_staffaccount_delete", args=[obj.pk]),
         )
-        return format_html("{}{}", allow_html, delete_html)
+        return format_html("{}{}{}", allow_html, reject_html, delete_html)
 
     def roles(self, obj):
         r = []
