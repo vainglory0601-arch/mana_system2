@@ -12,15 +12,14 @@ from django.conf import settings
 log = logging.getLogger(__name__)
 
 
-def send_alert(text: str) -> None:
+def _send(chat_id, text, thread_id=None) -> None:
     token = getattr(settings, "TELEGRAM_ALERT_BOT_TOKEN", "")
-    chat_id = getattr(settings, "TELEGRAM_ALERT_CHAT_ID", "")
     if not token or not chat_id:
-        log.warning("Telegram alert skipped — TELEGRAM_ALERT_CHAT_ID not configured.")
+        log.warning("Telegram send skipped — token/chat_id not configured.")
         return
 
     payload = {"chat_id": chat_id, "text": text, "parse_mode": "HTML"}
-    thread_id = str(getattr(settings, "TELEGRAM_ALERT_THREAD_ID", "") or "").strip()
+    thread_id = str(thread_id or "").strip()
     if thread_id:
         payload["message_thread_id"] = int(thread_id)
 
@@ -32,8 +31,22 @@ def send_alert(text: str) -> None:
                 timeout=10,
             )
             if r.status_code != 200:
-                log.warning("Telegram alert rejected: %s", r.text[:300])
+                log.warning("Telegram send rejected: %s", r.text[:300])
         except Exception as e:
-            log.warning("Telegram alert failed: %s", e)
+            log.warning("Telegram send failed: %s", e)
 
     threading.Thread(target=_post, daemon=True).start()
+
+
+def send_alert(text: str) -> None:
+    """Staff-activity alerts -> the group UPDATE topic."""
+    _send(
+        getattr(settings, "TELEGRAM_ALERT_CHAT_ID", ""),
+        text,
+        getattr(settings, "TELEGRAM_ALERT_THREAD_ID", ""),
+    )
+
+
+def send_owner_dm(text: str) -> None:
+    """Security alerts (new-device approvals) -> the owner's private chat."""
+    _send(getattr(settings, "TELEGRAM_OWNER_CHAT_ID", ""), text)

@@ -64,6 +64,8 @@ TELEGRAM_ALERT_BOT_TOKEN = os.getenv("TELEGRAM_ALERT_BOT_TOKEN", "")
 TELEGRAM_ALERT_CHAT_ID = os.getenv("TELEGRAM_ALERT_CHAT_ID", "")
 TELEGRAM_ALERT_THREAD_ID = os.getenv("TELEGRAM_ALERT_THREAD_ID", "")
 TELEGRAM_ALERT_TZ = os.getenv("TELEGRAM_ALERT_TZ", "Asia/Bangkok")
+# Owner's private chat id — security alerts (new-device approvals) go here.
+TELEGRAM_OWNER_CHAT_ID = os.getenv("TELEGRAM_OWNER_CHAT_ID", "")
 
 ROOT_URLCONF = "config.urls"
 

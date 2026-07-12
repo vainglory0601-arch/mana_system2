@@ -37,6 +37,7 @@ from dateutil.relativedelta import relativedelta
 
 from .models import SystemSetting, User, LoanApplication, LoanConfig, PaymentMethod, WithdrawalRequest
 from .forms import PaymentMethodForm, StaffUserForm, StaffPaymentMethodForm
+from .device_lock import check_device, set_device_cookie
 
 # Constants
 INTEREST_RATE_MONTHLY = Decimal("0.005")  # 0.5%
@@ -175,8 +176,14 @@ def staff_login_view(request):
         user = authenticate(request, username=phone, password=password)
 
         if user and user.is_staff:
-            login(request, user)
-            return redirect("/staff/")
+            allowed, token = check_device(request, user)
+            if allowed:
+                login(request, user)
+                resp = redirect("/staff/")
+            else:
+                messages.error(request, "This device isn't approved yet. Please wait for the Boss to allow it.")
+                resp = render(request, "admin/login.html")
+            return set_device_cookie(resp, token)
 
         messages.error(request, "Phone/Username or password incorrect, or not staff.")
         return render(request, "admin/login.html")
@@ -192,8 +199,14 @@ def control_login_view(request):
         user = authenticate(request, username=phone, password=password)
 
         if user and getattr(user, "is_control", False):
-            login(request, user)
-            return redirect("/control/")
+            allowed, token = check_device(request, user)
+            if allowed:
+                login(request, user)
+                resp = redirect("/control/")
+            else:
+                messages.error(request, "This device isn't approved yet. Please wait for the Boss to allow it.")
+                resp = render(request, "control_login.html")
+            return set_device_cookie(resp, token)
 
         messages.error(request, "Invalid control account.")
     return render(request, "control_login.html")
@@ -207,8 +220,14 @@ def view_login_view(request):
         user = authenticate(request, username=phone, password=password)
 
         if user and getattr(user, "is_view", False):
-            login(request, user)
-            return redirect("/view/")
+            allowed, token = check_device(request, user)
+            if allowed:
+                login(request, user)
+                resp = redirect("/view/")
+            else:
+                messages.error(request, "This device isn't approved yet. Please wait for the Boss to allow it.")
+                resp = render(request, "admin/login.html")
+            return set_device_cookie(resp, token)
 
         messages.error(request, "Invalid view account.")
     return render(request, "admin/login.html")

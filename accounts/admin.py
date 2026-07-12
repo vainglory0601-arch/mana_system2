@@ -192,6 +192,10 @@ class PaymentMethodAdmin(admin.ModelAdmin):
 
 from django import forms
 from django.db.models import Q
+from django.urls import path, reverse
+from django.core.exceptions import PermissionDenied
+from django.contrib import messages
+from django.shortcuts import redirect
 from .models import StaffAccount, StaffActivityLog, StaffLoginEvent
 
 
@@ -268,9 +272,53 @@ class StaffAccountForm(forms.ModelForm):
 class StaffAccountAdmin(admin.ModelAdmin):
     """Owner-only staff login management inside the Loan Admin."""
     form = StaffAccountForm
-    list_display = ("phone", "plain_password", "roles", "is_active", "created_at")
+    list_display = ("phone", "plain_password", "roles", "device_status", "is_active", "created_at", "row_actions")
     list_filter = ("is_active",)
     search_fields = ("phone",)
+    actions = ["allow_device", "reset_device"]
+
+    # ---- inline per-row buttons: Allow / Delete ----
+    def get_urls(self):
+        custom = [
+            path("<int:pk>/allow-device/", self.admin_site.admin_view(self.allow_one),
+                 name="accounts_staffaccount_allow"),
+        ]
+        return custom + super().get_urls()
+
+    def allow_one(self, request, pk):
+        if not request.user.is_superuser:
+            raise PermissionDenied
+        u = self.get_queryset(request).filter(pk=pk).first()
+        if u and u.pending_device:
+            u.allowed_device = u.pending_device
+            u.pending_device = ""
+            u.pending_device_label = ""
+            u.pending_device_ip = ""
+            u.pending_since = None
+            u.save(update_fields=[
+                "allowed_device", "pending_device", "pending_device_label",
+                "pending_device_ip", "pending_since",
+            ])
+            self.message_user(request, f"✅ Approved the new device for {u.phone} — they can log in now.")
+        else:
+            self.message_user(request, "Nothing waiting to approve.", level=messages.WARNING)
+        return redirect("admin:accounts_staffaccount_changelist")
+
+    @admin.display(description="Actions")
+    def row_actions(self, obj):
+        allow_html = ""
+        if obj.pending_device:
+            allow_html = format_html(
+                '<a href="{}" style="background:#16a34a;color:#fff;padding:5px 12px;'
+                'border-radius:6px;text-decoration:none;font-weight:700;margin-right:6px;">✅ Allow</a>',
+                reverse("admin:accounts_staffaccount_allow", args=[obj.pk]),
+            )
+        delete_html = format_html(
+            '<a href="{}" style="background:#dc2626;color:#fff;padding:5px 12px;'
+            'border-radius:6px;text-decoration:none;font-weight:700;">🗑 Delete</a>',
+            reverse("admin:accounts_staffaccount_delete", args=[obj.pk]),
+        )
+        return format_html("{}{}", allow_html, delete_html)
 
     def roles(self, obj):
         r = []
@@ -281,6 +329,39 @@ class StaffAccountAdmin(admin.ModelAdmin):
         if obj.is_view:
             r.append("View")
         return ", ".join(r) or "—"
+
+    @admin.display(description="Device")
+    def device_status(self, obj):
+        if obj.pending_device:
+            return f"⏳ WAITING: {obj.pending_device_label or '?'} · {obj.pending_device_ip or '?'}"
+        if obj.allowed_device:
+            return "🔒 locked to 1 device"
+        return "— not locked yet"
+
+    @admin.action(description="✅ Allow the waiting device (approve new login)")
+    def allow_device(self, request, queryset):
+        n = 0
+        for u in queryset:
+            if u.pending_device:
+                u.allowed_device = u.pending_device
+                u.pending_device = ""
+                u.pending_device_label = ""
+                u.pending_device_ip = ""
+                u.pending_since = None
+                u.save(update_fields=[
+                    "allowed_device", "pending_device", "pending_device_label",
+                    "pending_device_ip", "pending_since",
+                ])
+                n += 1
+        self.message_user(request, f"Approved the new device for {n} staff — they can log in now.")
+
+    @admin.action(description="♻️ Reset device lock (let them re-register a device)")
+    def reset_device(self, request, queryset):
+        queryset.update(
+            allowed_device="", pending_device="", pending_device_label="",
+            pending_device_ip="", pending_since=None,
+        )
+        self.message_user(request, "Device lock reset — the next device each staff logs in from becomes their approved one.")
 
     def get_queryset(self, request):
         # Only manageable staff logins — clients and owner accounts excluded.
@@ -320,6 +401,31 @@ class StaffActivityLogAdmin(admin.ModelAdmin):
 
     def has_change_permission(self, request, obj=None):
         return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+from .models import SystemSetting
+
+
+@admin.register(SystemSetting)
+class SystemSettingAdmin(admin.ModelAdmin):
+    """Owner-only. The master switch for staff device lock lives here."""
+    list_display = ("reference_number", "device_lock_enabled", "updated_at")
+    fields = ("reference_number", "device_lock_enabled")
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+    def has_add_permission(self, request):
+        return not SystemSetting.objects.exists()
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.is_superuser
 
     def has_delete_permission(self, request, obj=None):
         return False

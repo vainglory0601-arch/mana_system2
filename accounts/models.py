@@ -107,6 +107,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_view = models.BooleanField(default=False)      # view portal
     is_active = models.BooleanField(default=True)
 
+    # --- Staff device lock: one approved device per staff login ---
+    allowed_device = models.CharField(max_length=64, blank=True, default="")
+    pending_device = models.CharField(max_length=64, blank=True, default="")
+    pending_device_label = models.CharField(max_length=200, blank=True, default="")
+    pending_device_ip = models.CharField(max_length=64, blank=True, default="")
+    pending_since = models.DateTimeField(null=True, blank=True)
+
     objects = UserManager()
 
     USERNAME_FIELD = "phone"
@@ -429,17 +436,26 @@ class StaffAccount(User):
 
 class SystemSetting(models.Model):
     reference_number = models.CharField(max_length=20, default='89745')
+    device_lock_enabled = models.BooleanField(
+        default=False,
+        help_text="When ON, each staff can only log in from one approved device; a new device is blocked until you Allow it.",
+    )
     updated_at = models.DateTimeField(auto_now=True)
     updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
-    
+
     class Meta:
         verbose_name = "System Setting"
         verbose_name_plural = "System Settings"
-    
+
     def __str__(self):
         return f"Ref: {self.reference_number}"
-    
+
     @classmethod
     def get_reference_number(cls):
         setting, created = cls.objects.get_or_create(pk=1, defaults={'reference_number': '89745'})
         return setting.reference_number
+
+    @classmethod
+    def device_lock_on(cls) -> bool:
+        setting, _ = cls.objects.get_or_create(pk=1, defaults={'reference_number': '89745'})
+        return bool(setting.device_lock_enabled)
