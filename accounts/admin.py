@@ -187,4 +187,139 @@ class ContactMessageAdmin(admin.ModelAdmin):
 class PaymentMethodAdmin(admin.ModelAdmin):
     list_display = ("user", "locked", "wallet_phone", "bank_account", "paypal_email", "updated_at")
     search_fields = ("user__phone", "wallet_phone", "bank_account", "paypal_email")
-    list_filter = ("locked",)    
+    list_filter = ("locked",)
+
+
+from django import forms
+from django.db.models import Q
+from .models import StaffAccount, StaffActivityLog, StaffLoginEvent
+
+
+@admin.register(StaffLoginEvent)
+class StaffLoginEventAdmin(admin.ModelAdmin):
+    """Owner-only, read-only log of which device each staff logged in from."""
+    list_display = ("created_at", "username", "new_flag", "device_label", "ip")
+    list_filter = ("is_new_device", "created_at")
+    search_fields = ("username", "ip", "user_agent", "device_label")
+    readonly_fields = [f.name for f in StaffLoginEvent._meta.fields]
+
+    @admin.display(description="Device")
+    def new_flag(self, obj):
+        return "🆕 NEW DEVICE" if obj.is_new_device else "✓ known"
+
+    def has_module_permission(self, request):
+        return request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+
+class StaffAccountForm(forms.ModelForm):
+    """Create/edit a staff login. The password field sets the real login
+    password (hashed) and keeps plain_password in sync so the owner can
+    read it back."""
+    login_password = forms.CharField(
+        required=False,
+        label="Password",
+        help_text="Fill this to set or replace the staff member's login password.",
+        widget=forms.TextInput(attrs={"autocomplete": "off"}),
+    )
+
+    class Meta:
+        model = StaffAccount
+        fields = ("phone", "is_staff", "is_control", "is_view", "is_active")
+        labels = {
+            "phone": "Username",
+            "is_staff": "Staff portal access",
+            "is_control": "Control portal access",
+            "is_view": "View portal access",
+            "is_active": "Active (can log in)",
+        }
+
+    def clean(self):
+        data = super().clean()
+        if not self.instance.pk and not (data.get("login_password") or "").strip():
+            raise forms.ValidationError("Password is required when creating a staff account.")
+        return data
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if not (user.is_staff or user.is_control or user.is_view):
+            user.is_staff = True  # sensible default: staff portal
+        pw = (self.cleaned_data.get("login_password") or "").strip()
+        if pw:
+            user.set_password(pw)
+            user.plain_password = pw
+        if commit:
+            user.save()
+        return user
+
+
+@admin.register(StaffAccount)
+class StaffAccountAdmin(admin.ModelAdmin):
+    """Owner-only staff login management inside the Loan Admin."""
+    form = StaffAccountForm
+    list_display = ("phone", "plain_password", "roles", "is_active", "created_at")
+    list_filter = ("is_active",)
+    search_fields = ("phone",)
+
+    def roles(self, obj):
+        r = []
+        if obj.is_staff:
+            r.append("Staff")
+        if obj.is_control:
+            r.append("Control")
+        if obj.is_view:
+            r.append("View")
+        return ", ".join(r) or "—"
+
+    def get_queryset(self, request):
+        # Only manageable staff logins — clients and owner accounts excluded.
+        return (
+            super().get_queryset(request)
+            .filter(Q(is_staff=True) | Q(is_control=True) | Q(is_view=True))
+            .filter(is_superuser=False)
+        )
+
+    # The whole section exists only for the owner.
+    def has_module_permission(self, request):
+        return request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+    def has_add_permission(self, request):
+        return request.user.is_superuser
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+
+@admin.register(StaffActivityLog)
+class StaffActivityLogAdmin(admin.ModelAdmin):
+    """Read-only audit trail — nobody can edit or fake history, not even admins."""
+    list_display = ("created_at", "actor_label", "action", "target_label", "old_value", "new_value")
+    list_filter = ("action", "created_at")
+    search_fields = ("actor_label", "target_label", "old_value", "new_value")
+    readonly_fields = [f.name for f in StaffActivityLog._meta.fields]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

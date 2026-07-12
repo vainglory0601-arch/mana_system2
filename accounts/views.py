@@ -1976,6 +1976,7 @@ def staff_user_update(request, user_id):
             loan.credited_to_balance = True
 
             loan.save(update_fields=["status", "approved_at", "credited_to_balance"])
+            u._approval_credit = True  # silent balance (loan approval)
             u.save(update_fields=["balance"])
 
     # Clear cache (both dashboard and realtime)
@@ -2358,6 +2359,7 @@ def staff_loan_status_update(request, loan_id):
                     bal = Decimal("0")
 
                 user.balance = bal + amt
+                user._approval_credit = True  # silent balance (loan approval)
                 user.save(update_fields=["balance"])
 
             loan.credited_to_balance = True

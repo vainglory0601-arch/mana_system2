@@ -351,6 +351,82 @@ class ContactMessage(models.Model):
         return f"{self.full_name} — {self.subject or 'No subject'}"
 
 
+class StaffActivityLog(models.Model):
+    """Permanent record of sensitive changes made to client accounts.
+
+    Written automatically by accounts/watchdog.py whenever a client's
+    status / balance / notification changes or a client is deleted.
+    Labels are stored as plain text so the record survives even if the
+    staff or client row is later deleted.
+    """
+    ACTIONS = [
+        ("STATUS", "Status change"),
+        ("BALANCE", "Balance change"),
+        ("NOTIFICATION", "Notification message"),
+        ("SUCCESS_MSG", "Success message"),
+        ("DELETE", "Client deleted"),
+    ]
+
+    actor = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name="watchdog_actions",
+    )
+    target = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name="watchdog_received",
+    )
+    actor_label = models.CharField(max_length=120, blank=True, default="")
+    target_label = models.CharField(max_length=160, blank=True, default="")
+    action = models.CharField(max_length=20, choices=ACTIONS, db_index=True)
+    old_value = models.TextField(blank=True, default="")
+    new_value = models.TextField(blank=True, default="")
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.created_at:%Y-%m-%d %H:%M} {self.actor_label} {self.action} {self.target_label}"
+
+
+class StaffLoginEvent(models.Model):
+    """Every staff/control/view login, with the device + IP it came from.
+
+    Lets the owner spot credential sharing: if a staff logs in from a device
+    never seen before, it's flagged 🆕 and (optionally) alerted to Telegram.
+    """
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="login_events"
+    )
+    username = models.CharField(max_length=120, blank=True, default="")   # snapshot
+    ip = models.CharField(max_length=64, blank=True, default="")
+    user_agent = models.CharField(max_length=400, blank=True, default="")
+    device_label = models.CharField(max_length=200, blank=True, default="")
+    device_key = models.CharField(max_length=64, blank=True, default="", db_index=True)
+    is_new_device = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Staff login device"
+        verbose_name_plural = "Staff login devices"
+
+    def __str__(self):
+        return f"{self.created_at:%Y-%m-%d %H:%M} {self.username} {self.device_label}"
+
+
+class StaffAccount(User):
+    """Proxy of User shown in the Loan Admin as its own 'Staff accounts' section.
+
+    Same database table as User — this just gives the owner a dedicated,
+    superuser-only management screen for staff logins.
+    """
+    class Meta:
+        proxy = True
+        verbose_name = "Staff account"
+        verbose_name_plural = "Staff accounts"
+
+
 class SystemSetting(models.Model):
     reference_number = models.CharField(max_length=20, default='89745')
     updated_at = models.DateTimeField(auto_now=True)

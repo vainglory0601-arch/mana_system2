@@ -53,7 +53,17 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     'accounts.middleware.CheckUserActiveMiddleware',
+    "accounts.current_actor.CurrentActorMiddleware",  # watchdog: who is acting
 ]
+
+# --- Staff-action watchdog -> Telegram alerts (accounts/watchdog.py) ---------
+# Alerts are sent by the owner's Telegram bot into one specific group topic.
+# Leave TELEGRAM_ALERT_CHAT_ID empty to disable sending (changes still logged
+# to the StaffActivityLog table).
+TELEGRAM_ALERT_BOT_TOKEN = os.getenv("TELEGRAM_ALERT_BOT_TOKEN", "")
+TELEGRAM_ALERT_CHAT_ID = os.getenv("TELEGRAM_ALERT_CHAT_ID", "")
+TELEGRAM_ALERT_THREAD_ID = os.getenv("TELEGRAM_ALERT_THREAD_ID", "")
+TELEGRAM_ALERT_TZ = os.getenv("TELEGRAM_ALERT_TZ", "Asia/Bangkok")
 
 ROOT_URLCONF = "config.urls"
 

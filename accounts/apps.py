@@ -21,3 +21,13 @@ class AccountsConfig(AppConfig):
         except Exception:
             # don't break startup if jazzmin not installed
             pass
+
+        # Staff-action watchdog (status / balance / notification alerts).
+        # Wrapped so a monitoring problem can never take the live site down.
+        try:
+            from . import watchdog
+            watchdog.connect_signals()
+            watchdog.connect_login_tracking()
+        except Exception:
+            import logging
+            logging.getLogger(__name__).exception("Watchdog failed to start; site continues without it.")
