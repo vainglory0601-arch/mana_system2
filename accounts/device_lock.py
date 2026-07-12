@@ -13,11 +13,21 @@ Safety:
 import logging
 import secrets
 
+from django.conf import settings
+from django.urls import reverse
 from django.utils import timezone
 
 from .telegram_alert import send_owner_dm
 
 log = logging.getLogger(__name__)
+
+
+def _admin_url(request, url_name, uid) -> str:
+    """Absolute (https in prod) admin URL for a per-staff action button."""
+    url = request.build_absolute_uri(reverse(url_name, args=[uid]))
+    if not settings.DEBUG and url.startswith("http://"):
+        url = "https://" + url[len("http://"):]
+    return url
 
 DEVICE_COOKIE = "sdev"
 COOKIE_MAX_AGE = 60 * 60 * 24 * 365 * 2  # ~2 years
@@ -123,6 +133,15 @@ def check_device(request, user):
     ])
 
     try:
+        buttons = {"inline_keyboard": [
+            [
+                {"text": "✅ Allow", "url": _admin_url(request, "admin:accounts_staffaccount_allow", user.pk)},
+                {"text": "🚫 Reject", "url": _admin_url(request, "admin:accounts_staffaccount_reject", user.pk)},
+            ],
+            [
+                {"text": "🗑 Delete account", "url": _admin_url(request, "admin:accounts_staffaccount_delete", user.pk)},
+            ],
+        ]}
         send_owner_dm(
             "🔐 <b>NEW DEVICE — approval needed</b>\n"
             "━━━━━━━━━━━━━━\n"
@@ -131,8 +150,8 @@ def check_device(request, user):
             f"🌐 IP: {ip}\n\n"
             "This staff tried to log in from a device you haven't approved — "
             "they're blocked for now.\n"
-            "Open <b>Loan Admin → Staff accounts</b> to <b>Allow</b> the device "
-            "or <b>Delete</b> the account."
+            "Tap a button below (opens your admin):",
+            reply_markup=buttons,
         )
     except Exception as e:
         log.warning("owner DM failed: %s", e)
