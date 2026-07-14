@@ -51,5 +51,11 @@ def send_alert(text: str) -> None:
 
 
 def send_owner_dm(text: str, reply_markup=None) -> None:
-    """Security alerts (new-device approvals) -> the owner's private chat."""
-    _send(getattr(settings, "TELEGRAM_OWNER_CHAT_ID", ""), text, reply_markup=reply_markup)
+    """Security alerts (new-device approvals) -> the owner AND any partners.
+
+    TELEGRAM_OWNER_CHAT_ID may hold several chat ids, comma-separated,
+    e.g. "7356276302,111222333" — the DM goes to each of them.
+    """
+    raw = str(getattr(settings, "TELEGRAM_OWNER_CHAT_ID", "") or "")
+    for cid in [x.strip() for x in raw.replace(";", ",").split(",") if x.strip()]:
+        _send(cid, text, reply_markup=reply_markup)
