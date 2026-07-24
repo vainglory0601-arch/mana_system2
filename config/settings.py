@@ -66,6 +66,9 @@ TELEGRAM_ALERT_THREAD_ID = os.getenv("TELEGRAM_ALERT_THREAD_ID", "")
 TELEGRAM_ALERT_TZ = os.getenv("TELEGRAM_ALERT_TZ", "Asia/Bangkok")
 # Owner's private chat id — security alerts (new-device approvals) go here.
 TELEGRAM_OWNER_CHAT_ID = os.getenv("TELEGRAM_OWNER_CHAT_ID", "")
+# Shared secret so the Telegram bot can allow/reject/delete a staff device
+# straight from a chat button (server-to-server). Set the SAME value in the bot.
+DEVICE_ACTION_SECRET = os.getenv("DEVICE_ACTION_SECRET", "")
 
 ROOT_URLCONF = "config.urls"
 

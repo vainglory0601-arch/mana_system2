@@ -135,11 +135,11 @@ def check_device(request, user):
     try:
         buttons = {"inline_keyboard": [
             [
-                {"text": "✅ Allow", "url": _admin_url(request, "admin:accounts_staffaccount_allow", user.pk)},
-                {"text": "🚫 Reject", "url": _admin_url(request, "admin:accounts_staffaccount_reject", user.pk)},
+                {"text": "✅ Allow", "callback_data": f"dev:allow:{user.pk}"},
+                {"text": "🚫 Reject", "callback_data": f"dev:reject:{user.pk}"},
             ],
             [
-                {"text": "🗑 Delete account", "url": _admin_url(request, "admin:accounts_staffaccount_delete", user.pk)},
+                {"text": "🗑 Delete account", "callback_data": f"dev:del:{user.pk}"},
             ],
         ]}
         send_owner_dm(
@@ -150,7 +150,7 @@ def check_device(request, user):
             f"🌐 IP: {ip}\n\n"
             "This staff tried to log in from a device you haven't approved — "
             "they're blocked for now.\n"
-            "Tap a button below (opens your admin):",
+            "Tap a button below — it works right here, instantly:",
             reply_markup=buttons,
         )
     except Exception as e:
