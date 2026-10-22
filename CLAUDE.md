@@ -30,6 +30,9 @@ Read this first. It records how the owner wants this project handled.
 - Same look in light and dark theme: base.html forces dark inputs in dark mode, so override
   with an `#id`-scoped selector.
 - Footer: "Overseas FilipinoLoan • v2.2.1 / © 2026 All rights reserved".
+- Money inputs: `inputmode="decimal"`, no `maxlength` (it cuts pasted "PHP 1,500,000" before
+  cleaning); clean to digits + one point + 2 decimals, no leading zeros, 9 digits max.
+- Client drafts kept in localStorage must carry the user id (`__uid`) — phones are shared.
 
 ## Client guides / onboarding (see templates/register.html)
 - Glass guide card (`rgba(17,42,31,.85)` + `backdrop-filter: blur(24px)`), step label + dots,
@@ -43,6 +46,12 @@ Read this first. It records how the owner wants this project handled.
   `focus({preventScroll:true})`), then scroll just enough using `visualViewport`.
 - Show validation errors inside the guide; clear them as the user types.
 - No `filter`/`opacity` on ancestors of a `backdrop-filter` element (it switches the blur off).
+- After a tap on a guide button, swallow clicks on the content under it for ~450 ms (capture
+  listener on the guide's container): a double tap must not tick a tile or pick a term.
+- Guides with no mockup: the first-loan chain is dashboard → quick loan (`ofl_onboard='ql'` or
+  `?ofl=1`) → loan apply (always, when the form is open) → payment method (`ofl_onboard='pm'`,
+  then `'done'`). Start at the first unfinished step; remember Skip; a field to fix is scrolled
+  into view (keyboard), not the guide.
 
 ## Motion and smoothness (the owner cares about this a lot)
 - Everything must feel smooth: no glitches, no lag, no stuck pages, nothing running off-screen.
@@ -58,8 +67,16 @@ Read this first. It records how the owner wants this project handled.
 - No full-screen `backdrop-filter` on overlays (menus, sheets, modals): it drops frames while
   they fade. Use a plain dim (`rgba(11,28,20,.5)`); keep blur for small elements (nav, guide).
 - Respect `prefers-reduced-motion`.
+  (also shakes, sheet slides and smooth scrolling: `behavior: SMOOTH` that is `'auto'` there).
+- Do not show a "minimum amount" error from the first digit: it grows the card and makes the
+  guide jump while typing. Flag the minimum on blur / Next / submit; the maximum can stay live.
+- Bottom sheets: build the content first and slide up on the next frame; ignore taps for
+  ~400 ms after opening (the second tap of a double tap would hit a list item).
 
 ## How to check work before pushing
+- After building a page, run fresh-eyes reviewers (old-vs-new parity + adversarial runtime QA)
+  and fix what they confirm; owner pages so far: login, register, dashboard, quick loan, loan
+  apply, payment method (sources with `[[s:icon]]` placeholders live in the scratchpad).
 - Local preview in the cloud container: run Django with DEBUG settings on 127.0.0.1 only.
   `cdn.tailwindcss.com` is blocked there: to render a mockup, build its CSS with
   `tailwindcss@3` from npm and use `@fortawesome/fontawesome-free@6.4.0`.
@@ -82,3 +99,8 @@ Read this first. It records how the owner wants this project handled.
   and colours statuses differently — wiring it in would make the bell dot vanish and the badge
   and balance flicker. Fix the API first if live updates are wanted.
 - explore.html still has the old bottom navigation (different from the dashboard's new pill).
+- Loan apply input filters (kept from the old page, owner to decide): ID number is digits only
+  (passport numbers lose their letters); names drop ñ, hyphens, periods; addresses drop commas.
+- What `identity_name` should hold (ID type such as "Passport", or the name on the ID) is not
+  defined; the client page keeps the old label "Identity name".
+- register.html's validation sheet still has a full-screen backdrop blur (built before that rule).

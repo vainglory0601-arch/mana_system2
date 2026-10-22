@@ -1200,6 +1200,9 @@ def loan_apply_view(request):
     except (InvalidOperation, ValueError):
         messages.error(request, "Invalid loan amount.")
         return render(request, "loan_apply.html", {"locked": False, "loan": None})
+    if not amount.is_finite() or amount <= 0:  # "NaN" / "Infinity" parse as Decimal but cannot be saved
+        messages.error(request, "Invalid loan amount.")
+        return render(request, "loan_apply.html", {"locked": False, "loan": None})
 
     try:
         term_months = int(term_raw)
@@ -1275,15 +1278,32 @@ def loan_apply_view(request):
     return redirect(url)
 
 
+def _payment_method_page(request, form, locked, saved):
+    has_draft = LoanApplication.objects.filter(user=request.user, status="DRAFT").exists()
+    return render(request, "payment_method.html", {"form": form, "locked": locked, "saved": saved, "has_draft": has_draft})
+
+
 @login_required(login_url="login")
 def payment_method_view(request):
     """Payment method setup"""
     obj, _ = PaymentMethod.objects.get_or_create(user=request.user)
 
     if request.method == "POST" and obj.locked:
+        # A new application (after a rejected one) is sent with the saved, locked payment method
+        draft = (
+            LoanApplication.objects
+            .filter(user=request.user, status="DRAFT")
+            .order_by("-id")
+            .first()
+        )
+        if draft and request.POST.get("action") == "use_saved":
+            draft.status = "PENDING"
+            draft.save(update_fields=["status"])
+            messages.success(request, "Your loan is now submitted for review.")
+            return redirect(reverse("quick_loan") + "?done=1")
         messages.error(request, "Locked. Please contact staff to update.")
         form = PaymentMethodForm(instance=obj)
-        return render(request, "payment_method.html", {"form": form, "locked": True, "saved": True})
+        return _payment_method_page(request, form, True, True)
 
     if request.method == "POST":
         form = PaymentMethodForm(request.POST, instance=obj)
@@ -1308,11 +1328,11 @@ def payment_method_view(request):
 
             return redirect(reverse("quick_loan") + "?done=1")
 
-        return render(request, "payment_method.html", {"form": form, "locked": obj.locked, "saved": False})
+        return _payment_method_page(request, form, obj.locked, False)
 
     form = PaymentMethodForm(instance=obj)
     saved = bool(obj.wallet_name or obj.wallet_phone or obj.bank_name or obj.bank_account or obj.paypal_email)
-    return render(request, "payment_method.html", {"form": form, "locked": obj.locked, "saved": saved})
+    return _payment_method_page(request, form, obj.locked, saved)
 
 
 # ======================

@@ -190,7 +190,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
   transition:border-color .2s,background-color .2s,box-shadow .2s,transform .15s;
 }
 .la-up-selfie{grid-column:1 / -1;height:132px;}
-.la-up:hover{border-color:var(--la-green);background:#f4faf6;}
+.la-up:not(.is-locked):hover{border-color:var(--la-green);background:#f4faf6;}
 .la-up:active{transform:scale(.98);}
 .la-up:focus-within{box-shadow:0 0 0 3px rgba(27,67,50,.22);}
 .la-up.is-error{border-color:#f87171;background:#fef2f2;}
@@ -212,6 +212,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 }
 .la-up-chg svg{font-size:10px;}
 .la-up.has-img .la-up-chg{opacity:1;}
+.la-up.is-locked .la-up-chg{display:none;}
 .la-up-busy{
   position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:8px;font-size:11.5px;font-weight:700;color:var(--la-green);
   background:rgba(249,250,251,.9);opacity:0;visibility:hidden;transition:opacity .2s,visibility 0s linear .2s;
@@ -374,8 +375,8 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
   .la-flow li.la-fl{margin-left:5px;margin-right:5px;}
 }
 @media (prefers-reduced-motion: reduce){
-  .la-gfloat,.la-cta.is-ready::before{animation:none;}
-  .la-guide,.la-term-ind{transition:none;}
+  .la-gfloat,.la-cta.is-ready::before,.shake,.sp.shake{animation:none;}
+  .la-guide,.la-term-ind,.la-vwrap,.la-vsheet{transition:none;}
 }
 </style>
 
@@ -451,7 +452,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
       {% endif %}
       {% endif %}
 
-      <form class="la-form" id="laForm" method="POST" enctype="multipart/form-data" novalidate>
+      <form class="la-form" id="laForm" method="POST" action="{% url 'loan_apply' %}" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
         <input type="hidden" name="loan_amount" id="loanAmount">
         <input type="hidden" name="loan_terms" id="loanTerms">
@@ -470,7 +471,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
             <label class="la-label" for="laAmount">Loan amount</label>
             <div class="la-amt">
               <span aria-hidden="true">₱</span>
-              <input type="text" inputmode="numeric" id="laAmount" maxlength="12" autocomplete="off" placeholder="80,000 – 5,000,000"
+              <input type="text" inputmode="decimal" id="laAmount" autocomplete="off" placeholder="e.g. 150,000"
                      enterkeyhint="done" aria-describedby="laAmtErr"{% if locked %} readonly value="{{ loan.amount|default_if_none:''|floatformat:"-2" }}"{% endif %}>
             </div>
             <p class="la-err" id="laAmtErr" role="alert"></p>
@@ -531,7 +532,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
               <div>
                 <label class="la-label" for="ageInput">Age</label>
                 <div class="la-field"><span class="la-ico"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z"/></svg></span>
-                  <input class="la-input" type="text" name="age" id="ageInput" inputmode="numeric" maxlength="2" autocomplete="off" enterkeyhint="next" placeholder="18 – 90"
+                  <input class="la-input" type="text" name="age" id="ageInput" inputmode="numeric" autocomplete="off" enterkeyhint="next" placeholder="18 – 90"
                          value="{{ loan.age|default:'' }}"{% if locked %} readonly{% endif %}></div>
               </div>
               <div>
@@ -557,15 +558,15 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
                          value="{{ loan.monthly_expenses|default:'' }}"{% if locked %} readonly{% endif %}></div>
               </div>
               <div>
-                <label class="la-label" for="identityName">ID type</label>
+                <label class="la-label" for="identityName">Identity name</label>
                 <div class="la-field"><span class="la-ico"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H64zm96 320h64c44.2 0 80 35.8 80 80c0 8.8-7.2 16-16 16H96c-8.8 0-16-7.2-16-16c0-44.2 35.8-80 80-80zm-32-96a64 64 0 1 1 128 0 64 64 0 1 1 -128 0zM144 64h96c8.8 0 16 7.2 16 16s-7.2 16-16 16H144c-8.8 0-16-7.2-16-16s7.2-16 16-16z"/></svg></span>
-                  <input class="la-input" type="text" name="identity_name" id="identityName" autocomplete="off" enterkeyhint="next" placeholder="e.g. Passport, UMID"
+                  <input class="la-input" type="text" name="identity_name" id="identityName" autocomplete="off" enterkeyhint="next" placeholder="Identity name"
                          value="{{ loan.identity_name|default:'' }}"{% if locked %} readonly{% endif %}></div>
               </div>
               <div>
-                <label class="la-label" for="identityNumber">ID number</label>
+                <label class="la-label" for="identityNumber">Identity number</label>
                 <div class="la-field"><span class="la-ico"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M181.3 32.4c17.4 2.9 29.2 19.4 26.3 36.8L197.8 128h95.1l11.5-69.3c2.9-17.4 19.4-29.2 36.8-26.3s29.2 19.4 26.3 36.8L357.8 128H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H347.1L325.8 320H384c17.7 0 32 14.3 32 32s-14.3 32-32 32H315.1l-11.5 69.3c-2.9 17.4-19.4 29.2-36.8 26.3s-29.2-19.4-26.3-36.8l9.8-58.7H155.1l-11.5 69.3c-2.9 17.4-19.4 29.2-36.8 26.3s-29.2-19.4-26.3-36.8L90.2 384H32c-17.7 0-32-14.3-32-32s14.3-32 32-32h68.9l21.3-128H64c-17.7 0-32-14.3-32-32s14.3-32 32-32h68.9l11.5-69.3c2.9-17.4 19.4-29.2 36.8-26.3zM187.1 192L165.8 320h95.1l21.3-128H187.1z"/></svg></span>
-                  <input class="la-input" type="text" name="identity_number" id="identityNumber" inputmode="numeric" autocomplete="off" enterkeyhint="done" placeholder="Numbers only"
+                  <input class="la-input" type="text" name="identity_number" id="identityNumber" inputmode="numeric" autocomplete="off" enterkeyhint="done" placeholder="Identity number"
                          value="{{ loan.identity_number|default:'' }}"{% if locked %} readonly{% endif %}></div>
               </div>
             </div>
@@ -629,6 +630,8 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
             {% if not locked %}
             <button type="submit" class="la-cta" id="confirmApplyBtn" name="action" value="apply_loan"><svg viewBox="0 0 512 512" class="la-cta-ico" aria-hidden="true"><path d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480V396.4c0-4 1.5-7.8 4.2-10.7L331.8 202.8c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8 17.7 316.6C7.1 311.3 .3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z"/></svg><i class="la-spin" aria-hidden="true"></i><span id="laCtaTxt">Confirm Apply</span></button>
             <p class="la-fine">Please check your details before you confirm.</p>
+            {% elif loan.status == "APPROVED" or loan.status == "PAID" %}
+            <button type="button" class="la-cta" disabled><svg viewBox="0 0 512 512" class="la-cta-ico" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg><span>Application Approved</span></button>
             {% elif loan.status == "DRAFT" %}
             <a class="la-cta" href="{% url 'payment_method' %}"><span>Complete Payment Method</span><svg viewBox="0 0 448 512" class="la-cta-ico" aria-hidden="true"><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg></a>
             {% else %}
@@ -690,17 +693,23 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 'use strict';
 function $(id){ return document.getElementById(id); }
 function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
-/* digits and one decimal point with up to 2 decimals, the way the old number field allowed */
-function money(v){ v=String(v||'').replace(/[^0-9.]/g,''); var k=v.indexOf('.'); if(k>=0) v=v.slice(0,k+1)+v.slice(k+1).replace(/\./g,'').slice(0,2); return v; }
+/* digits and one decimal point (2 decimals at most), like the old number field; no leading zeros,
+   9 digits at most — cleaned before any cut, so a pasted "PHP 1,500,000" stays 1500000 */
+function money(v){
+  v=String(v||'').replace(/[^0-9.]/g,'');
+  var k=v.indexOf('.'), i=(k<0?v:v.slice(0,k)).replace(/^0+(?=\d)/,'').slice(0,9);
+  return k<0?i:(i||'0')+'.'+v.slice(k+1).replace(/\./g,'').slice(0,2);
+}
 function peso(n,cents){
   var s=cents?(Math.round(n*100)/100).toFixed(2).replace(/\.00$/,''):String(Math.round(n)), p=s.split('.');
   return '₱'+p[0].replace(/\B(?=(\d{3})+(?!\d))/g,',')+(p[1]?'.'+p[1]:'');
 }
 function shake(el){ el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(function(){ el.classList.remove('shake'); },450); }
 
+var SMOOTH=(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)?'auto':'smooth';
 var LOCKED={{ locked|yesno:"true,false" }}, AMT_MIN=80000, AMT_MAX=5000000, RATE=0.005, DRAFT_KEY='ofl_loan_apply_draft';
-/* the payment method page continues the first-loan guide */
-store('ofl_onboard','pm');
+/* the payment method page continues the first-loan guide (only when that step is still to do) */
+{% if not locked or loan.status == "DRAFT" %}store('ofl_onboard','pm');{% endif %}
 
 /* ── Offer: amount + term + monthly repayment ── */
 var form=$('laForm'), amountIn=$('laAmount'), amountHidden=$('loanAmount'), termHidden=$('loanTerms');
@@ -718,15 +727,16 @@ function pickTerm(b,quiet){
   if(!quiet) store('ofl_quick_term',termHidden.value);
 }
 function setAmtErr(m){ amtErr.textContent=m||''; amtErr.classList.toggle('is-visible',!!m); amountIn.classList.toggle('is-error',!!m); }
+/* the minimum is only flagged once the user leaves the field or tries to go on,
+   not from the first digit (it made the guide jump while typing) */
+var minArmed=false;
 function updateOffer(){
-  var v=amountIn.value, n=Number(v||0), msg='';
-  if(!LOCKED&&v){
-    if(n<AMT_MIN) msg='Minimum loan amount is ₱80,000.';
-    else if(n>AMT_MAX) msg='Maximum loan amount is ₱5,000,000.';
-  }
-  setAmtErr(msg);
-  amountHidden.value=(v&&!msg)?String(n):'';
-  var t=Number(termHidden.value||0), m=(n>0&&!msg&&t>0)?peso((n+n*RATE*t)/t):'—';
+  var v=amountIn.value, n=Number(v||0);
+  var low=!LOCKED&&!!v&&!(n>=AMT_MIN), high=!LOCKED&&n>AMT_MAX, bad=low||high;
+  if(!bad) minArmed=false;
+  setAmtErr(high?'Maximum loan amount is ₱5,000,000.':(low&&minArmed?'Minimum loan amount is ₱80,000.':''));
+  amountHidden.value=(v&&!bad)?String(n):'';
+  var t=Number(termHidden.value||0), m=(n>0&&!bad&&t>0)?peso((n+n*RATE*t)/t):'—';
   if(m!==lastMonthly){
     monthlyEl.textContent=m; lastMonthly=m;
     if(monthlyEl.animate) monthlyEl.animate([{opacity:.3,transform:'translateY(4px)'},{opacity:1,transform:'none'}],{duration:350,easing:'cubic-bezier(.22,1,.36,1)'});
@@ -749,7 +759,7 @@ if(LOCKED){
 var F={ fullName:$('fullName'), age:$('ageInput'), living:$('currentLiving'), home:$('hometownInput'),
         income:$('incomeInput'), expenses:$('expensesInput'), idName:$('identityName'), idNo:$('identityNumber') };
 var ORDER=[F.fullName,F.age,F.living,F.home,F.income,F.expenses,F.idName,F.idNo];
-var FILTERS=[ [amountIn,money],[F.fullName,/[^A-Za-z ]+/g],[F.age,/[^0-9]/g],[F.living,/[^A-Za-z0-9 ]+/g],
+var FILTERS=[ [amountIn,money],[F.fullName,/[^A-Za-z ]+/g],[F.age,function(v){ return v.replace(/[^0-9]/g,'').slice(0,2); }],[F.living,/[^A-Za-z0-9 ]+/g],
              [F.income,/[^0-9]/g],[F.expenses,/[^0-9]/g],[F.idName,/[^A-Za-z0-9 ]+/g],[F.idNo,/[^0-9]/g]];
 var REQ=[
   {el:F.fullName,name:'full name',msg:'Full name is required'},
@@ -757,8 +767,8 @@ var REQ=[
   {el:F.living,name:'current living address',msg:'Current living address is required'},
   {el:F.home,name:'hometown',msg:'Hometown is required'},
   {el:F.expenses,name:'monthly expenses',msg:'Monthly expenses is required'},
-  {el:F.idName,name:'ID type',msg:'Identity name is required'},
-  {el:F.idNo,name:'ID number',msg:'Identity number is required'}
+  {el:F.idName,name:'identity name',msg:'Identity name is required'},
+  {el:F.idNo,name:'identity number',msg:'Identity number is required'}
 ];
 /* keep only the allowed characters without making the cursor jump */
 function clean(el,re){
@@ -823,9 +833,10 @@ function photoDone(){
 }
 UPS.forEach(function(u){
   u.input=u.box.querySelector('input[type=file]'); u.img=u.box.querySelector('img'); u.token=0; u.url='';
+  u.note=u.box.querySelector('small'); u.noteTxt=u.note.textContent;
   u.input.addEventListener('change',function(){
     var file=u.input.files&&u.input.files[0], token=++u.token;
-    u.box.classList.remove('is-error');
+    u.box.classList.remove('is-error'); u.note.textContent=u.noteTxt;
     if(!file){ u.box.classList.remove('has-img','is-busy'); refresh(); return; }   /* picker cancelled */
     u.box.classList.add('is-busy'); busy++;
     shrink(file).then(function(out){
@@ -835,7 +846,13 @@ UPS.forEach(function(u){
       u.url=URL.createObjectURL(out);
       u.img.src=u.url;
       var show=function(){ if(token===u.token) u.box.classList.add('has-img'); };
-      return u.img.decode?u.img.decode().then(show,show):show();
+      /* the browser cannot show it (a PDF, an unknown photo type): the server would refuse it too */
+      var bad=function(){
+        if(token!==u.token) return;
+        u.input.value=''; u.img.removeAttribute('src'); u.box.classList.remove('has-img'); u.box.classList.add('is-error');
+        u.note.textContent='Not a photo — tap to choose again';
+      };
+      return u.img.decode?u.img.decode().then(show,bad):show();
     }).then(function(){
       if(token===u.token) u.box.classList.remove('is-busy');
       photoDone(); refresh();
@@ -845,7 +862,7 @@ UPS.forEach(function(u){
 
 /* ── Signature pad ── */
 var padBox=$('laPad'), pad=$('sigCanvas'), sigHidden=$('signatureData'), ctx=pad.getContext('2d');
-var ink=false, drawing=false, dirty=false, last=null, mid=null, padRect=null, encTimer=0, encToken=0, paintToken=0;
+var ink=false, drawing=false, moved=false, pid=null, dirty=false, last=null, mid=null, padRect=null, encTimer=0, encToken=0, paintToken=0;
 function pen(){ ctx.lineWidth=2.6; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.strokeStyle='#133224'; ctx.fillStyle='#133224'; }
 function hasSig(){ return ink&&(dirty||!!sigHidden.value); }
 function flushSig(){ if(!dirty) return; clearTimeout(encTimer); encToken++; sigHidden.value=ink?pad.toDataURL('image/png'):''; dirty=false; }
@@ -881,17 +898,17 @@ function encodeSoon(){
 }
 function point(e){ return {x:e.clientX-padRect.left,y:e.clientY-padRect.top}; }
 pad.addEventListener('pointerdown',function(e){
-  if(e.button>0) return;
+  if(e.button>0||drawing) return;   /* one finger at a time */
   e.preventDefault();
-  try{ pad.setPointerCapture(e.pointerId); }catch(err){}
+  pid=e.pointerId;
+  try{ pad.setPointerCapture(pid); }catch(err){}
   padRect=pad.getBoundingClientRect(); paintToken++;
-  drawing=true; last=mid=point(e);
-  ctx.beginPath(); ctx.arc(last.x,last.y,ctx.lineWidth/2,0,Math.PI*2); ctx.fill();
+  drawing=true; moved=false; last=mid=point(e);
   padBox.classList.remove('is-error');
   if(guide) guide.follow(3);
 });
 pad.addEventListener('pointermove',function(e){
-  if(!drawing) return;
+  if(!drawing||e.pointerId!==pid) return;
   var list=(e.getCoalescedEvents&&e.getCoalescedEvents())||[];
   if(!list.length) list=[e];
   ctx.beginPath(); ctx.moveTo(mid.x,mid.y);
@@ -900,13 +917,14 @@ pad.addEventListener('pointermove',function(e){
     ctx.quadraticCurveTo(last.x,last.y,m.x,m.y);
     last=p; mid=m;
   }
-  ctx.stroke(); ink=true;
+  ctx.stroke(); ink=moved=true;
 });
-function endStroke(){
-  if(!drawing) return;
+function endStroke(e){
+  if(!drawing||(e&&e.pointerId!==pid)) return;
   drawing=false;
-  ctx.beginPath(); ctx.moveTo(mid.x,mid.y); ctx.lineTo(last.x,last.y); ctx.stroke();
-  if(!ink) return;
+  if(moved){ ctx.beginPath(); ctx.moveTo(mid.x,mid.y); ctx.lineTo(last.x,last.y); ctx.stroke(); }
+  else if(ink){ ctx.beginPath(); ctx.arc(last.x,last.y,ctx.lineWidth/2,0,Math.PI*2); ctx.fill(); }   /* a dot on an i */
+  else return;   /* a lone tap is not a signature */
   dirty=true; padBox.classList.add('has-ink'); encodeSoon(); refresh();
 }
 pad.addEventListener('pointerup',endStroke);
@@ -921,8 +939,9 @@ $('sigClear').addEventListener('click',function(){
 
 /* ── Draft: everything typed is kept on this phone until the payment method step ── */
 var saveTimer=0;
+var UID='{{ request.user.pk }}';
 function saveDraft(){
-  var data={};
+  var data={__uid:UID};
   [].forEach.call(form.elements,function(el){
     if(!el.name||el.name==='csrfmiddlewaretoken'||el.type==='file'||el.type==='submit'||el.type==='button') return;
     if(el.type==='checkbox'){ data[el.name]=data[el.name]||[]; if(el.checked) data[el.name].push(el.value); }
@@ -934,6 +953,8 @@ function saveSoon(){ clearTimeout(saveTimer); saveTimer=setTimeout(saveDraft,250
 (function restore(){
   var d={};
   try{ d=JSON.parse(store(DRAFT_KEY)||'{}')||{}; }catch(e){ d={}; }
+  /* a draft left on this phone by another account is never shown */
+  if(d.__uid!==UID){ d={}; try{ localStorage.removeItem(DRAFT_KEY); }catch(e){} }
   [].forEach.call(form.elements,function(el){
     if(!el.name||!Object.prototype.hasOwnProperty.call(d,el.name)) return;
     if(el.name==='csrfmiddlewaretoken'||el.type==='file'||el.type==='submit'||el.type==='button') return;
@@ -944,16 +965,24 @@ function saveSoon(){ clearTimeout(saveTimer); saveTimer=setTimeout(saveDraft,250
   var first=null;   /* older drafts may hold several purposes: keep the first */
   purpIns.forEach(function(i){ if(i.checked){ if(first) i.checked=false; else first=i; } });
   FILTERS.forEach(function(p){ clean(p[0],p[1]); });
-  /* the offer: link from Quick Loan first, then the draft, then the last Quick Loan values */
+  /* the offer: the link from Quick Loan first, then the draft, then the last Quick Loan values.
+     The link is read once and removed from the address, so a reload or a server error keeps
+     the client's own changes (saved in the draft) instead of the old link values. */
   var qs=new URLSearchParams(location.search);
   function amt(v){ v=money(v); return Number(v)>0?v:''; }
   amountIn.value=amt(qs.get('amount'))||amt(amountHidden.value)||amt(store('ofl_quick_amount'));
   pickTerm(byTerm(qs.get('term')||termHidden.value||store('ofl_quick_term')||''),true);
+  if(qs.has('amount')||qs.has('term')){
+    qs.delete('amount'); qs.delete('term');
+    try{ history.replaceState(history.state,'',location.pathname+(qs.toString()?'?'+qs:'')+location.hash); }catch(e){}
+  }
   paintPurp();
   updateOffer();
+  saveSoon();
 })();
 
 amountIn.addEventListener('input',function(){ store('ofl_quick_amount',amountIn.value); updateOffer(); });
+amountIn.addEventListener('blur',function(){ minArmed=true; updateOffer(); });
 termBtns.forEach(function(b){ b.addEventListener('click',function(){ pickTerm(b); updateOffer(); saveSoon(); refresh(); }); });
 terms.addEventListener('keydown',function(e){
   var i=termBtns.indexOf(document.activeElement); if(i<0) return;
@@ -966,6 +995,7 @@ terms.addEventListener('keydown',function(e){
 form.addEventListener('keydown',function(e){
   if(e.key!=='Enter'||e.isComposing) return;
   var t=e.target, i=ORDER.indexOf(t);
+  if(t.type==='checkbox'){ e.preventDefault(); t.click(); return; }
   if(t===amountIn){ e.preventDefault(); if(guide&&guide.at(0)) guide.next(); else amountIn.blur(); return; }
   if(i<0) return;
   e.preventDefault();
@@ -976,7 +1006,7 @@ form.addEventListener('keydown',function(e){
 function problems(){
   var out=[], n=Number(amountIn.value||0);
   if(!amountIn.value) out.push({msg:'Loan amount is required',el:$('laSp1'),focus:amountIn,mark:amountIn});
-  else if(n<AMT_MIN||n>AMT_MAX) out.push({msg:'Loan amount must be ₱80,000 – ₱5,000,000',el:$('laSp1'),focus:amountIn,mark:amountIn});
+  else if(!(n>=AMT_MIN&&n<=AMT_MAX)) out.push({msg:'Loan amount must be ₱80,000 – ₱5,000,000',el:$('laSp1'),focus:amountIn,mark:amountIn});
   if(!termHidden.value) out.push({msg:'Loan term not selected',el:terms,mark:terms});
   if(!purpOn()) out.push({msg:'Loan purpose not selected',el:purp,mark:purp});
   REQ.forEach(function(r){
@@ -999,12 +1029,19 @@ form.addEventListener('change',function(){ saveSoon(); refresh(); });
 
 /* ── Bottom sheet ── */
 var sheet=$('laVal'), vList=$('laValList'), ARROW=$('laArrowIco').innerHTML;
+var sheetAt=0;   /* taps in the first moments belong to the tap that opened it */
+function settled(){ return performance.now()-sheetAt>400; }
 function closeSheet(){ sheet.classList.remove('is-open'); sheet.setAttribute('aria-hidden','true'); }
+/* bring a field into view (above the keyboard) when it is not already */
+function showField(el){
+  var vv=window.visualViewport, vTop=vv?vv.offsetTop:0, vh=vv?vv.height:window.innerHeight, r=el.getBoundingClientRect();
+  if(r.top-vTop<80||r.bottom-vTop>vh-24) window.scrollBy({top:r.top-vTop-96,behavior:SMOOTH});
+}
 function goTo(it){
   if(it.focus) it.focus.focus({preventScroll:true});
   else if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();
   var vv=window.visualViewport, top=it.el.getBoundingClientRect().top-(vv?vv.offsetTop:0)-(it.focus?96:72);
-  if(Math.abs(top)>4) window.scrollBy({top:top,behavior:'smooth'});
+  if(Math.abs(top)>4) window.scrollBy({top:top,behavior:SMOOTH});
   setTimeout(function(){ shake(it.el); },320);
 }
 function openSheet(list){
@@ -1012,17 +1049,17 @@ function openSheet(list){
   list.forEach(function(it){
     var li=document.createElement('li'), b=document.createElement('button'), s=document.createElement('span');
     b.type='button'; b.className='la-vitem'; s.textContent=it.msg; b.appendChild(s); b.insertAdjacentHTML('beforeend',ARROW);
-    b.addEventListener('click',function(){ closeSheet(); goTo(it); });
+    b.addEventListener('click',function(){ if(!settled()) return; closeSheet(); goTo(it); });
     li.appendChild(b); vList.appendChild(li);
     it.mark.classList.add('is-error');
   });
-  vList.scrollTop=0;
+  vList.scrollTop=0; sheetAt=performance.now();
   sheet.setAttribute('aria-hidden','false');
   /* build first, slide up on the next frame so the animation starts clean */
   requestAnimationFrame(function(){ sheet.classList.add('is-open'); });
 }
-$('laValClose').addEventListener('click',closeSheet);
-sheet.addEventListener('click',function(e){ if(e.target===sheet) closeSheet(); });
+$('laValClose').addEventListener('click',function(){ if(settled()) closeSheet(); });
+sheet.addEventListener('click',function(e){ if(e.target===sheet&&settled()) closeSheet(); });
 document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&sheet.classList.contains('is-open')) closeSheet(); });
 
 /* ── Send ── */
@@ -1030,13 +1067,20 @@ form.addEventListener('submit',function(e){
   if(sending){ e.preventDefault(); return; }
   flushSig();
   var list=problems();
-  if(list.length){ e.preventDefault(); openSheet(list); return; }
+  if(list.length){ e.preventDefault(); minArmed=true; updateOffer(); openSheet(list); return; }
   if(busy){ e.preventDefault(); waitPhotos=true; setLoading(true,'Preparing photos…'); return; }
   sending=true; setLoading(true,'Submitting…'); saveDraft();
   /* the draft is cleared on the payment method page, after the server accepted it */
 });
 window.addEventListener('pageshow',function(e){ if(e.persisted){ sending=false; waitPhotos=false; setLoading(false); refresh(); } });
 window.addEventListener('pagehide',function(){ flushSig(); saveDraft(); });
+/* Back without the page cache: the browser puts the chosen photos back without telling the
+   page, so build their previews (otherwise the boxes say "Tap to upload" while files are attached) */
+window.addEventListener('pageshow',function(){
+  setTimeout(function(){
+    UPS.forEach(function(u){ if(hasFile(u)&&!u.box.classList.contains('has-img')&&!u.box.classList.contains('is-busy')) u.input.dispatchEvent(new Event('change')); });
+  },0);
+});
 
 /* ── Guide: 5 steps, attached above each section ── */
 guide=(function(){
@@ -1114,7 +1158,7 @@ guide=(function(){
       var top=Math.min(gTop,r.top-vTop), bot=Math.max(gBot,r.bottom-vTop), d=0;
       if(bot-top<=room){ if(top<m) d=top-m; else if(bot>vh-m) d=bot-(vh-m); }
       else d=g.classList.contains('is-above')?gTop-m:gBot-(vh-m);
-      if(Math.abs(d)>4) window.scrollBy({top:d,behavior:'smooth'});
+      if(Math.abs(d)>4) window.scrollBy({top:d,behavior:SMOOTH});
     },80);
   }
   function goStep(i,quiet){
@@ -1134,6 +1178,9 @@ guide=(function(){
   }
   function start(){
     cur=firstOpen(); active=true; g.hidden=false; render(cur); y=targetY(cur);
+    /* the server refused the last try: say why right where the guide resumes */
+    var refused=document.querySelector('.la-alert.is-error');
+    if(refused) setErr(refused.textContent.trim());
     g.style.transition='none'; setTransform(true); void g.offsetWidth; g.style.transition='';
     g.classList.add('is-on'); setTransform(false); reveal();
   }
@@ -1145,9 +1192,12 @@ guide=(function(){
   function next(){
     var s=STEPS[cur], p=s.check();
     if(p){
-      setErr(p.msg); shake(s.el);
-      if(p.focus) p.focus.focus({preventScroll:true});
-      place(); reveal(); return;
+      if(cur===0){ minArmed=true; updateOffer(); }
+      setErr(p.msg); shake(s.el); place();
+      /* a field to fix: show that field (the keyboard opens for it), not the guide */
+      if(p.focus){ p.focus.focus({preventScroll:true}); if(p.focus!==amountIn) p.focus.classList.add('is-error'); showField(p.focus); }
+      else reveal();
+      return;
     }
     if(cur<STEPS.length-1) return goStep(cur+1);
     end();
@@ -1156,8 +1206,16 @@ guide=(function(){
 
   /* buttons inside the guide must not steal focus from a field (keyboard flicker) */
   g.addEventListener('mousedown',function(e){ if(e.target.closest('button')) e.preventDefault(); });
-  $('laGSkip').addEventListener('click',end);
-  gNext.addEventListener('click',next);
+  /* the second tap of a double tap must not land on what was under the guide */
+  var blockUntil=0, blockRect=null;
+  function armBlock(){ blockUntil=performance.now()+450; blockRect=g.querySelector('.la-gbody').getBoundingClientRect(); }
+  col.addEventListener('click',function(e){
+    if(!e.isTrusted||performance.now()>=blockUntil||g.contains(e.target)) return;
+    var r=blockRect;   /* only where the guide was when it was tapped */
+    if(e.clientX>=r.left-8&&e.clientX<=r.right+8&&e.clientY>=r.top-8&&e.clientY<=r.bottom+8){ e.preventDefault(); e.stopPropagation(); }
+  },true);
+  $('laGSkip').addEventListener('click',function(){ armBlock(); end(); });
+  gNext.addEventListener('click',function(){ armBlock(); next(); });
 
   /* the guide follows what the user works on, without scrolling the page */
   function follow(i){ if(active&&cur!==i) goStep(i,true); }
@@ -1167,13 +1225,22 @@ guide=(function(){
   /* step 2 moves on by itself once a purpose is tapped */
   purpIns.forEach(function(inp){
     inp.addEventListener('change',function(){
-      if(!active||!inp.checked) return;
-      if(cur<=1){ if(cur!==1) goStep(1,true); clearTimeout(autoTimer); autoTimer=setTimeout(function(){ if(active&&cur===1) goStep(2); },450); }
+      if(!active) return;
+      if(!inp.checked){ clearTimeout(autoTimer); return; }   /* ticked then unticked: stay */
+      if(cur<=1){ if(cur!==1) goStep(1,true); clearTimeout(autoTimer); autoTimer=setTimeout(function(){ if(active&&cur===1&&purpOn()) goStep(2); },450); }
     });
   });
 
   if(window.ResizeObserver){ var ro=new ResizeObserver(function(){ place(); }); ro.observe(col); ro.observe(g); }
-  window.addEventListener('resize',place);
+  /* turning the phone: bring the guide back if it ended up off screen */
+  var lastW=window.innerWidth;
+  window.addEventListener('resize',function(){
+    place();
+    if(!active||window.innerWidth===lastW) return;
+    lastW=window.innerWidth;
+    var top=col.getBoundingClientRect().top+y;
+    if(top<0||top+g.offsetHeight>window.innerHeight) reveal();
+  });
   /* wait for the page slide-in to finish */
   setTimeout(start,450);
   return { update:update, follow:follow, next:next, at:function(i){ return active&&cur===i; } };

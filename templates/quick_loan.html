@@ -120,6 +120,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .ql-btn:hover{background:var(--ql-green-dk);}
 .ql-btn:active{transform:scale(.98);}
 .ql-btn svg{font-size:14px;}
+.ql-btn[hidden]{display:none;}
 .ql-btn:disabled{cursor:not-allowed;background:#d1d5db;color:#fff!important;box-shadow:none;transform:none;}
 .ql-btn.is-done:disabled{background:var(--ql-sage);color:var(--ql-green)!important;}
 .ql-btn.is-incomplete:disabled{background:#fff7ed;color:#c2410c!important;border:1px solid #fed7aa;}
@@ -227,7 +228,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
   .term-btn{font-size:15px;}
 }
 @media (prefers-reduced-motion: reduce){
-  .ql-badge-dot::after,.ql-gfloat{animation:none;}
+  .ql-badge-dot::after,.ql-gfloat,.sp.shake{animation:none;}
   .ql-guide,.ql-term-ind,.ql-line i{transition:none;}
 }
 </style>
@@ -268,7 +269,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
             <label class="ql-label" for="qAmount">Loan amount</label>
             <div class="ql-amt">
               <span aria-hidden="true">₱</span>
-              <input type="text" inputmode="numeric" id="qAmount" maxlength="12" autocomplete="off" placeholder="80,000 – 5,000,000"
+              <input type="text" inputmode="decimal" id="qAmount" autocomplete="off" placeholder="e.g. 150,000"
                      enterkeyhint="next" aria-describedby="qAmtError"{% if loan %} readonly{% endif %}>
             </div>
             <p class="ql-err" id="qAmtError" role="alert"></p>
@@ -388,11 +389,17 @@ function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); loca
 var amountEl=$('qAmount'), termEl=$('qTerm'), hint=$('qHint'), terms=$('qTerms'), amtError=$('qAmtError');
 var outAmount=$('qSumAmount'), outTerm=$('qSumTerm'), outMonthly=$('qSumMonthly');
 var btns=[].slice.call(document.querySelectorAll('.term-btn')), goBtn=$('goApply'), goTxt=$('goApplyTxt');
+var SMOOTH=(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)?'auto':'smooth';
 var AMT_MIN=80000, AMT_MAX=5000000, RATE=0.005, LOCKED={% if loan %}true{% else %}false{% endif %};
 var lastMonthly='';
 
-/* digits and one decimal point with up to 2 decimals, the way the old number field allowed */
-function money(v){ v=String(v||'').replace(/[^0-9.]/g,''); var k=v.indexOf('.'); if(k>=0) v=v.slice(0,k+1)+v.slice(k+1).replace(/\./g,'').slice(0,2); return v; }
+/* digits and one decimal point (2 decimals at most), like the old number field; no leading zeros,
+   9 digits at most — cleaned before any cut, so a pasted "PHP 1,500,000" stays 1500000 */
+function money(v){
+  v=String(v||'').replace(/[^0-9.]/g,'');
+  var k=v.indexOf('.'), i=(k<0?v:v.slice(0,k)).replace(/^0+(?=\d)/,'').slice(0,9);
+  return k<0?i:(i||'0')+'.'+v.slice(k+1).replace(/\./g,'').slice(0,2);
+}
 function peso(n,cents){
   var s=cents?(Math.round(n*100)/100).toFixed(2).replace(/\.00$/,''):String(Math.round(n)), p=s.split('.');
   return '₱'+p[0].replace(/\B(?=(\d{3})+(?!\d))/g,',')+(p[1]?'.'+p[1]:'');
@@ -411,12 +418,15 @@ function pickTerm(b,quiet){
   hint.textContent=termEl.value+' months selected';
   if(!quiet) store('ofl_quick_term',termEl.value);
 }
+/* the minimum is only flagged once the user leaves the field or tries to go on,
+   not from the first digit (it made the guide jump while typing) */
+var minArmed=false;
 function update(){
-  var amount=Number(amountEl.value||0), term=Number(termEl.value||0), ok=true;
-  if(LOCKED){ /* a submitted loan is shown as it is, never flagged */ }
-  else if(amount>0&&amount<AMT_MIN){ setAmtError('Minimum loan amount is ₱80,000. Please enter a higher amount.'); ok=false; }
-  else if(amount>AMT_MAX){ setAmtError('Maximum loan amount is ₱5,000,000. Please enter a lower amount.'); ok=false; }
-  else setAmtError('');
+  var amount=Number(amountEl.value||0), term=Number(termEl.value||0);
+  /* a submitted loan is shown as it is, never flagged */
+  var low=!LOCKED&&amount>0&&amount<AMT_MIN, high=!LOCKED&&amount>AMT_MAX, ok=!low&&!high;
+  if(ok) minArmed=false;
+  setAmtError(high?'Maximum loan amount is ₱5,000,000. Please enter a lower amount.':(low&&minArmed?'Minimum loan amount is ₱80,000. Please enter a higher amount.':''));
   outAmount.textContent=amount>0?peso(amount,true):'—';
   outTerm.textContent=term>0?term+' months':'—';
   var monthly='—';
@@ -445,6 +455,7 @@ amountEl.addEventListener('input',function(){
   store('ofl_quick_amount',v);
   update();
 });
+amountEl.addEventListener('blur',function(){ if(!LOCKED){ minArmed=true; update(); } });
 
 {% if loan %}
 amountEl.value='{{ loan.amount|default_if_none:""|floatformat:"-2" }}';
@@ -474,7 +485,7 @@ goTxt.textContent='Submitted';
 goBtn.addEventListener('click',function(){
   var amount=amountEl.value, term=termEl.value, num=Number(amount);
   if(!amount||!term) return;
-  if(num<AMT_MIN||num>AMT_MAX){ update(); amountEl.focus(); return; }
+  if(!(num>=AMT_MIN&&num<=AMT_MAX)){ minArmed=true; update(); amountEl.focus(); return; }
   var url='{% url "loan_apply" %}?amount='+encodeURIComponent(amount)+'&term='+encodeURIComponent(term);
   if(new URLSearchParams(location.search).get('ofl')==='1') url+='&ofl=1';
   location.href=url;
@@ -482,7 +493,7 @@ goBtn.addEventListener('click',function(){
 {% endif %}
 
 /* ── Application status: checked on load, then every 10 s while visible and still in progress ── */
-var card=$('statusCard'), pill=$('statusPill'), text=$('statusText'), reject=$('rejectAlert'), pollTimer=0, finalState=false;
+var card=$('statusCard'), pill=$('statusPill'), text=$('statusText'), reject=$('rejectAlert'), contractLink=card.querySelector('a.ql-btn'), pollTimer=0, finalState=false;
 var MSG={REVIEW:'Initial approval in progress. Please wait.',APPROVED:'Final approval complete. Almost done!',PAID:'Paid successfully. Your loan is complete.',REJECTED:'Rejected. Please contact our department for assistance.'};
 function applyStep(n,label,status){
   for(var i=1;i<=3;i++){
@@ -495,10 +506,11 @@ function applyStep(n,label,status){
   pill.className='ql-pill'+(status==='REJECTED'?' is-bad':(status==='APPROVED'||status==='PAID'?' is-ok':''));
   text.textContent=MSG[status]||'Our team is reviewing your documents. Please wait.';
   reject.classList.toggle('on',status==='REJECTED');
+  contractLink.hidden=(status==='REJECTED');   /* a rejected loan has no contract to show */
 }
 function stepFromStatus(s){ return s==='REVIEW'?2:(s==='APPROVED'||s==='PAID')?3:1; }
-function poll(){
-  if(document.hidden||finalState) return;
+function poll(force){
+  if(document.hidden||(finalState&&!force)) return;
   fetch('{% url "loan_status_api" %}',{headers:{'X-Requested-With':'XMLHttpRequest'},cache:'no-store'})
     .then(function(r){ return r.json(); })
     .then(function(j){
@@ -506,20 +518,21 @@ function poll(){
       var s=String(j.status||'').toUpperCase().trim();
       card.hidden=false;
       applyStep(s==='REJECTED'?1:stepFromStatus(s),j.status_label||j.status,s);
-      finalState=(s==='APPROVED'||s==='PAID'||s==='REJECTED');
+      finalState=(s==='PAID'||s==='REJECTED');   /* approved loans still change to paid */
     })
     .catch(function(){});
 }
 if(new URLSearchParams(location.search).get('done')==='1'){ card.hidden=false; applyStep(1,'Pending','PENDING'); }
 poll();
 pollTimer=setInterval(function(){ if(finalState) clearInterval(pollTimer); else poll(); },10000);
-document.addEventListener('visibilitychange',function(){ if(!document.hidden) poll(); });
+document.addEventListener('visibilitychange',function(){ if(!document.hidden) poll(true); });
 
 {% if not loan %}
 /* ── First-loan guide (continues the dashboard guide) ── */
 (function(){
-  var forced=new URLSearchParams(location.search).get('ofl')==='1';
-  if(!forced&&store('ofl_onboard')!=='ql') return;
+  /* ?ofl=1 starts it too, unless it was skipped or already finished (reload / Back) */
+  var forced=new URLSearchParams(location.search).get('ofl')==='1', onboard=store('ofl_onboard');
+  if(onboard!=='ql'&&!(forced&&onboard!=='ql-skipped'&&onboard!=='pm'&&onboard!=='done')) return;
   var form=$('qlForm'), cardEl=form.parentNode, guide=$('qlGuide'), gText=$('qlGText'), gErr=$('qlGErr'), gStep=$('qlGStep');
   var gNext=$('qlGNext'), gNextTxt=$('qlGNextTxt'), gDots=$('qlGDots').children;
   var STEPS=[
@@ -559,14 +572,17 @@ document.addEventListener('visibilitychange',function(){ if(!document.hidden) po
     revealTimer=setTimeout(function(){
       if(!active) return;
       var vv=window.visualViewport, vTop=vv?vv.offsetTop:0, vh=vv?vv.height:window.innerHeight;
-      var s=STEPS[cur], r=s.el.getBoundingClientRect(), f=form.getBoundingClientRect();
-      var gTop=f.top+y-10, gBot=f.top+y+guide.offsetHeight+10, m=16, room=vh-2*m;
-      var top=Math.min(r.top,gTop)-vTop, bot=Math.max(r.bottom,gBot)-vTop, d=0;
-      var boxTop=(s.input?s.input.getBoundingClientRect().top:r.top)-vTop;
-      if(bot-top<=room){ if(top<m) d=top-m; else if(bot>vh-m) d=bot-(vh-m); }
-      else if(bot-boxTop<=room) d=bot-(vh-m);
-      else d=boxTop-m;
-      if(Math.abs(d)>4) window.scrollBy({top:d,behavior:'smooth'});
+      var s=STEPS[cur], r=s.el.getBoundingClientRect(), f=form.getBoundingClientRect(), up=guide.classList.contains('is-above');
+      var gTop=f.top+y-10-vTop, gBot=f.top+y+guide.offsetHeight+10-vTop, m=16, room=vh-2*m, d=0;
+      var top=Math.min(r.top-vTop,gTop), bot=Math.max(r.bottom-vTop,gBot);
+      if(bot-top>room){
+        /* not everything fits: keep the field being typed in and the whole guide, or at least the whole guide */
+        var b=(s.input&&document.activeElement===s.input)?s.input.getBoundingClientRect():null;
+        if(b&&(up?b.bottom-vTop-gTop:gBot-(b.top-vTop))<=room){ top=up?gTop:b.top-vTop; bot=up?b.bottom-vTop:gBot; }
+        else{ top=gTop; bot=gBot; }
+      }
+      if(top<m) d=top-m; else if(bot>vh-m) d=bot-(vh-m);
+      if(Math.abs(d)>4) window.scrollBy({top:d,behavior:SMOOTH});
     },80);
   }
   function goStep(i){
@@ -580,6 +596,8 @@ document.addEventListener('visibilitychange',function(){ if(!document.hidden) po
   }
   function shake(el){ el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(function(){ el.classList.remove('shake'); },450); }
   function start(){
+    /* values restored from last time: begin at the first step still to do */
+    cur=STEPS[0].check()?0:(STEPS[1].check()?1:2);
     active=true; guide.hidden=false; render(cur); y=targetY(cur);
     guide.style.transition='none'; setTransform(true); void guide.offsetWidth; guide.style.transition='';
     guide.classList.add('is-on'); setTransform(false); reveal();
@@ -591,10 +609,19 @@ document.addEventListener('visibilitychange',function(){ if(!document.hidden) po
   }
 
   guide.addEventListener('mousedown',function(e){ if(e.target.closest('button')) e.preventDefault(); });
-  $('qlGSkip').addEventListener('click',function(){ store('ofl_onboard','ql-skipped'); end(); });
+  /* the second tap of a double tap must not land on what was under the guide (a term, a field) */
+  var blockUntil=0, blockRect=null;
+  function armBlock(){ blockUntil=performance.now()+450; blockRect=guide.querySelector('.ql-gbody').getBoundingClientRect(); }
+  form.addEventListener('click',function(e){
+    if(!e.isTrusted||performance.now()>=blockUntil||guide.contains(e.target)) return;
+    var r=blockRect;   /* only where the guide was when it was tapped */
+    if(e.clientX>=r.left-8&&e.clientX<=r.right+8&&e.clientY>=r.top-8&&e.clientY<=r.bottom+8){ e.preventDefault(); e.stopPropagation(); }
+  },true);
+  $('qlGSkip').addEventListener('click',function(){ armBlock(); store('ofl_onboard','ql-skipped'); end(); });
   gNext.addEventListener('click',function(){
+    armBlock();
     var s=STEPS[cur], msg=s.check();
-    if(msg){ setErr(msg); shake(s.el); if(s.input) s.input.focus({preventScroll:true}); place(); reveal(); return; }
+    if(msg){ if(cur===0){ minArmed=true; update(); } setErr(msg); shake(s.el); if(s.input) s.input.focus({preventScroll:true}); place(); reveal(); return; }
     if(cur<STEPS.length-1) return goStep(cur+1);
     end(); goBtn.click();
   });
@@ -604,7 +631,8 @@ document.addEventListener('visibilitychange',function(){ if(!document.hidden) po
   /* step 2 moves on by itself once a term is tapped */
   btns.forEach(function(b){ b.addEventListener('click',function(){ if(active&&cur===1) setTimeout(function(){ if(active&&cur===1) goStep(2); },450); }); });
 
-  if(window.ResizeObserver){ var ro=new ResizeObserver(function(){ place(); }); ro.observe(form); ro.observe(guide); }
+  /* keep it attached when sizes change; while typing, keep it above the keyboard too */
+  if(window.ResizeObserver){ var ro=new ResizeObserver(function(){ place(); if(active&&document.activeElement===amountEl) reveal(); }); ro.observe(form); ro.observe(guide); }
   window.addEventListener('resize',place);
   if(window.visualViewport) window.visualViewport.addEventListener('resize',function(){ if(active&&document.activeElement===amountEl) reveal(); });
   /* wait for the page slide-in to finish */
