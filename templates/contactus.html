@@ -205,10 +205,10 @@ body{margin:0;min-height:100vh;background:var(--bg) !important;color:var(--ink) 
   z-index:9999;
   display:flex;align-items:center;justify-content:center;
   padding:24px;box-sizing:border-box;
-  opacity:0;pointer-events:none;
-  transition:opacity .3s ease;
+  opacity:0;pointer-events:none;visibility:hidden;
+  transition:opacity .3s ease,visibility 0s linear .3s;
 }
-.cu-overlay.show{opacity:1;pointer-events:all;}
+.cu-overlay.show{opacity:1;pointer-events:all;visibility:visible;transition:opacity .3s ease;}
 .cu-ov-card{
   background:#fff;
   border-radius:28px;

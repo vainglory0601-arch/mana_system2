@@ -40,7 +40,7 @@ html[data-theme="dark"] .status-title { color:#fff !important; }
 /* ── keyframes ── */
 @keyframes qlFadeUp   { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
 @keyframes qlShimmer  { 0%{transform:translateX(-120%) skewX(-15deg)} 100%{transform:translateX(300%) skewX(-15deg)} }
-@keyframes qlPulseBtn { 0%,100%{box-shadow:0 8px 24px rgba(255,140,0,.38),inset 0 1px 0 rgba(255,255,255,.18)} 50%{box-shadow:0 12px 32px rgba(255,140,0,.60),inset 0 1px 0 rgba(255,255,255,.18)} }
+@keyframes qlPulseBtn { 0%,100%{opacity:0} 50%{opacity:1} }
 @keyframes dotBlink   { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.45;transform:scale(.65)} }
 @keyframes orbFloat   { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
 
@@ -303,10 +303,17 @@ html[data-theme="dark"] .ql-amt-error { background:rgba(220,38,38,.12) !importan
   font-size:13.5px; font-weight:950; letter-spacing:.14em; text-transform:uppercase;
   font-family:inherit; cursor:pointer;
   box-shadow:0 8px 24px rgba(255,140,0,.40), inset 0 1px 0 rgba(255,255,255,.18);
-  animation:qlPulseBtn 2.8s ease-in-out infinite;
   transition:transform .2s, filter .2s, opacity .2s;
   position:relative; overflow:hidden;
 }
+/* Pulse glow on its own layer behind the button: fading opacity runs on the GPU,
+   animating box-shadow would repaint the button every frame */
+#qlSp4::before {
+  content:""; position:absolute; left:0; right:0; top:20px; bottom:0; border-radius:16px;
+  box-shadow:0 12px 32px rgba(255,140,0,.45); opacity:0; pointer-events:none;
+  animation:qlPulseBtn 2.8s ease-in-out infinite;
+}
+#qlSp4:has(#goApply:disabled)::before { display:none; }
 #goApply::after {
   content:""; position:absolute; inset:0;
   background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.13) 50%,transparent 70%);

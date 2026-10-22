@@ -48,7 +48,7 @@ html[data-theme="dark"] .sig-canvas { background:#0d1b3e !important; }
 /* keyframes */
 @keyframes laFadeUp  { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
 @keyframes laShimmer { 0%{transform:translateX(-120%) skewX(-15deg)} 100%{transform:translateX(300%) skewX(-15deg)} }
-@keyframes laPulse   { 0%,100%{box-shadow:0 8px 24px rgba(255,140,0,.38),inset 0 1px 0 rgba(255,255,255,.18)} 50%{box-shadow:0 12px 32px rgba(255,140,0,.60),inset 0 1px 0 rgba(255,255,255,.18)} }
+@keyframes laPulse   { 0%,100%{opacity:0} 50%{opacity:1} }
 @keyframes dotBlink  { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.45;transform:scale(.65)} }
 @keyframes orbFloat  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
 @keyframes ctaSpin   { to{transform:rotate(360deg)} }
@@ -280,9 +280,12 @@ hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
   font-weight:900; font-size:15px; letter-spacing:.10em; text-transform:uppercase;
   font-family:inherit; cursor:pointer;
   box-shadow:0 8px 24px rgba(255,140,0,.40), inset 0 1px 0 rgba(255,255,255,.18);
-  animation:laPulse 2.8s ease-in-out infinite;
   transition:transform .2s, filter .2s; position:relative; overflow:hidden;
 }
+/* Pulse glow on its own layer behind the button: fading opacity runs on the GPU,
+   animating box-shadow would repaint the button every frame */
+#laSp5::before { content:""; position:absolute; left:0; right:0; top:16px; bottom:0; border-radius:16px; box-shadow:0 12px 32px rgba(255,140,0,.45); opacity:0; pointer-events:none; animation:laPulse 2.8s ease-in-out infinite; }
+#laSp5:has(#confirmApplyBtn:disabled)::before { display:none; }
 .btn.btn-primary::after { content:""; position:absolute; inset:0; background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.13) 50%,transparent 70%); animation:laShimmer 3.5s ease-in-out 1.2s infinite; }
 .btn.btn-primary:hover  { transform:translateY(-2px); filter:brightness(1.07); }
 .btn.btn-primary:active { transform:translateY(0); }

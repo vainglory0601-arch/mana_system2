@@ -993,10 +993,17 @@ html:not([data-theme="dark"]) body{background:var(--bg)!important;}
              width .48s cubic-bezier(.22,1,.36,1),height .48s cubic-bezier(.22,1,.36,1),opacity .3s;
   opacity:0;
 }
-.og-spot.on{opacity:1;animation:ogPulse 2.5s ease-in-out infinite;}
+.og-spot.on{opacity:1;}
+/* Pulse on its own layer: animating the spot's border/box-shadow would repaint
+   its full-screen 9999px shadow every frame */
+.og-spot::after{
+  content:'';position:absolute;inset:-2.5px;border-radius:inherit;
+  border:2.5px solid #FF8C00;box-shadow:0 0 0 6px rgba(255,140,0,.18);opacity:0;
+}
+.og-spot.on::after{animation:ogPulse 2.5s ease-in-out infinite;}
 @keyframes ogPulse{
-  0%,100%{border-color:rgba(255,140,0,.6);}
-  50%{border-color:#FF8C00;box-shadow:0 0 0 9999px rgba(6,21,64,.88),0 0 0 6px rgba(255,140,0,.18);}
+  0%,100%{opacity:0;}
+  50%{opacity:1;}
 }
 .og-card{
   position:fixed;left:50%;transform:translateX(-50%);

@@ -24,6 +24,8 @@
       document.documentElement.setAttribute("data-theme","light");
       document.documentElement.style.backgroundColor = "#ffffff";
     }
+    /* Browsers without cross-page View Transitions get a CSS fade-in instead */
+    if (!window.CSSViewTransitionRule) document.documentElement.classList.add("no-vt");
   })();
 </script>
 <style>
@@ -418,20 +420,29 @@ html[data-theme="dark"] .btn-cancel:hover {
 }
 /* btn-confirm (red) stays the same */
 
-/* ===== PAGE ENTER/LEAVE ANIMATION ===== */
-.page-enter{
-  animation: pageIn .45s ease both;
+/* ===== PAGE TRANSITIONS =====
+   Modern browsers: native cross-page View Transition. The old page stays on
+   screen until the new one is ready, then they cross-fade (no blank flash, no delay).
+   Older browsers (.no-vt): short opacity fade-in of the new page.
+   Never leave a transform on #pageRoot: it would make position:fixed modals
+   inside pages scroll away with the page. */
+@view-transition{ navigation: auto; }
+::view-transition-old(root),
+::view-transition-new(root){
+  animation-duration: .28s;
+  animation-timing-function: cubic-bezier(.4,0,.2,1);
+}
+.no-vt .page-enter{
+  animation: pageIn .3s ease-out;
 }
 @keyframes pageIn{
-  from{ opacity:0; transform: translateX(16px); }
-  to{ opacity:1; transform: translateX(0); }
+  from{ opacity:0; }
+  to{ opacity:1; }
 }
-.page-leave{
-  animation: pageOut .22s ease both;
-}
-@keyframes pageOut{
-  from{ opacity:1; transform: translateX(0); }
-  to{ opacity:0; transform: translateX(-14px); }
+@media (prefers-reduced-motion: reduce){
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  .no-vt .page-enter{ animation: none; }
 }
 
 /* ===== PAGE WRAP (GLOBAL SAFE) ===== */
@@ -745,81 +756,6 @@ function flowBack() {
     window.location.href = "/dashboard/";
   }
 }
-
-// Prevent stuck/blank screens on page restore from bfcache (pageshow's persisted).
-// If a transition was interrupted, reinstate the correct content and scroll.
-
-(function () {
-  const root = document.getElementById('pageRoot');
-  if (!root) return;
-
-  function saveScroll() {
-    try {
-      sessionStorage.setItem('page-scrollY', window.scrollY.toString());
-      sessionStorage.setItem('page-scrollX', window.scrollX.toString());
-    } catch (e) {}
-  }
-  function restoreScroll() {
-    try {
-      const scrollY = parseInt(sessionStorage.getItem('page-scrollY') || '', 10);
-      const scrollX = parseInt(sessionStorage.getItem('page-scrollX') || '', 10);
-      if (!isNaN(scrollY)) window.scrollTo(scrollX || 0, scrollY);
-    } catch (e) {}
-  }
-  function setNavFlag() {
-    try { sessionStorage.setItem('page-navigate', '1'); } catch (e) {}
-  }
-  function clearNavFlag() {
-    try { sessionStorage.removeItem('page-navigate'); } catch (e) {}
-  }
-  function hasNavFlag() {
-    try { return sessionStorage.getItem('page-navigate') === '1'; }
-    catch (e) { return false; }
-  }
-
-  document.addEventListener('click', function (e) {
-    const a = e.target.closest('a');
-    if (!a) return;
-    const href = a.getAttribute('href') || '';
-    const target = a.getAttribute('target');
-    if (target && target !== '_self') return;
-    if (href.startsWith('#') || href.startsWith('javascript:')) return;
-    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
-
-    e.preventDefault();
-    saveScroll();
-    setNavFlag();
-
-    root.classList.remove('page-enter');
-    root.classList.add('page-leave');
-
-    setTimeout(function () {
-      window.location.href = href;
-    }, 180);
-  }, true);
-
-  // Fix for blank/stuck screens on mobile and Safari back/forward navigation (bfcache).
-  window.addEventListener('pageshow', function (event) {
-    if (event.persisted || (performance.getEntriesByType("navigation")[0]?.type === "back_forward")) {
-      if (hasNavFlag()) {
-        clearNavFlag();
-        restoreScroll();
-        if (root) {
-          root.classList.remove('page-leave');
-          root.classList.add('page-enter');
-        }
-      } else {
-        // In rare cases, forcibly restore .page-enter
-        if (root && !root.classList.contains('page-enter')) {
-          root.classList.remove('page-leave');
-          root.classList.add('page-enter');
-        }
-      }
-    }
-  });
-
-  clearNavFlag();
-})();
 </script>
 <script>
   (function(){

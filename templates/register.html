@@ -99,7 +99,6 @@ input:-webkit-autofill{-webkit-text-fill-color:var(--ink)!important;-webkit-box-
   border:none;border-radius:999px;color:#fff;font-size:14px;font-weight:950;
   letter-spacing:.14em;text-transform:uppercase;cursor:pointer;font-family:inherit;
   box-shadow:0 6px 20px rgba(154,79,0,.50);transition:transform .18s,box-shadow .18s;
-  animation:pulseOrg 2.5s ease-in-out infinite;
 }
 .reg-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(154,79,0,.65);animation:none;}
 .reg-btn:active{transform:scale(.99);}
@@ -244,7 +243,8 @@ input:-webkit-autofill{-webkit-text-fill-color:var(--ink)!important;-webkit-box-
 @keyframes orb5     {0%,100%{transform:translate(0,0)}50%{transform:translate(20px,35px) scale(.94)}}
 @keyframes ringPop  {0%{transform:scale(.8);opacity:.8}100%{transform:scale(2.2);opacity:0}}
 @keyframes shimmer  {0%{left:-120%}100%{left:220%}}
-@keyframes btnShimmer{0%{left:-150%}100%{left:200%}}
+/* moves with transform (GPU) instead of left; same path as left:-150% → 200% for a 55%-wide sweep */
+@keyframes btnShimmer{0%{transform:translateX(-272.7%)}100%{transform:translateX(363.6%)}}
 @keyframes starDrift{0%{transform:translateY(0) translateX(0);opacity:.7}100%{transform:translateY(-100vh) translateX(20px);opacity:0}}
 
 /* Orbs */
@@ -317,8 +317,9 @@ input:-webkit-autofill{-webkit-text-fill-color:var(--ink)!important;-webkit-box-
   position:relative!important;overflow:hidden!important;
 }
 .reg-btn::before{
-  content:'';position:absolute;top:0;left:-150%;width:55%;height:100%;
+  content:'';position:absolute;top:0;left:0;width:55%;height:100%;
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);
+  transform:translateX(-272.7%);
   animation:btnShimmer 4.5s ease-in-out 2.5s infinite;
   border-radius:inherit;pointer-events:none;z-index:0;
 }
