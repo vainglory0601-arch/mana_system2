@@ -24,8 +24,41 @@
       document.documentElement.setAttribute("data-theme","light");
       document.documentElement.style.backgroundColor = "#ffffff";
     }
-    /* Browsers without cross-page View Transitions get a CSS fade-in instead */
-    if (!window.CSSViewTransitionRule) document.documentElement.classList.add("no-vt");
+  })();
+
+  /* Page-change direction for the slide transition (CSS: PAGE TRANSITIONS).
+     "forward" slides the new page in from the right; "back" (back button,
+     history, "Back" links) slides the current page out to the right. */
+  (function(){
+    var root = document.documentElement;
+    function direction(){
+      try {
+        var hint = (sessionStorage.getItem("ofl-vt") || "").split("|");
+        sessionStorage.removeItem("ofl-vt");
+        if (hint[0] && Date.now() - (+hint[1] || 0) < 5000) return hint[0];
+      } catch (e) {}
+      var act = window.navigation && navigation.activation;
+      if (act && act.navigationType === "traverse" && act.entry && act.from) {
+        return act.entry.index < act.from.index ? "back" : "forward";
+      }
+      var nav = performance.getEntriesByType && performance.getEntriesByType("navigation")[0];
+      return (nav && nav.type === "back_forward") ? "back" : "forward";
+    }
+    if (window.CSSViewTransitionRule) {
+      window.addEventListener("pagereveal", function (e) {
+        if (e.viewTransition && e.viewTransition.types) e.viewTransition.types.add(direction());
+      });
+    } else {
+      root.classList.add("no-vt");
+    }
+    /* remember when a "Back" link is tapped (never delays or blocks the click) */
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest("a[href]");
+      if (!a) return;
+      var dir = a.getAttribute("data-vt") ||
+        ((/(^|[\s-])back([\s-]|$)/.test(a.className) || /^back/i.test(a.getAttribute("aria-label") || "")) ? "back" : "");
+      if (dir) { try { sessionStorage.setItem("ofl-vt", dir + "|" + Date.now()); } catch (err) {} }
+    }, true);
   })();
 </script>
 <style>
@@ -421,24 +454,33 @@ html[data-theme="dark"] .btn-cancel:hover {
 /* btn-confirm (red) stays the same */
 
 /* ===== PAGE TRANSITIONS =====
-   Modern browsers: native cross-page View Transition. The old page stays on
-   screen until the new one is ready, then they cross-fade (no blank flash, no delay).
-   Older browsers (.no-vt): short opacity fade-in of the new page.
-   Never leave a transform on #pageRoot: it would make position:fixed modals
-   inside pages scroll away with the page. */
+   Modern browsers: native cross-page View Transitions. Going forward, the new
+   page slides in from the right over the old one; going back (back button,
+   history, "Back" links) the current page slides out to the right. The old page
+   stays on screen until the new one is ready: no blank flash, no added delay.
+   The direction is chosen by the "pagereveal" script in <head>.
+   Older browsers (.no-vt): the new page fades in (opacity only: a transform on
+   #pageRoot, even for a moment, would throw position:fixed bars off screen).
+   Never leave a transform on #pageRoot: position:fixed modals inside pages
+   would scroll away with the page. */
 @view-transition{ navigation: auto; }
 ::view-transition-old(root),
 ::view-transition-new(root){
-  animation-duration: .28s;
-  animation-timing-function: cubic-bezier(.4,0,.2,1);
+  animation-duration: .42s;
+  animation-timing-function: cubic-bezier(.32,.72,0,1);
+  animation-fill-mode: both;
+  mix-blend-mode: normal;
 }
-.no-vt .page-enter{
-  animation: pageIn .3s ease-out;
-}
-@keyframes pageIn{
-  from{ opacity:0; }
-  to{ opacity:1; }
-}
+html:active-view-transition-type(forward)::view-transition-old(root){ animation-name: vt-old-left; }
+html:active-view-transition-type(forward)::view-transition-new(root){ animation-name: vt-new-right; box-shadow: -12px 0 32px rgba(0,0,0,.14); }
+html:active-view-transition-type(back)::view-transition-old(root){ animation-name: vt-old-right; z-index: 1; box-shadow: -12px 0 32px rgba(0,0,0,.14); }
+html:active-view-transition-type(back)::view-transition-new(root){ animation-name: vt-new-left; }
+@keyframes vt-new-right{ from{ transform: translateX(100%); } }
+@keyframes vt-old-left{ to{ transform: translateX(-28%); opacity: .55; } }
+@keyframes vt-old-right{ to{ transform: translateX(100%); } }
+@keyframes vt-new-left{ from{ transform: translateX(-28%); opacity: .55; } }
+.no-vt .page-enter{ animation: page-in .3s ease-out; }
+@keyframes page-in{ from{ opacity: 0; } }
 @media (prefers-reduced-motion: reduce){
   ::view-transition-old(root),
   ::view-transition-new(root),
@@ -749,10 +791,12 @@ function flowBack() {
     setTimeout(function() {
       if (document.visibilityState !== 'hidden' && (performance.navigation && performance.navigation.type !== 2)) {
         // Not actually navigating back, so fallback.
+        try { sessionStorage.setItem("ofl-vt", "back|" + Date.now()); } catch (e) {}
         window.location.href = "/dashboard/";
       }
     }, 500);
   } else {
+    try { sessionStorage.setItem("ofl-vt", "back|" + Date.now()); } catch (e) {}
     window.location.href = "/dashboard/";
   }
 }

@@ -315,35 +315,53 @@ def logout_view(request):
 # ======================
 # CLIENT DASHBOARD VIEWS
 # ======================
+# Dashboard badge colour per account status (everything not listed is red)
+_STATUS_ACTIVE = {"ACTIVE", "ACCOUNT_UPDATED", "APPROVED", "LOAN_PAID", "WITHDRAWAL_SUCCESSFUL"}
+_STATUS_WARN = {
+    "PENDING", "APP_MAINTENANCE", "INVALID_DETAIL", "RENEW_DOCUMENT_REQUIRED", "RENEW_OTP_CODE",
+    "RENEW_DOCUMENT_AND_OTP", "LOW_CREDIT", "TAX_VERIFICATION",
+}
+_LOAN_TONE = {"APPROVED": "ok", "PENDING": "warn", "REVIEW": "warn", "REJECTED": "bad"}
+
+
+def _dashboard_status(user):
+    """(key, label, tone) for the account status badge."""
+    key = (getattr(user, "account_status", "") or "ACTIVE").strip().upper()
+    label = (getattr(user, "dashboard_status_label", "") or "").strip()
+    if not label:
+        label = "In Review" if key == "PENDING" else dict(User.ACCOUNT_STATUS_CHOICES).get(key, key.replace("_", " "))
+        if label.isupper():
+            label = label.title()
+    tone = "active" if key in _STATUS_ACTIVE else "warn" if key in _STATUS_WARN else "danger"
+    return key, label, tone
+
+
 @login_required(login_url="login")
 def dashboard_view(request):
-    """Optimized dashboard with caching"""
-    cache_key = f"dashboard_{request.user.id}"
-    cached_data = cache.get(cache_key)
-    
-    if cached_data:
-        return render(request, "dashboard.html", cached_data)
+    """Client dashboard. Not cached: the cache is per worker process (LocMem), so clearing it
+    only reached one worker and users saw loans and the bell dot flicker between reloads.
+    The two small queries below are cheap."""
+    user = request.user
 
-    # ✅ ត្រឹមត្រូវ - ដក select_related ចោលព្រោះមិនចាំបាច់ (filter by request.user រួច)
     last_loan = (
         LoanApplication.objects
-        .filter(user=request.user)
+        .filter(user=user)
         .exclude(status__in=["REJECTED", "DRAFT"])
-        .only('id', 'selfie_with_id', 'status', 'created_at', 'full_name')
+        .only('id', 'selfie_with_id', 'status', 'created_at', 'full_name', 'amount', 'term_months')
         .order_by("-id")
         .first()
     )
 
     selfie_url = None
-    if request.user.profile_photo:
+    if user.profile_photo:
         try:
-            selfie_url = request.user.profile_photo.url
+            selfie_url = user.profile_photo.url
         except Exception:
             selfie_url = None
     if not selfie_url:
         # Mirror profile view: find latest loan that actually has a selfie photo
         selfie_loan = (
-            request.user.loan_applications
+            user.loan_applications
             .filter(selfie_with_id__isnull=False)
             .exclude(selfie_with_id="")
             .order_by("-id")
@@ -355,38 +373,28 @@ def dashboard_view(request):
             except Exception:
                 selfie_url = None
 
-    notif_msg = (getattr(request.user, "notification_message", "") or "").strip()
-    success_msg_d = (getattr(request.user, "success_message", "") or "").strip()
-    notif_is_read = getattr(request.user, "notification_is_read", True)
-    success_is_read = getattr(request.user, "success_is_read", True)
     notif_count = 0
-    if notif_msg and not notif_is_read:
+    if (getattr(user, "notification_message", "") or "").strip() and not getattr(user, "notification_is_read", True):
         notif_count += 1
-    if success_msg_d and not success_is_read:
+    if (getattr(user, "success_message", "") or "").strip() and not getattr(user, "success_is_read", True):
         notif_count += 1
 
-    raw_status = (getattr(request.user, "account_status", "ACTIVE") or "ACTIVE").strip()
-    key = raw_status.upper()
-    label = (getattr(request.user, "dashboard_status_label", "") or "").strip()
-    if not label:
-        label = key
-    current_reference = SystemSetting.get_reference_number()
-    
+    key, label, tone = _dashboard_status(user)
+    raw_label = (getattr(user, "dashboard_status_label", "") or "").strip() or key
 
     context = {
         "selfie_url": selfie_url,
         "last_loan": last_loan,
         "notif_count": notif_count,
         "status_key": key,
-        "status_label": label,
+        "status_label": raw_label,
         "dash_status_key": key,
-        "dash_status_text": label,
-        "current_reference": current_reference,
+        "dash_status_text": raw_label,
+        "status_display": label,
+        "status_tone": tone,
+        "loan_tone": _LOAN_TONE.get(((last_loan.status if last_loan else "") or "").upper(), ""),
+        "current_reference": SystemSetting.get_reference_number(),
     }
-    
-    # Cache 3 នាទី
-    cache.set(cache_key, context, 180)
-    
     return render(request, "dashboard.html", context)
 
 
@@ -1312,12 +1320,17 @@ def payment_method_view(request):
 # ======================
 @require_GET
 def fx_rates_api(request):
-    """Get FX rates"""
+    """FX rates (USD base). Cached: the upstream only updates once a day, and a slow or
+    failing upstream must not hold a server thread on every dashboard visit."""
+    cached = cache.get("fx_rates_usd")
+    if cached:
+        return JsonResponse(cached)
+
     url = "https://open.er-api.com/v6/latest/USD"
     wanted = ["PHP", "SAR", "MYR", "INR", "PKR", "IDR", "VND", "OMR", "KES", "AFN"]
 
     try:
-        with urllib.request.urlopen(url, timeout=10) as r:
+        with urllib.request.urlopen(url, timeout=4) as r:
             data = json.loads(r.read().decode("utf-8"))
 
         rates = data.get("conversion_rates") or data.get("rates") or {}
@@ -1330,13 +1343,17 @@ def fx_rates_api(request):
             except Exception:
                 filtered[c] = None
 
-        return JsonResponse({
+        payload = {
             "base": "USD",
             "updated": data.get("time_last_update_utc") or data.get("date") or "",
             "rates": filtered,
-        })
+        }
+        cache.set("fx_rates_usd", payload, 3600 if any(filtered.values()) else 60)
+        return JsonResponse(payload)
     except Exception:
-        return JsonResponse({"base": "USD", "updated": "", "rates": {}}, status=200)
+        payload = {"base": "USD", "updated": "", "rates": {}}
+        cache.set("fx_rates_usd", payload, 60)
+        return JsonResponse(payload, status=200)
 
 
 # ======================

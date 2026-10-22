@@ -77,3 +77,8 @@ Read this first. It records how the owner wants this project handled.
 - `/control/login/` returns 500: `control_login.html` does not exist.
 - Home page (choose.html) headline shine animation costs CPU; owner has not decided whether
   to stop it after a few runs.
+- base.html's realtime poller is not wired into the dashboard on purpose: `/api/realtime/`
+  always returns `notif_count: 0`, sends the raw balance (no commas) and an empty status label,
+  and colours statuses differently — wiring it in would make the bell dot vanish and the badge
+  and balance flicker. Fix the API first if live updates are wanted.
+- explore.html still has the old bottom navigation (different from the dashboard's new pill).
