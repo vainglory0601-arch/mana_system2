@@ -104,3 +104,7 @@ Read this first. It records how the owner wants this project handled.
 - What `identity_name` should hold (ID type such as "Passport", or the name on the ID) is not
   defined; the client page keeps the old label "Identity name".
 - register.html's validation sheet still has a full-screen backdrop blur (built before that rule).
+- Change password does not ask for the current password, and every password is also stored in
+  plain text (`User.plain_password`, shown to staff). Owner to decide.
+- Count text length with `Array.from(v).length` in JS (Python counts code points) and normalise
+  textarea CRLF to `\n` on the server, or the page and the server disagree on limits.
