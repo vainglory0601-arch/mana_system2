@@ -484,7 +484,7 @@ def credit_score_view(request):
         "points_to_next": (lows[tier_index + 1] - score) if nxt else 0,
         "tier": {"key": tiers[tier_index][1], "label": tiers[tier_index][2], "title": tiers[tier_index][3], "text": tiers[tier_index][4]},
         "loans_total": loans.count(),
-        "loans_approved": loans.filter(status__in=["APPROVED", "PAID"]).count(),
+        "loans_approved": loans.filter(status="APPROVED").count(),
         "withdrawals_paid": WithdrawalRequest.objects.filter(user=user, status="paid").count(),
     })
 

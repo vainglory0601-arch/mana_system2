@@ -103,13 +103,14 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .cs-head h2{margin:0;font-size:16px;line-height:22px;font-weight:700;color:var(--cs-ink);}
 .cs-head small{font-size:12px;line-height:16px;font-weight:700;color:var(--cs-mut2);white-space:nowrap;}
 .cs-rail{position:relative;height:12px;border-radius:999px;overflow:hidden;background:var(--cs-line);}
-.cs-rail i{position:absolute;inset:0;border-radius:999px;transform-origin:left center;transform:scaleX(var(--cs-pct));animation:csFill 1.1s var(--cs-ease) .25s both;}
+/* the full-width bar slides in from the left, so its rounded end keeps its shape */
+.cs-rail i{position:absolute;inset:0;border-radius:999px;transform:translateX(calc((var(--cs-pct) - 1) * 100%));animation:csFill 1.1s var(--cs-ease) .25s both;}
 .cs-rail i.t-critical{background:var(--cs-critical);}
 .cs-rail i.t-low{background:var(--cs-low);}
 .cs-rail i.t-mid{background:var(--cs-mid);}
 .cs-rail i.t-good{background:var(--cs-good);}
 .cs-rail i.t-top{background:var(--cs-top);}
-@keyframes csFill{from{transform:scaleX(0);}to{transform:scaleX(var(--cs-pct));}}
+@keyframes csFill{from{transform:translateX(-100%);}to{transform:translateX(calc((var(--cs-pct) - 1) * 100%));}}
 .cs-ms{position:relative;height:16px;margin-top:6px;font-size:10.5px;line-height:16px;font-weight:700;color:var(--cs-mut);}
 .cs-ms span{position:absolute;top:0;transform:translateX(-50%);}
 .cs-ms span:first-child{transform:none;}
@@ -135,10 +136,10 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .cs-you{padding:2px 8px;border-radius:999px;font-size:9.5px;line-height:14px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--cs-accent);}
 
 /* ── stats ── */
-.cs-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
-.cs-stat{padding:12px 6px;border-radius:16px;text-align:center;background:#f9fafb;border:1px solid var(--cs-line);}
-.cs-stat b{display:block;font-size:20px;line-height:26px;font-weight:800;color:var(--cs-ink);}
-.cs-stat span{display:block;margin-top:2px;font-size:10px;line-height:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--cs-mut2);}
+.cs-boxes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.cs-box{padding:12px 6px;border-radius:16px;text-align:center;background:#f9fafb;border:1px solid var(--cs-line);}
+.cs-box b{display:block;font-size:20px;line-height:26px;font-weight:800;color:var(--cs-ink);}
+.cs-box span{display:block;margin-top:2px;font-size:10px;line-height:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--cs-mut2);}
 
 .cs-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:999px;font-size:14px;line-height:20px;font-weight:700;text-decoration:none!important;transition:background-color .15s,transform .15s;}
 .cs-btn:active{transform:scale(.97);}
@@ -243,10 +244,10 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
         </ul>
       </section>
 
-      <section class="cs-stats" aria-label="Your activity">
-        <div class="cs-stat"><b>{{ loans_total }}</b><span>Applied</span></div>
-        <div class="cs-stat"><b>{{ loans_approved }}</b><span>Approved</span></div>
-        <div class="cs-stat"><b>{{ withdrawals_paid }}</b><span>Paid out</span></div>
+      <section class="cs-boxes" aria-label="Your activity">
+        <div class="cs-box"><b>{{ loans_total }}</b><span>Applied</span></div>
+        <div class="cs-box"><b>{{ loans_approved }}</b><span>Approved</span></div>
+        <div class="cs-box"><b>{{ withdrawals_paid }}</b><span>Paid out</span></div>
       </section>
 
       <div class="cs-acts">
