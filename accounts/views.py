@@ -567,7 +567,11 @@ def change_password_view(request):
             request.user.save()
             from django.contrib.auth import update_session_auth_hash
             update_session_auth_hash(request, request.user)
-            success = True
+            # Post/Redirect/Get: a refresh must not send the password again
+            request.session["pw_changed"] = True
+            return redirect("change_password")
+    else:
+        success = request.session.pop("pw_changed", False)
     return render(request, "change_password.html", {"error": error, "success": success})
 
 
