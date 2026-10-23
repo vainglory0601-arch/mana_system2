@@ -25,7 +25,7 @@ html body select,html body textarea,html body a{
   --la-glass:rgba(17,42,31,.85);--la-float:0 20px 40px -10px rgba(0,0,0,.1);--la-ease:cubic-bezier(.22,1,.36,1);
 }
 #pageRoot.wrap{max-width:100%!important;width:100%!important;padding:0!important;display:block!important;}
-html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!important;background:#e5e7eb!important;color:#1f2937!important;-webkit-font-smoothing:antialiased;}
+html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!important;overflow-x:clip!important;background:#e5e7eb!important;color:#1f2937!important;-webkit-font-smoothing:antialiased;}
 .la a,.la button,.la label{-webkit-tap-highlight-color:transparent;}
 .la svg,.la-vwrap svg{display:block;width:auto;height:1em;fill:currentColor;flex-shrink:0;}
 
@@ -1168,7 +1168,8 @@ guide=(function(){
     if(!quiet&&a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&!STEPS[i].el.contains(a)) a.blur();
     gText.style.opacity='0';
     clearTimeout(textTimer);
-    textTimer=setTimeout(function(){ render(i); place(); gText.style.opacity=''; if(!quiet) reveal(); },120);
+    stepping=true;
+    textTimer=setTimeout(function(){ render(i); place(); gText.style.opacity=''; if(!quiet) reveal(); setTimeout(function(){ stepping=false; },250); },120);
   }
   function firstOpen(){
     var started=purpOn()||REQ.some(function(r){ return r.el.value.trim(); });
@@ -1209,13 +1210,17 @@ guide=(function(){
   /* the second tap of a double tap must not land on what was under the guide */
   var blockUntil=0, blockRect=null;
   function armBlock(){ blockUntil=performance.now()+450; blockRect=g.querySelector('.la-gbody').getBoundingClientRect(); }
-  col.addEventListener('click',function(e){
+  /* the press, not just the click: a field under it must not get focus (keyboard) either */
+  function swallow(e){
     if(!e.isTrusted||performance.now()>=blockUntil||g.contains(e.target)) return;
-    var r=blockRect;   /* only where the guide was when it was tapped */
-    if(e.clientX>=r.left-8&&e.clientX<=r.right+8&&e.clientY>=r.top-8&&e.clientY<=r.bottom+8){ e.preventDefault(); e.stopPropagation(); }
-  },true);
+    var t=(e.changedTouches&&e.changedTouches[0])||e, r=blockRect;   /* only where the guide was when it was tapped */
+    if(t.clientX>=r.left-8&&t.clientX<=r.right+8&&t.clientY>=r.top-8&&t.clientY<=r.bottom+8){ e.preventDefault(); e.stopPropagation(); }
+  }
+  ['click','mousedown','touchend'].forEach(function(t){ col.addEventListener(t,swallow,{capture:true,passive:false}); });
+  /* while it glides to the next step, a second tap must not count for the new step */
+  var stepping=false;
   $('laGSkip').addEventListener('click',function(){ armBlock(); end(); });
-  gNext.addEventListener('click',function(){ armBlock(); next(); });
+  gNext.addEventListener('click',function(){ if(stepping) return; armBlock(); next(); });
 
   /* the guide follows what the user works on, without scrolling the page */
   function follow(i){ if(active&&cur!==i) goStep(i,true); }

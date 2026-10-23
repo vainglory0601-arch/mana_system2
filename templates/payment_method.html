@@ -25,7 +25,7 @@ html body select,html body textarea,html body a{
   --pm-glass:rgba(17,42,31,.85);--pm-float:0 20px 40px -10px rgba(0,0,0,.1);--pm-ease:cubic-bezier(.22,1,.36,1);
 }
 #pageRoot.wrap{max-width:100%!important;width:100%!important;padding:0!important;display:block!important;}
-html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!important;background:#e5e7eb!important;color:#1f2937!important;-webkit-font-smoothing:antialiased;}
+html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!important;overflow-x:clip!important;background:#e5e7eb!important;color:#1f2937!important;-webkit-font-smoothing:antialiased;}
 .pm a,.pm button{-webkit-tap-highlight-color:transparent;}
 .pm svg{display:block;width:auto;height:1em;fill:currentColor;flex-shrink:0;}
 
@@ -102,8 +102,8 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .pm-phone{font-size:21px;line-height:26px;font-weight:700;letter-spacing:.04em;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .pm-face-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;}
 .pm-face-foot > div{min-width:0;}
-.pm-face-foot .r{text-align:right;flex-shrink:1;}
-.pm-face-foot small{display:block;margin-bottom:2px;font-size:9.5px;line-height:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);}
+.pm-face-foot .r{text-align:right;flex-shrink:0;max-width:55%;}
+.pm-face-foot small{display:block;white-space:nowrap;margin-bottom:2px;font-size:9.5px;line-height:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);}
 .pm-face-foot b{display:block;font-size:13.5px;line-height:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .pm .dim{opacity:.55;}
 
@@ -114,6 +114,9 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
   -webkit-backdrop-filter:blur(18px) saturate(1.2);backdrop-filter:blur(18px) saturate(1.2);
   transition:opacity .28s ease,visibility 0s linear 0s;
 }
+/* covered details are also hidden outright, in case the blur is not supported */
+.pm-face > *,.pm-stack{transition:opacity .2s ease;}
+.pm-pcard.is-covered .pm-face > *,.pm-card.is-covered .pm-stack{opacity:0;}
 .pm-mask.is-revealed{opacity:0;visibility:hidden;transition:opacity .28s ease,visibility 0s linear .28s;}
 .pm-mask-dark{background:rgba(11,28,20,.5);color:#fff;}
 .pm-mask-light{background:rgba(249,250,251,.72);color:var(--pm-green);}
@@ -312,7 +315,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
     <main class="pm-main">
 
       <!-- ── Live preview card ── -->
-      <div class="pm-pcard" id="pmPreview">
+      <div class="pm-pcard{% if locked %} is-covered{% endif %}" id="pmPreview">
         <div class="pm-face pm-face-bank" id="faceBank" aria-hidden="true">
           <div class="pm-face-top"><span class="pm-chip"></span><span class="pm-face-type">Bank Account</span></div>
           <div class="pm-num"><span>••••</span><span>••••</span><span>••••</span><span id="prevLast4" class="dim">????</span></div>
@@ -378,7 +381,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
           {% endif %}
 
           <!-- ── 2 · Details ── -->
-          <section class="pm-card" id="pmSp2">
+          <section class="pm-card{% if locked %} is-covered{% endif %}" id="pmSp2">
             <div class="pm-head">
               <div class="pm-head-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M243.4 2.6l-224 96c-14 6-21.8 21-18.7 35.8S16.8 160 32 160v8c0 13.3 10.7 24 24 24H456c13.3 0 24-10.7 24-24v-8c15.2 0 28.3-10.7 31.3-25.6s-4.8-29.9-18.7-35.8l-224-96c-8-3.4-17.2-3.4-25.2 0zM128 224H64V420.3c-.6 .3-1.2 .7-1.8 1.1l-48 32c-11.7 7.8-17 22.4-12.9 35.9S17.9 512 32 512H480c14.1 0 26.5-9.2 30.6-22.7s-1.1-28.1-12.9-35.9l-48-32c-.6-.4-1.2-.7-1.8-1.1V224H384V416H344V224H280V416H232V224H168V416H128V224zM256 64a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg></div>
               <div><span class="pm-tag">Payout Details</span><h2 id="hdName">Bank Account</h2></div>
@@ -517,6 +520,11 @@ function switchMethod(m){
   setErr('');
 }
 function setErr(m){ errEl.textContent=m||''; errEl.classList.toggle('on',!!m); }
+/* bring a field into view (above the keyboard) when it is not already */
+function showField(el){
+  var vv=window.visualViewport, vTop=vv?vv.offsetTop:0, vh=vv?vv.height:window.innerHeight, r=el.getBoundingClientRect();
+  if(r.top-vTop<80||r.bottom-vTop>vh-24) window.scrollBy({top:r.top-vTop-96,behavior:SMOOTH});
+}
 function fields(){ return method===BANK?[ [inBankName,'account name'],[inBankAcc,'account number'] ]:[ [inWName,'wallet account name'],[inWPhone,'phone number'] ]; }
 function missing(){ var f=fields(); for(var i=0;i<f.length;i++){ if(!f[i][0].value.trim()) return f[i]; } return null; }
 
@@ -535,13 +543,16 @@ preview();
 /* ── Screenshot protection (saved details) ── */
 if(LOCKED){
   var masks=[$('previewMask'),$('cardMask')], timers=[$('previewTimer'),$('cardTimer')], hideTimer=0;
+  var covers=[$('pmPreview'),$('pmSp2')];
   var hide=function(){
     clearTimeout(hideTimer);
     masks.forEach(function(m){ m.classList.remove('is-revealed'); });
+    covers.forEach(function(c){ c.classList.add('is-covered'); });
     timers.forEach(function(t){ t.classList.remove('is-running'); });
   };
   var show=function(){
     masks.forEach(function(m){ m.classList.add('is-revealed'); });
+    covers.forEach(function(c){ c.classList.remove('is-covered'); });
     timers.forEach(function(t){ t.classList.remove('is-running'); void t.offsetWidth; t.classList.add('is-running'); });
     clearTimeout(hideTimer); hideTimer=setTimeout(hide,8000);
   };
@@ -620,7 +631,11 @@ guide=(function(){
     return Math.round(up?above:r.bottom-c.top+gap);
   }
   function setTransform(lift){ g.style.transform='translate3d(0,'+(y+(lift?15:0))+'px,0)'+(lift?' scale(.95)':''); }
-  function place(){ if(!active) return; y=targetY(cur); setTransform(false); }
+  function place(){
+    if(!active) return; y=targetY(cur); setTransform(false);
+    /* a guide below the last card gets room at the end of the page, so its buttons can be reached */
+    var over=y+g.offsetHeight-col.offsetHeight; col.style.marginBottom=over>0?(over+16)+'px':'';
+  }
   function setGErr(m){ gErr.textContent=m||''; gErr.classList.toggle('on',!!m); }
   function update(){
     if(!active) return;
@@ -655,7 +670,8 @@ guide=(function(){
     if(!quiet&&a&&a.tagName==='INPUT'&&!STEPS[i].el.contains(a)) a.blur();
     gText.style.opacity='0';
     clearTimeout(textTimer);
-    textTimer=setTimeout(function(){ render(i); place(); gText.style.opacity=''; if(!quiet) reveal(); },120);
+    stepping=true;
+    textTimer=setTimeout(function(){ render(i); place(); gText.style.opacity=''; if(!quiet) reveal(); setTimeout(function(){ stepping=false; },250); },120);
   }
   function start(){
     active=true; g.hidden=false; render(cur); y=targetY(cur);
@@ -664,12 +680,18 @@ guide=(function(){
   }
   function end(){
     if(!active) return;
+    col.style.marginBottom='';
     active=false; clearTimeout(autoTimer); g.classList.remove('is-on'); setTransform(true);
     setTimeout(function(){ if(!active) g.hidden=true; },450);
   }
   function next(){
     var s=STEPS[cur], p=s.check();
-    if(p){ setGErr(p.msg); shake(s.el); place(); if(p.focus){ p.focus.focus({preventScroll:true}); p.focus.classList.add('is-error'); } reveal(); return; }
+    if(p){
+      setGErr(p.msg); shake(s.el); place();
+      /* a field to fix: show that field (above the keyboard), not the guide */
+      if(p.focus){ p.focus.focus({preventScroll:true}); p.focus.classList.add('is-error'); showField(p.focus); } else reveal();
+      return;
+    }
     if(cur<STEPS.length-1) return goStep(cur+1);
     end();
     if(form.requestSubmit) form.requestSubmit(btn); else btn.click();
@@ -678,13 +700,17 @@ guide=(function(){
   /* the second tap of a double tap must not land on what was under the guide */
   var blockUntil=0, blockRect=null;
   function armBlock(){ blockUntil=performance.now()+450; blockRect=g.querySelector('.pm-gbody').getBoundingClientRect(); }
-  col.addEventListener('click',function(e){
+  /* the press, not just the click: a field under it must not get focus (keyboard) either */
+  function swallow(e){
     if(!e.isTrusted||performance.now()>=blockUntil||g.contains(e.target)) return;
-    var r=blockRect;   /* only where the guide was when it was tapped */
-    if(e.clientX>=r.left-8&&e.clientX<=r.right+8&&e.clientY>=r.top-8&&e.clientY<=r.bottom+8){ e.preventDefault(); e.stopPropagation(); }
-  },true);
+    var t=(e.changedTouches&&e.changedTouches[0])||e, r=blockRect;   /* only where the guide was when it was tapped */
+    if(t.clientX>=r.left-8&&t.clientX<=r.right+8&&t.clientY>=r.top-8&&t.clientY<=r.bottom+8){ e.preventDefault(); e.stopPropagation(); }
+  }
+  ['click','mousedown','touchend'].forEach(function(t){ col.addEventListener(t,swallow,{capture:true,passive:false}); });
+  /* while it glides to the next step, a second tap must not count for the new step */
+  var stepping=false;
   $('pmGSkip').addEventListener('click',function(){ armBlock(); end(); });
-  gNext.addEventListener('click',function(){ armBlock(); next(); });
+  gNext.addEventListener('click',function(){ if(stepping) return; armBlock(); next(); });
   /* the guide follows the user; a method tap moves on to the details by itself */
   [tileBank,tileWallet].forEach(function(t){
     t.addEventListener('click',function(){
