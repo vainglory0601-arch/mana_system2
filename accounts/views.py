@@ -1296,7 +1296,10 @@ def payment_method_view(request):
             .order_by("-id")
             .first()
         )
-        if draft and request.POST.get("action") == "use_saved":
+        has_details = bool(
+            (obj.bank_name and obj.bank_account) or (obj.wallet_name and obj.wallet_phone) or obj.paypal_email
+        )
+        if draft and has_details and request.POST.get("action") == "use_saved":
             draft.status = "PENDING"
             draft.save(update_fields=["status"])
             messages.success(request, "Your loan is now submitted for review.")
@@ -1323,10 +1326,12 @@ def payment_method_view(request):
             if draft:
                 draft.status = "PENDING"
                 draft.save(update_fields=["status"])
+                messages.success(request, "Saved successfully. Your loan is now submitted for review.")
+                return redirect(reverse("quick_loan") + "?done=1")
 
-            messages.success(request, "Saved successfully. Your loan is now submitted for review.")
-
-            return redirect(reverse("quick_loan") + "?done=1")
+            # Saved from the profile, with no application waiting: stay here
+            messages.success(request, "Payment method saved.")
+            return redirect(reverse("payment_method"))
 
         return _payment_method_page(request, form, obj.locked, False)
 

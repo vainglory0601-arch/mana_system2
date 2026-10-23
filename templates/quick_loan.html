@@ -170,6 +170,13 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .ql-step-labels span:last-child{text-align:right;}
 
 /* footer */
+/* server messages (e.g. "your loan is now submitted for review") */
+.ql-alerts{display:flex;flex-direction:column;gap:10px;}
+.ql-alert{display:flex;gap:10px;padding:14px 16px;border-radius:18px;font-size:13px;line-height:19px;font-weight:600;background:#fff;border:1px solid var(--ql-line);box-shadow:var(--ql-float);color:var(--ql-ink2);}
+.ql-alert svg{margin-top:2px;font-size:15px;}
+.ql-alert.is-error{color:#991b1b;background:#fef2f2;border-color:#fecaca;}
+.ql-alert.is-success{color:#166534;background:#f0fdf4;border-color:#bbf7d0;}
+.ql-alert.is-warning{color:#9a3412;background:#fff7ed;border-color:#fed7aa;}
 .ql-foot{padding-top:4px;text-align:center;font-size:12px;line-height:16px;font-weight:500;color:var(--ql-mut);}
 .ql-foot p{margin:0;}
 .ql-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
@@ -253,6 +260,14 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
     </header>
 
     <main class="ql-main">
+
+      {% if messages %}
+      <div class="ql-alerts" role="status">
+        {% for message in messages %}
+        <div class="ql-alert is-{{ message.level_tag|default:'info' }}">{% if message.level_tag == 'success' %}<svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>{% else %}<svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>{% endif %}<span>{{ message }}</span></div>
+        {% endfor %}
+      </div>
+      {% endif %}
 
       <!-- ── Loan calculator ── -->
       <section class="ql-card">

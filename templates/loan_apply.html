@@ -1135,9 +1135,9 @@ guide=(function(){
     if(!active) return;
     var s=STEPS[cur], html=s.prog?s.prog():'';
     if(html!==lastProg){ gProg.innerHTML=html; lastProg=html; }
-    var ok=!s.check();
-    gNext.classList.toggle('is-ready',ok&&cur<STEPS.length-1&&!!s.prog);
-    if(ok&&gErr.textContent) setErr('');
+    var p=s.check();
+    gNext.classList.toggle('is-ready',!p&&cur<STEPS.length-1&&!!s.prog);
+    if(gErr.textContent) setErr(p?p.msg:'');   /* follow what is still missing */
   }
   function render(i){
     var s=STEPS[i];
