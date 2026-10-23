@@ -121,6 +121,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .ql-btn:active{transform:scale(.98);}
 .ql-btn svg{font-size:14px;}
 .ql-btn[hidden]{display:none;}
+.ql-status .ql-btn-line{margin-top:20px;}
 .ql-btn:disabled{cursor:not-allowed;background:#d1d5db;color:#fff!important;box-shadow:none;transform:none;}
 .ql-btn.is-done:disabled{background:var(--ql-sage);color:var(--ql-green)!important;}
 .ql-btn.is-incomplete:disabled{background:#fff7ed;color:#c2410c!important;border:1px solid #fed7aa;}
@@ -164,7 +165,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .ql-line{flex:1;height:4px;margin:0 6px;border-radius:999px;background:#f3f4f6;overflow:hidden;}
 .ql-line i{display:block;height:100%;background:var(--ql-green);transform:scaleX(0);transform-origin:left;transition:transform .5s var(--ql-ease);}
 .ql-line.on i{transform:scaleX(1);}
-.ql-step-labels{display:flex;justify-content:space-between;margin-bottom:20px;font-size:11px;line-height:15px;font-weight:700;color:var(--ql-mut2);}
+.ql-step-labels{display:flex;justify-content:space-between;margin-bottom:0;font-size:11px;line-height:15px;font-weight:700;color:var(--ql-mut2);}
 .ql-step-labels span{width:72px;text-align:center;}
 .ql-step-labels span:first-child{text-align:left;}
 .ql-step-labels span:last-child{text-align:right;}
@@ -594,6 +595,7 @@ document.addEventListener('visibilitychange',function(){ if(!document.hidden) po
         /* not everything fits: keep the field being typed in and the whole guide, or at least the whole guide */
         var b=(s.input&&document.activeElement===s.input)?s.input.getBoundingClientRect():null;
         if(b&&(up?b.bottom-vTop-gTop:gBot-(b.top-vTop))<=room){ top=up?gTop:b.top-vTop; bot=up?b.bottom-vTop:gBot; }
+        else if(b){ top=b.top-vTop; bot=top; }   /* tiny space with the keyboard open: the field being typed in comes first */
         else{ top=gTop; bot=gBot; }
       }
       if(top<m) d=top-m; else if(bot>vh-m) d=bot-(vh-m);
@@ -654,7 +656,15 @@ document.addEventListener('visibilitychange',function(){ if(!document.hidden) po
 
   /* keep it attached when sizes change; while typing, keep it above the keyboard too */
   if(window.ResizeObserver){ var ro=new ResizeObserver(function(){ place(); if(active&&document.activeElement===amountEl) reveal(); }); ro.observe(form); ro.observe(guide); }
-  window.addEventListener('resize',place);
+  /* turning the phone: bring the guide back if it ended up off screen */
+  var lastW=window.innerWidth;
+  window.addEventListener('resize',function(){
+    place();
+    if(!active||window.innerWidth===lastW) return;
+    lastW=window.innerWidth;
+    var top=form.getBoundingClientRect().top+y;
+    if(top<0||top+guide.offsetHeight>window.innerHeight) reveal();
+  });
   if(window.visualViewport) window.visualViewport.addEventListener('resize',function(){ if(active&&document.activeElement===amountEl) reveal(); });
   /* wait for the page slide-in to finish */
   setTimeout(start,450);

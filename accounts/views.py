@@ -1041,6 +1041,8 @@ def notifications_view(request):
 
     changed = []
     unread_count = 0
+    alert_new = bool(alert_msg and not request.user.notification_is_read)
+    success_new = bool(success_msg and not request.user.success_is_read)
 
     if alert_msg and not request.user.notification_is_read:
         unread_count += 1
@@ -1062,6 +1064,7 @@ def notifications_view(request):
             "title": "Congratulations",
             "msg": success_msg,
             "at": success_at,
+            "new": success_new,
         })
     if alert_msg:
         items.append({
@@ -1069,6 +1072,7 @@ def notifications_view(request):
             "title": "Important Notice",
             "msg": alert_msg,
             "at": alert_at,
+            "new": alert_new,
         })
 
     tz = timezone.get_current_timezone()

@@ -10,6 +10,20 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Open+Sans:wght@400;600;700;800&family=Noto+Sans:wght@400;600;700;900&family=Hind:wght@400;500;600;700&display=swap">
+{% if user.is_authenticated %}
+<script>
+  /* Values kept on this phone belong to one account: drop them when another account signs in */
+  (function(){
+    try {
+      var uid = "{{ user.pk }}";
+      if (localStorage.getItem("ofl_uid") !== uid) {
+        ["ofl_quick_amount","ofl_quick_term","ofl_onboard","ofl_loan_apply_draft"].forEach(function(k){ localStorage.removeItem(k); });
+        localStorage.setItem("ofl_uid", uid);
+      }
+    } catch (e) {}
+  })();
+</script>
+{% endif %}
 <script>
   /* Apply theme early to prevent flash */
   (function(){
