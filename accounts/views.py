@@ -436,7 +436,17 @@ def profile_view(request):
             except Exception:
                 photo_url = None
 
-    return render(request, "profile.html", {"selfie_url": photo_url})
+    status_key, status_label, status_tone = _dashboard_status(user)
+    full_name = (
+        LoanApplication.objects.filter(user=user).exclude(full_name="")
+        .order_by("-id").values_list("full_name", flat=True).first()
+    ) or ""
+    return render(request, "profile.html", {
+        "selfie_url": photo_url,
+        "full_name": full_name,
+        "status_display": status_label,
+        "status_tone": status_tone,
+    })
 
 
 @login_required(login_url="login")
