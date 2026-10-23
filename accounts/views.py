@@ -577,25 +577,61 @@ def change_password_view(request):
 
 @login_required(login_url="login")
 def contact_view(request):
+    from django.core.validators import validate_email
+    from django.core.exceptions import ValidationError
     from .models import ContactMessage
-    sent = False
+    user = request.user
+    errors, values = {}, {}
     if request.method == "POST":
-        full_name = (request.POST.get("full_name") or "").strip()
-        email     = (request.POST.get("email")     or "").strip()
-        phone     = (request.POST.get("phone")     or "").strip()
-        subject   = (request.POST.get("subject")   or "").strip()
-        message   = (request.POST.get("message")   or "").strip()
-        if full_name and message:
-            ContactMessage.objects.create(
-                user=request.user,
-                full_name=full_name,
-                email=email,
-                phone=phone,
-                subject=subject,
-                message=message,
-            )
-            sent = True
-    return render(request, "contactus.html", {"sent": sent})
+        values = {k: (request.POST.get(k) or "").strip() for k in ("full_name", "email", "phone", "subject", "message")}
+        if not values["full_name"]:
+            errors["full_name"] = "Please enter your full name."
+        elif len(values["full_name"]) > 120:
+            errors["full_name"] = "Name is too long (120 characters max)."
+        if not values["phone"]:
+            errors["phone"] = "Please enter your phone or WhatsApp number."
+        elif len(values["phone"]) > 40 or not _re.fullmatch(r"\+?[\d\s\-()]{7,}", values["phone"]) \
+                or not 7 <= len(_re.sub(r"\D", "", values["phone"])) <= 15:
+            errors["phone"] = "Please enter a valid phone number."
+        if not values["email"]:
+            errors["email"] = "Please enter your email so we can reply."
+        else:
+            try:
+                validate_email(values["email"])
+            except ValidationError:
+                errors["email"] = "Please enter a valid email address."
+            if len(values["email"]) > 254:
+                errors["email"] = "Please enter a valid email address."
+        if len(values["subject"]) > 200:
+            errors["subject"] = "Subject is too long (200 characters max)."
+        if not values["message"]:
+            errors["message"] = "Please write your message."
+        elif len(values["message"]) > 2000:
+            errors["message"] = "Message is too long (2000 characters max)."
+        if not errors:
+            # a double tap or a resend of the same message within 2 minutes is stored once
+            recent = ContactMessage.objects.filter(
+                user=user, message=values["message"], created_at__gte=timezone.now() - timedelta(minutes=2)
+            ).exists()
+            if not recent:
+                ContactMessage.objects.create(user=user, **values)
+            # Post/Redirect/Get: a refresh must not send the message again
+            request.session["contact_sent"] = True
+            return redirect("contact")
+    sent = request.session.pop("contact_sent", False) if request.method == "GET" else False
+    if not values:
+        name = (
+            LoanApplication.objects.filter(user=user).exclude(full_name="")
+            .order_by("-id").values_list("full_name", flat=True).first()
+        ) or ""
+        last = ContactMessage.objects.filter(user=user).exclude(email="").order_by("-created_at").first()
+        values = {"full_name": name, "phone": getattr(user, "phone", "") or "",
+                  "email": last.email if last else "", "subject": "", "message": ""}
+    recent_msgs = list(ContactMessage.objects.filter(user=user).order_by("-created_at")[:3])
+    return render(request, "contactus.html", {
+        "sent": sent, "errors": errors, "v": values, "recent_msgs": recent_msgs,
+        "topics": ["Loan", "Withdrawal", "Payment", "Account", "Other"],
+    })
 
 
 @login_required(login_url="login")
