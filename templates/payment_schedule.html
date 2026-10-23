@@ -1,292 +1,192 @@
 {% extends "base.html" %}
-{% block title %}Payment Schedule{% endblock %}
+{% load static humanize %}
+{% block title %}Payment Schedule — Overseas FilipinoLoan{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+html body,html body *,html body button,html body input,
+html body select,html body textarea,html body a{
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif!important;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <style>
-/* ===== OFL Payment Schedule — Professional Bank Style ===== */
+/* ════════════════════════════════════════════
+   OFL PAYMENT SCHEDULE — Deep Forest
+   Same look in light and dark theme
+════════════════════════════════════════════ */
 :root{
-  --navy:#0A2463;--navy-dk:#061540;--navy-lt:#1a3a8a;
-  --orange:#FF8C00;--orange-dk:#D97200;--orange-lt:#FFA733;
-  --bg:#f0f3f9;--card:#ffffff;
-  --ink:#0d1b3e;--ink2:#5a6680;--ink3:#9aa3b8;--line:#e6eaf4;
+  --ps-dark:#0B1C14;--ps-primary:#133224;--ps-green:#1B4332;--ps-sage:#E8F3ED;--ps-accent:#F97316;
+  --ps-ink:#111827;--ps-ink2:#374151;--ps-mut:#9ca3af;--ps-mut2:#6b7280;--ps-line:#f3f4f6;--ps-line2:#e5e7eb;
+  --ps-float:0 20px 40px -10px rgba(0,0,0,.1);--ps-ease:cubic-bezier(.22,1,.36,1);
 }
+#pageRoot.wrap{max-width:100%!important;width:100%!important;padding:0!important;display:block!important;}
+html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!important;overflow-x:clip!important;background:#e5e7eb!important;color:#1f2937!important;-webkit-font-smoothing:antialiased;}
+.ps a{-webkit-tap-highlight-color:transparent;}
+.ps svg{display:block;width:auto;height:1em;fill:currentColor;flex-shrink:0;}
 
-body,body *{font-family:"Lato","Open Sans",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif !important;}
-html,body{width:100%;overflow-x:hidden;}
-body{margin:0;min-height:100vh;background:var(--bg) !important;color:var(--ink) !important;}
-.wrap{padding-top:0 !important;}
+.ps{min-height:100vh;min-height:100dvh;display:flex;justify-content:center;}
+.ps-app{position:relative;width:100%;max-width:420px;min-height:100vh;min-height:100dvh;background:#f9fafb;padding-bottom:calc(32px + env(safe-area-inset-bottom,0px));}
 
-@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
-
-.ps-outer{width:100%;max-width:520px;margin:0 auto;}
-
-/* ══════════════════════════════
-   HERO
-══════════════════════════════ */
-.ps-hero{
-  position:relative;padding:54px 20px 32px;
-  background:
-    radial-gradient(ellipse 160% 85% at 5% 5%,rgba(255,167,51,.22) 0%,transparent 50%),
-    radial-gradient(ellipse 80% 65% at 95% 95%,rgba(26,58,138,.55) 0%,transparent 55%),
-    linear-gradient(148deg,var(--navy-dk) 0%,var(--navy) 55%,var(--navy-lt) 100%);
-  overflow:hidden;
+.ps-top{
+  position:relative;overflow:hidden;padding:24px 24px 120px;border-radius:0 0 2.5rem 2.5rem;
+  background:linear-gradient(to bottom,var(--ps-dark),var(--ps-primary));box-shadow:inset 0 2px 4px rgba(0,0,0,.05);
 }
-.ps-hero::before{content:"";position:absolute;bottom:-65px;left:-55px;width:230px;height:230px;border-radius:50%;border:1px solid rgba(255,255,255,.06);pointer-events:none;}
-.ps-hero::after{content:"";position:absolute;top:-55px;right:-45px;width:210px;height:210px;border-radius:50%;border:1px solid rgba(255,140,0,.14);pointer-events:none;}
-
-/* OFL Badge */
-.ps-badge{position:absolute;top:16px;left:18px;display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:4px 10px 4px 5px;z-index:3;}
-.ps-badge-dot{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--orange-lt),var(--orange));display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:900;color:#fff;}
-.ps-badge-txt{font-size:9.5px;font-weight:900;color:rgba(255,255,255,.82);letter-spacing:.06em;text-transform:uppercase;}
-
-/* Back button */
-.ps-back{position:absolute;top:14px;right:18px;display:inline-flex;align-items:center;gap:5px;height:34px;padding:0 13px;border-radius:999px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);color:rgba(255,255,255,.88) !important;text-decoration:none;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;transition:background .18s;z-index:3;}
-.ps-back svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
-.ps-back:hover{background:rgba(255,255,255,.22);}
-
-.ps-hero-inner{position:relative;z-index:2;}
-
-/* Page tag */
-.ps-hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,140,0,.18);border:1px solid rgba(255,140,0,.38);border-radius:999px;padding:5px 13px;font-size:10px;font-weight:900;color:var(--orange-lt);letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px;}
-.ps-hero-tag svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
-
-/* Loan summary card in hero */
-.ps-sum-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:18px 20px 16px;position:relative;overflow:hidden;}
-.ps-sum-card::before{content:"";position:absolute;top:0;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);}
-
-.ps-sum-label{font-size:9.5px;font-weight:900;color:rgba(255,255,255,.45);letter-spacing:.22em;text-transform:uppercase;margin-bottom:6px;}
-.ps-sum-row{display:flex;align-items:baseline;gap:6px;margin-bottom:4px;}
-.ps-sum-currency{font-size:20px;font-weight:800;color:rgba(255,255,255,.55);}
-.ps-sum-value{font-size:40px;font-weight:900;color:#fff;letter-spacing:-.04em;line-height:1;}
-.ps-sum-sub{font-size:12px;color:rgba(255,255,255,.45);margin-bottom:16px;}
-
-/* 3-col stat grid */
-.ps-sum-grid{display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr;padding-top:14px;border-top:1px solid rgba(255,255,255,.14);}
-.ps-sum-div{background:rgba(255,255,255,.15);width:1px;height:34px;align-self:center;}
-.ps-sum-stat{text-align:center;padding:0 6px;}
-.ps-sum-stat .slbl{font-size:9px;font-weight:900;color:rgba(255,255,255,.40);letter-spacing:.16em;text-transform:uppercase;margin-bottom:4px;}
-.ps-sum-stat .sval{font-size:13px;font-weight:900;color:#fff;}
-
-/* Idle state inside hero card */
-.ps-sum-idle{font-size:16px;font-weight:700;color:rgba(255,255,255,.55);margin-bottom:6px;}
-.ps-sum-idle-sub{font-size:12px;color:rgba(255,255,255,.32);line-height:1.5;}
-
-/* ══════════════════════════════
-   BODY
-══════════════════════════════ */
-.ps-body{background:var(--card);border-radius:28px 28px 0 0;box-shadow:0 -4px 24px rgba(10,36,99,.12);padding:26px 16px 52px;box-sizing:border-box;}
-
-/* Section divider */
-.ps-sec-hd{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
-.ps-sec-line{flex:1;height:1px;background:var(--line);}
-.ps-sec-txt{font-size:9.5px;font-weight:900;color:var(--ink3);letter-spacing:.20em;text-transform:uppercase;white-space:nowrap;}
-
-/* ── Installment cards ── */
-.ps-list{margin-bottom:18px;display:flex;flex-direction:column;gap:10px;}
-
-.ps-card{
-  border-radius:16px;overflow:hidden;
-  box-shadow:0 3px 16px rgba(10,36,99,.08);
-  opacity:0;animation:fadeUp .40s ease-out forwards;
-  transition:box-shadow .20s,transform .18s;
+.ps-glow{position:absolute;border-radius:50%;pointer-events:none;}
+.ps-glow-a{top:0;right:0;width:256px;height:256px;background:rgba(255,255,255,.05);filter:blur(64px);transform:translate(33%,-33%);}
+.ps-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(249,115,22,.1);filter:blur(40px);transform:translate(-25%,25%);}
+.ps-bar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.ps-glass-dark{background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);}
+.ps-back{
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;
+  color:#fff!important;text-decoration:none!important;transition:background-color .15s,transform .15s;
 }
-.ps-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(10,36,99,.14);}
-.ps-card:nth-child(1){animation-delay:.08s;}
-.ps-card:nth-child(2){animation-delay:.12s;}
-.ps-card:nth-child(3){animation-delay:.16s;}
-.ps-card:nth-child(4){animation-delay:.20s;}
-.ps-card:nth-child(5){animation-delay:.24s;}
-.ps-card:nth-child(6){animation-delay:.28s;}
-.ps-card:nth-child(n+7){animation-delay:.32s;}
+.ps-back:hover{background-color:rgba(255,255,255,.1);}
+.ps-back:active{transform:scale(.94);}
+.ps-badge{display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.04em;color:#fff;}
+.ps-badge svg{font-size:11px;color:#FDBA74;}
+.ps-hero{position:relative;z-index:1;}
+.ps-eyebrow{margin:0 0 6px;font-size:11px;line-height:16px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#FDBA74;}
+.ps-hero h1{margin:0 0 6px;font-size:30px;line-height:36px;font-weight:800;letter-spacing:-.025em;color:#fff;}
+.ps-hero p{margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(232,243,237,.75);}
 
-/* Navy header strip on each card */
-.ps-card-head{
-  background:linear-gradient(135deg,var(--navy-dk) 0%,var(--navy) 100%);
-  padding:11px 16px;
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
+.ps-main{position:relative;z-index:2;margin-top:-88px;padding:0 20px;display:flex;flex-direction:column;gap:20px;}
+.ps-card{position:relative;padding:22px;border-radius:2rem;background:#fff;border:1px solid var(--ps-line);box-shadow:var(--ps-float);}
+.ps-label{display:block;margin-bottom:4px;font-size:11px;line-height:15px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ps-mut2);}
+.ps-big{display:block;font-size:clamp(24px,7.6vw,28px);line-height:34px;font-weight:800;color:var(--ps-ink);white-space:nowrap;}
+.ps-sub{display:block;margin-top:2px;font-size:12.5px;line-height:18px;font-weight:500;color:var(--ps-mut2);}
+.ps-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;}
+.ps-stat{padding:10px 8px;border-radius:14px;text-align:center;background:#f9fafb;border:1px solid var(--ps-line);}
+.ps-stat span{display:block;font-size:10px;line-height:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ps-mut2);}
+.ps-stat b{display:block;margin-top:2px;font-size:14px;line-height:20px;font-weight:800;color:var(--ps-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ps-stat.is-main{background:var(--ps-sage);border-color:#d7eadf;}
+.ps-stat.is-main span,.ps-stat.is-main b{color:var(--ps-green);}
+.ps-total{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;padding:12px 14px;border-radius:14px;border:1px dashed var(--ps-line2);font-size:12.5px;line-height:18px;font-weight:600;color:var(--ps-mut2);}
+.ps-total b{font-size:14px;font-weight:800;color:var(--ps-ink);}
+
+.ps-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.ps-head h2{margin:0;font-size:16px;line-height:22px;font-weight:700;color:var(--ps-ink);}
+.ps-head small{font-size:12px;line-height:16px;font-weight:600;color:var(--ps-mut2);}
+.ps-list{list-style:none;margin:0;padding:0;}
+.ps-row{position:relative;display:flex;align-items:center;gap:12px;padding:12px 0;}
+/* the timeline line between installments */
+.ps-row:not(:last-child)::before{content:'';position:absolute;left:19px;top:52px;bottom:-12px;width:2px;background:var(--ps-line2);}
+.ps-num{position:relative;z-index:1;width:40px;height:40px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--ps-green);background:var(--ps-sage);}
+.ps-row-txt{flex:1;min-width:0;}
+.ps-row-txt b{display:block;font-size:14px;line-height:20px;font-weight:700;color:var(--ps-ink);}
+.ps-row-txt small{display:block;font-size:11.5px;line-height:16px;font-weight:500;color:var(--ps-mut2);}
+.ps-row-end{flex-shrink:0;text-align:right;}
+.ps-row-end b{display:block;font-size:14.5px;line-height:20px;font-weight:800;color:var(--ps-ink);white-space:nowrap;}
+.ps-tag{display:inline-block;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:9.5px;line-height:14px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--ps-mut2);background:#f3f4f6;}
+.ps-row.is-past .ps-num{color:var(--ps-mut);background:#f3f4f6;}
+.ps-row.is-past .ps-row-txt b,.ps-row.is-past .ps-row-end b{color:var(--ps-mut2);}
+.ps-row.is-next{margin:4px -12px;padding:12px;border-radius:18px;background:#fff7ed;border:1px solid #fed7aa;}
+.ps-row.is-next::before{left:31px;}
+.ps-row.is-next .ps-num{color:#fff;background:var(--ps-accent);box-shadow:0 6px 14px -4px rgba(249,115,22,.55);}
+.ps-row.is-next .ps-tag{color:#fff;background:var(--ps-accent);}
+
+.ps-empty{display:flex;flex-direction:column;align-items:center;text-align:center;padding:12px 4px 4px;}
+.ps-empty span{width:64px;height:64px;margin-bottom:16px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--ps-green);background:var(--ps-sage);}
+.ps-empty h2{margin:0 0 6px;font-size:17px;line-height:24px;font-weight:700;color:var(--ps-ink);}
+.ps-empty p{margin:0 0 20px;font-size:13px;line-height:20px;font-weight:500;color:var(--ps-mut2);}
+.ps-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:999px;font-size:14px;line-height:20px;font-weight:700;text-decoration:none!important;transition:background-color .15s,transform .15s;}
+.ps-btn:active{transform:scale(.97);}
+.ps-btn svg{font-size:12px;}
+.ps-btn-green{color:#fff!important;background:var(--ps-green);box-shadow:0 10px 15px -3px rgba(27,67,50,.25);}
+.ps-btn-green:hover{background:#122e22;}
+.ps-btn-line{color:var(--ps-green)!important;border:2px solid var(--ps-green);padding:11px 20px;}
+.ps-btn-line:hover{background:rgba(232,243,237,.5);}
+.ps-acts{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+.ps-foot{padding-top:4px;text-align:center;font-size:12px;line-height:16px;font-weight:500;color:var(--ps-mut);}
+.ps-foot p{margin:0;}
+.ps-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
+.ps-foot i{width:6px;height:6px;border-radius:50%;background:var(--ps-primary);}
+.ps-foot b{font-weight:700;color:var(--ps-accent);}
+
+@media (min-width:640px){
+  .ps{padding:32px 0;}
+  .ps-app{min-height:0;border-radius:2.5rem;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);}
+  .ps-top{border-radius:2.5rem;}
 }
-.ps-card-head-l{display:flex;align-items:center;gap:9px;}
-.ps-card-num{
-  width:30px;height:30px;border-radius:9px;
-  background:rgba(255,140,0,.20);border:1px solid rgba(255,140,0,.35);
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:900;color:var(--orange-lt);flex:0 0 auto;
-}
-.ps-card-inst{font-size:9px;font-weight:900;color:rgba(255,255,255,.42);letter-spacing:.18em;text-transform:uppercase;}
-.ps-card-head-r{display:flex;align-items:center;gap:7px;}
-.ps-card-head-r svg{width:13px;height:13px;fill:none;stroke:rgba(255,255,255,.48);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto;}
-.ps-card-date{font-size:13px;font-weight:800;color:#fff;}
-
-/* Card body — white, 2×2 KV grid */
-.ps-card-body{background:#fff;border:1.5px solid var(--line);border-top:0;padding:14px 16px;}
-.ps-card-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 14px;}
-.ps-kv .lbl{font-size:9.5px;font-weight:800;color:var(--ink3);letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px;}
-.ps-kv .val{font-size:13.5px;font-weight:800;color:var(--ink);}
-.ps-kv .val.repay{font-size:15px;font-weight:900;color:var(--orange);}
-
-/* ── Empty state ── */
-.ps-empty{text-align:center;padding:46px 20px;border:1.5px dashed var(--line);border-radius:18px;margin-bottom:18px;}
-.ps-empty-ring{width:66px;height:66px;border-radius:50%;background:rgba(10,36,99,.05);border:2px solid var(--line);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
-.ps-empty-ring svg{width:28px;height:28px;fill:none;stroke:var(--ink3);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-.ps-empty-title{font-size:15px;font-weight:900;color:var(--navy);margin-bottom:6px;}
-.ps-empty-sub{font-size:13px;font-weight:500;color:var(--ink3);line-height:1.55;}
-
-/* ── Action buttons ── */
-.ps-actions{display:flex;gap:10px;}
-.ps-btn-back{flex:1;padding:15px 18px;border-radius:999px;border:2px solid var(--line);background:var(--bg);color:var(--ink);font-weight:900;font-size:12px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;text-align:center;transition:border-color .18s,background .18s;}
-.ps-btn-back:hover{border-color:var(--navy);background:#fff;}
-.ps-btn-dash{flex:2;padding:15px 18px;border-radius:999px;border:0;background:linear-gradient(135deg,var(--orange-dk),var(--orange));color:#fff;font-weight:900;font-size:12px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;text-align:center;display:block;box-shadow:0 6px 22px rgba(255,140,0,.36);transition:box-shadow .18s,filter .18s;}
-.ps-btn-dash:hover{box-shadow:0 10px 28px rgba(255,140,0,.52);filter:brightness(1.05);}
-
-/* Dark mode */
-html[data-theme="dark"] .ps-body{background:var(--navy-dk) !important;}
-html[data-theme="dark"] .ps-card-body{background:rgba(255,255,255,.04) !important;border-color:rgba(255,255,255,.10) !important;}
-html[data-theme="dark"] .ps-kv .val{color:#ccd6f6 !important;}
-html[data-theme="dark"] .ps-empty{border-color:rgba(255,255,255,.12) !important;}
-html[data-theme="dark"] .ps-empty-title{color:#ccd6f6 !important;}
-html[data-theme="dark"] .ps-btn-back{background:rgba(255,255,255,.06) !important;border-color:rgba(255,255,255,.12) !important;color:#ccd6f6 !important;}
-
-@media(max-width:420px){
-  .ps-sum-value{font-size:30px;}
-  .ps-sum-grid{grid-template-columns:1fr 1px 1fr;}
-  .ps-sum-stat:nth-child(5),.ps-sum-div:nth-child(4){display:none;}
-  .ps-card-grid{grid-template-columns:1fr;}
-  .ps-card-date{font-size:12px;}
+@media (max-width:359px){
+  .ps-top{padding-left:20px;padding-right:20px;}
+  .ps-main{padding:0 14px;}
+  .ps-card{padding:18px 16px;}
+  .ps-stat b{font-size:13px;}
 }
 </style>
 
-<div class="ps-outer">
-
-  <!-- ══ HERO ══ -->
-  <div class="ps-hero">
-    <div class="ps-badge">
-      <div class="ps-badge-dot">OFL</div>
-      <span class="ps-badge-txt">Overseas FilipinoLoan</span>
-    </div>
-    <a class="ps-back" href="/profile/">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      Back
-    </a>
-
-    <div class="ps-hero-inner">
-      <div class="ps-hero-tag">
-        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="15" x2="13" y2="15"/></svg>
-        Repayment
+<!-- Icons: Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0) Copyright 2023 Fonticons, Inc. -->
+<div class="ps">
+  <div class="ps-app">
+    <header class="ps-top">
+      <div class="ps-glow ps-glow-a"></div>
+      <div class="ps-glow ps-glow-b"></div>
+      <div class="ps-bar">
+        <a class="ps-back ps-glass-dark" href="{% url 'profile' %}" aria-label="Back to profile"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></a>
+        <div class="ps-badge ps-glass-dark"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z"/></svg>Repayment</div>
       </div>
+      <div class="ps-hero">
+        <p class="ps-eyebrow">Your Loan</p>
+        <h1>Payment Schedule</h1>
+        <p>When each monthly payment is due</p>
+      </div>
+    </header>
 
+    <main class="ps-main">
       {% if latest_loan and schedules %}
-        {% with first=schedules.0 %}
-        <div class="ps-sum-card">
-          <div class="ps-sum-label">Approved Loan</div>
-          <div class="ps-sum-row">
-            <span class="ps-sum-currency">₱</span>
-            <span class="ps-sum-value">{{ first.loan_amount }}</span>
-          </div>
-          <div class="ps-sum-sub">{{ first.term_months }}-month term &middot; {{ schedules|length }} installment{{ schedules|length|pluralize }}</div>
-          <div class="ps-sum-grid">
-            <div class="ps-sum-stat">
-              <div class="slbl">Rate</div>
-              <div class="sval">{{ first.interest_rate }}</div>
-            </div>
-            <div class="ps-sum-div"></div>
-            <div class="ps-sum-stat">
-              <div class="slbl">Per Period</div>
-              <div class="sval">₱&nbsp;{{ first.repayment }}</div>
-            </div>
-            <div class="ps-sum-div"></div>
-            <div class="ps-sum-stat">
-              <div class="slbl">Installments</div>
-              <div class="sval">{{ schedules|length }}</div>
-            </div>
-          </div>
+      {% with first=schedules.0 %}
+      <section class="ps-card" aria-label="Loan summary">
+        <span class="ps-label">Approved Loan</span>
+        <b class="ps-big">₱{{ first.loan_amount|default:0|floatformat:2|intcomma }}</b>
+        <span class="ps-sub">{{ first.term_months }}-month term · {{ schedules|length }} installment{{ schedules|length|pluralize }}</span>
+        <div class="ps-stats">
+          <div class="ps-stat is-main"><span>Monthly</span><b>₱{{ first.repayment|default:0|floatformat:2|intcomma }}</b></div>
+          <div class="ps-stat"><span>Rate / mo</span><b>{{ rate_pct|default:"—" }}</b></div>
+          <div class="ps-stat"><span>Payments</span><b>{{ schedules|length }}</b></div>
         </div>
-        {% endwith %}
+        {% if total %}<div class="ps-total"><span>Total to repay</span><b>₱{{ total|floatformat:2|intcomma }}</b></div>{% endif %}
+      </section>
+      {% endwith %}
+
+      <section class="ps-card">
+        <div class="ps-head"><h2>Installments</h2><small>First due 15 days after approval</small></div>
+        <ol class="ps-list">
+          {% for s in schedules %}
+          <li class="ps-row{% if s.is_next %} is-next{% elif s.is_past %} is-past{% endif %}">
+            <span class="ps-num">{{ forloop.counter|stringformat:"02d" }}</span>
+            <div class="ps-row-txt"><b>{{ s.due|date:"M j, Y" }}</b><small>{{ s.due|date:"l" }}</small></div>
+            <div class="ps-row-end"><b>₱{{ s.repayment|default:0|floatformat:2|intcomma }}</b>{% if s.is_next %}<span class="ps-tag">Next due</span>{% elif s.is_past %}<span class="ps-tag">Due date passed</span>{% endif %}</div>
+          </li>
+          {% endfor %}
+        </ol>
+      </section>
       {% else %}
-        <div class="ps-sum-card">
-          <div class="ps-sum-label">Account Status</div>
-          <div class="ps-sum-idle">No Active Loan</div>
-          <div class="ps-sum-idle-sub">Apply for a loan to see your full repayment schedule here.</div>
+      <section class="ps-card">
+        <div class="ps-empty">
+          <span><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z"/></svg></span>
+          <h2>No approved loan yet</h2>
+          <p>Your payment schedule will appear here once your loan is approved.</p>
+          <a class="ps-btn ps-btn-green" href="{% url 'quick_loan' %}"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>Check my application</a>
         </div>
+      </section>
       {% endif %}
-    </div>
-  </div>
 
-  <!-- ══ BODY ══ -->
-  <div class="ps-body">
-
-    <div class="ps-sec-hd">
-      <div class="ps-sec-line"></div>
-      <div class="ps-sec-txt">Repayment Schedule</div>
-      <div class="ps-sec-line"></div>
-    </div>
-
-    {% if latest_loan %}
-      <div class="ps-list">
-        {% for s in schedules %}
-          <div class="ps-card">
-
-            <!-- Navy header: installment number + due date -->
-            <div class="ps-card-head">
-              <div class="ps-card-head-l">
-                <div class="ps-card-num">{{ forloop.counter|stringformat:"02d" }}</div>
-                <div class="ps-card-inst">Installment</div>
-              </div>
-              <div class="ps-card-head-r">
-                <svg viewBox="0 0 24 24">
-                  <rect x="3" y="5" width="18" height="16" rx="2"/>
-                  <line x1="3" y1="10" x2="21" y2="10"/>
-                  <line x1="8" y1="2" x2="8" y2="6"/>
-                  <line x1="16" y1="2" x2="16" y2="6"/>
-                </svg>
-                <span class="ps-card-date">{{ s.due_date }}</span>
-              </div>
-            </div>
-
-            <!-- White body: 2×2 KV grid -->
-            <div class="ps-card-body">
-              <div class="ps-card-grid">
-                <div class="ps-kv">
-                  <div class="lbl">Loan Amount</div>
-                  <div class="val">₱ {{ s.loan_amount }}</div>
-                </div>
-                <div class="ps-kv">
-                  <div class="lbl">Loan Period</div>
-                  <div class="val">{{ s.term_months }} months</div>
-                </div>
-                <div class="ps-kv">
-                  <div class="lbl">Repayment</div>
-                  <div class="val repay">₱ {{ s.repayment }}</div>
-                </div>
-                <div class="ps-kv">
-                  <div class="lbl">Interest Rate</div>
-                  <div class="val">{{ s.interest_rate }}</div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        {% endfor %}
+      <div class="ps-acts">
+        <a class="ps-btn ps-btn-line ps-back-link" href="{% url 'profile' %}"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg>Profile</a>
+        <a class="ps-btn ps-btn-green" href="{% url 'dashboard' %}"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg>Dashboard</a>
       </div>
-    {% else %}
-      <div class="ps-empty">
-        <div class="ps-empty-ring">
-          <svg viewBox="0 0 24 24">
-            <rect x="3" y="5" width="18" height="16" rx="2"/>
-            <line x1="3" y1="10" x2="21" y2="10"/>
-            <line x1="8" y1="2" x2="8" y2="6"/>
-            <line x1="16" y1="2" x2="16" y2="6"/>
-          </svg>
-        </div>
-        <div class="ps-empty-title">No approved loan yet</div>
-        <div class="ps-empty-sub">Your payment schedule will appear here once your loan is approved.</div>
-      </div>
-    {% endif %}
 
-    <div class="ps-actions">
-      <a class="ps-btn-back" href="/profile/">Back</a>
-      <a class="ps-btn-dash" href="/dashboard/">Dashboard</a>
-    </div>
-
+      <footer class="ps-foot">
+        <p><i></i> Overseas FilipinoLoan <span>•</span> <b>v2.2.1</b></p>
+        <p>© 2026 All rights reserved</p>
+      </footer>
+    </main>
   </div>
 </div>
 {% endblock %}

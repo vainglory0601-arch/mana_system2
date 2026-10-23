@@ -480,19 +480,38 @@ def payment_schedule_view(request):
         start = latest_loan.approved_at or latest_loan.created_at or timezone.now()
         first_due = start + timedelta(days=15)
 
+        today = timezone.localdate()
+        next_marked = False
         for i in range(int(latest_loan.term_months or 0)):
             due = first_due + relativedelta(months=i)
+            due_day = timezone.localtime(due).date() if timezone.is_aware(due) else due.date()
+            is_next = not next_marked and due_day >= today
+            next_marked = next_marked or is_next
             schedules.append({
                 "due_date": due.strftime("%d/%m/%Y"),
+                "due": due_day,
+                "is_next": is_next,
+                "is_past": due_day < today,
                 "loan_amount": latest_loan.amount,
                 "term_months": latest_loan.term_months,
                 "repayment": latest_loan.monthly_repayment,
                 "interest_rate": latest_loan.interest_rate_monthly,
             })
 
+    rate_pct = ""
+    total = None
+    if latest_loan:
+        rate = latest_loan.interest_rate_monthly
+        if rate is not None:
+            rate_pct = format((Decimal(rate) * 100).normalize(), "f") + "%"
+        if latest_loan.monthly_repayment is not None and latest_loan.term_months:
+            total = latest_loan.monthly_repayment * int(latest_loan.term_months)
+
     return render(request, "payment_schedule.html", {
         "latest_loan": latest_loan,
         "schedules": schedules,
+        "rate_pct": rate_pct,
+        "total": total,
     })
 
 
