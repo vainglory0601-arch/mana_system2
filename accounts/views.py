@@ -538,9 +538,15 @@ def agreement(request):
 @login_required(login_url="login")
 def wallet_view(request):
     """User wallet view"""
-    last = WithdrawalRequest.objects.filter(user=request.user).order_by("-id").first()
-    items = WithdrawalRequest.objects.filter(user=request.user).order_by("-id")[:20]
-    return render(request, "wallet.html", {"last_withdrawal": last, "withdrawals": items})
+    items = list(WithdrawalRequest.objects.filter(user=request.user).order_by("-id")[:20])
+    # Card holder: the name from the client's latest application (the user model has no name field)
+    holder = (
+        LoanApplication.objects.filter(user=request.user).exclude(full_name="")
+        .order_by("-id").values_list("full_name", flat=True).first()
+    ) or ""
+    return render(request, "wallet.html", {
+        "last_withdrawal": items[0] if items else None, "withdrawals": items, "holder": holder,
+    })
 
 
 @login_required(login_url="login")

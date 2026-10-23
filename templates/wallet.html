@@ -1,966 +1,529 @@
 {% extends "base.html" %}
-{% load static %}
-{% block title %}Wallet{% endblock %}
+{% load static humanize %}
+{% block title %}My Wallet — Overseas FilipinoLoan{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+html body,html body *,html body button,html body input,
+html body select,html body textarea,html body a{
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif!important;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <style>
-/* ===== OFL Wallet — Premium Fintech ===== */
-:root {
-  --navy:#0A2463; --navy-dk:#061540; --navy-lt:#1a3a8a; --navy-mid:#0d2b75;
-  --orange:#FF8C00; --orange-dk:#D97200; --orange-lt:#FFA733;
-  --bg:#f0f3f9; --card:#ffffff;
-  --ink:#0d1b3e; --ink2:#5a6680; --ink3:#9aa3b8; --line:#e6eaf4;
-  --green:#16a34a; --green-dk:#15803d;
-  --red:#dc2626; --red-dk:#b91c1c;
+/* ════════════════════════════════════════════
+   OFL WALLET — Deep Forest
+   Same look in light and dark theme
+════════════════════════════════════════════ */
+:root{
+  --wl-dark:#0B1C14;--wl-primary:#133224;--wl-green:#1B4332;--wl-green-dk:#122e22;--wl-sage:#E8F3ED;--wl-accent:#F97316;
+  --wl-ink:#111827;--wl-ink2:#374151;--wl-mut:#9ca3af;--wl-mut2:#6b7280;--wl-line:#f3f4f6;--wl-line2:#e5e7eb;
+  --wl-float:0 20px 40px -10px rgba(0,0,0,.1);--wl-ease:cubic-bezier(.22,1,.36,1);
 }
+#pageRoot.wrap{max-width:100%!important;width:100%!important;padding:0!important;display:block!important;}
+html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!important;background:#e5e7eb!important;color:#1f2937!important;-webkit-font-smoothing:antialiased;}
+.wl a,.wl button{-webkit-tap-highlight-color:transparent;}
+.wl svg{display:block;width:auto;height:1em;fill:currentColor;flex-shrink:0;}
 
-html:not([data-theme="dark"]) body { background: var(--bg) !important; }
-html, body { width: 100%; overflow-x: hidden; }
-html body, html body * {
-  font-family: "Lato","Open Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif !important;
-}
-.wrap { padding-top: 0 !important; }
+/* ── App shell ── */
+.wl{min-height:100vh;min-height:100dvh;display:flex;justify-content:center;}
+.wl-app{position:relative;width:100%;max-width:420px;min-height:100vh;min-height:100dvh;background:#f9fafb;padding-bottom:calc(32px + env(safe-area-inset-bottom,0px));}
 
-/* ── Animations ── */
-@keyframes wFadeUp {
-  from { opacity:0; transform:translateY(16px); }
-  to   { opacity:1; transform:translateY(0); }
+/* ── Header ── */
+.wl-top{
+  position:relative;overflow:hidden;padding:24px 24px 128px;border-radius:0 0 2.5rem 2.5rem;
+  background:linear-gradient(to bottom,var(--wl-dark),var(--wl-primary));box-shadow:inset 0 2px 4px rgba(0,0,0,.05);
 }
-@keyframes shimmer {
-  0%   { transform:translateX(-120%) skewX(-15deg); }
-  100% { transform:translateX(300%) skewX(-15deg); }
+.wl-glow{position:absolute;border-radius:50%;pointer-events:none;}
+.wl-glow-a{top:0;right:0;width:256px;height:256px;background:rgba(255,255,255,.05);filter:blur(64px);transform:translate(33%,-33%);}
+.wl-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(249,115,22,.1);filter:blur(40px);transform:translate(-25%,25%);}
+.wl-bar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.wl-glass-dark{background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);}
+.wl-back{
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;
+  color:#fff!important;text-decoration:none!important;transition:background-color .15s,transform .15s;
 }
-@keyframes cardFloat {
-  0%,100% { transform:translateY(0px); }
-  50%      { transform:translateY(-5px); }
-}
-@keyframes pulseDot {
-  0%,100% { opacity:1; transform:scale(1); }
-  50%      { opacity:.5; transform:scale(.7); }
-}
+.wl-back:hover{background-color:rgba(255,255,255,.1);}
+.wl-back:active{transform:scale(.94);}
+.wl-badge{display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.04em;color:#fff;}
+.wl-badge svg{font-size:11px;color:#FDBA74;}
+.wl-hero{position:relative;z-index:1;}
+.wl-eyebrow{margin:0 0 6px;font-size:11px;line-height:16px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#FDBA74;}
+.wl-hero h1{margin:0 0 6px;font-size:30px;line-height:36px;font-weight:800;letter-spacing:-.025em;color:#fff;}
+.wl-hero p{margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(232,243,237,.75);}
 
-/* ─────────────── HERO ─────────────── */
-.w-hero-shell {
-  position: relative;
-  background: linear-gradient(150deg, var(--navy-dk) 0%, var(--navy) 52%, var(--navy-mid) 100%);
-  padding: max(20px,env(safe-area-inset-top)) 18px 64px;
-  overflow: hidden;
-}
-/* top-right orange glow */
-.w-hero-shell::after {
-  content:"";
-  position:absolute; top:-70px; right:-70px;
-  width:280px; height:280px; border-radius:50%;
-  background:radial-gradient(circle,rgba(255,140,0,.24) 0%,transparent 65%);
-  pointer-events:none;
-}
-/* bottom-left navy glow */
-.w-hero-shell::before {
-  content:"";
-  position:absolute; bottom:-40px; left:-60px;
-  width:200px; height:200px; border-radius:50%;
-  background:radial-gradient(circle,rgba(26,58,138,.55) 0%,transparent 70%);
-  pointer-events:none;
-}
-/* dot-grid texture */
-.w-dot-grid {
-  position:absolute; inset:0; z-index:0;
-  background-image:radial-gradient(rgba(255,255,255,.065) 1px,transparent 1px);
-  background-size:22px 22px;
-  pointer-events:none;
-}
+/* ── Main column ── */
+.wl-main{position:relative;z-index:2;margin-top:-104px;padding:0 20px;display:flex;flex-direction:column;gap:20px;}
+.wl-card{position:relative;padding:24px;border-radius:2rem;background:#fff;border:1px solid var(--wl-line);box-shadow:var(--wl-float);}
+.wl-head{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.wl-head-ico{width:48px;height:48px;border-radius:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--wl-primary);background:linear-gradient(to bottom right,var(--wl-sage),#fff);border:1px solid #fff;box-shadow:0 1px 2px rgba(0,0,0,.05);}
+.wl-head > div:nth-child(2){flex:1;min-width:0;}
+.wl-head h2{margin:0;font-size:16px;line-height:22px;font-weight:700;color:var(--wl-ink);}
+.wl-head p{margin:2px 0 0;font-size:12px;line-height:16px;font-weight:500;color:var(--wl-mut2);}
+.wl-count{flex-shrink:0;min-width:28px;padding:3px 9px;border-radius:999px;text-align:center;font-size:11px;line-height:16px;font-weight:800;color:var(--wl-green);background:var(--wl-sage);}
+@keyframes wlShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:wlShake .4s ease;}
+@keyframes wlIn{from{opacity:0;transform:translateY(-4px);}}
 
-/* nav bar */
-.w-nav {
-  position:relative; z-index:3;
-  display:flex; align-items:center; justify-content:space-between;
-  margin-bottom:24px;
+/* ── Balance card (sits across the header edge) ── */
+.wl-bcard{
+  position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;gap:14px;min-height:196px;padding:20px 22px 18px;
+  border-radius:24px;color:#fff;background:linear-gradient(135deg,#24573f 0%,var(--wl-green) 45%,var(--wl-dark) 100%);
+  box-shadow:0 24px 40px -14px rgba(11,28,20,.55),0 2px 8px rgba(0,0,0,.12);
 }
-.w-nav-back {
-  width:36px; height:36px; border-radius:50%;
-  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.18);
-  display:flex; align-items:center; justify-content:center;
-  text-decoration:none; transition:background .18s;
-}
-.w-nav-back:hover { background:rgba(255,255,255,.22); }
-.w-nav-back svg { width:16px; height:16px; fill:none; stroke:#fff; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
-.w-nav-title { font-size:17px; font-weight:900; color:#fff; letter-spacing:.03em; }
-.w-nav-spacer { width:36px; }
+.wl-bcard::before{content:'';position:absolute;top:-40%;right:-18%;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none;}
+.wl-bcard::after{content:'';position:absolute;bottom:-60px;left:-40px;width:180px;height:180px;border-radius:50%;background:rgba(249,115,22,.12);filter:blur(30px);pointer-events:none;}
+.wl-bcard > *{position:relative;z-index:1;}
+.wl-btop{display:flex;align-items:center;justify-content:space-between;}
+.wl-brand{display:flex;align-items:baseline;gap:8px;}
+.wl-brand b{font-size:18px;line-height:22px;font-weight:800;letter-spacing:.06em;}
+.wl-brand span{font-size:10px;line-height:14px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6);}
+.wl-chip{width:40px;height:30px;border-radius:7px;background:linear-gradient(135deg,#fde68a,#d4a72c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);}
+.wl-blabel{display:block;margin-bottom:4px;font-size:11px;line-height:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.65);}
+.wl-brow{display:flex;align-items:center;gap:10px;min-height:44px;}
+/* hidden and real amount share one grid cell, so toggling never shifts the layout */
+.wl-amt{display:grid;min-width:0;}
+.wl-amt > span{grid-area:1/1;font-size:clamp(26px,8.6vw,32px);line-height:40px;font-weight:800;white-space:nowrap;transition:opacity .2s ease,transform .2s ease;}
+.wl-amt-mask{letter-spacing:.1em;}
+.wl-amt-real{letter-spacing:-.01em;opacity:0;transform:translateY(4px);}
+.wl-amt.is-shown .wl-amt-mask{opacity:0;transform:translateY(-4px);}
+.wl-amt.is-shown .wl-amt-real{opacity:1;transform:none;}
+.wl-eye{padding:8px;border:0;background:none;cursor:pointer;color:rgba(255,255,255,.55);font-size:20px;transition:color .15s;}
+.wl-eye:hover{color:#fff;}
+.wl-eye .i-shown,.wl-eye.on .i-hidden{display:none;}
+.wl-eye.on .i-shown{display:block;}
+.wl-bfoot{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;}
+.wl-bfoot > div{min-width:0;}
+.wl-bfoot small{display:block;margin-bottom:2px;font-size:9.5px;line-height:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);}
+.wl-bfoot b{display:block;font-size:13.5px;line-height:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.wl-bfoot .r{text-align:right;flex-shrink:0;}
 
-/* ── Premium OFL Card ── */
-.ofl-card {
-  position:relative; z-index:3;
-  width:100%; border-radius:22px;
-  padding:22px 22px 20px;
-  background:
-    radial-gradient(120% 80% at 5% 5%, rgba(255,167,51,.20) 0%, transparent 48%),
-    radial-gradient(80% 80% at 95% 95%, rgba(6,21,64,.60) 0%, transparent 50%),
-    linear-gradient(135deg, #1a3a8a 0%, #0A2463 50%, #061540 100%);
-  border:1px solid rgba(255,255,255,.13);
-  box-shadow:
-    0 22px 55px rgba(6,21,64,.60),
-    0 0 0 1px rgba(255,255,255,.05),
-    inset 0 1px 0 rgba(255,255,255,.13);
-  box-sizing:border-box;
-  overflow:hidden;
-  animation:cardFloat 6s ease-in-out infinite;
-}
-/* shimmer sweep */
-.ofl-card::before {
-  content:"";
-  position:absolute; top:0; left:0; width:55%; height:100%;
-  background:linear-gradient(105deg,transparent 25%,rgba(255,255,255,.06) 50%,transparent 75%);
-  animation:shimmer 4.5s ease-in-out 2s infinite;
-  pointer-events:none;
-}
-/* orange bottom accent line */
-.ofl-card::after {
-  content:"";
-  position:absolute; bottom:0; left:0; right:0; height:3px;
-  background:linear-gradient(90deg,transparent 0%,var(--orange) 35%,var(--orange-lt) 65%,transparent 100%);
-}
-.ofl-card > * { position:relative; z-index:2; }
+/* account status banner (base.html's live poller also writes into #statusAlert) */
+.wl-alert{position:relative;padding:14px 16px 14px 40px;border-radius:18px;font-size:13px;line-height:19px;font-weight:600;background:#fff;border:1px solid var(--wl-line);box-shadow:var(--wl-float);color:var(--wl-ink2);animation:wlIn .3s var(--wl-ease);}
+.wl-alert::before{content:'';position:absolute;left:17px;top:20px;width:9px;height:9px;border-radius:50%;background:currentColor;}
+.wl-alert.status-danger{color:#991b1b;background:#fef2f2;border-color:#fecaca;}
+.wl-alert.status-warn{color:#9a3412;background:#fff7ed;border-color:#fed7aa;}
+.wl-alert.status-success{color:#166534;background:#f0fdf4;border-color:#bbf7d0;}
 
-.ofl-top {
-  display:flex; align-items:flex-start; justify-content:space-between;
-  margin-bottom:20px;
+/* ── Withdraw form (#wlForm beats base.html's dark-theme input overrides) ── */
+.wl-fields{display:flex;flex-direction:column;gap:18px;}
+.wl-label-row{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin:0 0 8px;padding-left:4px;}
+.wl-label{display:block;margin:0;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--wl-green);}
+.wl-max{padding:4px 10px;border:0;border-radius:999px;cursor:pointer;font-size:11px;line-height:15px;font-weight:700;color:var(--wl-green);background:var(--wl-sage);transition:background-color .15s,transform .15s;}
+.wl-max:hover{background:#d7eadf;}
+.wl-max:active{transform:scale(.95);}
+.wl-field{position:relative;}
+.wl-ico{position:absolute;left:16px;top:50%;transform:translateY(-50%);display:flex;font-size:15px;color:var(--wl-mut);pointer-events:none;transition:color .15s;}
+.wl-ico.is-peso{font-size:20px;font-weight:800;color:var(--wl-green);}
+.wl-field:focus-within .wl-ico{color:var(--wl-green);}
+#wlForm .wl-input{
+  display:block;width:100%;margin:0;padding:14px 16px 14px 46px;font-size:16px;line-height:22px;font-weight:600;
+  color:var(--wl-ink)!important;background:rgba(249,250,251,.6)!important;border:1px solid var(--wl-line2)!important;border-radius:16px;
+  outline:none;box-shadow:none!important;-webkit-appearance:none;appearance:none;transition:border-color .15s,box-shadow .15s;
 }
-.ofl-brand-row { }
-.ofl-brand {
-  font-size:10px; font-weight:900; color:var(--orange);
-  letter-spacing:.28em; text-transform:uppercase;
+#wlForm #amountInput{font-size:22px;line-height:28px;font-weight:800;padding-left:44px;}
+#wlForm .wl-input::placeholder{color:#c4c9d4!important;font-weight:500;}
+#wlForm .wl-input:focus{border-color:var(--wl-green)!important;box-shadow:0 0 0 1px var(--wl-green)!important;background:#fff!important;}
+#wlForm .wl-input.is-error{border-color:#f87171!important;box-shadow:0 0 0 1px #f87171!important;background:#fef2f2!important;}
+#wlForm .wl-input:-webkit-autofill{-webkit-text-fill-color:var(--wl-ink)!important;-webkit-box-shadow:0 0 0 1000px #fff inset!important;transition:background-color 9999s ease-in-out 0s;}
+.wl-hint{margin:8px 0 0;padding-left:4px;font-size:12px;line-height:17px;font-weight:500;color:var(--wl-mut2);}
+.wl-hint b{font-weight:700;color:var(--wl-ink2);}
+.wl-err{display:none;margin:18px 0 0;padding:12px 14px;border-radius:14px;font-size:12.5px;line-height:18px;font-weight:600;color:#991b1b;background:#fef2f2;border:1px solid #fecaca;}
+.wl-err.on{display:block;animation:wlIn .25s var(--wl-ease);}
+.wl-cta{
+  position:relative;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:20px;padding:17px;border:0;border-radius:999px;cursor:pointer;
+  font-size:15.5px;line-height:22px;font-weight:700;color:#fff!important;background:var(--wl-accent);
+  box-shadow:0 10px 15px -3px rgba(249,115,22,.3),0 4px 6px -4px rgba(249,115,22,.3);transition:background-color .15s,transform .15s,opacity .2s;
 }
-.ofl-brand-full {
-  font-size:8px; color:rgba(255,255,255,.40);
-  letter-spacing:.10em; text-transform:uppercase;
-  font-weight:700; margin-top:2px;
-}
-/* chip icon */
-.ofl-chip {
-  width:34px; height:26px; border-radius:5px;
-  background:linear-gradient(135deg,rgba(255,215,80,.70) 0%,rgba(255,170,30,.45) 100%);
-  border:1px solid rgba(255,220,100,.35);
-  display:flex; align-items:center; justify-content:center;
-}
-.ofl-chip svg { width:20px; height:20px; fill:none; stroke:rgba(255,220,100,.90); stroke-width:1.4; }
+.wl-cta:hover{background:#ea580c;}
+.wl-cta:active{transform:scale(.98);}
+.wl-cta svg{font-size:14px;}
+.wl-cta:disabled{cursor:not-allowed;background:#d1d5db;box-shadow:none;transform:none;}
+.wl-spin{display:none;width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;}
+.wl-cta.is-loading{pointer-events:none;}
+.wl-cta.is-loading:disabled{background:var(--wl-accent);opacity:.92;}
+.wl-cta.is-loading .wl-spin{display:block;animation:wlSpin .7s linear infinite;}
+.wl-cta.is-loading .wl-cta-ico{display:none;}
+@keyframes wlSpin{to{transform:rotate(360deg);}}
 
-.ofl-bal-label {
-  font-size:10px; font-weight:700; color:rgba(255,255,255,.48);
-  letter-spacing:.14em; text-transform:uppercase; margin-bottom:6px;
+/* ── Withdrawal status timeline ── */
+.wl-tl[hidden]{display:none;}
+.wl-tl{animation:wlIn .35s var(--wl-ease);}
+.wl-live{display:flex;align-items:center;gap:8px;margin:-6px 0 18px;font-size:11px;line-height:15px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--wl-mut2);}
+.wl-live i{position:relative;width:8px;height:8px;}
+.wl-live i::before,.wl-live i::after{content:'';position:absolute;inset:0;border-radius:50%;background:#22C55E;}
+.wl-live i::after{animation:wlPing 1.2s cubic-bezier(0,0,.2,1) infinite;}
+.wl-tl.is-final .wl-live i::after{animation:none;}
+@keyframes wlPing{75%,100%{transform:scale(2.2);opacity:0;}}
+.wl-steps{list-style:none;margin:0;padding:0;}
+.wl-step{position:relative;display:flex;gap:14px;padding-bottom:22px;}
+.wl-step:last-child{padding-bottom:0;}
+/* the line to the next step fills when that step is reached */
+.wl-step:not(:last-child)::before{content:'';position:absolute;left:15px;top:34px;bottom:4px;width:2px;border-radius:2px;background:var(--wl-line2);}
+.wl-step:not(:last-child)::after{content:'';position:absolute;left:15px;top:34px;bottom:4px;width:2px;border-radius:2px;background:var(--wl-green);transform:scaleY(0);transform-origin:top;transition:transform .5s var(--wl-ease);}
+.wl-step.is-line::after{transform:scaleY(1);}
+.wl-dot{
+  position:relative;z-index:1;width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:var(--wl-mut);background:#f3f4f6;border:2px solid #f3f4f6;transition:background-color .3s,color .3s,border-color .3s;
 }
-.ofl-bal-row { display:flex; align-items:center; gap:12px; }
-.ofl-bal-hidden {
-  font-size:28px; font-weight:700;
-  color:rgba(255,255,255,.55); letter-spacing:.18em; line-height:1;
-}
-.ofl-bal-amt {
-  font-size:34px; font-weight:950;
-  color:#fff; letter-spacing:-.02em; line-height:1;
-}
-.ofl-bal-eye {
-  width:32px; height:32px; border-radius:50%;
-  background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.18);
-  display:flex; align-items:center; justify-content:center;
-  cursor:pointer; flex:0 0 auto; transition:background .18s;
-}
-.ofl-bal-eye:hover { background:rgba(255,255,255,.20); }
-.ofl-bal-eye svg { width:14px; height:14px; fill:none; stroke:rgba(255,255,255,.80); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.wl-dot .i-x{display:none;}
+.wl-step.is-on .wl-dot{color:#fff;background:var(--wl-green);border-color:var(--wl-green);}
+.wl-step.is-ok .wl-dot{color:#fff;background:#16a34a;border-color:#16a34a;box-shadow:0 0 0 4px #dcfce7;}
+.wl-step.is-bad .wl-dot{color:#fff;background:#dc2626;border-color:#dc2626;box-shadow:0 0 0 4px #fee2e2;}
+.wl-step.is-bad .wl-dot .i-ok{display:none;}
+.wl-step.is-bad .wl-dot .i-x{display:block;}
+.wl-step b{display:block;padding-top:5px;font-size:14px;line-height:20px;font-weight:700;color:var(--wl-mut);transition:color .3s;}
+.wl-step small{display:block;margin-top:2px;font-size:12px;line-height:17px;font-weight:500;color:var(--wl-mut);}
+.wl-step.is-on b,.wl-step.is-on small{color:var(--wl-ink);}
+.wl-step.is-on small{color:var(--wl-mut2);}
+.wl-step.is-ok b{color:#15803d;}
+.wl-step.is-bad b{color:#b91c1c;}
 
-.ofl-foot {
-  display:flex; align-items:flex-end; justify-content:space-between;
-  margin-top:18px; padding-top:14px;
-  border-top:1px solid rgba(255,255,255,.08);
-}
-.ofl-holder-label { font-size:9px; color:rgba(255,255,255,.40); font-weight:700; letter-spacing:.10em; text-transform:uppercase; }
-.ofl-holder-name  { font-size:12px; color:rgba(255,255,255,.82); font-weight:900; margin-top:2px; letter-spacing:.03em; }
-.ofl-card-num {
-  font-size:14px; color:var(--orange); letter-spacing:.12em;
-  font-weight:700; opacity:.80;
-}
+/* ── History ── */
+.wl-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;}
+.wl-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px dashed var(--wl-line2);}
+.wl-row:last-child{border-bottom:0;padding-bottom:0;}
+.wl-row:first-child{padding-top:0;}
+.wl-row.is-new{animation:wlIn .4s var(--wl-ease);}
+.wl-row-ico{width:40px;height:40px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--wl-green);background:var(--wl-sage);}
+.wl-row-txt{flex:1;min-width:0;}
+.wl-row-txt b{display:block;font-size:14px;line-height:20px;font-weight:700;color:var(--wl-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.wl-row-txt small{display:block;font-size:11.5px;line-height:16px;font-weight:500;color:var(--wl-mut2);}
+.wl-pill{flex-shrink:0;max-width:44%;padding:4px 10px;border-radius:999px;font-size:10px;line-height:15px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#fff7ed;color:#c2410c;}
+.wl-pill.is-ok{background:#E6F4EA;color:#15803D;}
+.wl-pill.is-bad{background:#FEE2E2;color:#B91C1C;}
+.wl-empty{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 0 6px;text-align:center;font-size:13px;line-height:18px;font-weight:600;color:var(--wl-mut2);}
+.wl-empty span{width:52px;height:52px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--wl-green);background:var(--wl-sage);}
 
-/* status alert */
-.status-alert {
-  width:100%; margin-bottom:12px; padding:12px 16px;
-  border-radius:14px; text-align:center; font-weight:900;
-  letter-spacing:.4px; box-sizing:border-box;
-}
-.status-danger  { background:rgba(220,38,38,.08); color:var(--red-dk); border:1px solid rgba(220,38,38,.35); border-left:4px solid var(--red); }
-.status-success { background:rgba(22,163,74,.08); color:#166534; border:1px solid rgba(22,163,74,.35); border-left:4px solid var(--green); }
-.status-warn    { background:rgba(255,140,0,.10); color:var(--orange-dk); border:1px solid rgba(255,140,0,.45); border-left:4px solid var(--orange); }
+/* footer */
+.wl-foot{padding-top:4px;text-align:center;font-size:12px;line-height:16px;font-weight:500;color:var(--wl-mut);}
+.wl-foot p{margin:0;}
+.wl-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
+.wl-foot i{width:6px;height:6px;border-radius:50%;background:var(--wl-primary);}
+.wl-foot b{font-weight:700;color:var(--wl-accent);}
 
-/* ─────────────── PAGE WRAP ─────────────── */
-.w-wrap {
-  width:min(520px,94vw); max-width:520px;
-  margin:0 auto; padding:0 14px 80px; box-sizing:border-box;
+@media (min-width:640px){
+  .wl{padding:32px 0;}
+  .wl-app{min-height:0;border-radius:2.5rem;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);}
+  .wl-top{border-radius:2.5rem;}
 }
-.w-body { margin-top:-34px; }
-
-/* ─────────────── CARDS ─────────────── */
-.w-card {
-  position:relative;
-  background:var(--card); border-radius:22px;
-  padding:20px 20px 18px;
-  box-shadow:0 8px 30px rgba(10,36,99,.10),0 2px 6px rgba(0,0,0,.05);
-  border:1px solid var(--line);
-  margin-bottom:12px; overflow:hidden;
-  opacity:0; animation:wFadeUp .45s ease-out both;
+@media (max-width:359px){
+  .wl-top{padding-left:20px;padding-right:20px;}
+  .wl-main{padding:0 14px;}
+  .wl-card{padding:20px 16px;}
+  .wl-bcard{padding:16px 18px 14px;min-height:180px;}
 }
-/* left orange accent bar */
-.w-card::before {
-  content:"";
-  position:absolute; top:18px; left:0;
-  width:4px; height:calc(100% - 36px);
-  border-radius:0 4px 4px 0;
-  background:linear-gradient(180deg,var(--orange-lt),var(--orange-dk));
-}
-.w-card:nth-child(1) { animation-delay:.06s; }
-.w-card:nth-child(2) { animation-delay:.11s; }
-.w-card:nth-child(3) { animation-delay:.16s; }
-.w-card:nth-child(4) { animation-delay:.21s; }
-
-/* card header row */
-.w-card-head { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
-
-/* icon badges */
-.w-ico {
-  width:40px; height:40px; border-radius:13px;
-  display:flex; align-items:center; justify-content:center; flex:0 0 auto;
-}
-.w-ico svg { width:18px; height:18px; }
-.w-ico-orange { background:linear-gradient(135deg,var(--orange-lt),var(--orange-dk)); box-shadow:0 4px 12px rgba(255,140,0,.30); }
-.w-ico-orange svg { fill:none; stroke:#fff; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-.w-ico-navy   { background:rgba(10,36,99,.08); }
-.w-ico-navy svg { fill:none; stroke:var(--navy); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-.w-ico-green  { background:rgba(22,163,74,.10); }
-.w-ico-green svg { fill:none; stroke:var(--green); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-
-.w-card-info { flex:1; min-width:0; }
-.w-card-title { font-size:15px; font-weight:900; color:var(--ink); }
-.w-card-sub   { font-size:11.5px; color:var(--ink2); font-weight:600; margin-top:1px; }
-
-/* pill */
-.w-pill {
-  padding:5px 12px; border-radius:999px;
-  font-weight:900; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
-  background:rgba(10,36,99,.07); border:1px solid rgba(10,36,99,.15); color:var(--navy);
-  white-space:nowrap;
-}
-.w-pill[data-wstatus="paid"],.w-pill[data-wstatus="payment_sent"]
-  { background:rgba(22,163,74,.10); color:#166534; border-color:rgba(22,163,74,.35); }
-.w-pill[data-wstatus="rejected"],.w-pill[data-wstatus="withdrawal_fail"]
-  { background:rgba(220,38,38,.10); color:var(--red-dk); border-color:rgba(220,38,38,.35); }
-.w-pill[data-wstatus="processing"],.w-pill[data-wstatus="reviewed"]
-  { background:rgba(255,140,0,.12); color:var(--orange-dk); border-color:rgba(255,140,0,.40); }
-
-/* ── Inputs ── */
-.w-field { margin-top:2px; position:relative; }
-.w-field-prefix {
-  position:absolute; left:16px; top:50%; transform:translateY(-50%);
-  font-size:18px; font-weight:900; color:var(--orange); pointer-events:none; z-index:1;
-}
-.w-input {
-  width:100%; padding:14px 16px 14px 36px;
-  border-radius:14px; border:1.5px solid var(--line);
-  background:#f7f9fc; color:var(--ink); outline:none;
-  font-size:17px; font-weight:800; letter-spacing:.02em;
-  box-sizing:border-box;
-  transition:border-color .18s, box-shadow .18s, background .18s;
-}
-.w-input.bare { padding-left:16px; }
-.w-input::placeholder { color:var(--ink3); font-weight:600; font-size:15px; }
-.w-input:focus { border-color:var(--orange); background:#fff; box-shadow:0 0 0 4px rgba(255,140,0,.10); }
-
-.w-hint {
-  margin-top:8px; font-size:11.5px; color:var(--ink2); font-weight:600;
-  display:flex; align-items:center; gap:5px;
-}
-.w-hint::before {
-  content:""; display:inline-block;
-  width:4px; height:4px; border-radius:50%;
-  background:var(--orange-lt); flex:0 0 auto;
-}
-
-/* ── Big button ── */
-.big-btn {
-  display:flex; align-items:center; justify-content:center; gap:10px;
-  height:56px; border-radius:16px; border:0; width:100%;
-  cursor:pointer; font-family:inherit; font-weight:950;
-  letter-spacing:.14em; text-transform:uppercase; font-size:14px;
-  color:#fff;
-  background:linear-gradient(135deg,var(--orange-lt) 0%,var(--orange) 45%,var(--orange-dk) 100%);
-  box-shadow:0 8px 24px rgba(255,140,0,.40),inset 0 1px 0 rgba(255,255,255,.18);
-  transition:box-shadow .22s,transform .18s,filter .18s,opacity .18s;
-  position:relative; overflow:hidden;
-}
-.big-btn::before {
-  content:""; position:absolute; inset:0;
-  background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.12) 50%,transparent 70%);
-  animation:shimmer 3.5s ease-in-out 1.5s infinite;
-}
-.big-btn:hover:not([disabled]) { box-shadow:0 12px 32px rgba(255,140,0,.55),inset 0 1px 0 rgba(255,255,255,.18); transform:translateY(-2px); }
-.big-btn:active:not([disabled]) { transform:scale(.99); }
-.big-btn[disabled] { opacity:.38; cursor:not-allowed; background:var(--line); color:var(--ink3); box-shadow:none; }
-.big-btn[disabled]::before { animation:none; }
-
-/* ── Form alert ── */
-#formAlert {
-  display:none; align-items:center; gap:10px;
-  margin:0 0 14px !important; padding:13px 15px !important;
-  border-radius:13px !important; box-sizing:border-box;
-  border:1px solid rgba(220,38,38,.22) !important;
-  border-left:4px solid var(--red) !important;
-  background:rgba(220,38,38,.05) !important;
-  color:var(--red-dk) !important;
-  font-weight:800; font-size:13px;
-}
-
-/* ── Timeline ── */
-.timeline {
-  display:none; margin-top:20px;
-  padding:20px 18px 16px;
-  border-radius:18px;
-  background:linear-gradient(135deg,rgba(10,36,99,.03) 0%,rgba(255,140,0,.03) 100%);
-  border:1.5px solid var(--line);
-}
-.tl-head {
-  display:flex; align-items:center; gap:10px; margin-bottom:20px;
-}
-.tl-live-dot {
-  width:8px; height:8px; border-radius:50%;
-  background:var(--orange); position:relative; flex:0 0 auto;
-  animation:pulseDot 1.4s ease-in-out infinite;
-}
-.tl-live-dot::after {
-  content:""; position:absolute; inset:-5px; border-radius:50%;
-  border:2px solid rgba(255,140,0,.30);
-  animation:pulseDot 1.4s ease-in-out .3s infinite;
-}
-.tl-head-label {
-  font-size:10.5px; font-weight:900; color:var(--ink2);
-  letter-spacing:.18em; text-transform:uppercase;
-}
-
-.tl-item {
-  display:flex; align-items:flex-start; gap:14px;
-  position:relative; padding:5px 0;
-}
-.tl-item:not(:last-child)::after {
-  content:""; position:absolute; left:18px; top:44px; bottom:-5px;
-  width:2px; border-radius:2px;
-  background:linear-gradient(180deg,var(--line) 0%,rgba(230,234,244,.4) 100%);
-}
-.tl-item:not(:last-child).tl-active::after {
-  background:linear-gradient(180deg,rgba(10,36,99,.25) 0%,var(--line) 100%);
-}
-
-.tl-bullet {
-  width:36px; height:36px; border-radius:50%;
-  border:2px solid var(--line); background:#fff;
-  display:flex; align-items:center; justify-content:center;
-  flex:0 0 auto;
-  transition:background .30s,border-color .30s,box-shadow .30s;
-}
-.tl-bullet svg { width:17px; height:17px; fill:var(--ink3); transition:fill .30s; }
-
-.tl-bullet.on {
-  background:linear-gradient(135deg,var(--navy),var(--navy-lt));
-  border-color:var(--navy);
-  box-shadow:0 4px 14px rgba(10,36,99,.35),0 0 0 5px rgba(10,36,99,.07);
-}
-.tl-bullet.on svg { fill:#fff; }
-.tl-bullet.success {
-  background:linear-gradient(135deg,var(--green),var(--green-dk)) !important;
-  border-color:var(--green) !important;
-  box-shadow:0 4px 14px rgba(22,163,74,.42),0 0 0 5px rgba(22,163,74,.08) !important;
-}
-.tl-bullet.success svg { fill:#fff !important; }
-.tl-bullet.rejected,.tl-bullet.on.rejected {
-  background:linear-gradient(135deg,var(--red),var(--red-dk)) !important;
-  border-color:var(--red) !important;
-  box-shadow:0 4px 14px rgba(220,38,38,.42),0 0 0 5px rgba(220,38,38,.08) !important;
-}
-.tl-bullet.rejected svg { fill:#fff !important; }
-
-/* ico helpers — preserved exactly */
-.tl-bullet .ico-ok { display:block; }
-.tl-bullet .ico-x  { display:none; }
-.tl-bullet.rejected .ico-ok { display:none; }
-.tl-bullet.rejected .ico-x  { display:block; }
-#b3 .ico-ok          { display:block !important; }
-#b3 .ico-x           { display:none !important; }
-#b3.rejected .ico-ok { display:none !important; }
-#b3.rejected .ico-x  { display:block !important; }
-#b3.success .ico-ok  { display:block !important; }
-#b3.success .ico-x   { display:none !important; }
-
-.tl-info { flex:1; padding-top:4px; }
-.tl-text { font-weight:900; color:var(--ink); font-size:14px; }
-.tl-text.rejected { color:var(--red); }
-.tl-text.success  { color:#166534; }
-.tl-sub { font-size:11px; color:var(--ink2); font-weight:600; margin-top:2px; }
-
-/* ── Withdrawals list ── */
-.w-list-row {
-  display:flex; align-items:center; gap:12px;
-  padding:13px 0; border-bottom:1px solid var(--line);
-}
-.w-list-row:last-child { border-bottom:none; }
-.w-list-ico {
-  width:38px; height:38px; border-radius:12px;
-  background:rgba(10,36,99,.06);
-  display:flex; align-items:center; justify-content:center; flex:0 0 auto;
-}
-.w-list-ico svg { width:16px; height:16px; fill:none; stroke:var(--navy); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-.w-list-info { flex:1; min-width:0; }
-.w-list-label { font-weight:900; color:var(--ink); font-size:13.5px; }
-.w-list-muted { font-size:11px; color:var(--ink2); font-weight:600; margin-top:2px; }
-
-.w-empty {
-  text-align:center; padding:18px 0 6px;
-  color:var(--ink3); font-size:13px; font-weight:600;
-}
-.w-empty svg { width:34px; height:34px; fill:none; stroke:var(--ink3); stroke-width:1.5; stroke-linecap:round; display:block; margin:0 auto 10px; }
-
-/* ── Back button ── */
-.top-actions { margin-top:6px; }
-.back-btn {
-  display:inline-flex; align-items:center; gap:6px;
-  height:42px; padding:0 20px; border-radius:999px;
-  background:var(--card); color:var(--navy) !important;
-  border:2px solid rgba(10,36,99,.20); font-weight:900;
-  font-size:12.5px; letter-spacing:.08em; text-transform:uppercase;
-  text-decoration:none; box-shadow:0 2px 10px rgba(10,36,99,.07);
-  transition:all .22s;
-}
-.back-btn:hover { color:#fff !important; background:var(--navy); border-color:var(--navy); box-shadow:0 6px 16px rgba(10,36,99,.26); }
-.back-btn svg { width:14px; height:14px; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
-
-@media (max-width:768px) {
-  .w-card { animation:none !important; opacity:1 !important; }
+@media (prefers-reduced-motion: reduce){
+  .wl-live i::after,.shake{animation:none;}
+  .wl-amt > span,.wl-step::after{transition:none;}
 }
 </style>
 
-<div class="w-wrap">
+<!-- Icons: Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0) Copyright 2023 Fonticons, Inc. -->
+<div class="wl">
+  <div class="wl-app">
 
-  <!-- ── HERO ── -->
-  <div class="w-hero-shell" style="margin:0 -14px; padding-left:max(18px,env(safe-area-inset-left)); padding-right:max(18px,env(safe-area-inset-right));">
-    <div class="w-dot-grid" aria-hidden="true"></div>
-
-    <!-- nav -->
-    <div class="w-nav">
-      <a class="w-nav-back" href="{% url 'dashboard' %}" aria-label="Back">
-        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      </a>
-      <div class="w-nav-title">My Wallet</div>
-      <div class="w-nav-spacer"></div>
-    </div>
-
-    <!-- status alert (inside hero, shown if needed) -->
-    <div id="statusAlert"
-         class="status-alert"
-         style="display:none; margin-bottom:16px; position:relative; z-index:3;"
-         data-msg="{{ request.user.status_message|default:''|escapejs }}"
-         {% if request.user.status_message %}data-lock="1"{% endif %}></div>
-
-    <!-- OFL Premium Card -->
-    <div class="ofl-card">
-      <div class="ofl-top">
-        <div class="ofl-brand-row">
-          <div class="ofl-brand">OFL</div>
-          <div class="ofl-brand-full">Overseas Filipino Loan</div>
-        </div>
-        <div class="ofl-chip">
-          <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="2"/><path d="M7 6v13M17 6v13M2 11h20M2 15h20"/></svg>
-        </div>
+    <!-- ── Header ── -->
+    <header class="wl-top">
+      <div class="wl-glow wl-glow-a"></div>
+      <div class="wl-glow wl-glow-b"></div>
+      <div class="wl-bar">
+        <a class="wl-back wl-glass-dark" href="{% url 'dashboard' %}" aria-label="Back to dashboard"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></a>
+        <div class="wl-badge wl-glass-dark"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 0c4.6 0 9.2 1 13.4 2.9L457.7 82.8c22 9.3 38.4 31 38.3 57.2c-.5 99.2-41.3 280.7-213.6 363.2c-16.7 8-36.1 8-52.8 0C57.3 420.7 16.5 239.2 16 140c-.1-26.2 16.3-47.9 38.3-57.2L242.7 2.9C246.8 1 251.4 0 256 0zm0 66.8V444.8C394 378 431.1 230.1 432 141.4L256 66.8l0 0z"/></svg>Secure Withdrawal</div>
       </div>
-
-      <div class="ofl-bal-label">Available Balance</div>
-      <div class="ofl-bal-row">
-        <div class="ofl-bal-hidden" id="wBalHidden">&#8369;&nbsp;&#9679;&#9679;&#9679;&#9679;&#9679;</div>
-        <div class="ofl-bal-amt" id="wBalReal" style="display:none">&#8369; {{ request.user.balance|default:"0.00" }}</div>
-        <span data-balance style="position:absolute;visibility:hidden;pointer-events:none;font-size:0;">{{ request.user.balance|default:"0.00" }}</span>
-        <button class="ofl-bal-eye" id="wBalEye" type="button" onclick="toggleWalBal()" aria-label="Toggle balance">
-          <svg id="wEyeIcon" viewBox="0 0 24 24">
-            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-            <line x1="1" y1="1" x2="23" y2="23"/>
-          </svg>
-        </button>
+      <div class="wl-hero">
+        <p class="wl-eyebrow">Wallet</p>
+        <h1>My Wallet</h1>
+        <p>Withdraw your money to your payout account</p>
       </div>
+    </header>
 
-      <div class="ofl-foot">
+    <main class="wl-main">
+
+      <!-- ── Balance card ── -->
+      <div class="wl-bcard">
+        <div class="wl-btop">
+          <div class="wl-brand"><b>OFL</b><span>Overseas Filipino Loan</span></div>
+          <span class="wl-chip" aria-hidden="true"></span>
+        </div>
         <div>
-          <div class="ofl-holder-label">Card Holder</div>
-          <div class="ofl-holder-name">{{ request.user.username }}</div>
+          <span class="wl-blabel">Available Balance</span>
+          <div class="wl-brow">
+            <div class="wl-amt" id="wlAmt">
+              <span class="wl-amt-mask" aria-hidden="true">₱ ••••••</span>
+              <span class="wl-amt-real" id="wlAmtReal">₱ {{ request.user.balance|default:0|floatformat:2|intcomma }}</span>
+            </div>
+            <button type="button" class="wl-eye" id="wlEye" aria-label="Show balance" aria-pressed="false" aria-controls="wlAmt"><svg viewBox="0 0 640 512" class="i-hidden" aria-hidden="true"><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zm151 118.3C226 97.7 269.5 80 320 80c65.2 0 118.8 29.6 159.9 67.7C518.4 183.5 545 226 558.6 256c-12.6 28-36.6 66.8-70.9 100.9l-53.8-42.2c9.1-17.6 14.2-37.5 14.2-58.7c0-70.7-57.3-128-128-128c-32.2 0-61.7 11.9-84.2 31.5l-46.1-36.1zM394.9 284.2l-81.5-63.9c4.2-8.5 6.6-18.2 6.6-28.3c0-5.5-.7-10.9-2-16c.7 0 1.3 0 2 0c44.2 0 80 35.8 80 80c0 9.9-1.8 19.4-5.1 28.2zm9.4 130.3C378.8 425.4 350.7 432 320 432c-65.2 0-118.8-29.6-159.9-67.7C121.6 328.5 95 286 81.4 256c8.3-18.4 21.5-41.5 39.4-64.8L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5l-41.9-33zM192 256c0 70.7 57.3 128 128 128c13.3 0 26.1-2 38.2-5.8L302 334c-23.5-5.4-43.1-21.2-53.7-42.3l-56.1-44.2c-.2 2.8-.3 5.6-.3 8.5z"/></svg><svg viewBox="0 0 576 512" class="i-shown" aria-hidden="true"><path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"/></svg></button>
+          </div>
+          <!-- base.html's live poller keeps this up to date (raw number) -->
+          <span data-balance hidden>{{ request.user.balance|default:"0.00" }}</span>
         </div>
-        <div class="ofl-card-num">&#9679;&#9679;&#9679;&#9679;</div>
+        <div class="wl-bfoot">
+          <div><small>Card Holder</small><b>{{ holder|default:"OFL Client" }}</b></div>
+          <div class="r"><small>Currency</small><b>PHP</b></div>
+        </div>
       </div>
-    </div>
+
+      <!-- account status (from staff, or live from base.html) -->
+      <div id="statusAlert" class="wl-alert" role="status" style="display:none"
+           {% if request.user.status_message %}data-lock="1" data-msg="{{ request.user.status_message }}"{% endif %}></div>
+
+      <!-- ── Withdraw ── -->
+      <section class="wl-card">
+        <div class="wl-head">
+          <div class="wl-head-ico"><svg viewBox="0 0 640 512" aria-hidden="true"><path d="M535 41c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l64 64c4.5 4.5 7 10.6 7 17s-2.5 12.5-7 17l-64 64c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l23-23L384 112c-13.3 0-24-10.7-24-24s10.7-24 24-24l174.1 0L535 41zM105 377l-23 23L256 400c13.3 0 24 10.7 24 24s-10.7 24-24 24L81.9 448l23 23c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L7 441c-4.5-4.5-7-10.6-7-17s2.5-12.5 7-17l64-64c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9zM96 64H337.9c-3.7 7.2-5.9 15.3-5.9 24c0 28.7 23.3 52 52 52l117.4 0c-4 17 .6 35.5 13.8 48.8c20.3 20.3 53.2 20.3 73.5 0L608 169.5V384c0 35.3-28.7 64-64 64H302.1c3.7-7.2 5.9-15.3 5.9-24c0-28.7-23.3-52-52-52l-117.4 0c4-17-.6-35.5-13.8-48.8c-20.3-20.3-53.2-20.3-73.5 0L32 342.5V128c0-35.3 28.7-64 64-64zm64 64H96v64c35.3 0 64-28.7 64-64zM544 320c-35.3 0-64 28.7-64 64h64V320zM320 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"/></svg></div>
+          <div><h2>Withdraw Funds</h2><p>Sent to your saved payment method</p></div>
+        </div>
+        <form id="wlForm" method="post" action="{% url 'withdraw_create' %}" novalidate>
+          {% csrf_token %}
+          <input type="hidden" name="amount" id="amountHidden" value="">
+          <input type="hidden" name="otp" id="otpHidden" value="">
+          <div class="wl-fields">
+            <div>
+              <div class="wl-label-row">
+                <label class="wl-label" for="amountInput">Amount</label>
+                <button type="button" class="wl-max" id="wlMax">Use all</button>
+              </div>
+              <div class="wl-field"><span class="wl-ico is-peso" aria-hidden="true">₱</span>
+                <input class="wl-input" id="amountInput" type="text" inputmode="decimal" autocomplete="off" placeholder="0.00" enterkeyhint="next" aria-describedby="amountHint"></div>
+              <p class="wl-hint" id="amountHint">Available: <b id="wlAvail">₱{{ request.user.balance|default:0|floatformat:2|intcomma }}</b></p>
+            </div>
+            <div>
+              <div class="wl-label-row"><label class="wl-label" for="otpInput">OTP code</label></div>
+              <div class="wl-field"><span class="wl-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M336 352c97.2 0 176-78.8 176-176S433.2 0 336 0S160 78.8 160 176c0 18.7 2.9 36.8 8.3 53.7L7 391c-4.5 4.5-7 10.6-7 17v80c0 13.3 10.7 24 24 24h80c13.3 0 24-10.7 24-24V448h40c13.3 0 24-10.7 24-24V384h40c6.4 0 12.5-2.5 17-7l33.3-33.3c16.9 5.4 35 8.3 53.7 8.3zM376 96a40 40 0 1 1 0 80 40 40 0 1 1 0-80z"/></svg></span>
+                <input class="wl-input" id="otpInput" type="text" autocomplete="one-time-code" autocapitalize="off" spellcheck="false" placeholder="Enter OTP" enterkeyhint="send"></div>
+              <p class="wl-hint">The one-time code from our team confirms your withdrawal.</p>
+            </div>
+          </div>
+          <div class="wl-err" id="formAlert" role="alert"></div>
+          <button type="submit" class="wl-cta" id="withdrawBtn" disabled><svg viewBox="0 0 512 512" class="wl-cta-ico" aria-hidden="true"><path d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480V396.4c0-4 1.5-7.8 4.2-10.7L331.8 202.8c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8 17.7 316.6C7.1 311.3 .3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z"/></svg><i class="wl-spin" aria-hidden="true"></i><span id="wlBtnTxt">Withdraw Now</span></button>
+        </form>
+      </section>
+
+      <!-- ── Latest withdrawal status ── -->
+      <section class="wl-card wl-tl" id="timelineBox" hidden>
+        <div class="wl-head">
+          <div class="wl-head-ico"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M32 0C14.3 0 0 14.3 0 32S14.3 64 32 64V75c0 42.4 16.9 83.1 46.9 113.1L146.7 256 78.9 323.9C48.9 353.9 32 394.6 32 437v11c-17.7 0-32 14.3-32 32s14.3 32 32 32H64 320h32c17.7 0 32-14.3 32-32s-14.3-32-32-32V437c0-42.4-16.9-83.1-46.9-113.1L237.3 256l67.9-67.9c30-30 46.9-70.7 46.9-113.1V64c17.7 0 32-14.3 32-32s-14.3-32-32-32H320 64 32zM96 75V64H288V75c0 19-5.6 37.4-16 53H112c-10.3-15.6-16-34-16-53zm16 309c3.5-5.3 7.6-10.3 12.1-14.9L192 301.3l67.9 67.9c4.6 4.6 8.6 9.6 12.1 14.9H112z"/></svg></div>
+          <div><h2>Withdrawal Status</h2><p>Your latest request</p></div>
+        </div>
+        <div class="wl-live"><i></i><span id="wlLiveTxt">Live updates</span></div>
+        <ol class="wl-steps">
+          <li class="wl-step" id="b1"><span class="wl-dot"><svg viewBox="0 0 448 512" class="i-ok" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></span><div><b>Reviewed</b><small>Your request is being reviewed</small></div></li>
+          <li class="wl-step" id="b2"><span class="wl-dot"><svg viewBox="0 0 448 512" class="i-ok" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></span><div><b>Processing</b><small>We are processing your withdrawal</small></div></li>
+          <li class="wl-step" id="b3"><span class="wl-dot"><svg viewBox="0 0 448 512" class="i-ok" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg><svg viewBox="0 0 384 512" class="i-x" aria-hidden="true"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></span><div><b id="t3">Withdrawal Successful</b><small id="t3sub">Sent to your payment method</small></div></li>
+        </ol>
+      </section>
+
+      <!-- ── History ── -->
+      <section class="wl-card">
+        <div class="wl-head">
+          <div class="wl-head-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></div>
+          <div><h2>Last Withdrawals</h2><p>Your recent requests</p></div>
+          <span class="wl-count" id="wlCount">{{ withdrawals|length }}</span>
+        </div>
+        <ul class="wl-list" id="wlList">
+          {% for w in withdrawals %}
+          <li class="wl-row">
+            <span class="wl-row-ico"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/></svg></span>
+            <div class="wl-row-txt"><b>₱{{ w.amount|floatformat:2|intcomma }}</b><small>{{ w.created_at|date:"M j, Y · g:i A" }}</small></div>
+            <span class="wl-pill{% if w.status == 'paid' %} is-ok{% elif w.status == 'rejected' or w.status == 'withdrawal_fail' %} is-bad{% endif %}"{% if forloop.first %} data-wstatus="{{ w.status }}"{% endif %}>{{ w.get_status_display }}</span>
+          </li>
+          {% empty %}
+          <li class="wl-empty" id="wlEmpty"><span><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M14 2.2C22.5-1.7 32.5-.3 39.6 5.8L80 40.4 120.4 5.8c9-7.7 22.3-7.7 31.2 0L192 40.4 232.4 5.8c9-7.7 22.3-7.7 31.2 0L304 40.4 344.4 5.8c7.1-6.1 17.1-7.5 25.6-3.6s14 12.4 14 21.8V488c0 9.4-5.5 17.9-14 21.8s-18.5 2.5-25.6-3.6L304 471.6l-40.4 34.6c-9 7.7-22.3 7.7-31.2 0L192 471.6l-40.4 34.6c-9 7.7-22.3 7.7-31.2 0L80 471.6 39.6 506.2c-7.1 6.1-17.1 7.5-25.6 3.6S0 497.4 0 488V24C0 14.6 5.5 6.1 14 2.2zM96 144c-8.8 0-16 7.2-16 16s7.2 16 16 16H288c8.8 0 16-7.2 16-16s-7.2-16-16-16H96zM80 352c0 8.8 7.2 16 16 16H288c8.8 0 16-7.2 16-16s-7.2-16-16-16H96c-8.8 0-16 7.2-16 16zM96 240c-8.8 0-16 7.2-16 16s7.2 16 16 16H288c8.8 0 16-7.2 16-16s-7.2-16-16-16H96z"/></svg></span>No withdrawals yet.</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <footer class="wl-foot">
+        <p><i></i> Overseas FilipinoLoan <span>•</span> <b>v2.2.1</b></p>
+        <p>© 2026 All rights reserved</p>
+      </footer>
+    </main>
   </div>
-
-  <!-- ── BODY ── -->
-  <div class="w-body">
-
-    <!-- WITHDRAWAL AMOUNT -->
-    <div class="w-card">
-      <div class="w-card-head">
-        <div class="w-ico w-ico-orange">
-          <!-- Peso banknote icon -->
-          <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 6v13M18 6v13"/></svg>
-        </div>
-        <div class="w-card-info">
-          <div class="w-card-title">Withdrawal Amount</div>
-          <div class="w-card-sub">Enter amount you want to withdraw</div>
-        </div>
-        <div class="w-pill">PHP</div>
-      </div>
-      <div class="w-field">
-        <span class="w-field-prefix">₱</span>
-        <input id="amountInput" class="w-input" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0.00" autocomplete="off"/>
-      </div>
-      <div class="w-hint" id="amountHint">Max: PHP 0.00</div>
-    </div>
-
-    <!-- OTP CODE -->
-    <div class="w-card">
-      <div class="w-card-head">
-        <div class="w-ico w-ico-navy">
-          <!-- Shield + checkmark: security/OTP -->
-          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-        </div>
-        <div class="w-card-info">
-          <div class="w-card-title">OTP Code</div>
-          <div class="w-card-sub">One-time password to confirm</div>
-        </div>
-        <div class="w-pill">OTP</div>
-      </div>
-      <div class="w-field">
-        <input id="otpInput" class="w-input bare" type="text" inputmode="text" placeholder="Enter OTP" autocomplete="one-time-code"/>
-      </div>
-      <div class="w-hint">OTP is required to confirm withdrawal.</div>
-    </div>
-
-    <!-- WITHDRAW + TIMELINE -->
-    <div class="w-card">
-      <div class="w-card-head" style="margin-bottom:16px;">
-        <div class="w-ico w-ico-orange">
-          <!-- Wallet icon -->
-          <svg viewBox="0 0 24 24"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>
-        </div>
-        <div class="w-card-info">
-          <div class="w-card-title">Withdraw Funds</div>
-          <div class="w-card-sub">Instant transfer to your account</div>
-        </div>
-      </div>
-
-      <form method="post" action="{% url 'withdraw_create' %}" style="margin:0;" id="withdrawForm">
-        {% csrf_token %}
-        <input type="hidden" name="amount" id="amountHidden" value="">
-        <input type="hidden" name="otp"    id="otpHidden"    value="">
-
-        <div id="formAlert"></div>
-
-        <button class="big-btn" type="button" id="withdrawBtn" disabled>
-          <!-- Paper plane / send -->
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex:0 0 auto">
-            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-          </svg>
-          WITHDRAW NOW
-        </button>
-        <div class="w-hint" id="btnHint" style="justify-content:center;margin-top:10px;">Enter a valid amount to enable withdraw.</div>
-      </form>
-
-      <!-- TIMELINE -->
-      <div class="timeline" id="timelineBox">
-        <div class="tl-head">
-          <div class="tl-live-dot"></div>
-          <div class="tl-head-label">Withdrawal Status</div>
-        </div>
-
-        <div class="tl-item">
-          <div class="tl-bullet" id="b1">
-            <svg viewBox="0 0 24 24"><path class="ico-ok" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
-          </div>
-          <div class="tl-info">
-            <div class="tl-text">Reviewed</div>
-            <div class="tl-sub">Your request is being reviewed</div>
-          </div>
-        </div>
-
-        <div class="tl-item">
-          <div class="tl-bullet" id="b2">
-            <svg viewBox="0 0 24 24"><path class="ico-ok" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/></svg>
-          </div>
-          <div class="tl-info">
-            <div class="tl-text">Processing</div>
-            <div class="tl-sub">We are processing your withdrawal</div>
-          </div>
-        </div>
-
-        <div class="tl-item">
-          <div class="tl-bullet" id="b3">
-            <svg id="b3Icon" viewBox="0 0 24 24">
-              <path id="b3Path" class="ico-ok" d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"></path>
-            </svg>
-          </div>
-          <div class="tl-info">
-            <div class="tl-text" id="t3">Withdrawal Successfully</div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- LAST WITHDRAWALS -->
-    <div class="w-card">
-      <div class="w-card-head">
-        <div class="w-ico w-ico-green">
-          <!-- Receipt / transaction document -->
-          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg>
-        </div>
-        <div class="w-card-info">
-          <div class="w-card-title">Last Withdrawals</div>
-          <div class="w-card-sub">Your recent transactions</div>
-        </div>
-        <div class="w-pill">{{ withdrawals|length }}</div>
-      </div>
-
-      {% for w in withdrawals %}
-        <div class="w-list-row">
-          <div class="w-list-ico">
-            <!-- Arrow down = money sent out -->
-            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><polyline points="19 12 12 19 5 12"/></svg>
-          </div>
-          <div class="w-list-info">
-            <div class="w-list-label">PHP {{ w.amount }} {{ w.currency }}</div>
-            <div class="w-list-muted">{{ w.created_at }}</div>
-          </div>
-          {% if forloop.first %}
-            <div class="w-pill" data-wstatus="{{ w.status }}">{{ w.get_status_display }}</div>
-          {% else %}
-            <div class="w-pill">{{ w.get_status_display }}</div>
-          {% endif %}
-        </div>
-      {% empty %}
-        <div class="w-empty">
-          <!-- Empty wallet -->
-          <svg viewBox="0 0 24 24"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0 0 4h4v-4z"/></svg>
-          No withdrawals yet.
-        </div>
-      {% endfor %}
-    </div>
-
-    <!-- BACK -->
-    <div class="top-actions">
-      <a class="back-btn" href="{% url 'dashboard' %}">
-        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-        Back to Dashboard
-      </a>
-    </div>
-
-  </div><!-- /.w-body -->
-</div><!-- /.w-wrap -->
-
-<script>
-/* Balance toggle */
-var _wShown = false;
-window.toggleWalBal = function(){
-  _wShown = !_wShown;
-  var h = document.getElementById('wBalHidden');
-  var r = document.getElementById('wBalReal');
-  var e = document.getElementById('wEyeIcon');
-  if(_wShown){
-    if(h) h.style.display='none';
-    if(r) r.style.display='';
-    if(e) e.innerHTML='<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-  } else {
-    if(h) h.style.display='';
-    if(r) r.style.display='none';
-    if(e) e.innerHTML='<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
-  }
-};
-</script>
+</div>
+<template id="wlRowTpl"><li class="wl-row is-new"><span class="wl-row-ico"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/></svg></span><div class="wl-row-txt"><b></b><small>Just now</small></div><span class="wl-pill" data-wstatus="processing">Processing</span></li></template>
 
 <script>
 (function(){
-  const form = document.getElementById("withdrawForm");
-  const btn  = document.getElementById("withdrawBtn");
+'use strict';
+function $(id){ return document.getElementById(id); }
+function shake(el){ el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(function(){ el.classList.remove('shake'); },450); }
+function peso(n){
+  var s=(Math.round(n*100)/100).toFixed(2), p=s.split('.');
+  return '₱'+p[0].replace(/\B(?=(\d{3})+(?!\d))/g,',')+'.'+p[1];
+}
+/* digits and one decimal point (2 decimals at most); no leading zeros */
+function money(v){
+  v=String(v||'').replace(/[^0-9.]/g,'');
+  var k=v.indexOf('.'), i=(k<0?v:v.slice(0,k)).replace(/^0+(?=\d)/,'').slice(0,12);
+  return k<0?i:(i||'0')+'.'+v.slice(k+1).replace(/\./g,'').slice(0,2);
+}
+function getCookie(name){ var m=document.cookie.match('(^|;)\\s*'+name+'\\s*=\\s*([^;]+)'); return m?m.pop():''; }
 
-  const amountInput  = document.getElementById("amountInput");
-  const otpInput     = document.getElementById("otpInput");
-  const amountHidden = document.getElementById("amountHidden");
-  const otpHidden    = document.getElementById("otpHidden");
+/* ── Balance: show / hide, and follow base.html's live updates ── */
+var amtBox=$('wlAmt'), eye=$('wlEye'), balSrc=document.querySelector('[data-balance]'), amtReal=$('wlAmtReal'), avail=$('wlAvail');
+eye.addEventListener('click',function(){
+  var show=!amtBox.classList.contains('is-shown');
+  amtBox.classList.toggle('is-shown',show); eye.classList.toggle('on',show);
+  eye.setAttribute('aria-pressed',String(show)); eye.setAttribute('aria-label',show?'Hide balance':'Show balance');
+});
+function balance(){ return parseFloat(String(balSrc.textContent||'0').replace(/,/g,'').trim())||0; }
+function paintBalance(){ var b=balance(); amtReal.textContent='₱ '+peso(b).slice(1); avail.textContent=peso(b); update(); }
+if(window.MutationObserver) new MutationObserver(paintBalance).observe(balSrc,{childList:true,characterData:true,subtree:true});
 
-  const timeline = document.getElementById("timelineBox");
-  const b1 = document.getElementById("b1");
-  const b2 = document.getElementById("b2");
-  const b3 = document.getElementById("b3");
-  const t3 = document.getElementById("t3");
-
-  const alertBox = document.getElementById("formAlert");
-
-  function getCookie(name){
-    const m = document.cookie.match("(^|;)\\s*"+name+"\\s*=\\s*([^;]+)");
-    return m ? m.pop() : "";
-  }
-  const CSRF = getCookie("csrftoken");
-
-  function show(){ if(timeline) timeline.style.display = "block"; }
-  function hide(){ if(timeline) timeline.style.display = "none"; }
-
-  const OK_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"></path></svg>`;
-  const X_SVG  = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4L10.6 13.4 4.3 19.7 2.9 18.3 9.2 12 2.9 5.7 4.3 4.3l6.3 6.3 6.3-6.3z"></path></svg>`;
-
-  let _uiStage=0, _lockUntil=0, _currentWdId=null, _submittedAt=0;
-
-  function lockUI(ms){ _lockUntil = Date.now()+(ms||0); }
-
-  function setIconOK(){ if(b3) b3.innerHTML=OK_SVG; }
-  function setIconX(){  if(b3) b3.innerHTML=X_SVG;  }
-
-  function resetTimeline(){
-    [b1,b2,b3].forEach(el=>{
-      if(!el) return;
-      el.classList.remove("on","success","rejected");
-      el.style.background=""; el.style.borderColor="";
-    });
-    setIconOK();
-    if(t3){ t3.classList.remove("success","rejected"); t3.textContent="Withdrawal Successfully"; }
-    _uiStage=0;
-  }
-
-  function paintStage(stage){
-    if(stage<=0){ hide(); resetTimeline(); return; }
-    show();
-    [b1,b2,b3].forEach(el=>{
-      if(!el) return;
-      el.classList.remove("on","success","rejected");
-      el.style.background=""; el.style.borderColor="";
-    });
-    setIconOK();
-    if(t3){ t3.classList.remove("success","rejected"); t3.textContent="Withdrawal Successfully"; }
-    if(stage>=1&&b1) b1.classList.add("on");
-    if(stage>=2&&b2) b2.classList.add("on");
-    _uiStage=stage;
-  }
-
-  function paintFinalRejected(){
-    show();
-    if(b1){ b1.classList.remove("rejected","success"); b1.classList.add("on"); }
-    if(b2){ b2.classList.remove("rejected","success"); b2.classList.add("on"); }
-    if(b3){
-      b3.classList.remove("on","success"); b3.classList.add("rejected");
-      b3.style.setProperty("background","#dc2626","important");
-      b3.style.setProperty("border-color","rgba(255,255,255,.18)","important");
-      setIconX(); void b3.offsetHeight; setIconX();
-    }
-    if(t3){ t3.classList.add("rejected"); t3.textContent="Rejected"; }
-    _uiStage=3;
-  }
-
-  function paintFinalPaid(){
-    show();
-    if(b1){ b1.classList.remove("rejected","success"); b1.classList.add("on"); }
-    if(b2){ b2.classList.remove("rejected","success"); b2.classList.add("on"); }
-    if(b3){
-      b3.classList.remove("rejected"); b3.classList.add("success");
-      b3.style.setProperty("background","#7CB342","important");
-      b3.style.setProperty("border-color","rgba(255,255,255,.18)","important");
-      setIconOK(); void b3.offsetHeight; setIconOK();
-    }
-    if(t3){ t3.classList.remove("rejected"); t3.classList.add("success"); t3.textContent="Withdrawal Successfully"; }
-    _uiStage=3;
-  }
-
-  function paintFinalWithdrawalFail(){
-    show();
-    if(b1){ b1.classList.remove("rejected","success"); b1.classList.add("on"); }
-    if(b2){ b2.classList.remove("rejected","success"); b2.classList.add("on"); }
-    if(b3){
-      b3.classList.remove("on","success","rejected"); b3.classList.add("rejected");
-      b3.style.setProperty("background","#dc2626","important");
-      b3.style.setProperty("border-color","rgba(255,255,255,.18)","important");
-      setIconX();
-    }
-    if(t3){ t3.classList.remove("success"); t3.classList.add("rejected"); t3.textContent="Withdraw Failed"; }
-    _uiStage=3;
-    if(alertBox){ alertBox.textContent="Withdrawal Failed"; alertBox.style.display="flex"; }
-  }
-
-  function setStatusFromDB(raw, sid){
-    const s=(raw||"").toLowerCase().trim();
-    const known=["reviewed","processing","paid","payment_sent","rejected","withdrawal_fail"];
-    if(!known.includes(s)){ paintStage(0); return; }
-
-    if(sid&&_currentWdId!==sid){
-      _currentWdId=sid;
-      const terminal=["paid","payment_sent","rejected","withdrawal_fail"];
-      if(!terminal.includes(s)){ _uiStage=0; _lockUntil=0; resetTimeline(); }
-    }
-
-    const stageMap={reviewed:1,processing:2,paid:3,payment_sent:3,rejected:3,withdrawal_fail:3};
-    const stage=stageMap[s]||0;
-
-    const justSubmitted=_submittedAt&&(Date.now()-_submittedAt)<8000;
-    if(justSubmitted&&stage<_uiStage) return;
-
-    if(s!=="withdrawal_fail"&&alertBox&&alertBox.textContent==="Withdrawal Failed") clearAlert();
-
-    if(s==="reviewed")  { paintStage(1); return; }
-    if(s==="processing"){ paintStage(2); return; }
-    if(s==="paid"||s==="payment_sent") { paintFinalPaid(); return; }
-    if(s==="rejected")       { paintFinalRejected(); return; }
-    if(s==="withdrawal_fail"){ paintFinalWithdrawalFail(); return; }
-  }
-
-  function playSubmitAnimation(){ show(); paintStage(1); setTimeout(()=>paintStage(2),450); }
-
-  let _wdPoll=null;
-
-  async function pullWithdrawStatus(){
-    try{
-      const r=await fetch("{% url 'latest_withdraw_status' %}",{cache:"no-store"});
-      const data=await r.json().catch(()=>null);
-      if(!data||data.ok!==true) return;
-      if(!data.has){ paintStage(0); _currentWdId=null; return; }
-
-      const sid=data.id;
-      const s=(data.status||"").toLowerCase().trim();
-
-      const latest=document.querySelector(".w-pill[data-wstatus]");
-      if(latest){ latest.dataset.wstatus=s; latest.textContent=data.label||data.status||""; }
-
-      setStatusFromDB(s,sid);
-    }catch(e){}
-  }
-
-  function startPolling(){
-    if(_wdPoll) return;
-    _wdPoll=setInterval(pullWithdrawStatus,2000);
-    pullWithdrawStatus();
-  }
-
-  const init=document.querySelector(".w-pill[data-wstatus]")?.dataset.wstatus||"";
-  setStatusFromDB(init,null);
-  startPolling();
-
-  function showAlert(msg){ if(!alertBox) return; alertBox.textContent=msg; alertBox.style.display="flex"; }
-  function clearAlert(){   if(!alertBox) return; alertBox.textContent=""; alertBox.style.display="none"; }
-
-  function getBalance(){
-    const t=(document.querySelector("[data-balance]")?.textContent||"0").replace(/,/g,"").trim();
-    return parseFloat(t)||0;
-  }
-
-  function syncHidden(){
-    if(amountHidden) amountHidden.value=(amountInput?.value||"").trim();
-    if(otpHidden)    otpHidden.value=(otpInput?.value||"").trim();
-  }
-
-  function updateBtn(){
-    const bal=getBalance();
-    const amt=parseFloat((amountInput?.value||"").trim())||0;
-    const otp=(otpInput?.value||"").trim();
-    const ok=(amt>0&&amt<=bal&&otp.length>0);
-    if(btn){
-      btn.disabled=!ok;
-      btn.style.opacity=ok?"1":"0.45";
-      btn.style.pointerEvents=ok?"auto":"none";
-    }
-    syncHidden();
-  }
-
-  amountInput&&amountInput.addEventListener("input",()=>{ clearAlert(); updateBtn(); });
-  otpInput&&otpInput.addEventListener("input",()=>{ clearAlert(); updateBtn(); });
-  updateBtn();
-
-  let locked=false;
-
-  btn&&btn.addEventListener("click",async()=>{
-    if(locked) return;
-    clearAlert();
-
-    const bal=getBalance();
-    const amountRaw=(amountInput?.value||"").trim();
-    const otpRaw=(otpInput?.value||"").trim();
-    const amount=parseFloat(amountRaw)||0;
-
-    if(!amountRaw||amount<=0){ showAlert("Please enter withdrawal amount."); return; }
-    if(amount>bal){ showAlert("Amount exceeds your balance."); return; }
-    if(!otpRaw){ showAlert("Please enter OTP code."); return; }
-
-    hide(); resetTimeline();
-
-    try{
-      const verifyForm=new FormData();
-      verifyForm.append("otp",otpRaw);
-      const vr=await fetch("{% url 'verify_withdraw_otp' %}",{
-        method:"POST",
-        headers:{"X-CSRFToken":CSRF,"X-Requested-With":"XMLHttpRequest"},
-        body:verifyForm
-      });
-      const vdata=await vr.json().catch(()=>null);
-      if(!vdata||vdata.ok!==true){
-        const err=vdata.error||"";
-        if(err==="otp_already_used"){ showAlert(vdata.message||"This OTP has already been used. Please request a new one."); }
-        else if(err==="otp_wrong"){ showAlert("Invalid code. Please check and try again."); }
-        else { showAlert("Invalid code. Please check and try again."); }
-        return;
-      }
-    }catch(e){ showAlert("Network error. Try again."); return; }
-
-    syncHidden();
-    locked=true; btn.disabled=true; btn.style.opacity="0.6";
-
-    try{
-      const res=await fetch("{% url 'withdraw_create' %}",{
-        method:"POST",
-        headers:{"X-Requested-With":"XMLHttpRequest","X-CSRFToken":CSRF},
-        body:new FormData(form)
-      });
-      const data=await res.json().catch(()=>null);
-
-      if(!data||data.ok!==true){
-        locked=false; updateBtn(); hide(); resetTimeline();
-        const err=data&&data.error;
-        if(err==="amount_required")   showAlert("Please enter withdrawal amount.");
-        else if(err==="exceed")       showAlert("Amount exceeds your balance.");
-        else if(err==="insufficient") showAlert("No balance available.");
-        else if(err==="otp_wrong")    showAlert("Invalid code. Please check and try again.");
-        else if(err==="otp_already_used") showAlert(data.message||"This OTP has already been used. Please request a new one.");
-        else if(err==="account_not_active") showAlert("Your account is not ACTIVE. Please contact company department.");
-        else showAlert("Request failed. Try again.");
-        return;
-      }
-
-      _submittedAt=Date.now(); lockUI(8000); playSubmitAnimation();
-
-      if(otpInput){ otpInput.value=""; otpInput.placeholder="Enter new OTP"; }
-      if(otpHidden) otpHidden.value="";
-      updateBtn();
-
-      const latest=document.querySelector(".w-pill[data-wstatus]");
-      if(latest){ latest.dataset.wstatus="processing"; latest.textContent="Processing"; }
-
-      _uiStage=2;
-
-    }catch(e){ locked=false; updateBtn(); hide(); resetTimeline(); showAlert("Network error. Try again."); }
-  });
-})();
-</script>
-<script>
+/* ── Account status banner (staff message wins; otherwise base.html keeps it live) ── */
 (function(){
-  const el=document.getElementById("statusAlert");
-  if(!el) return;
-  const msg=(el.dataset.msg||"").trim();
+  var el=$('statusAlert'), msg=(el.getAttribute('data-msg')||'').trim();
   if(!msg) return;
-  el.textContent=msg; el.style.display="block";
-  el.classList.remove("status-danger","status-success","status-warn");
-  const m=msg.toLowerCase();
-  const isGreen  = m.includes("approved")||m.includes("success")||m.includes("active");
-  const isYellow = m.includes("maintenance")||m.includes("warning");
-  if(isGreen)       el.classList.add("status-success");
-  else if(isYellow) el.classList.add("status-warn");
-  else              el.classList.add("status-danger");
+  var m=msg.toLowerCase();
+  el.textContent=msg; el.style.display='block';
+  el.classList.add(/approved|success|active/.test(m)?'status-success':(/maintenance|warning/.test(m)?'status-warn':'status-danger'));
+})();
+
+/* ── Withdraw form ── */
+var form=$('wlForm'), btn=$('withdrawBtn'), btnTxt=$('wlBtnTxt'), amountIn=$('amountInput'), otpIn=$('otpInput');
+var amountHidden=$('amountHidden'), otpHidden=$('otpHidden'), alertBox=$('formAlert'), CSRF=getCookie('csrftoken'), busy=false;
+function showAlert(m){ alertBox.textContent=m; alertBox.classList.add('on'); }
+function clearAlert(){ alertBox.textContent=''; alertBox.classList.remove('on'); }
+function update(){
+  var amt=parseFloat(amountIn.value)||0, otp=otpIn.value.trim(), over=amt>balance();
+  amountIn.classList.toggle('is-error',over);
+  if(over) showAlert('Amount exceeds your balance.');
+  else if(alertBox.textContent==='Amount exceeds your balance.') clearAlert();
+  btn.disabled=busy||!(amt>0&&!over&&otp.length>0);
+  amountHidden.value=amountIn.value.trim(); otpHidden.value=otp;
+}
+amountIn.addEventListener('input',function(){
+  var v=money(amountIn.value); if(v!==amountIn.value) amountIn.value=v;
+  if(alertBox.textContent!=='Amount exceeds your balance.') clearAlert();
+  update();
+});
+otpIn.addEventListener('input',function(){ clearAlert(); update(); });
+amountIn.addEventListener('keydown',function(e){ if(e.key==='Enter'){ e.preventDefault(); otpIn.focus(); } });
+$('wlMax').addEventListener('click',function(){
+  var b=balance(); amountIn.value=b>0?b.toFixed(2):''; clearAlert(); update();
+  if(!otpIn.value) otpIn.focus({preventScroll:true});
+});
+function setBusy(on,txt){ busy=on; btn.classList.toggle('is-loading',on); btnTxt.textContent=on?txt:'Withdraw Now'; update(); }
+var MSG={amount_required:'Please enter withdrawal amount.',exceed:'Amount exceeds your balance.',insufficient:'No balance available.',
+  invalid_amount:'Please enter a valid amount.',otp_required:'Please enter OTP code.',otp_wrong:'Invalid code. Please check and try again.',
+  otp_already_used:'This OTP has already been used. Please request a new one.',account_not_active:'Your account is not ACTIVE. Please contact company department.'};
+
+form.addEventListener('submit',function(e){
+  e.preventDefault();
+  if(busy) return;
+  clearAlert();
+  var bal=balance(), raw=amountIn.value.trim(), otp=otpIn.value.trim(), amount=parseFloat(raw)||0;
+  if(!raw||amount<=0){ showAlert(MSG.amount_required); shake(amountIn.parentNode); amountIn.focus(); return; }
+  if(amount>bal){ showAlert(MSG.exceed); shake(amountIn.parentNode); amountIn.focus(); return; }
+  if(!otp){ showAlert(MSG.otp_required); shake(otpIn.parentNode); otpIn.focus(); return; }
+  setBusy(true,'Checking code…');
+  var vf=new FormData(); vf.append('otp',otp);
+  fetch('{% url "verify_withdraw_otp" %}',{method:'POST',headers:{'X-CSRFToken':CSRF,'X-Requested-With':'XMLHttpRequest'},body:vf})
+    .then(function(r){ return r.json().catch(function(){ return null; }); })
+    .then(function(v){
+      if(!v||v.ok!==true){
+        setBusy(false);
+        showAlert(v&&v.error==='otp_already_used'?(v.message||MSG.otp_already_used):MSG.otp_wrong);
+        otpIn.classList.add('is-error'); shake(otpIn.parentNode); return null;
+      }
+      setBusy(true,'Sending…');
+      amountHidden.value=raw; otpHidden.value=otp;
+      return fetch('{% url "withdraw_create" %}',{method:'POST',headers:{'X-Requested-With':'XMLHttpRequest','X-CSRFToken':CSRF},body:new FormData(form)})
+        .then(function(r){ return r.json().catch(function(){ return null; }); })
+        .then(function(d){
+          setBusy(false);
+          if(!d||d.ok!==true){
+            var err=d&&d.error;
+            showAlert(err==='otp_already_used'?(d.message||MSG.otp_already_used):(MSG[err]||'Request failed. Try again.'));
+            return;
+          }
+          if(d.already){ showAlert('You already have a withdrawal in progress. Please wait for it to finish.'); pull(); return; }
+          done(amount);
+        });
+    })
+    .catch(function(){ setBusy(false); showAlert('Network error. Try again.'); });
+});
+otpIn.addEventListener('input',function(){ otpIn.classList.remove('is-error'); });
+
+/* a new request: lower the balance at once, add it to the list, start the timeline */
+function done(amount){
+  balSrc.textContent=(Math.max(0,balance()-amount)).toFixed(2);   /* the observer repaints the card */
+  amountIn.value=''; otpIn.value=''; otpIn.placeholder='Enter new OTP'; update();
+  var old=document.querySelector('.wl-pill[data-wstatus]'); if(old) old.removeAttribute('data-wstatus');
+  var empty=$('wlEmpty'); if(empty) empty.remove();
+  var row=$('wlRowTpl').content.firstElementChild.cloneNode(true);
+  row.querySelector('b').textContent=peso(amount);
+  $('wlList').insertBefore(row,$('wlList').firstChild);
+  var c=$('wlCount'); c.textContent=String((parseInt(c.textContent,10)||0)+1);
+  submittedAt=Date.now(); reqSeq++; current=''; lastId=null; paint('processing'); fast();   /* a new request starts its own timeline */
+  $('timelineBox').scrollIntoView({behavior:SMOOTH,block:'nearest'});
+}
+
+/* ── Latest withdrawal status (live) ── */
+var SMOOTH=(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)?'auto':'smooth';
+var box=$('timelineBox'), steps=[$('b1'),$('b2'),$('b3')], t3=$('t3'), t3sub=$('t3sub'), liveTxt=$('wlLiveTxt');
+var STAGE={waiting:1,reviewed:1,processing:2,paid:3,payment_sent:3,rejected:3,withdrawal_fail:3};
+var FINAL={paid:1,payment_sent:1,rejected:1,withdrawal_fail:1};
+var LABEL={processing:'Processing',waiting:'Waiting for approval',reviewed:'Reviewed',paid:'Payment sent',payment_sent:'Payment sent',rejected:'Rejected',withdrawal_fail:'Withdrawal failed'};
+var current='', submittedAt=0, timer=0, reqSeq=0, lastId=null;
+function paint(s){
+  var stage=STAGE[s]||0;
+  /* right after sending, never step backwards while the server catches up */
+  if(submittedAt&&Date.now()-submittedAt<8000&&stage<(STAGE[current]||0)) return;
+  current=s;
+  box.hidden=!stage;
+  if(!stage) return;
+  var paid=(s==='paid'||s==='payment_sent'), bad=(s==='rejected'||s==='withdrawal_fail');
+  steps.forEach(function(el,i){
+    el.classList.toggle('is-on',i<stage&&!(i===2&&(paid||bad)));
+    el.classList.toggle('is-ok',i===2&&paid);
+    el.classList.toggle('is-bad',i===2&&bad);
+    el.classList.toggle('is-line',i<stage-1);   /* the line fills once the next step is reached */
+  });
+  t3.textContent=bad?(s==='rejected'?'Rejected':'Withdrawal Failed'):'Withdrawal Successful';
+  t3sub.textContent=bad?(s==='rejected'?'Please contact our department for help.':'The transfer did not go through. Please contact our department.'):'Sent to your payment method';
+  box.classList.toggle('is-final',!!FINAL[s]);
+  liveTxt.textContent=FINAL[s]?'Final status':'Live updates';
+  var pill=document.querySelector('.wl-pill[data-wstatus]');
+  if(pill){
+    pill.setAttribute('data-wstatus',s); pill.textContent=LABEL[s]||s;
+    pill.classList.toggle('is-ok',paid); pill.classList.toggle('is-bad',bad);
+  }
+}
+function pull(){
+  if(document.hidden) return;
+  var my=++reqSeq;
+  fetch('{% url "latest_withdraw_status" %}',{cache:'no-store',headers:{'X-Requested-With':'XMLHttpRequest'}})
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if(my!==reqSeq||!d||d.ok!==true) return;   /* a check sent before a new request is out of date */
+      if(!d.has){ paint(''); return; }
+      if(lastId!==null&&d.id!==lastId) current='';   /* another withdrawal: no 'never backwards' from the old one */
+      lastId=d.id;
+      paint(String(d.status||'').toLowerCase().trim());
+    })
+    .catch(function(){})
+    .then(schedule);
+}
+/* every 2 s while a request is moving, every 15 s otherwise; paused while the tab is hidden */
+function schedule(){
+  clearTimeout(timer);
+  if(document.hidden) return;
+  var moving=(STAGE[current]&&!FINAL[current])||(submittedAt&&Date.now()-submittedAt<60000);
+  timer=setTimeout(pull,moving?2000:15000);
+}
+function fast(){ clearTimeout(timer); timer=setTimeout(pull,2000); }
+document.addEventListener('visibilitychange',function(){ if(document.hidden) clearTimeout(timer); else pull(); });
+var first=document.querySelector('.wl-pill[data-wstatus]');
+paint(first?first.getAttribute('data-wstatus'):'');
+pull();
+update();
+window.addEventListener('pageshow',function(e){ if(e.persisted){ setBusy(false); pull(); } });
 })();
 </script>
 {% endblock %}
