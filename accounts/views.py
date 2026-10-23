@@ -451,7 +451,42 @@ def profile_view(request):
 
 @login_required(login_url="login")
 def credit_score_view(request):
-    return render(request, "credit_score.html")
+    user = request.user
+    score = user.credit_score if user.credit_score is not None else 100
+    score = max(0, min(int(score), 500))
+    # (upper bound, key, label, title, text) — same bands as the old page
+    tiers = [
+        (50, "critical", "Critical", "Critical Score",
+         "Your credit score is critically low. Immediate action is required to improve your financial standing."),
+        (100, "low", "Low", "Needs Improvement",
+         "Your credit score is at the starting point. Make on-time payments to start building your score."),
+        (250, "mid", "Building", "Building Credit",
+         "Good progress! Keep making regular payments to continue growing your credit score."),
+        (400, "good", "Good", "Good Standing",
+         "Your credit score is in good shape. You qualify for better loan terms and higher limits."),
+        (500, "top", "Excellent", "Excellent Credit",
+         "Outstanding! You have the highest credit rating and qualify for the best rates and maximum loan limits."),
+    ]
+    tier_index = next(i for i, t in enumerate(tiers) if score <= t[0])
+    lows = [0] + [t[0] + 1 for t in tiers[:-1]]
+    nxt = tiers[tier_index + 1] if tier_index + 1 < len(tiers) else None
+    loans = LoanApplication.objects.filter(user=user).exclude(status="DRAFT")
+    return render(request, "credit_score.html", {
+        "score": score,
+        "needle_deg": round(score / 500 * 180 - 90, 1),
+        "score_frac": round(score / 500, 4),
+        # each band of the gauge in score points (the arc has pathLength 500), 2 points of gap on each side
+        "tiers": [{"key": t[1], "label": t[2], "low": lows[i], "high": t[0], "on": i == tier_index, "past": i < tier_index,
+                   "dash": t[0] - (lows[i] - 1 if i else 0) - (2 if i else 0) - (2 if i < len(tiers) - 1 else 0),
+                   "dash_off": -((lows[i] - 1) + 2) if i else 0}
+                  for i, t in enumerate(tiers)],
+        "next_label": nxt[2] if nxt else "",
+        "points_to_next": (lows[tier_index + 1] - score) if nxt else 0,
+        "tier": {"key": tiers[tier_index][1], "label": tiers[tier_index][2], "title": tiers[tier_index][3], "text": tiers[tier_index][4]},
+        "loans_total": loans.count(),
+        "loans_approved": loans.filter(status__in=["APPROVED", "PAID"]).count(),
+        "withdrawals_paid": WithdrawalRequest.objects.filter(user=user, status="paid").count(),
+    })
 
 
 @login_required(login_url="login")
