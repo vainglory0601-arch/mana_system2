@@ -313,7 +313,10 @@ var btn=$('cuBtn'), btnTxt=$('cuBtnTxt'), count=$('cuCount');
 var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 var SMOOTH=reduce?'auto':'smooth';
 var MAX=2000, hadServerValues={% if errors %}true{% else %}false{% endif %};
-var EMAIL=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+/* close to Django's own check, so the server rarely disagrees */
+var EMAIL=/^[^\s@,;:<>()\[\]"]+@(?!-)(?:[A-Za-z0-9-]+\.)+[A-Za-z]{2,}$/;
+/* count letters the way the server does: an emoji is 1, a line break is 1 */
+function len(v){ return Array.from(v).length; }
 
 /* each check returns an error text, or '' when the value is fine */
 var checks={
@@ -323,9 +326,9 @@ var checks={
     if(!v) return 'Please enter your phone or WhatsApp number.';
     return (/^\+?[\d\s\-()]+$/.test(v)&&d.length>=7&&d.length<=15)?'':'Please enter a valid phone number.';
   },
-  cuEmail:function(){ var v=email.value.trim(); if(!v) return 'Please enter your email so we can reply.'; return EMAIL.test(v)?'':'Please enter a valid email address.'; },
+  cuEmail:function(){ var v=email.value.trim(); if(!v) return 'Please enter your email so we can reply.'; return (EMAIL.test(v)&&v.indexOf('..')<0&&!/[.-]@|@.*-\./.test(v))?'':'Please enter a valid email address.'; },
   cuSubject:function(){ return subj.value.trim().length>200?'Subject is too long (200 characters max).':''; },
-  cuMsg:function(){ var n=msg.value.trim().length; if(!n) return 'Please write your message.'; return n>MAX?'Message is too long (2000 characters max).':''; }
+  cuMsg:function(){ var n=len(msg.value.trim()); if(!n) return 'Please write your message.'; return n>MAX?'Message is too long (2000 characters max).':''; }
 };
 function fieldOf(inp){ return inp.closest('.cu-field'); }
 function show(inp,text){
@@ -353,7 +356,10 @@ function syncChips(){ chips.forEach(function(c){ c.setAttribute('aria-pressed',c
 chips.forEach(function(c){
   c.addEventListener('click',function(){
     var t=c.getAttribute('data-topic');
-    subj.value=(subj.value.trim()===t)?'':t;
+    var cur=subj.value.trim(), isTopic=chips.some(function(x){ return x.getAttribute('data-topic')===cur; });
+    /* a subject the client typed is kept: chips only replace an empty subject or another topic */
+    if(cur&&!isTopic){ subj.focus({preventScroll:true}); return; }
+    subj.value=(cur===t)?'':t;
     syncChips(); saveDraft();
     if(fieldOf(subj).classList.contains('is-bad')) show(subj,checks.cuSubject());
   });
@@ -366,7 +372,7 @@ function grow(){
   msg.style.height=Math.min(msg.scrollHeight+2,320)+'px';
 }
 function counter(){
-  var n=msg.value.length; count.textContent=n+' / '+MAX; count.classList.toggle('is-over',msg.value.trim().length>MAX);
+  var n=len(msg.value); count.textContent=n+' / '+MAX; count.classList.toggle('is-over',len(msg.value.trim())>MAX);
 }
 msg.addEventListener('input',function(){ counter(); grow(); });
 

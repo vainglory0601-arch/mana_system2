@@ -584,6 +584,8 @@ def contact_view(request):
     errors, values = {}, {}
     if request.method == "POST":
         values = {k: (request.POST.get(k) or "").strip() for k in ("full_name", "email", "phone", "subject", "message")}
+        # browsers send textarea line breaks as CRLF; count and store them as one character, like the page does
+        values["message"] = values["message"].replace("\r\n", "\n").replace("\r", "\n")
         if not values["full_name"]:
             errors["full_name"] = "Please enter your full name."
         elif len(values["full_name"]) > 120:
@@ -611,7 +613,7 @@ def contact_view(request):
         if not errors:
             # a double tap or a resend of the same message within 2 minutes is stored once
             recent = ContactMessage.objects.filter(
-                user=user, message=values["message"], created_at__gte=timezone.now() - timedelta(minutes=2)
+                user=user, subject=values["subject"], message=values["message"], created_at__gte=timezone.now() - timedelta(minutes=2)
             ).exists()
             if not recent:
                 ContactMessage.objects.create(user=user, **values)
