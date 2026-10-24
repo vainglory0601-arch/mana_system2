@@ -80,7 +80,7 @@ Read this first. It records how the owner wants this project handled.
 - After building a page, run fresh-eyes reviewers (old-vs-new parity + adversarial runtime QA)
   and fix what they confirm; owner pages so far: login, register, dashboard, quick loan, loan
   apply, payment method; Claude-led redesigns since: wallet, profile, notifications, transactions,
-  payment schedule, credit score, change password, contact us, explore (sources with `[[s:icon]]` placeholders live in the scratchpad).
+  payment schedule, credit score, change password, contact us, explore, contract, agreement, home (sources with `[[s:icon]]` placeholders live in the scratchpad).
 - Local preview in the cloud container: run Django with DEBUG settings on 127.0.0.1 only.
   `cdn.tailwindcss.com` is blocked there: to render a mockup, build its CSS with
   `tailwindcss@3` from npm and use `@fortawesome/fontawesome-free@6.4.0`.
@@ -96,8 +96,10 @@ Read this first. It records how the owner wants this project handled.
   `accounts/management/commands/bootstrap_admin.py` (runs on every deploy), production data
   in `data_backup.json`, uploads in `id_cards/`.
 - `/control/login/` returns 500: `control_login.html` does not exist.
-- Home page (choose.html) headline shine animation costs CPU; owner has not decided whether
-  to stop it after a few runs.
+- Home page (choose.html) shows only facts the app can back up. The old page claimed a BSP licence,
+  "The Bank for Every Filipino", 50K borrowers / ₱8.2B / 98% approval, bank partnerships, and
+  made-up news about real banks with their logos; none of it was verifiable, so it was left out.
+  Add stats, licence numbers (SEC) or partners only when the owner supplies real ones.
 - base.html's realtime poller is not wired into the dashboard on purpose: `/api/realtime/`
   always returns `notif_count: 0`, sends the raw balance (no commas) and an empty status label,
   and colours statuses differently — wiring it in would make the bell dot vanish and the badge
