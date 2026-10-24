@@ -1,536 +1,309 @@
 {% extends "base.html" %}
-{% load static %}
-{% block title %}Loan Contract — OFL{% endblock %}
+{% load static humanize %}
+{% block title %}Loan Contract — Overseas FilipinoLoan{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+html body,html body *,html body button,html body input,
+html body select,html body textarea,html body a{
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif!important;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <style>
-/* ═══════════════════════════════════════════════════
-   OFL Loan Contract  ·  Professional Bank Document
-   Brand: Navy #0A2463  ·  Orange #FF8C00
-═══════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════
+   OFL LOAN CONTRACT — Deep Forest
+   Same look in light and dark theme; prints as a clean document
+════════════════════════════════════════════ */
 :root{
-  --navy:#0A2463; --navy-dk:#061540; --navy-lt:#1a3a8a;
-  --orange:#FF8C00; --orange-dk:#D97200; --orange-lt:#FFA733;
-  --bg:#eef1f8; --paper:#ffffff;
-  --ink:#0d1b3e; --ink2:#4a5568; --ink3:#8896a8; --line:#dde3ef;
+  --ct-dark:#0B1C14;--ct-primary:#133224;--ct-green:#1B4332;--ct-sage:#E8F3ED;--ct-accent:#F97316;
+  --ct-ink:#111827;--ct-ink2:#374151;--ct-mut:#9ca3af;--ct-mut2:#6b7280;--ct-line:#f3f4f6;--ct-line2:#e5e7eb;
+  --ct-float:0 20px 40px -10px rgba(0,0,0,.1);
 }
+#pageRoot.wrap{max-width:100%!important;width:100%!important;padding:0!important;display:block!important;}
+html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!important;overflow-x:clip!important;background:#e5e7eb!important;color:#1f2937!important;-webkit-font-smoothing:antialiased;}
+.ct a,.ct button{-webkit-tap-highlight-color:transparent;}
+.ct svg{display:block;width:auto;height:1em;fill:currentColor;flex-shrink:0;}
 
-/* Reset wrap padding from base */
-.wrap,.wrap.page-enter{
-  padding:0!important;
-  max-width:100%!important;
-  overflow-x:hidden!important;
-  animation:none!important;
-  transform:none!important;
-}
-html,body{
-  background:var(--bg)!important;
-  min-height:100vh;
-}
+.ct{min-height:100vh;min-height:100dvh;display:flex;justify-content:center;}
+.ct-app{position:relative;width:100%;max-width:420px;min-height:100vh;min-height:100dvh;background:#f9fafb;padding-bottom:calc(32px + env(safe-area-inset-bottom,0px));}
 
-/* ── Page shell ── */
-.ct-page{
-  min-height:100vh;
-  padding:20px 12px 56px;
-  box-sizing:border-box;
+.ct-top{
+  position:relative;overflow:hidden;padding:24px 24px 120px;border-radius:0 0 2.5rem 2.5rem;
+  background:linear-gradient(to bottom,var(--ct-dark),var(--ct-primary));box-shadow:inset 0 2px 4px rgba(0,0,0,.05);
 }
-.ct-inner{
-  width:min(700px,100%);
-  margin:0 auto;
-}
-
-/* ── Back button ── */
+.ct-glow{position:absolute;border-radius:50%;pointer-events:none;}
+.ct-glow-a{top:0;right:0;width:256px;height:256px;background:rgba(255,255,255,.05);filter:blur(64px);transform:translate(33%,-33%);}
+.ct-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(249,115,22,.1);filter:blur(40px);transform:translate(-25%,25%);}
+.ct-bar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.ct-glass-dark{background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);}
 .ct-back{
-  display:inline-flex;align-items:center;gap:6px;
-  height:36px;padding:0 14px;
-  border-radius:8px;
-  background:#fff;color:var(--navy);
-  font-size:13px;font-weight:800;letter-spacing:.02em;
-  text-decoration:none;
-  border:1.5px solid var(--line);
-  box-shadow:0 1px 4px rgba(10,36,99,.08);
-  margin-bottom:16px;
-  transition:all .18s;
-  -webkit-tap-highlight-color:transparent;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;
+  color:#fff!important;text-decoration:none!important;transition:background-color .15s,transform .15s;
 }
-.ct-back svg{width:14px;height:14px;flex-shrink:0;}
-.ct-back:hover{border-color:var(--navy);background:var(--navy);color:#fff;}
+.ct-back:hover{background-color:rgba(255,255,255,.1);}
+.ct-back:active{transform:scale(.94);}
+.ct-badge{display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.04em;color:#fff;}
+.ct-badge svg{font-size:11px;color:#FDBA74;}
+.ct-hero{position:relative;z-index:1;}
+.ct-eyebrow{margin:0 0 6px;font-size:11px;line-height:16px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#FDBA74;}
+.ct-hero h1{margin:0 0 6px;font-size:30px;line-height:36px;font-weight:800;letter-spacing:-.025em;color:#fff;}
+.ct-hero p{margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(232,243,237,.75);}
 
-/* ══════════════════════════════════════
-   DOCUMENT CARD
-══════════════════════════════════════ */
-.ct-doc{
-  background:var(--paper);
-  border-radius:6px;
-  box-shadow:
-    0 0 0 1px rgba(10,36,99,.08),
-    0 4px 12px rgba(10,36,99,.10),
-    0 20px 48px rgba(10,36,99,.08);
-  overflow:hidden;
-}
+.ct-main{position:relative;z-index:2;margin-top:-88px;padding:0 20px;display:flex;flex-direction:column;gap:20px;}
+.ct-doc{position:relative;padding:22px;border-radius:2rem;background:#fff;border:1px solid var(--ct-line);box-shadow:var(--ct-float);}
 
-/* ── 1. Letterhead ── */
-.ct-lh{
-  background:linear-gradient(135deg,var(--navy-dk) 0%,var(--navy) 55%,#1e4db7 100%);
-  padding:24px 26px 22px;
-  display:flex;align-items:flex-start;
-  justify-content:space-between;gap:14px;
-  position:relative;overflow:hidden;
-}
-/* Subtle crosshatch */
-.ct-lh::before{
-  content:"";position:absolute;inset:0;
-  background:repeating-linear-gradient(
-    -50deg,
-    rgba(255,255,255,.025) 0,rgba(255,255,255,.025) 1px,
-    transparent 1px,transparent 20px
-  );pointer-events:none;
-}
-/* Orange bottom accent */
-.ct-lh::after{
-  content:"";
-  position:absolute;bottom:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--orange-dk) 0%,var(--orange) 40%,var(--orange-lt) 70%,var(--orange-dk) 100%);
-}
+/* letterhead */
+.ct-lh{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:16px;border-bottom:1px solid var(--ct-line);}
+.ct-brand{display:flex;align-items:center;gap:10px;min-width:0;}
+.ct-logo{width:40px;height:40px;flex-shrink:0;border-radius:12px;overflow:hidden;background:var(--ct-sage);display:flex;align-items:center;justify-content:center;}
+.ct-logo img{width:100%;height:100%;object-fit:contain;}
+.ct-brand b{display:block;font-size:13.5px;line-height:18px;font-weight:800;color:var(--ct-ink);}
+.ct-brand small{display:block;font-size:10.5px;line-height:15px;font-weight:600;color:var(--ct-mut2);}
+.ct-ref{flex-shrink:0;text-align:right;}
+.ct-ref span{display:block;font-size:9.5px;line-height:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ct-mut);}
+.ct-ref b{display:block;font-size:12px;line-height:17px;font-weight:800;color:var(--ct-ink);font-variant-numeric:tabular-nums;}
+.ct-ref small{display:block;font-size:10.5px;line-height:15px;font-weight:600;color:var(--ct-mut2);}
 
-.ct-lh-left{display:flex;align-items:center;gap:13px;position:relative;z-index:1;}
-.ct-logo-box{
-  width:50px;height:50px;flex-shrink:0;
-  border-radius:10px;overflow:hidden;
-  background:rgba(255,255,255,.12);
-  border:1.5px solid rgba(255,255,255,.22);
-}
-.ct-logo-box img{width:100%;height:100%;object-fit:cover;display:block;}
-.ct-brand{
-  font-size:15px;font-weight:900;color:#fff;
-  letter-spacing:.05em;text-transform:uppercase;line-height:1.1;
-}
-.ct-brand-sub{
-  font-size:9.5px;font-weight:700;
-  color:rgba(255,255,255,.55);
-  letter-spacing:.14em;text-transform:uppercase;margin-top:4px;
-}
+.ct-title{display:flex;align-items:center;gap:12px;margin:18px 0 6px;}
+.ct-title-ico{width:44px;height:44px;flex-shrink:0;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;background:var(--ct-green);}
+.ct-title h2{margin:0;font-size:18px;line-height:24px;font-weight:800;color:var(--ct-ink);}
+.ct-title p{margin:2px 0 0;font-size:12px;line-height:17px;font-weight:500;color:var(--ct-mut2);}
+.ct-status{display:inline-flex;align-items:center;gap:6px;margin:10px 0 4px;padding:5px 12px;border-radius:999px;font-size:11px;line-height:15px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;}
+.ct-status svg{font-size:11px;}
+.ct-status.s-APPROVED,.ct-status.s-PAID{color:#2d6a4f;background:var(--ct-sage);}
+.ct-status.s-PENDING,.ct-status.s-REVIEW{color:#b45309;background:#fffbeb;}
+.ct-status.s-DRAFT{color:var(--ct-mut2);background:var(--ct-line);}
 
-.ct-lh-right{text-align:right;position:relative;z-index:1;flex-shrink:0;}
-.ct-ref-label{font-size:9px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:var(--orange-lt);}
-.ct-ref-no{font-size:13px;font-weight:900;color:#fff;letter-spacing:.04em;margin-top:2px;}
-.ct-ref-date{font-size:10.5px;color:rgba(255,255,255,.55);font-weight:700;margin-top:6px;letter-spacing:.03em;}
+.ct-sec{margin-top:18px;}
+.ct-sec-h{display:flex;align-items:center;gap:8px;margin:0 0 8px;font-size:11px;line-height:15px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ct-mut2);}
+.ct-sec-h svg{font-size:12px;color:var(--ct-green);}
+.ct-kv{border-radius:16px;border:1px solid var(--ct-line);background:#f9fafb;}
+.ct-kv div{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:11px 14px;}
+.ct-kv div + div{border-top:1px solid var(--ct-line);}
+.ct-kv span{flex-shrink:0;font-size:12.5px;line-height:18px;font-weight:600;color:var(--ct-mut2);}
+.ct-kv b{min-width:0;text-align:right;font-size:13.5px;line-height:19px;font-weight:700;color:var(--ct-ink);overflow-wrap:anywhere;}
+.ct-kv b.is-money{font-weight:800;color:var(--ct-green);white-space:nowrap;}
 
-/* ── 2. Document title band ── */
-.ct-title{
-  border-bottom:1px solid var(--line);
-  padding:0;
-  display:flex;
-  align-items:stretch;
-}
-.ct-title-icon-wrap{
-  width:56px;flex-shrink:0;
-  background:linear-gradient(180deg,var(--navy) 0%,var(--navy-lt) 100%);
-  display:flex;align-items:center;justify-content:center;
-}
-.ct-title-icon-wrap svg{width:22px;height:22px;fill:none;stroke:rgba(255,255,255,.85);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-.ct-title-text{padding:16px 20px;}
-.ct-title-main{
-  font-size:14.5px;font-weight:900;color:var(--navy);
-  letter-spacing:.06em;text-transform:uppercase;
-}
-.ct-title-note{
-  font-size:11px;color:var(--ink3);font-weight:600;
-  margin-top:3px;letter-spacing:.01em;
-}
+.ct-subject{display:flex;align-items:center;gap:8px;margin-top:20px;padding:10px 14px;border-radius:12px;font-size:12.5px;line-height:18px;font-weight:700;color:var(--ct-green);background:var(--ct-sage);}
+.ct-subject i{width:6px;height:6px;border-radius:50%;background:var(--ct-accent);}
+.ct-greet{margin:16px 0 8px;font-size:14px;line-height:21px;font-weight:600;color:var(--ct-ink);}
+.ct-notice{margin:0;font-size:13px;line-height:21px;font-weight:500;color:var(--ct-ink2);}
+.ct-notice strong,.ct-cl p strong{font-weight:700;color:var(--ct-ink);}
 
-/* ── 3. Two-column detail boxes ── */
-.ct-grid{
-  display:grid;grid-template-columns:1fr 1fr;
-  border-bottom:1px solid var(--line);
-}
-@media(max-width:480px){.ct-grid{grid-template-columns:1fr;}}
-.ct-box{padding:20px 22px;}
-.ct-box:first-child{border-right:1px solid var(--line);}
-@media(max-width:480px){
-  .ct-box:first-child{border-right:none;border-bottom:1px solid var(--line);}
-}
-.ct-box-label{
-  font-size:9px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--orange-dk);
-  margin-bottom:14px;
-  padding-bottom:8px;
-  border-bottom:1.5px solid rgba(255,140,0,.2);
-  display:flex;align-items:center;gap:6px;
-}
-.ct-box-label svg{width:11px;height:11px;fill:none;stroke:var(--orange-dk);stroke-width:2.5;stroke-linecap:round;flex-shrink:0;}
-.ct-rows{display:flex;flex-direction:column;gap:10px;}
-.ct-kv-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
-.ct-k{font-size:11.5px;color:var(--ink3);font-weight:700;flex-shrink:0;}
-.ct-v{font-size:12.5px;color:var(--ink);font-weight:900;text-align:right;}
-.ct-v.accent{color:var(--navy);font-size:14px;}
+.ct-cls{list-style:none;margin:18px 0 0;padding:0;counter-reset:cl;}
+.ct-cl{display:flex;gap:12px;padding:14px 0;}
+.ct-cl + .ct-cl{border-top:1px solid var(--ct-line);}
+.ct-cl-n{width:28px;height:28px;flex-shrink:0;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--ct-green);background:var(--ct-sage);}
+.ct-cl h3{margin:3px 0 4px;font-size:14px;line-height:20px;font-weight:800;color:var(--ct-ink);}
+.ct-cl p{margin:0;font-size:12.5px;line-height:20px;font-weight:500;color:var(--ct-ink2);}
 
-/* ── 4. Subject line ── */
-.ct-subject{
-  background:linear-gradient(90deg,rgba(10,36,99,.04) 0%,transparent 100%);
-  border-left:4px solid var(--navy);
-  padding:11px 22px;
-  border-bottom:1px solid var(--line);
-  font-size:11px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--navy);
-  display:flex;align-items:center;gap:10px;
-}
-.ct-subject-dot{
-  width:6px;height:6px;border-radius:50%;background:var(--orange);flex-shrink:0;
-}
+.ct-sigs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;}
+.ct-sig{display:flex;flex-direction:column;padding:12px;border-radius:16px;border:1px dashed var(--ct-line2);}
+.ct-sig-pad{height:52px;display:flex;align-items:flex-end;justify-content:center;}
+.ct-sig-pad img{max-width:100%;max-height:52px;object-fit:contain;}
+.ct-sig-line{height:1px;margin:6px 0 8px;background:var(--ct-ink2);opacity:.35;}
+.ct-sig b{font-size:12.5px;line-height:17px;font-weight:800;color:var(--ct-ink);overflow-wrap:anywhere;}
+.ct-sig span{font-size:11px;line-height:16px;font-weight:600;color:var(--ct-mut2);}
 
-/* ── 5. Contract body ── */
-.ct-body{padding:22px 26px;border-bottom:1px solid var(--line);}
+.ct-stamps{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+.ct-stamp{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:11px;line-height:15px;font-weight:700;color:var(--ct-mut2);background:var(--ct-line);}
+.ct-stamp svg{font-size:11px;}
+.ct-stamp.is-ok{color:#2d6a4f;background:var(--ct-sage);}
 
-.ct-greet{
-  font-size:13.5px;color:var(--ink);font-weight:500;margin-bottom:14px;line-height:1.5;
-}
-.ct-greet strong{color:var(--navy);font-weight:900;}
+.ct-docfoot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--ct-line);font-size:11px;line-height:16px;font-weight:600;color:var(--ct-mut2);}
+.ct-conf{display:flex;align-items:center;gap:8px;}
+.ct-conf b{padding:2px 8px;border-radius:6px;font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#b91c1c;background:#fef2f2;}
 
-.ct-notice{
-  font-size:12.5px;line-height:1.72;color:var(--ink2);
-  border-left:3px solid var(--orange);
-  background:linear-gradient(90deg,rgba(255,140,0,.05),transparent 80%);
-  border-radius:0 6px 6px 0;
-  padding:11px 14px;
-  margin-bottom:22px;
-}
+.ct-empty{display:flex;flex-direction:column;align-items:center;text-align:center;padding:12px 4px 4px;}
+.ct-empty > span{width:64px;height:64px;margin-bottom:16px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--ct-green);background:var(--ct-sage);}
+.ct-empty h2{margin:0 0 6px;font-size:17px;line-height:24px;font-weight:700;color:var(--ct-ink);}
+.ct-empty p{margin:0 0 20px;font-size:13px;line-height:20px;font-weight:500;color:var(--ct-mut2);}
 
-/* Numbered clauses */
-.ct-clauses{display:flex;flex-direction:column;gap:0;}
-.ct-clause{
-  display:flex;align-items:flex-start;gap:14px;
-  padding:14px 0;
-  border-bottom:1px dashed var(--line);
-}
-.ct-clause:last-child{border-bottom:none;padding-bottom:0;}
-.ct-cl-n{
-  width:26px;height:26px;flex-shrink:0;border-radius:50%;
-  background:var(--navy);color:#fff;
-  font-size:11px;font-weight:900;
-  display:flex;align-items:center;justify-content:center;
-  margin-top:1px;
-}
-.ct-cl-content{}
-.ct-cl-title{
-  font-size:12.5px;font-weight:900;color:var(--navy);
-  letter-spacing:.02em;margin-bottom:5px;
-}
-.ct-cl-text{
-  font-size:12.5px;line-height:1.70;color:var(--ink2);
-}
-.ct-cl-text strong{color:var(--ink);font-weight:900;}
+.ct-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 18px;border:0;border-radius:999px;cursor:pointer;font-size:14px;line-height:20px;font-weight:700;text-decoration:none!important;transition:background-color .15s,transform .15s;}
+.ct-btn:active{transform:scale(.97);}
+.ct-btn svg{font-size:12px;}
+.ct-btn-green{color:#fff!important;background:var(--ct-green);box-shadow:0 10px 15px -3px rgba(27,67,50,.25);}
+.ct-btn-green:hover{background:#122e22;}
+.ct-btn-line{color:var(--ct-green)!important;background:transparent;border:2px solid var(--ct-green);padding:11px 16px;}
+.ct-btn-line:hover{background:rgba(232,243,237,.5);}
+.ct-acts{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.ct-acts .ct-wide{grid-column:1 / -1;}
 
-/* ── 6. Signature row ── */
-.ct-sigs{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:24px;padding:22px 26px;
-  border-bottom:1px solid var(--line);
-}
-@media(max-width:460px){.ct-sigs{grid-template-columns:1fr;gap:20px;}}
-.ct-sig{}
-.ct-sig-spacer{height:36px;}
-.ct-sig-line{
-  height:2px;
-  background:linear-gradient(90deg,var(--navy) 70%,var(--orange) 100%);
-  border-radius:999px;
-  margin-bottom:8px;
-}
-.ct-sig-who{font-size:13px;font-weight:900;color:var(--navy);}
-.ct-sig-role{
-  font-size:10px;font-weight:700;letter-spacing:.10em;text-transform:uppercase;
-  color:var(--ink3);margin-top:3px;
-}
-.ct-sig-org{
-  font-size:11px;font-weight:800;color:var(--orange-dk);margin-top:2px;
-}
+.ct-foot{padding-top:4px;text-align:center;font-size:12px;line-height:16px;font-weight:500;color:var(--ct-mut);}
+.ct-foot p{margin:0;}
+.ct-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
+.ct-foot i{width:6px;height:6px;border-radius:50%;background:var(--ct-primary);}
+.ct-foot b{font-weight:700;color:var(--ct-accent);}
 
-/* ── 7. Verification stamp row ── */
-.ct-stamp-row{
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  padding:12px 26px;
-  border-bottom:1px solid var(--line);
-  background:linear-gradient(90deg,rgba(10,36,99,.03),rgba(255,140,0,.03));
+@media (min-width:640px){
+  .ct{padding:32px 0;}
+  .ct-app{min-height:0;border-radius:2.5rem;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);}
+  .ct-top{border-radius:2.5rem;}
 }
-.ct-stamp{
-  display:inline-flex;align-items:center;gap:7px;
-  border:1.5px solid var(--line);
-  border-radius:999px;
-  padding:6px 14px;
-  font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--ink3);
+@media (max-width:359px){
+  .ct-top{padding-left:20px;padding-right:20px;}
+  .ct-main{padding:0 14px;}
+  .ct-doc{padding:18px 14px;}
+  .ct-lh{flex-direction:column;}
+  .ct-ref{text-align:left;}
+  .ct-sigs{grid-template-columns:1fr;}
 }
-.ct-stamp svg{width:12px;height:12px;fill:none;stroke:var(--ink3);stroke-width:2;stroke-linecap:round;}
-.ct-stamp.ok{border-color:rgba(22,163,74,.30);color:#15803d;background:rgba(22,163,74,.04);}
-.ct-stamp.ok svg{stroke:#16a34a;}
-
-/* ── 8. Footer ── */
-.ct-foot{
-  background:var(--navy-dk);
-  padding:13px 24px;
-  display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
-}
-.ct-foot-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.ct-badge{
-  background:var(--orange);color:#fff;
-  font-size:9px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;
-  padding:4px 11px;border-radius:999px;flex-shrink:0;
-}
-.ct-foot-text{font-size:11px;color:rgba(255,255,255,.50);font-weight:600;}
-.ct-foot-hours{font-size:11px;color:rgba(255,255,255,.60);font-weight:700;}
-
-/* Mobile tweaks */
-@media(max-width:480px){
-  .ct-lh{padding:18px 16px 18px;}
-  .ct-box,.ct-body,.ct-sigs{padding:16px;}
-  .ct-brand{font-size:13px;}
-  .ct-ref-no{font-size:12px;}
-  .ct-title-text{padding:13px 16px;}
-  .ct-title-icon-wrap{width:48px;}
-  .ct-subject{padding:10px 16px;}
-  .ct-stamp-row{padding:10px 16px;gap:7px;flex-wrap:wrap;}
-  .ct-foot{padding:12px 16px;}
+/* Save as PDF / print: only the document, on white paper */
+@media print{
+  html body,html[data-theme] body{background:#fff!important;}
+  .ct{padding:0;}
+  .ct-app{max-width:none;min-height:0;background:#fff;box-shadow:none;padding:0;}
+  .ct-top,.ct-acts,.ct-foot,#pageRoot ~ *{display:none!important;}
+  .ct-main{margin:0;padding:0;}
+  .ct-doc{border:0;box-shadow:none;border-radius:0;padding:0;}
+  .ct-cl,.ct-sigs,.ct-kv{break-inside:avoid;}
+  .ct *{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
 }
 </style>
 
-<div class="ct-page">
-<div class="ct-inner">
+<!-- Icons: Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0) Copyright 2023 Fonticons, Inc. -->
+<div class="ct">
+  <div class="ct-app">
+    <header class="ct-top">
+      <div class="ct-glow ct-glow-a"></div>
+      <div class="ct-glow ct-glow-b"></div>
+      <div class="ct-bar">
+        <a class="ct-back ct-glass-dark" href="{% url 'quick_loan' %}" aria-label="Back to quick loan"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></a>
+        <div class="ct-badge ct-glass-dark"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V428.7c-2.7 1.1-5.4 2-8.2 2.7l-60.1 15c-3 .7-6 1.2-9 1.4c-.9 .1-1.8 .2-2.7 .2H240c-6.1 0-11.6-3.4-14.3-8.8l-8.8-17.7c-1.7-3.4-5.1-5.5-8.8-5.5s-7.2 2.1-8.8 5.5l-8.8 17.7c-2.9 5.9-9.2 9.4-15.7 8.8s-12.1-5.1-13.9-11.3L144 381l-9.8 32.8c-6.1 20.3-24.8 34.2-46 34.2H80c-8.8 0-16-7.2-16-16s7.2-16 16-16h8.2c7.1 0 13.3-4.6 15.3-11.4l14.9-49.5c3.4-11.3 13.8-19.1 25.6-19.1s22.2 7.8 25.6 19.1l11.6 38.6c7.4-6.2 16.8-9.7 26.8-9.7c15.9 0 30.4 9 37.5 23.2l4.4 8.8h8.9c-3.1-8.8-3.7-18.4-1.4-27.8l15-60.1c2.8-11.3 8.6-21.5 16.8-29.7L384 203.6V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM549.8 139.7c-15.6-15.6-40.9-15.6-56.6 0l-29.4 29.4 71 71 29.4-29.4c15.6-15.6 15.6-40.9 0-56.6l-14.4-14.4zM311.9 321c-4.1 4.1-7 9.2-8.4 14.9l-15 60.1c-1.4 5.5 .2 11.2 4.2 15.2s9.7 5.6 15.2 4.2l60.1-15c5.6-1.4 10.8-4.3 14.9-8.4L512.1 262.7l-71-71L311.9 321z"/></svg>Contract</div>
+      </div>
+      <div class="ct-hero">
+        <p class="ct-eyebrow">Your Loan</p>
+        <h1>Loan Contract</h1>
+        <p>Read all terms carefully before proceeding</p>
+      </div>
+    </header>
 
-  <!-- Back -->
-  <a class="ct-back" href="{% url 'quick_loan' %}">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-      <polyline points="15 18 9 12 15 6"/>
-    </svg>
-    Back
-  </a>
-
-  <div class="ct-doc">
-
-    <!-- ① LETTERHEAD -->
-    <div class="ct-lh">
-      <div class="ct-lh-left">
-        <div class="ct-logo-box">
-          <img src="{% static 'img/logo.webp' %}" alt="OFL Logo">
+    <main class="ct-main">
+      {% if loan %}
+      <article class="ct-doc" id="ctDoc" aria-label="Loan agreement contract">
+        <div class="ct-lh">
+          <div class="ct-brand">
+            <span class="ct-logo"><img src="{% static 'img/logo.webp' %}" alt="OFL logo"></span>
+            <div><b>Overseas Filipino Loan</b><small>Licensed Financial Services Provider</small></div>
+          </div>
+          <div class="ct-ref"><span>Contract Ref.</span><b id="ctRef">{{ ref }}</b><small>Issued: {{ issued|date:"F j, Y" }}</small></div>
         </div>
-        <div>
-          <div class="ct-brand">Overseas Filipino Loan</div>
-          <div class="ct-brand-sub">Licensed Financial Services Provider</div>
+
+        <div class="ct-title">
+          <span class="ct-title-ico"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM80 64h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H80c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H80c-8.8 0-16-7.2-16-16s7.2-16 16-16zm54.2 253.8c-6.1 20.3-24.8 34.2-46 34.2H80c-8.8 0-16-7.2-16-16s7.2-16 16-16h8.2c7.1 0 13.3-4.6 15.3-11.4l14.9-49.5c3.4-11.3 13.8-19.1 25.6-19.1s22.2 7.7 25.6 19.1l11.6 38.6c7.4-6.2 16.8-9.7 26.8-9.7c15.9 0 30.4 9 37.5 23.2l4.4 8.8H304c8.8 0 16 7.2 16 16s-7.2 16-16 16H240c-6.1 0-11.6-3.4-14.3-8.8l-8.8-17.7c-1.7-3.4-5.1-5.5-8.8-5.5s-7.2 2.1-8.8 5.5l-8.8 17.7c-2.9 5.9-9.2 9.4-15.7 8.8s-12.1-5.1-13.9-11.3L144 349l-9.8 32.8z"/></svg></span>
+          <div><h2>Loan Agreement Contract</h2><p>Official binding document — read all terms carefully before proceeding</p></div>
         </div>
-      </div>
-      <div class="ct-lh-right">
-        <div class="ct-ref-label">Contract Ref.</div>
-        <div class="ct-ref-no">OFL-{% now "Ymd" %}-{{ term_months|default:"00" }}</div>
-        <div class="ct-ref-date">Issued: {% now "F j, Y" %}</div>
-      </div>
-    </div>
+        <span class="ct-status s-{{ status }}" id="ctStatus">{% if status == "APPROVED" or status == "PAID" %}<svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>{% elif status == "DRAFT" %}<svg viewBox="0 0 512 512" aria-hidden="true"><path d="M362.7 19.3L314.3 67.7 444.3 197.7l48.4-48.4c25-25 25-65.5 0-90.5L453.3 19.3c-25-25-65.5-25-90.5 0zm-71 71L58.6 323.5c-10.4 10.4-18 23.3-22.2 37.4L1 481.2C-1.5 489.7 .8 498.8 7 505s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L421.7 220.3 291.7 90.3z"/></svg>{% else %}<svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 0a256 256 0 1 1 0 512A256 256 0 1 1 256 0zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/></svg>{% endif %}{{ status_label }}</span>
 
-    <!-- ② TITLE BAND -->
-    <div class="ct-title">
-      <div class="ct-title-icon-wrap">
-        <svg viewBox="0 0 24 24">
-          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
-          <line x1="16" y1="13" x2="8" y2="13"/>
-          <line x1="16" y1="17" x2="8" y2="17"/>
-          <polyline points="10 9 9 9 8 9"/>
-        </svg>
-      </div>
-      <div class="ct-title-text">
-        <div class="ct-title-main">Loan Agreement Contract</div>
-        <div class="ct-title-note">Official binding document — read all terms carefully before proceeding</div>
-      </div>
-    </div>
-
-    <!-- ③ CLIENT + LOAN DETAILS (2 columns) -->
-    <div class="ct-grid">
-
-      <div class="ct-box">
-        <div class="ct-box-label">
-          <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          Client Information
-        </div>
-        <div class="ct-rows">
-          <div class="ct-kv-row">
-            <span class="ct-k">Full Name</span>
-            <span class="ct-v">{{ full_name|default:"—" }}</span>
+        <section class="ct-sec">
+          <h3 class="ct-sec-h"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg>Client Information</h3>
+          <div class="ct-kv">
+            <div><span>Full Name</span><b>{{ full_name|default:"—" }}</b></div>
+            <div><span>Phone</span><b>{{ phone|default:"—" }}</b></div>
+            <div><span>Address</span><b>{{ current_living|default:"—" }}</b></div>
           </div>
-          <div class="ct-kv-row">
-            <span class="ct-k">Phone</span>
-            <span class="ct-v">{{ phone|default:"—" }}</span>
+        </section>
+
+        <section class="ct-sec">
+          <h3 class="ct-sec-h"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M64 32C46.3 32 32 46.3 32 64v64c-17.7 0-32 14.3-32 32s14.3 32 32 32l0 32c-17.7 0-32 14.3-32 32s14.3 32 32 32l0 64v96c0 17.7 14.3 32 32 32s32-14.3 32-32V384h80c68.4 0 127.7-39 156.8-96H352c17.7 0 32-14.3 32-32s-14.3-32-32-32h-.7c.5-5.3 .7-10.6 .7-16s-.2-10.7-.7-16h.7c17.7 0 32-14.3 32-32s-14.3-32-32-32H332.8C303.7 71 244.4 32 176 32H64zm190.4 96H96V96h80c30.5 0 58.2 12.2 78.4 32zM96 192H286.9c.7 5.2 1.1 10.6 1.1 16s-.4 10.8-1.1 16H96V192zm158.4 96c-20.2 19.8-47.9 32-78.4 32H96V288H254.4z"/></svg>Loan Terms</h3>
+          <div class="ct-kv" id="ctTerms">
+            <div><span>Loan Amount</span><b class="is-money">₱{{ amount|floatformat:2|intcomma }}</b></div>
+            <div><span>Term</span><b>{% if term_months %}{{ term_months }} month{{ term_months|pluralize }}{% else %}—{% endif %}</b></div>
+            <div><span>Interest Rate</span><b>{{ interest_rate }}% / month</b></div>
+            <div><span>Monthly Payment</span><b class="is-money">₱{{ monthly_repayment|default:0|floatformat:2|intcomma }}</b></div>
+            {% if total %}<div><span>Total to Repay</span><b class="is-money">₱{{ total|floatformat:2|intcomma }}</b></div>{% endif %}
           </div>
-          <div class="ct-kv-row">
-            <span class="ct-k">Address</span>
-            <span class="ct-v">{{ current_living|default:"—" }}</span>
+        </section>
+
+        <div class="ct-subject"><i></i>Subject: Loan Contract Agreement</div>
+        <p class="ct-greet">Dear <strong>{{ full_name|default:"Valued Client" }}</strong>,</p>
+        <p class="ct-notice" id="ctNotice">
+          {% if status == "DRAFT" %}
+          Your loan application has <strong>not been submitted yet</strong>. Finish it in the <strong>Loan Apply</strong> section of your account; this contract shows the terms of your request and outlines your repayment responsibilities under company policy.
+          {% elif status == "APPROVED" or status == "PAID" %}
+          Your loan has been <strong>approved</strong>{% if approved_at %} on {{ approved_at|date:"F j, Y" }}{% endif %}. You can see each due date in the <strong>Payment Schedule</strong> section of your account. This contract confirms your loan and outlines your repayment responsibilities under company policy. By continuing to use this service, you agree to all terms stated below.
+          {% else %}
+          Your loan application is currently under review by our Financial Department. You may track your application status via the <strong>Quick Loan</strong> section of your account. This contract confirms your loan request and outlines your repayment responsibilities under company policy. By continuing to use this service, you agree to all terms stated below.
+          {% endif %}
+        </p>
+
+        <ol class="ct-cls">
+          <li class="ct-cl"><span class="ct-cl-n">1</span><div><h3>Loan Details</h3>
+            <p>The borrower, <strong>{{ full_name|default:"the client" }}</strong>, requests a loan of <strong>₱{{ amount|floatformat:2|intcomma }}</strong> to be repaid over <strong>{{ term_months|default:"—" }} months</strong> at an interest rate of <strong>{{ interest_rate }}% per month</strong>. The estimated monthly repayment is <strong>₱{{ monthly_repayment|default:0|floatformat:2|intcomma }}</strong>. Final figures are subject to confirmation by the Finance Department.</p></div></li>
+          <li class="ct-cl"><span class="ct-cl-n">2</span><div><h3>Repayment Obligation</h3>
+            <p>The borrower agrees to repay the full outstanding balance including applicable interest according to the repayment schedule provided in the system. Late or missed payments may result in account restrictions, additional verification requirements, or referral to the collections department.</p></div></li>
+          <li class="ct-cl"><span class="ct-cl-n">3</span><div><h3>Document Verification</h3>
+            <p>The company reserves the right to request additional supporting documents at any time for purposes of identity verification, risk assessment, or regulatory compliance. Failure to provide required documents may result in suspension of the loan application or disbursement hold.</p></div></li>
+          <li class="ct-cl"><span class="ct-cl-n">4</span><div><h3>Communication &amp; Notices</h3>
+            <p>All official communications, updates, and notices regarding your loan will be delivered through the Notifications section of your account and/or via the contact details provided during registration. It is the borrower's responsibility to keep contact information current and accurate at all times.</p></div></li>
+          <li class="ct-cl"><span class="ct-cl-n">5</span><div><h3>Data Privacy &amp; Confidentiality</h3>
+            <p>All personal and financial information provided by the borrower is collected and processed in accordance with the <strong>Data Privacy Act of 2012 (Republic Act 10173)</strong>. Your data will not be shared with third parties without your explicit consent, except as required by law or authorized regulatory bodies.</p></div></li>
+        </ol>
+
+        <div class="ct-sigs">
+          <div class="ct-sig">
+            <div class="ct-sig-pad"></div>
+            <div class="ct-sig-line"></div>
+            <b>Authorized Representative</b><span>Company Signatory</span><span>Overseas Filipino Loan</span>
           </div>
-        </div>
-      </div>
-
-      <div class="ct-box">
-        <div class="ct-box-label">
-          <svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-          Loan Terms
-        </div>
-        <div class="ct-rows">
-          <div class="ct-kv-row">
-            <span class="ct-k">Loan Amount</span>
-            <span class="ct-v accent">PHP {{ amount|floatformat:2|default:"0.00" }}</span>
-          </div>
-          <div class="ct-kv-row">
-            <span class="ct-k">Term</span>
-            <span class="ct-v">{{ term_months|default:"—" }} months</span>
-          </div>
-          <div class="ct-kv-row">
-            <span class="ct-k">Interest Rate</span>
-            <span class="ct-v">0.5% / month</span>
-          </div>
-          <div class="ct-kv-row">
-            <span class="ct-k">Monthly Payment</span>
-            <span class="ct-v accent">PHP {{ monthly_repayment|floatformat:2|default:"0.00" }}</span>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ④ SUBJECT -->
-    <div class="ct-subject">
-      <div class="ct-subject-dot"></div>
-      Subject: Loan Contract Agreement
-    </div>
-
-    <!-- ⑤ CONTRACT BODY -->
-    <div class="ct-body">
-
-      <div class="ct-greet">
-        Dear <strong>{{ full_name|default:"Valued Client" }}</strong>,
-      </div>
-
-      <div class="ct-notice">
-        Your loan application is currently under review by our Financial Department.
-        You may track your application status via the <strong>Quick Loan</strong> section of your account.
-        This contract confirms your loan request and outlines your repayment responsibilities
-        under company policy. By continuing to use this service, you agree to all terms stated below.
-      </div>
-
-      <div class="ct-clauses">
-
-        <div class="ct-clause">
-          <div class="ct-cl-n">1</div>
-          <div class="ct-cl-content">
-            <div class="ct-cl-title">Loan Details</div>
-            <div class="ct-cl-text">
-              The borrower, <strong>{{ full_name|default:"the client" }}</strong>, requests a loan of
-              <strong>PHP {{ amount|floatformat:2|default:"0.00" }}</strong> to be repaid over
-              <strong>{{ term_months|default:"—" }} months</strong> at an interest rate of
-              <strong>0.5% per month</strong>. The estimated monthly repayment is
-              <strong>PHP {{ monthly_repayment|floatformat:2|default:"0.00" }}</strong>.
-              Final figures are subject to confirmation by the Finance Department.
-            </div>
+          <div class="ct-sig">
+            <div class="ct-sig-pad">{% if signature_url %}<img src="{{ signature_url }}" alt="Your signature" id="ctSig" onerror="this.remove()">{% endif %}</div>
+            <div class="ct-sig-line"></div>
+            <b>{{ full_name|default:"Client" }}</b><span>Borrower / Client</span><span>Date: {{ issued|date:"F j, Y" }}</span>
           </div>
         </div>
 
-        <div class="ct-clause">
-          <div class="ct-cl-n">2</div>
-          <div class="ct-cl-content">
-            <div class="ct-cl-title">Repayment Obligation</div>
-            <div class="ct-cl-text">
-              The borrower agrees to repay the full outstanding balance including applicable interest
-              according to the repayment schedule provided in the system. Late or missed payments may
-              result in account restrictions, additional verification requirements, or referral to the
-              collections department.
-            </div>
-          </div>
+        <div class="ct-stamps">
+          {% if status == "APPROVED" or status == "PAID" %}<span class="ct-stamp is-ok"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>Document Verified</span>{% endif %}
+          <span class="ct-stamp is-ok"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/></svg>Secured &amp; Encrypted</span>
+          <span class="ct-stamp"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/></svg>{{ issued|date:"F j, Y" }}</span>
         </div>
 
-        <div class="ct-clause">
-          <div class="ct-cl-n">3</div>
-          <div class="ct-cl-content">
-            <div class="ct-cl-title">Document Verification</div>
-            <div class="ct-cl-text">
-              The company reserves the right to request additional supporting documents at any time
-              for purposes of identity verification, risk assessment, or regulatory compliance.
-              Failure to provide required documents may result in suspension of the loan application
-              or disbursement hold.
-            </div>
-          </div>
+        <div class="ct-docfoot">
+          <div class="ct-conf"><b>Confidential</b>Intended solely for the named client. Do not distribute.</div>
+          <span>Mon – Sun · 9:00 AM – 10:00 PM</span>
         </div>
+      </article>
 
-        <div class="ct-clause">
-          <div class="ct-cl-n">4</div>
-          <div class="ct-cl-content">
-            <div class="ct-cl-title">Communication &amp; Notices</div>
-            <div class="ct-cl-text">
-              All official communications, updates, and notices regarding your loan will be delivered
-              through the Notifications section of your account and/or via the contact details provided
-              during registration. It is the borrower's responsibility to keep contact information
-              current and accurate at all times.
-            </div>
-          </div>
+      <div class="ct-acts">
+        <button type="button" class="ct-btn ct-btn-green ct-wide" id="ctPrint"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM216 232V334.1l31-31c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-72 72c-9.4 9.4-24.6 9.4-33.9 0l-72-72c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l31 31V232c0-13.3 10.7-24 24-24s24 10.7 24 24z"/></svg>Save as PDF / Print</button>
+        {% if status == "APPROVED" or status == "PAID" %}
+        <a class="ct-btn ct-btn-line" href="{% url 'payment_schedule' %}"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z"/></svg>Schedule</a>
+        {% else %}
+        <a class="ct-btn ct-btn-line ct-back-link" href="{% url 'quick_loan' %}"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>Status</a>
+        {% endif %}
+        <a class="ct-btn ct-btn-line" href="{% url 'dashboard' %}"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg>Dashboard</a>
+      </div>
+      {% else %}
+      <section class="ct-doc">
+        <div class="ct-empty">
+          <span><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM80 64h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H80c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H80c-8.8 0-16-7.2-16-16s7.2-16 16-16zm54.2 253.8c-6.1 20.3-24.8 34.2-46 34.2H80c-8.8 0-16-7.2-16-16s7.2-16 16-16h8.2c7.1 0 13.3-4.6 15.3-11.4l14.9-49.5c3.4-11.3 13.8-19.1 25.6-19.1s22.2 7.7 25.6 19.1l11.6 38.6c7.4-6.2 16.8-9.7 26.8-9.7c15.9 0 30.4 9 37.5 23.2l4.4 8.8H304c8.8 0 16 7.2 16 16s-7.2 16-16 16H240c-6.1 0-11.6-3.4-14.3-8.8l-8.8-17.7c-1.7-3.4-5.1-5.5-8.8-5.5s-7.2 2.1-8.8 5.5l-8.8 17.7c-2.9 5.9-9.2 9.4-15.7 8.8s-12.1-5.1-13.9-11.3L144 349l-9.8 32.8z"/></svg></span>
+          <h2>No loan contract yet</h2>
+          <p>Your contract will appear here once you apply for a loan.</p>
+          <a class="ct-btn ct-btn-green" href="{% url 'quick_loan' %}"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/></svg>Apply for a loan</a>
         </div>
-
-        <div class="ct-clause">
-          <div class="ct-cl-n">5</div>
-          <div class="ct-cl-content">
-            <div class="ct-cl-title">Data Privacy &amp; Confidentiality</div>
-            <div class="ct-cl-text">
-              All personal and financial information provided by the borrower is collected and processed
-              in accordance with the <strong>Data Privacy Act of 2012 (Republic Act 10173)</strong>.
-              Your data will not be shared with third parties without your explicit consent, except
-              as required by law or authorized regulatory bodies.
-            </div>
-          </div>
-        </div>
-
+      </section>
+      <div class="ct-acts">
+        <a class="ct-btn ct-btn-line ct-wide" href="{% url 'dashboard' %}"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg>Dashboard</a>
       </div>
-    </div><!-- /.ct-body -->
+      {% endif %}
 
-    <!-- ⑥ SIGNATURE BLOCKS -->
-    <div class="ct-sigs">
-
-      <div class="ct-sig">
-        <div class="ct-sig-spacer"></div>
-        <div class="ct-sig-line"></div>
-        <div class="ct-sig-who">Authorized Representative</div>
-        <div class="ct-sig-role">Company Signatory</div>
-        <div class="ct-sig-org">Overseas Filipino Loan</div>
-      </div>
-
-      <div class="ct-sig">
-        <div class="ct-sig-spacer"></div>
-        <div class="ct-sig-line"></div>
-        <div class="ct-sig-who">{{ full_name|default:"Client" }}</div>
-        <div class="ct-sig-role">Borrower / Client</div>
-        <div class="ct-sig-org">Date: {% now "F j, Y" %}</div>
-      </div>
-
-    </div>
-
-    <!-- ⑦ VERIFICATION STAMPS -->
-    <div class="ct-stamp-row">
-      <div class="ct-stamp ok">
-        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-        Document Verified
-      </div>
-      <div class="ct-stamp ok">
-        <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-        Secured &amp; Encrypted
-      </div>
-      <div class="ct-stamp">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        {% now "F j, Y" %}
-      </div>
-    </div>
-
-    <!-- ⑧ FOOTER -->
-    <div class="ct-foot">
-      <div class="ct-foot-left">
-        <div class="ct-badge">Confidential</div>
-        <div class="ct-foot-text">Intended solely for the named client. Do not distribute.</div>
-      </div>
-      <div class="ct-foot-hours">Mon – Sun &nbsp;·&nbsp; 9:00 AM – 10:00 PM</div>
-    </div>
-
-  </div><!-- /.ct-doc -->
-</div><!-- /.ct-inner -->
-</div><!-- /.ct-page -->
+      <footer class="ct-foot">
+        <p><i></i> Overseas FilipinoLoan <span>•</span> <b>v2.2.1</b></p>
+        <p>© 2026 All rights reserved</p>
+      </footer>
+    </main>
+  </div>
+</div>
+<script>
+(function(){
+  var b=document.getElementById('ctPrint');
+  if(b) b.addEventListener('click',function(){ window.print(); });
+})();
+</script>
 {% endblock %}

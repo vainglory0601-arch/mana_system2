@@ -1217,9 +1217,8 @@ def loan_status_api(request):
 
 @login_required(login_url="login")
 def contract_view(request):
-    """Loan contract view - FIXED to show correct 0.5% calculation"""
-    from decimal import Decimal
-    
+    """Loan contract. The rate is always shown and computed at 0.5% per month (the old page's fix:
+    stored snapshots were wrong), so these figures match the quick loan and loan apply pages."""
     loan = (
         LoanApplication.objects
         .filter(user=request.user)
@@ -1227,32 +1226,42 @@ def contract_view(request):
         .order_by("-id")
         .first()
     )
-
-    # ✅ FIX: គណនាឡើងវិញដោយប្រើ 0.5% (0.005) ជំនួសឲ្យការយកពី Database ដែលខុស
-    monthly_display = "0.00"
+    ctx = {"loan": loan, "phone": getattr(request.user, "phone", "") or "", "interest_rate": "0.5"}
     if loan:
-        try:
-            amt = Decimal(str(loan.amount or 0))
-            terms = int(loan.term_months or 0)
-            if amt > 0 and terms > 0:
-                rate = Decimal("0.005")  # ✅ 0.5% ត្រឹមត្រូវ
-                total = amt + (amt * rate * terms)
-                monthly_calc = total / terms
-                monthly_display = str(monthly_calc)
-            else:
-                monthly_display = str(loan.monthly_repayment or "0.00")
-        except:
-            monthly_display = str(loan.monthly_repayment or "0.00")
-
-    ctx = {
-        "full_name": getattr(loan, "full_name", "") or "",
-        "phone": getattr(request.user, "phone", "") or "",
-        "current_living": getattr(loan, "current_living", "") or "",
-        "amount": str(getattr(loan, "amount", "") or "0.00"),
-        "term_months": getattr(loan, "term_months", "") or "",
-        "interest_rate": "0.5",
-        "monthly_repayment": monthly_display,  # ✅ ប្រើតម្លៃដែលគណនាឡើងវិញត្រឹមត្រូវ
-    }
+        amount = Decimal(str(loan.amount or 0))
+        terms = int(loan.term_months or 0)
+        monthly = total = None
+        if amount > 0 and terms > 0:
+            total = amount + amount * Decimal("0.005") * terms
+            monthly = total / terms
+        elif loan.monthly_repayment:
+            monthly = loan.monthly_repayment
+        status = loan.status
+        # same rule as the quick loan page: a pending loan older than 3 hours shows "In Review"
+        if status == "PENDING" and loan.created_at and timezone.now() - loan.created_at >= timedelta(hours=3):
+            status = "REVIEW"
+        signature_url = ""
+        if loan.signature_image:
+            try:
+                signature_url = loan.signature_image.url
+            except Exception:
+                signature_url = ""
+        issued = timezone.localtime(loan.created_at) if loan.created_at else timezone.localtime()
+        ctx.update({
+            "full_name": loan.full_name or "",
+            "current_living": loan.current_living or "",
+            "amount": amount,
+            "term_months": terms or "",
+            "monthly_repayment": monthly,
+            "total": total,
+            "status": status,
+            "status_label": {"DRAFT": "Draft", "PENDING": "Pending", "REVIEW": "In Review",
+                             "APPROVED": "Approved", "PAID": "Paid"}.get(status, status.title()),
+            "ref": f"OFL-{issued:%Y%m%d}-{loan.id:05d}",
+            "issued": issued,
+            "approved_at": timezone.localtime(loan.approved_at) if loan.approved_at else None,
+            "signature_url": signature_url,
+        })
     return render(request, "contract.html", ctx)
 
 
