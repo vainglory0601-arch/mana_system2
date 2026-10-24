@@ -91,7 +91,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 
 .ct-subject{display:flex;align-items:center;gap:8px;margin-top:20px;padding:10px 14px;border-radius:12px;font-size:12.5px;line-height:18px;font-weight:700;color:var(--ct-green);background:var(--ct-sage);}
 .ct-subject i{width:6px;height:6px;border-radius:50%;background:var(--ct-accent);}
-.ct-greet{margin:16px 0 8px;font-size:14px;line-height:21px;font-weight:600;color:var(--ct-ink);}
+.ct-greet{overflow-wrap:anywhere;margin:16px 0 8px;font-size:14px;line-height:21px;font-weight:600;color:var(--ct-ink);}
 .ct-notice{margin:0;font-size:13px;line-height:21px;font-weight:500;color:var(--ct-ink2);}
 .ct-notice strong,.ct-cl p strong{font-weight:700;color:var(--ct-ink);}
 
@@ -100,7 +100,8 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .ct-cl + .ct-cl{border-top:1px solid var(--ct-line);}
 .ct-cl-n{width:28px;height:28px;flex-shrink:0;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:var(--ct-green);background:var(--ct-sage);}
 .ct-cl h3{margin:3px 0 4px;font-size:14px;line-height:20px;font-weight:800;color:var(--ct-ink);}
-.ct-cl p{margin:0;font-size:12.5px;line-height:20px;font-weight:500;color:var(--ct-ink2);}
+.ct-cl > div{min-width:0;}
+.ct-cl p{overflow-wrap:anywhere;margin:0;font-size:12.5px;line-height:20px;font-weight:500;color:var(--ct-ink2);}
 
 .ct-sigs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px;}
 .ct-sig{display:flex;flex-direction:column;padding:12px;border-radius:16px;border:1px dashed var(--ct-line2);}
@@ -152,10 +153,12 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
   .ct-lh{flex-direction:column;}
   .ct-ref{text-align:left;}
   .ct-sigs{grid-template-columns:1fr;}
+  .ct-kv b.is-money{white-space:normal;overflow-wrap:anywhere;}
 }
 /* Save as PDF / print: only the document, on white paper */
+@page{margin:14mm;}
 @media print{
-  html body,html[data-theme] body{background:#fff!important;}
+  html,html[data-theme],html body,html[data-theme] body{background:#fff!important;}
   .ct{padding:0;}
   .ct-app{max-width:none;min-height:0;background:#fff;box-shadow:none;padding:0;}
   .ct-top,.ct-acts,.ct-foot,#pageRoot ~ *{display:none!important;}
@@ -234,7 +237,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 
         <ol class="ct-cls">
           <li class="ct-cl"><span class="ct-cl-n">1</span><div><h3>Loan Details</h3>
-            <p>The borrower, <strong>{{ full_name|default:"the client" }}</strong>, requests a loan of <strong>₱{{ amount|floatformat:2|intcomma }}</strong> to be repaid over <strong>{{ term_months|default:"—" }} months</strong> at an interest rate of <strong>{{ interest_rate }}% per month</strong>. The estimated monthly repayment is <strong>₱{{ monthly_repayment|default:0|floatformat:2|intcomma }}</strong>. Final figures are subject to confirmation by the Finance Department.</p></div></li>
+            <p>The borrower, <strong>{{ full_name|default:"the client" }}</strong>, requests a loan of <strong>₱{{ amount|floatformat:2|intcomma }}</strong> to be repaid over <strong>{% if term_months %}{{ term_months }} month{{ term_months|pluralize }}{% else %}—{% endif %}</strong> at an interest rate of <strong>{{ interest_rate }}% per month</strong>. The estimated monthly repayment is <strong>₱{{ monthly_repayment|default:0|floatformat:2|intcomma }}</strong>. Final figures are subject to confirmation by the Finance Department.</p></div></li>
           <li class="ct-cl"><span class="ct-cl-n">2</span><div><h3>Repayment Obligation</h3>
             <p>The borrower agrees to repay the full outstanding balance including applicable interest according to the repayment schedule provided in the system. Late or missed payments may result in account restrictions, additional verification requirements, or referral to the collections department.</p></div></li>
           <li class="ct-cl"><span class="ct-cl-n">3</span><div><h3>Document Verification</h3>
