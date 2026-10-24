@@ -17,7 +17,7 @@
     try {
       var uid = "{{ user.pk }}";
       if (localStorage.getItem("ofl_uid") !== uid) {
-        ["ofl_quick_amount","ofl_quick_term","ofl_onboard","ofl_loan_apply_draft","ofl_contact_draft"].forEach(function(k){ localStorage.removeItem(k); });
+        ["ofl_quick_amount","ofl_quick_term","ofl_onboard","ofl_loan_apply_draft","ofl_contact_draft","ofl_news_likes"].forEach(function(k){ localStorage.removeItem(k); });
         localStorage.setItem("ofl_uid", uid);
       }
     } catch (e) {}

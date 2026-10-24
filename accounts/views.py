@@ -887,6 +887,7 @@ def account_status_api(request):
 # ─────────────────────────────────────────
 
 import re as _re
+import hashlib as _hashlib
 import html as _html
 import threading as _threading
 import urllib.request as _urlreq
@@ -1006,6 +1007,11 @@ def _parse_feed(name, code, color, url, limit=9, finance_only=False):
                     m = _re.search(r'<img[^>]+src=["\']([^"\']+)', src)
                     if m:
                         img = m.group(1); break
+            # only real web links: a feed must never inject javascript:/data: URLs into the page
+            if not link.lower().startswith(('http://', 'https://')):
+                link = ''
+            if img and not img.lower().startswith(('http://', 'https://')):
+                img = None
             if title and link:
                 summary = desc[:240] + ('…' if len(desc) > 240 else '')
                 if finance_only and not _is_finance(title, summary):
@@ -1015,7 +1021,8 @@ def _parse_feed(name, code, color, url, limit=9, finance_only=False):
                     'title': title, 'summary': summary,
                     'link': link, 'pub_ts': pub_ts,
                     'image': img or '',
-                    'id': str(abs(hash(link)) % (10 ** 12)),
+                    # stable across restarts and workers (hash() is randomised per process), so saved likes keep working
+                    'id': _hashlib.md5(link.encode('utf-8')).hexdigest()[:12],
                 })
     except Exception:
         pass
@@ -1047,10 +1054,9 @@ def explore_view(request):
 @login_required(login_url="login")
 def explore_news_api(request):
     """Cached JSON feed from Philippine financial RSS sources."""
-    ck = 'ofl_explore_v8'
-    if request.GET.get('refresh') == '1':
-        cache.delete(ck)
-
+    ck = 'ofl_explore_v9'
+    # No client-side cache busting: a refresh costs ~40 outside requests. An empty result is never
+    # cached, so "Try again" re-fetches by itself when there was nothing to show.
     data = cache.get(ck)
     if data is None:
         # (name, code, color, url, limit, finance_only)

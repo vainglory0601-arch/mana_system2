@@ -76,7 +76,8 @@ Read this first. It records how the owner wants this project handled.
 ## How to check work before pushing
 - After building a page, run fresh-eyes reviewers (old-vs-new parity + adversarial runtime QA)
   and fix what they confirm; owner pages so far: login, register, dashboard, quick loan, loan
-  apply, payment method (sources with `[[s:icon]]` placeholders live in the scratchpad).
+  apply, payment method; Claude-led redesigns since: wallet, profile, notifications, transactions,
+  payment schedule, credit score, change password, contact us, explore (sources with `[[s:icon]]` placeholders live in the scratchpad).
 - Local preview in the cloud container: run Django with DEBUG settings on 127.0.0.1 only.
   `cdn.tailwindcss.com` is blocked there: to render a mockup, build its CSS with
   `tailwindcss@3` from npm and use `@fortawesome/fontawesome-free@6.4.0`.
@@ -98,7 +99,6 @@ Read this first. It records how the owner wants this project handled.
   always returns `notif_count: 0`, sends the raw balance (no commas) and an empty status label,
   and colours statuses differently — wiring it in would make the bell dot vanish and the badge
   and balance flicker. Fix the API first if live updates are wanted.
-- explore.html still has the old bottom navigation (different from the dashboard's new pill).
 - Loan apply input filters (kept from the old page, owner to decide): ID number is digits only
   (passport numbers lose their letters); names drop ñ, hyphens, periods; addresses drop commas.
 - What `identity_name` should hold (ID type such as "Passport", or the name on the ID) is not
