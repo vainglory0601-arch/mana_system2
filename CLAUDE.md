@@ -33,6 +33,9 @@ Read this first. It records how the owner wants this project handled.
 - Money inputs: `inputmode="decimal"`, no `maxlength` (it cuts pasted "PHP 1,500,000" before
   cleaning); clean to digits + one point + 2 decimals, no leading zeros, 9 digits max.
 - Client drafts kept in localStorage must carry the user id (`__uid`) — phones are shared.
+- Interest is 0.5% per month. One source: `accounts.models.loan_rate()` (admin LoanConfig, else
+  0.5%); templates get `{{ loan_rate }}` / `{{ loan_rate_pct }}` from a context processor. Never
+  hard-code a rate.
 
 ## Client guides / onboarding (see templates/register.html)
 - Glass guide card (`rgba(17,42,31,.85)` + `backdrop-filter: blur(24px)`), step label + dots,

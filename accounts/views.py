@@ -35,12 +35,11 @@ from django.views.decorators.http import require_POST, require_GET
 
 from dateutil.relativedelta import relativedelta
 
-from .models import SystemSetting, User, LoanApplication, LoanConfig, PaymentMethod, WithdrawalRequest
+from .models import SystemSetting, User, LoanApplication, LoanConfig, PaymentMethod, WithdrawalRequest, loan_rate
 from .forms import PaymentMethodForm, StaffUserForm, StaffPaymentMethodForm
 from .device_lock import check_device, set_device_cookie
 
 # Constants
-INTEREST_RATE_MONTHLY = Decimal("0.005")  # 0.5%
 
 # ======================
 # HELPER FUNCTIONS
@@ -537,8 +536,9 @@ def payment_schedule_view(request):
     total = None
     if latest_loan:
         rate = latest_loan.interest_rate_monthly
-        if rate is not None:
-            rate_pct = format((Decimal(rate) * 100).normalize(), "f") + "%"
+        if rate is None:
+            rate = loan_rate()
+        rate_pct = format((Decimal(rate) * 100).normalize(), "f") + "%"
         if latest_loan.monthly_repayment is not None and latest_loan.term_months:
             total = latest_loan.monthly_repayment * int(latest_loan.term_months)
 
@@ -1219,8 +1219,8 @@ def loan_status_api(request):
 
 @login_required(login_url="login")
 def contract_view(request):
-    """Loan contract. The rate is always shown and computed at 0.5% per month (the old page's fix:
-    stored snapshots were wrong), so these figures match the quick loan and loan apply pages."""
+    """Loan contract, at the loan's own monthly rate (0.5%; snapshots saved at the old 0.05%
+    fallback were corrected by migration 0053), else the current rate."""
     loan = (
         LoanApplication.objects
         .filter(user=request.user)
@@ -1228,13 +1228,15 @@ def contract_view(request):
         .order_by("-id")
         .first()
     )
-    ctx = {"loan": loan, "phone": getattr(request.user, "phone", "") or "", "interest_rate": "0.5"}
+    rate = Decimal(str(loan.interest_rate_monthly)) if loan and loan.interest_rate_monthly is not None else loan_rate()
+    ctx = {"loan": loan, "phone": getattr(request.user, "phone", "") or "",
+           "interest_rate": format((rate * 100).normalize(), "f")}
     if loan:
         amount = Decimal(str(loan.amount or 0))
         terms = int(loan.term_months or 0)
         monthly = total = None
         if amount > 0 and terms > 0:
-            total = amount + amount * Decimal("0.005") * terms
+            total = amount + amount * rate * terms
             monthly = total / terms
         elif loan.monthly_repayment:
             monthly = loan.monthly_repayment
@@ -1353,9 +1355,7 @@ def loan_apply_view(request):
         if amount < Decimal(str(cfg.min_amount)) or amount > Decimal(str(cfg.max_amount)):
             messages.error(request, f"Loan amount must be between {cfg.min_amount} and {cfg.max_amount}.")
             return render(request, "loan_apply.html", {"locked": False, "loan": None})
-        rate = Decimal(str(cfg.interest_rate_monthly))
-    else:
-        rate = Decimal("0.0005")
+    rate = loan_rate()
 
     total = amount + (amount * rate * Decimal(term_months))
     monthly = total / Decimal(term_months)
@@ -2449,8 +2449,7 @@ def staff_loan_edit_save(request, loan_id):
     # Recalc monthly repayment
     rate = loan.interest_rate_monthly
     if rate is None:
-        cfg = LoanConfig.objects.first()
-        rate = Decimal(str(cfg.interest_rate_monthly)) if cfg else Decimal("0.0005")
+        rate = loan_rate()
         loan.interest_rate_monthly = rate
 
     total = loan.amount + (loan.amount * Decimal(str(rate)) * Decimal(loan.term_months))
@@ -2745,8 +2744,7 @@ def staff_loan_update(request, loan_id):
     # Recalc repayment
     rate = loan.interest_rate_monthly
     if rate is None:
-        cfg = LoanConfig.objects.first()
-        rate = Decimal(str(cfg.interest_rate_monthly)) if cfg else Decimal("0.0005")
+        rate = loan_rate()
         loan.interest_rate_monthly = rate
 
     total = loan.amount + (loan.amount * Decimal(str(rate)) * Decimal(loan.term_months))

@@ -487,7 +487,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
             {% if locked %}<p class="la-hint" id="laTermNote" hidden></p>{% endif %}
 
             <div class="la-stats" aria-live="polite">
-              <div class="la-stat"><span>Interest</span><b>0.5% / mo</b></div>
+              <div class="la-stat"><span>Interest</span><b>{{ loan_rate_pct }}% / mo</b></div>
               <div class="la-stat la-stat-main"><span>Monthly</span><b id="laMonthly">—</b></div>
             </div>
           </section>
@@ -707,7 +707,7 @@ function peso(n,cents){
 function shake(el){ el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(function(){ el.classList.remove('shake'); },450); }
 
 var SMOOTH=(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)?'auto':'smooth';
-var LOCKED={{ locked|yesno:"true,false" }}, AMT_MIN=80000, AMT_MAX=5000000, RATE=0.005, DRAFT_KEY='ofl_loan_apply_draft';
+var LOCKED={{ locked|yesno:"true,false" }}, AMT_MIN=80000, AMT_MAX=5000000, RATE={{ loan_rate }}, DRAFT_KEY='ofl_loan_apply_draft';
 /* the payment method page continues the first-loan guide (only when that step is still to do) */
 {% if not locked or loan.status == "DRAFT" %}store('ofl_onboard','pm');{% endif %}
 

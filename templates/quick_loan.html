@@ -306,7 +306,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 
           <div class="ql-sum sp" id="qlSp3" aria-live="polite">
             <div class="ql-row"><span>Loan amount</span><b id="qSumAmount">—</b></div>
-            <div class="ql-row"><span>Interest rate</span><b>0.5% / month</b></div>
+            <div class="ql-row"><span>Interest rate</span><b>{{ loan_rate_pct }}% / month</b></div>
             <div class="ql-row"><span>Loan period</span><b id="qSumTerm">—</b></div>
             <div class="ql-row ql-row-main"><span>Monthly repayment</span><b id="qSumMonthly">—</b></div>
           </div>
@@ -406,7 +406,7 @@ var amountEl=$('qAmount'), termEl=$('qTerm'), hint=$('qHint'), terms=$('qTerms')
 var outAmount=$('qSumAmount'), outTerm=$('qSumTerm'), outMonthly=$('qSumMonthly');
 var btns=[].slice.call(document.querySelectorAll('.term-btn')), goBtn=$('goApply'), goTxt=$('goApplyTxt');
 var SMOOTH=(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)?'auto':'smooth';
-var AMT_MIN=80000, AMT_MAX=5000000, RATE=0.005, LOCKED={% if loan %}true{% else %}false{% endif %};
+var AMT_MIN=80000, AMT_MAX=5000000, RATE={{ loan_rate }}, LOCKED={% if loan %}true{% else %}false{% endif %};
 var lastMonthly='';
 
 /* digits and one decimal point (2 decimals at most), like the old number field; no leading zeros,
