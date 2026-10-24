@@ -1125,9 +1125,11 @@ def explore_news_api(request):
             t.join(timeout=12)
 
         combined.sort(key=lambda x: x['pub_ts'], reverse=True)
-        data = combined
-        if data:
-            cache.set(ck, data, 900)  # 15-min cache for fresher news
+        # several feeds carry the same site's stories (BW/BWB, Rappler/RPBL, MB/MBF): show each once
+        seen = set()
+        data = [a for a in combined if not (a['id'] in seen or seen.add(a['id']))]
+        # 15-min cache; when every feed failed, wait a minute before trying ~40 sites again
+        cache.set(ck, data, 900 if data else 60)
 
     return JsonResponse({'articles': data or [], 'ok': True})
 
