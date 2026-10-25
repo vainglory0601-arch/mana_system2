@@ -1,560 +1,265 @@
 {% extends "base.html" %}
-{% block title %}Credit Score{% endblock %}
+{% load static %}
+{% block title %}Credit Score — APEX{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+html body,html body *,html body button,html body input,
+html body select,html body textarea,html body a{
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif!important;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <style>
-/* ===== OFL Credit Score ===== */
-:root {
-  --navy:#0A2463; --navy-dk:#061540; --navy-lt:#1a3a8a;
-  --orange:#FF8C00; --orange-dk:#D97200; --orange-lt:#FFA733;
-  --bg:#f0f3f9; --card:#ffffff;
-  --ink:#0d1b3e; --ink2:#5a6680; --ink3:#9aa3b8; --line:#e6eaf4;
-  --red:#dc2626; --red-dk:#b91c1c;
-  --green:#16a34a; --green-lt:#22c55e;
-  --amber:#d97706; --amber-lt:#fbbf24;
+/* ════════════════════════════════════════════
+   APEX CREDIT SCORE — Deep Forest
+   Same look in light and dark theme
+════════════════════════════════════════════ */
+:root{
+  --cs-dark:#0B1C14;--cs-primary:#133224;--cs-green:#1B4332;--cs-sage:#E8F3ED;--cs-accent:#F97316;
+  --cs-ink:#111827;--cs-ink2:#374151;--cs-mut:#9ca3af;--cs-mut2:#6b7280;--cs-line:#f3f4f6;--cs-line2:#e5e7eb;
+  --cs-float:0 20px 40px -10px rgba(0,0,0,.1);--cs-ease:cubic-bezier(.22,1,.36,1);
+  /* tier colours */
+  --cs-critical:#dc2626;--cs-low:#f97316;--cs-mid:#f59e0b;--cs-good:#40916c;--cs-top:#1B4332;
 }
+#pageRoot.wrap{max-width:100%!important;width:100%!important;padding:0!important;display:block!important;}
+html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!important;overflow-x:clip!important;background:#e5e7eb!important;color:#1f2937!important;-webkit-font-smoothing:antialiased;}
+.cs a{-webkit-tap-highlight-color:transparent;}
+.cs svg{display:block;width:auto;height:1em;fill:currentColor;flex-shrink:0;}
 
-body, body * { font-family:"Lato","Open Sans",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif !important; }
-html, body { width:100%; overflow-x:hidden; }
-body { margin:0; min-height:100vh; background:var(--bg) !important; color:var(--ink) !important; }
-.wrap { padding-top:0 !important; }
+.cs{min-height:100vh;min-height:100dvh;display:flex;justify-content:center;}
+.cs-app{position:relative;width:100%;max-width:420px;min-height:100vh;min-height:100dvh;background:#f9fafb;padding-bottom:calc(32px + env(safe-area-inset-bottom,0px));}
 
-@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
-@keyframes tilePop { from{transform:translateY(0);opacity:0} to{transform:translateY(-6px);opacity:1} }
-@keyframes scoreCount { from{opacity:0;transform:scale(.85)} to{opacity:1;transform:scale(1)} }
+.cs-top{
+  position:relative;overflow:hidden;padding:24px 24px 120px;border-radius:0 0 2.5rem 2.5rem;
+  background:linear-gradient(to bottom,var(--cs-dark),var(--cs-primary));box-shadow:inset 0 2px 4px rgba(0,0,0,.05);
+}
+.cs-glow{position:absolute;border-radius:50%;pointer-events:none;}
+.cs-glow-a{top:0;right:0;width:256px;height:256px;background:rgba(255,255,255,.05);filter:blur(64px);transform:translate(33%,-33%);}
+.cs-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(249,115,22,.1);filter:blur(40px);transform:translate(-25%,25%);}
+.cs-bar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.cs-glass-dark{background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);}
+.cs-back{
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;
+  color:#fff!important;text-decoration:none!important;transition:background-color .15s,transform .15s;
+}
+.cs-back:hover{background-color:rgba(255,255,255,.1);}
+.cs-back:active{transform:scale(.94);}
+.cs-badge{display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.04em;color:#fff;}
+.cs-badge svg{font-size:11px;color:#FDBA74;}
+.cs-hero{position:relative;z-index:1;}
+.cs-eyebrow{margin:0 0 6px;font-size:11px;line-height:16px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#FDBA74;}
+.cs-hero h1{margin:0 0 6px;font-size:30px;line-height:36px;font-weight:800;letter-spacing:-.025em;color:#fff;}
+.cs-hero p{margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(232,243,237,.75);}
 
-.cs-outer { width:100%; max-width:520px; margin:0 auto; }
+.cs-main{position:relative;z-index:2;margin-top:-88px;padding:0 20px;display:flex;flex-direction:column;gap:20px;}
+.cs-card{position:relative;padding:22px;border-radius:2rem;background:#fff;border:1px solid var(--cs-line);box-shadow:var(--cs-float);}
 
-/* ══ HERO ══ */
-.cs-hero {
-  position:relative;
-  padding:54px 20px 36px;
-  background:
-    radial-gradient(ellipse 150% 90% at 8% 5%,  rgba(255,167,51,.18) 0%, transparent 50%),
-    radial-gradient(ellipse 80%  70% at 92% 95%, rgba(26,58,138,.55)  0%, transparent 55%),
-    linear-gradient(148deg, var(--navy-dk) 0%, var(--navy) 55%, var(--navy-lt) 100%);
-  overflow:hidden;
-  text-align:center;
-}
-.cs-hero::before {
-  content:""; position:absolute;
-  bottom:-70px; left:-60px;
-  width:240px; height:240px; border-radius:50%;
-  border:1px solid rgba(255,255,255,.06); pointer-events:none;
-}
-.cs-hero::after {
-  content:""; position:absolute;
-  top:-55px; right:-45px;
-  width:210px; height:210px; border-radius:50%;
-  border:1px solid rgba(255,140,0,.16); pointer-events:none;
-}
+/* ── gauge ── */
+.cs-gauge{position:relative;width:100%;max-width:260px;margin:0 auto;}
+.cs svg.cs-dial{width:100%;height:auto;overflow:visible;}
+.cs-seg{fill:none;stroke-width:16;stroke:#eef0f2;}
+.cs-seg.is-lit.t-critical{stroke:var(--cs-critical);}
+.cs-seg.is-lit.t-low{stroke:var(--cs-low);}
+.cs-seg.is-lit.t-mid{stroke:var(--cs-mid);}
+.cs-seg.is-lit.t-good{stroke:var(--cs-good);}
+.cs-seg.is-lit.t-top{stroke:var(--cs-top);}
+.cs-needle{transform-box:view-box;transform-origin:100px 100px;transform:rotate(var(--cs-deg));animation:csNeedle 1.1s var(--cs-ease) .15s both;}
+.cs-needle line{stroke:var(--cs-ink);stroke-width:4;stroke-linecap:round;}
+.cs-hub{fill:var(--cs-ink);}
+.cs-hub-dot{fill:#fff;}
+@keyframes csNeedle{from{transform:rotate(-90deg);}to{transform:rotate(var(--cs-deg));}}
+.cs-ends{display:flex;justify-content:space-between;margin:2px 4px 0;font-size:10.5px;line-height:14px;font-weight:700;color:var(--cs-mut);}
 
-/* Badge */
-.cs-badge {
-  position:absolute; top:16px; left:18px;
-  display:flex; align-items:center; gap:6px;
-  background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.18);
-  border-radius:999px; padding:4px 10px 4px 5px; z-index:3;
-}
-.cs-badge-dot {
-  width:22px; height:22px; border-radius:50%;
-  background:linear-gradient(135deg,var(--orange-lt),var(--orange));
-  display:flex; align-items:center; justify-content:center;
-  font-size:8px; font-weight:900; color:#fff;
-}
-.cs-badge-txt { font-size:9.5px; font-weight:900; color:rgba(255,255,255,.82); letter-spacing:.06em; text-transform:uppercase; }
+.cs-score{margin-top:8px;text-align:center;}
+.cs-score-lbl{display:block;font-size:11px;line-height:15px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--cs-mut2);}
+.cs-score-num{display:flex;align-items:baseline;justify-content:center;gap:6px;margin-top:2px;}
+.cs-score-num b{font-size:52px;line-height:58px;font-weight:800;letter-spacing:-.04em;color:var(--cs-ink);}
+.cs-score-num span{font-size:16px;line-height:22px;font-weight:700;color:var(--cs-mut);}
+.cs-pill{display:inline-flex;align-items:center;gap:7px;margin-top:8px;padding:6px 14px;border-radius:999px;font-size:12px;line-height:16px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;}
+.cs-pill svg{font-size:12px;}
+.cs-pill.t-critical{color:#b91c1c;background:#fef2f2;}
+.cs-pill.t-low{color:#c2410c;background:#fff7ed;}
+.cs-pill.t-mid{color:#b45309;background:#fffbeb;}
+.cs-pill.t-good{color:#2d6a4f;background:var(--cs-sage);}
+.cs-pill.t-top{color:#fff;background:var(--cs-green);}
 
-/* Back */
-.cs-back {
-  position:absolute; top:14px; right:18px;
-  display:inline-flex; align-items:center; gap:5px;
-  height:34px; padding:0 13px; border-radius:999px;
-  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
-  color:rgba(255,255,255,.88) !important; text-decoration:none;
-  font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
-  transition:background .18s; z-index:3;
-}
-.cs-back svg { width:13px; height:13px; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
-.cs-back:hover { background:rgba(255,255,255,.22); }
+.cs-insight{display:flex;gap:14px;align-items:flex-start;margin-top:20px;padding:16px;border-radius:20px;background:#f9fafb;border:1px solid var(--cs-line);}
+.cs-insight-ico{width:44px;height:44px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.cs-insight-ico.t-critical{color:var(--cs-critical);background:#fef2f2;}
+.cs-insight-ico.t-low{color:var(--cs-low);background:#fff7ed;}
+.cs-insight-ico.t-mid{color:var(--cs-mid);background:#fffbeb;}
+.cs-insight-ico.t-good{color:var(--cs-good);background:var(--cs-sage);}
+.cs-insight-ico.t-top{color:#fff;background:var(--cs-green);}
+.cs-insight h2{margin:0 0 4px;font-size:15px;line-height:21px;font-weight:800;color:var(--cs-ink);}
+.cs-insight p{margin:0;font-size:13px;line-height:20px;font-weight:500;color:var(--cs-ink2);}
 
-/* ── Score display ── */
-.cs-score-lbl {
-  font-size:10px; font-weight:900;
-  color:var(--orange-lt); letter-spacing:.24em; text-transform:uppercase;
-  margin-bottom:6px; position:relative; z-index:2;
-}
-.cs-score-num {
-  font-size:76px; font-weight:900; line-height:1;
-  color:#fff; letter-spacing:-.04em;
-  position:relative; z-index:2;
-  animation:scoreCount .7s cubic-bezier(.34,1.56,.64,1) .1s both;
-}
-.cs-score-num.is-low  { color:#fca5a5; }
-.cs-score-num.is-mid  { color:var(--amber-lt); }
-.cs-score-num.is-good { color:#86efac; }
-.cs-score-denom {
-  font-size:16px; font-weight:700;
-  color:rgba(255,255,255,.40); letter-spacing:.1em; text-transform:uppercase;
-  display:block; margin-top:6px; position:relative; z-index:2;
-}
+/* ── progress ── */
+.cs-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;}
+.cs-head h2{margin:0;font-size:16px;line-height:22px;font-weight:700;color:var(--cs-ink);}
+.cs-head small{font-size:12px;line-height:16px;font-weight:700;color:var(--cs-mut2);white-space:nowrap;}
+.cs-rail{position:relative;height:12px;border-radius:999px;overflow:hidden;background:var(--cs-line);}
+/* the full-width bar slides in from the left, so its rounded end keeps its shape */
+.cs-rail i{position:absolute;inset:0;border-radius:999px;transform:translateX(calc((var(--cs-pct) - 1) * 100%));animation:csFill 1.1s var(--cs-ease) .25s both;}
+.cs-rail i.t-critical{background:var(--cs-critical);}
+.cs-rail i.t-low{background:var(--cs-low);}
+.cs-rail i.t-mid{background:var(--cs-mid);}
+.cs-rail i.t-good{background:var(--cs-good);}
+.cs-rail i.t-top{background:var(--cs-top);}
+@keyframes csFill{from{transform:translateX(-100%);}to{transform:translateX(calc((var(--cs-pct) - 1) * 100%));}}
+.cs-ms{position:relative;height:16px;margin-top:6px;font-size:10.5px;line-height:16px;font-weight:700;color:var(--cs-mut);}
+.cs-ms span{position:absolute;top:0;transform:translateX(-50%);}
+.cs-ms span:first-child{transform:none;}
+.cs-ms span:last-child{transform:translateX(-100%);}
+.cs-next{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px 14px;border-radius:14px;font-size:13px;line-height:19px;font-weight:600;color:var(--cs-green);background:var(--cs-sage);}
+.cs-next svg{font-size:14px;}
+.cs-next b{font-weight:800;}
 
-/* ── Tier tiles ── */
-.cs-tiers {
-  display:flex; gap:7px;
-  margin:28px 0 0;
-  align-items:flex-end;
-  position:relative; z-index:2;
-}
-.cs-tile {
-  flex:1;
-  display:flex; flex-direction:column; align-items:center; gap:5px;
-  cursor:default;
-  position:relative;
-}
-.cs-tile-bar {
-  width:100%; height:6px; border-radius:5px;
-  background:rgba(255,255,255,.10);
-  border:1px solid rgba(255,255,255,.14);
-  transition:all .45s cubic-bezier(.34,1.56,.64,1);
-}
-.cs-tile-name {
-  font-size:8.5px; font-weight:900; text-transform:uppercase;
-  letter-spacing:.08em; color:rgba(255,255,255,.28);
-  transition:color .3s;
-  white-space:nowrap;
-}
+/* ── tier list ── */
+.cs-tiers{list-style:none;margin:0;padding:0;}
+.cs-tier{display:flex;align-items:center;gap:12px;padding:10px 12px;margin:0 -12px;border-radius:16px;}
+.cs-tier + .cs-tier{margin-top:2px;}
+.cs-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;background:var(--cs-line2);}
+.cs-tier.t-critical .cs-dot{background:var(--cs-critical);}
+.cs-tier.t-low .cs-dot{background:var(--cs-low);}
+.cs-tier.t-mid .cs-dot{background:var(--cs-mid);}
+.cs-tier.t-good .cs-dot{background:var(--cs-good);}
+.cs-tier.t-top .cs-dot{background:var(--cs-top);}
+.cs-tier b{flex:1;min-width:0;font-size:14px;line-height:20px;font-weight:700;color:var(--cs-ink);}
+.cs-tier small{font-size:12px;line-height:16px;font-weight:600;color:var(--cs-mut2);white-space:nowrap;}
+.cs-tier.is-past b{color:var(--cs-mut2);}
+.cs-tier.is-on{background:#f9fafb;border:1px solid var(--cs-line2);padding:9px 11px;}
+.cs-you{padding:2px 8px;border-radius:999px;font-size:9.5px;line-height:14px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--cs-accent);}
 
-/* Active tile */
-.cs-tile.active .cs-tile-bar {
-  height:10px;
-  background:linear-gradient(90deg, var(--orange-dk), var(--orange-lt));
-  border-color:rgba(255,167,51,.60);
-  box-shadow:0 0 18px rgba(255,140,0,.55), 0 4px 12px rgba(255,140,0,.30);
-}
-.cs-tile.active .cs-tile-name { color:var(--orange-lt); font-weight:900; }
+/* ── stats ── */
+.cs-boxes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.cs-box{padding:12px 6px;border-radius:16px;text-align:center;background:#f9fafb;border:1px solid var(--cs-line);}
+.cs-box b{display:block;font-size:20px;line-height:26px;font-weight:800;color:var(--cs-ink);}
+.cs-box span{display:block;margin-top:2px;font-size:10px;line-height:14px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--cs-mut2);}
 
-/* Score chip above active tile */
-.cs-tile-chip {
-  display:none;
-  position:absolute;
-  bottom:calc(100% + 4px);
-  left:50%; transform:translateX(-50%);
-  background:rgba(6,21,64,.92);
-  border:1px solid rgba(255,140,0,.55);
-  border-radius:8px;
-  padding:3px 8px;
-  font-size:10.5px; font-weight:900;
-  color:var(--orange-lt);
-  white-space:nowrap;
-  z-index:5;
-}
-.cs-tile.active .cs-tile-chip { display:block; }
+.cs-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:999px;font-size:14px;line-height:20px;font-weight:700;text-decoration:none!important;transition:background-color .15s,transform .15s;}
+.cs-btn:active{transform:scale(.97);}
+.cs-btn svg{font-size:12px;}
+.cs-btn-green{color:#fff!important;background:var(--cs-green);box-shadow:0 10px 15px -3px rgba(27,67,50,.25);}
+.cs-btn-green:hover{background:#122e22;}
+.cs-btn-line{color:var(--cs-green)!important;border:2px solid var(--cs-green);padding:11px 20px;}
+.cs-btn-line:hover{background:rgba(232,243,237,.5);}
+.cs-acts{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 
-/* Lower tiers: progressive fill */
-.cs-tile.passed .cs-tile-bar {
-  background:rgba(255,255,255,.18);
-  border-color:rgba(255,255,255,.22);
-}
-.cs-tile.passed .cs-tile-name { color:rgba(255,255,255,.45); }
+.cs-foot{padding-top:4px;text-align:center;font-size:12px;line-height:16px;font-weight:500;color:var(--cs-mut);}
+.cs-foot p{margin:0;}
+.cs-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
+.cs-foot i{width:6px;height:6px;border-radius:50%;background:var(--cs-primary);}
+.cs-foot b{font-weight:700;color:var(--cs-accent);}
 
-/* ══ BODY ══ */
-.cs-body {
-  background:var(--card);
-  border-radius:28px 28px 0 0;
-  margin-top:0;
-  box-shadow:0 -4px 24px rgba(10,36,99,.12);
-  padding:28px 16px 52px;
-  box-sizing:border-box;
+@media (min-width:640px){
+  .cs{padding:32px 0;}
+  .cs-app{min-height:0;border-radius:2.5rem;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);}
+  .cs-top{border-radius:2.5rem;}
 }
-
-/* ── Tier badge (top of body) ── */
-.cs-tier-badge {
-  display:inline-flex; align-items:center; gap:8px;
-  padding:8px 20px; border-radius:12px;
-  font-size:12px; font-weight:900; letter-spacing:.10em; text-transform:uppercase;
-  margin-bottom:20px;
-  animation:fadeUp .5s ease-out .1s both;
+@media (max-width:359px){
+  .cs-top{padding-left:20px;padding-right:20px;}
+  .cs-main{padding:0 14px;}
+  .cs-card{padding:18px 16px;}
+  .cs-score-num b{font-size:46px;line-height:52px;}
+  .cs-insight{padding:14px 12px;gap:12px;}
 }
-.cs-tier-badge svg { width:16px; height:16px; flex:0 0 auto; }
-.tb-low     { background:rgba(220,38,38,.08);   color:var(--red-dk);    border:1px solid rgba(220,38,38,.22); }
-.tb-mid     { background:rgba(217,119,6,.08);   color:var(--amber);     border:1px solid rgba(217,119,6,.22); }
-.tb-good    { background:rgba(22,163,74,.08);   color:var(--green);     border:1px solid rgba(22,163,74,.22); }
-.tb-critical{ background:rgba(127,29,29,.12);   color:#7f1d1d;          border:1px solid rgba(127,29,29,.25); }
-
-/* ── Score insight card ── */
-.cs-insight {
-  position:relative;
-  border-radius:18px; overflow:hidden;
-  border:1px solid var(--line);
-  margin-bottom:18px;
-  animation:fadeUp .5s ease-out .16s both;
-}
-.cs-insight-strip {
-  height:3px; width:100%;
-}
-.cs-insight-strip.low     { background:linear-gradient(90deg,var(--red-dk),var(--red)); }
-.cs-insight-strip.mid     { background:linear-gradient(90deg,var(--amber),var(--amber-lt)); }
-.cs-insight-strip.good    { background:linear-gradient(90deg,var(--green),var(--green-lt)); }
-.cs-insight-strip.critical{ background:linear-gradient(90deg,#7f1d1d,var(--red-dk)); }
-
-.cs-insight-body {
-  padding:16px 18px 18px;
-  display:flex; gap:14px; align-items:flex-start;
-}
-.cs-insight-ico {
-  width:44px; height:44px; border-radius:14px;
-  display:flex; align-items:center; justify-content:center; flex:0 0 auto;
-}
-.cs-insight-ico svg { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-.ico-low      { background:rgba(220,38,38,.10); color:var(--red); }
-.ico-mid      { background:rgba(217,119,6,.10); color:var(--amber); }
-.ico-good     { background:rgba(22,163,74,.10); color:var(--green); }
-.ico-critical { background:rgba(127,29,29,.12); color:#7f1d1d; }
-
-.cs-insight-text { flex:1; }
-.cs-insight-title {
-  font-size:14.5px; font-weight:900; color:var(--ink);
-  letter-spacing:-.1px; margin-bottom:6px;
-}
-.cs-insight-desc {
-  font-size:13px; font-weight:500; color:var(--ink2);
-  line-height:1.65;
-}
-
-/* ── Progress rail (linear, NOT circular) ── */
-.cs-rail-wrap {
-  margin-bottom:20px;
-  animation:fadeUp .5s ease-out .22s both;
-}
-.cs-rail-head {
-  display:flex; justify-content:space-between; align-items:center;
-  margin-bottom:8px;
-}
-.cs-rail-head-lbl { font-size:10px; font-weight:900; color:var(--ink3); letter-spacing:.16em; text-transform:uppercase; }
-.cs-rail-head-val { font-size:11px; font-weight:900; color:var(--ink2); }
-.cs-rail-track {
-  height:10px; border-radius:999px;
-  background:var(--bg); border:1px solid var(--line);
-  overflow:hidden; position:relative;
-}
-.cs-rail-fill {
-  height:100%; border-radius:999px;
-  background:linear-gradient(90deg, var(--red-dk) 0%, var(--amber) 40%, var(--green) 80%);
-  transition:width 1.2s cubic-bezier(.25,.8,.25,1);
-  width:0;
-  position:relative;
-}
-.cs-rail-fill::after {
-  content:""; position:absolute;
-  top:0; left:0; right:0; bottom:0;
-  background:linear-gradient(180deg,rgba(255,255,255,.30) 0%,transparent 100%);
-  border-radius:999px;
-}
-.cs-rail-milestones {
-  display:flex; justify-content:space-between;
-  margin-top:6px;
-}
-.cs-rail-ms {
-  font-size:9.5px; font-weight:800; color:var(--ink3);
-  letter-spacing:.04em; text-align:center;
-}
-.cs-rail-ms.current { color:var(--ink); font-weight:900; }
-
-/* ── Stats row ── */
-.cs-stats {
-  display:grid; grid-template-columns:repeat(3,1fr); gap:10px;
-  margin-bottom:20px;
-  animation:fadeUp .5s ease-out .28s both;
-}
-.cs-stat {
-  background:var(--bg); border-radius:14px;
-  border:1px solid var(--line);
-  padding:14px 8px 12px;
-  text-align:center; position:relative; overflow:hidden;
-}
-.cs-stat::before {
-  content:""; position:absolute;
-  top:0; left:10%; right:10%; height:2px;
-  background:linear-gradient(90deg,transparent,var(--orange),transparent);
-  border-radius:2px;
-}
-.cs-stat-val {
-  font-size:26px; font-weight:900;
-  color:var(--navy); letter-spacing:-.02em;
-  margin-bottom:4px;
-}
-.cs-stat-lbl {
-  font-size:9.5px; font-weight:900; color:var(--ink3);
-  text-transform:uppercase; letter-spacing:.14em;
-}
-
-html[data-theme="dark"] .cs-stat-val { color:#fff !important; }
-
-/* ── Actions ── */
-.cs-actions {
-  display:flex; gap:10px;
-  animation:fadeUp .5s ease-out .34s both;
-}
-.cs-act-back {
-  flex:1; padding:15px 20px; border-radius:999px;
-  border:2px solid var(--line); background:var(--bg);
-  color:var(--ink) !important; font-weight:900; font-size:12.5px;
-  letter-spacing:.06em; text-transform:uppercase;
-  text-decoration:none; text-align:center;
-  transition:all .18s;
-}
-.cs-act-back:hover { border-color:var(--navy); background:var(--navy); color:#fff !important; }
-.cs-act-dash {
-  flex:2; padding:15px 20px; border-radius:999px;
-  border:0; background:linear-gradient(135deg,var(--orange-dk),var(--orange));
-  color:#fff !important; font-weight:900; font-size:12.5px;
-  letter-spacing:.06em; text-transform:uppercase;
-  text-decoration:none; text-align:center;
-  box-shadow:0 8px 22px rgba(255,140,0,.38);
-  transition:all .18s;
-}
-.cs-act-dash:hover { transform:translateY(-2px); box-shadow:0 12px 28px rgba(255,140,0,.52); filter:brightness(1.05); }
-.cs-act-dash:active { transform:scale(.98); }
-
-@media(max-width:480px){
-  .cs-score-num { font-size:62px; }
-  .cs-tile-name { font-size:7.5px; }
+@media (prefers-reduced-motion:reduce){
+  .cs-needle,.cs-rail i{animation:none;}
 }
 </style>
 
-{% with cs=request.user.credit_score|default:100 %}
-{% with score_int=cs|add:0 %}
-
-<div class="cs-outer">
-
-  <!-- ══ HERO ══ -->
-  <div class="cs-hero">
-
-    <div class="cs-badge">
-      <div class="cs-badge-dot">OFL</div>
-      <span class="cs-badge-txt">Overseas FilipinoLoan</span>
-    </div>
-
-    <a class="cs-back" href="/profile/">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      Back
-    </a>
-
-    <div class="cs-score-lbl">Credit Score</div>
-    <div class="cs-score-num" id="csScoreNum">{{ cs }}</div>
-    <span class="cs-score-denom">out of 500</span>
-
-    <!-- Tier tiles -->
-    <div class="cs-tiers" id="csTiles">
-      <div class="cs-tile" data-tier="0">
-        <div class="cs-tile-chip" id="scoreChip">{{ cs }}</div>
-        <div class="cs-tile-bar"></div>
-        <span class="cs-tile-name">Critical</span>
+<!-- Icons: Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0) Copyright 2023 Fonticons, Inc. -->
+<div class="cs">
+  <div class="cs-app">
+    <header class="cs-top">
+      <div class="cs-glow cs-glow-a"></div>
+      <div class="cs-glow cs-glow-b"></div>
+      <div class="cs-bar">
+        <a class="cs-back cs-glass-dark" href="{% url 'profile' %}" aria-label="Back to profile"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></a>
+        <div class="cs-badge cs-glass-dark"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 0c4.6 0 9.2 1 13.4 2.9L457.7 82.8c22 9.3 38.4 31 38.3 57.2c-.5 99.2-41.3 280.7-213.6 363.2c-16.7 8-36.1 8-52.8 0C57.3 420.7 16.5 239.2 16 140c-.1-26.2 16.3-47.9 38.3-57.2L242.7 2.9C246.8 1 251.4 0 256 0zm0 66.8V444.8C394 378 431.1 230.1 432 141.4L256 66.8l0 0z"/></svg>Credit</div>
       </div>
-      <div class="cs-tile" data-tier="1">
-        <div class="cs-tile-chip" id="scoreChip1">{{ cs }}</div>
-        <div class="cs-tile-bar"></div>
-        <span class="cs-tile-name">Low</span>
+      <div class="cs-hero">
+        <p class="cs-eyebrow">Your Account</p>
+        <h1>Credit Score</h1>
+        <p>How lenders see your account today</p>
       </div>
-      <div class="cs-tile" data-tier="2">
-        <div class="cs-tile-chip" id="scoreChip2">{{ cs }}</div>
-        <div class="cs-tile-bar"></div>
-        <span class="cs-tile-name">Building</span>
-      </div>
-      <div class="cs-tile" data-tier="3">
-        <div class="cs-tile-chip" id="scoreChip3">{{ cs }}</div>
-        <div class="cs-tile-bar"></div>
-        <span class="cs-tile-name">Good</span>
-      </div>
-      <div class="cs-tile" data-tier="4">
-        <div class="cs-tile-chip" id="scoreChip4">{{ cs }}</div>
-        <div class="cs-tile-bar"></div>
-        <span class="cs-tile-name">Excellent</span>
-      </div>
-    </div>
+    </header>
 
-  </div><!-- /.cs-hero -->
-
-  <!-- ══ BODY ══ -->
-  <div class="cs-body">
-
-    <!-- Tier badge -->
-    <div id="csTierBadge" class="cs-tier-badge tb-low">
-      <svg id="csBadgeIcon" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-      <span id="csBadgeTxt">Low Score</span>
-    </div>
-
-    <!-- Score insight card -->
-    <div class="cs-insight" id="csInsight">
-      <div class="cs-insight-strip" id="csStrip"></div>
-      <div class="cs-insight-body">
-        <div class="cs-insight-ico" id="csIco">
-          <svg id="csIcoSvg" viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <main class="cs-main">
+      <section class="cs-card" aria-label="Your credit score">
+        <div class="cs-gauge" style="--cs-deg:{{ needle_deg|stringformat:'s' }}deg">
+          <!-- pathLength 500 = the score scale, so every band is drawn in score points -->
+          <svg class="cs-dial" viewBox="0 0 200 112" aria-hidden="true">
+            {% for t in tiers %}
+            <path class="cs-seg t-{{ t.key }}{% if t.on or t.past %} is-lit{% endif %}" d="M20 100 A80 80 0 0 1 180 100" pathLength="500"
+              stroke-dasharray="{{ t.dash }} 9999" stroke-dashoffset="{{ t.dash_off }}"/>
+            {% endfor %}
+            <g class="cs-needle">
+              <line x1="100" y1="100" x2="100" y2="36"/>
+            </g>
+            <circle class="cs-hub" cx="100" cy="100" r="8"/>
+            <circle class="cs-hub-dot" cx="100" cy="100" r="3"/>
+          </svg>
+          <div class="cs-ends"><span>0</span><span>500</span></div>
         </div>
-        <div class="cs-insight-text">
-          <div class="cs-insight-title" id="csInsightTitle">Analyzing...</div>
-          <div class="cs-insight-desc" id="csInsightDesc">Please wait.</div>
+
+        <div class="cs-score">
+          <span class="cs-score-lbl">Credit Score</span>
+          <div class="cs-score-num"><b id="csScore">{{ score }}</b><span>/ 500</span></div>
+          <span class="cs-pill t-{{ tier.key }}">{% if tier.key == 'critical' or tier.key == 'low' %}<svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"/></svg>{% elif tier.key == 'mid' %}<svg viewBox="0 0 576 512" aria-hidden="true"><path d="M384 160c-17.7 0-32-14.3-32-32s14.3-32 32-32H544c17.7 0 32 14.3 32 32V288c0 17.7-14.3 32-32 32s-32-14.3-32-32V205.3L342.6 374.6c-12.5 12.5-32.8 12.5-45.3 0L192 269.3 54.6 406.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160c12.5-12.5 32.8-12.5 45.3 0L320 306.7 466.7 160H384z"/></svg>{% elif tier.key == 'good' %}<svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>{% else %}<svg viewBox="0 0 576 512" aria-hidden="true"><path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"/></svg>{% endif %}{{ tier.label }}</span>
         </div>
+
+        <div class="cs-insight">
+          <span class="cs-insight-ico t-{{ tier.key }}">{% if tier.key == 'critical' or tier.key == 'low' %}<svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"/></svg>{% elif tier.key == 'mid' %}<svg viewBox="0 0 448 512" aria-hidden="true"><path d="M349.4 44.6c5.9-13.7 1.5-29.7-10.6-38.5s-28.6-8-39.9 1.8l-256 224c-10 8.8-13.6 22.9-8.9 35.3S50.7 288 64 288H175.5L98.6 467.4c-5.9 13.7-1.5 29.7 10.6 38.5s28.6 8 39.9-1.8l256-224c10-8.8 13.6-22.9 8.9-35.3s-16.6-20.7-30-20.7H272.5L349.4 44.6z"/></svg>{% elif tier.key == 'good' %}<svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>{% else %}<svg viewBox="0 0 576 512" aria-hidden="true"><path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"/></svg>{% endif %}</span>
+          <div>
+            <h2>{{ tier.title }}</h2>
+            <p>{{ tier.text }}</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="cs-card" aria-label="Score progress">
+        <div class="cs-head"><h2>Score Progress</h2><small>{{ score }} / 500</small></div>
+        <div class="cs-rail"><i class="t-{{ tier.key }}" style="--cs-pct:{{ score_frac|stringformat:'s' }}"></i></div>
+        <div class="cs-ms"><span style="left:0">0</span><span style="left:20%">100</span><span style="left:50%">250</span><span style="left:80%">400</span><span style="left:100%">500</span></div>
+        <div class="cs-next">{% if next_label %}<svg viewBox="0 0 576 512" aria-hidden="true"><path d="M384 160c-17.7 0-32-14.3-32-32s14.3-32 32-32H544c17.7 0 32 14.3 32 32V288c0 17.7-14.3 32-32 32s-32-14.3-32-32V205.3L342.6 374.6c-12.5 12.5-32.8 12.5-45.3 0L192 269.3 54.6 406.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160c12.5-12.5 32.8-12.5 45.3 0L320 306.7 466.7 160H384z"/></svg><span><b>{{ points_to_next }} point{{ points_to_next|pluralize }}</b> to reach {{ next_label }}</span>{% else %}<svg viewBox="0 0 576 512" aria-hidden="true"><path d="M316.9 18C311.6 7 300.4 0 288.1 0s-23.4 7-28.8 18L195 150.3 51.4 171.5c-12 1.8-22 10.2-25.7 21.7s-.7 24.2 7.9 32.7L137.8 329 113.2 474.7c-2 12 3 24.2 12.9 31.3s23 8 33.8 2.3l128.3-68.5 128.3 68.5c10.8 5.7 23.9 4.9 33.8-2.3s14.9-19.3 12.9-31.3L438.5 329 542.7 225.9c8.6-8.5 11.7-21.2 7.9-32.7s-13.7-19.9-25.7-21.7L381.2 150.3 316.9 18z"/></svg><span><b>Top level reached.</b> Keep it up!</span>{% endif %}</div>
+      </section>
+
+      <section class="cs-card" aria-label="Score levels">
+        <div class="cs-head"><h2>Score Levels</h2></div>
+        <ul class="cs-tiers">
+          {% for t in tiers %}
+          <li class="cs-tier t-{{ t.key }}{% if t.on %} is-on{% elif t.past %} is-past{% endif %}">
+            <span class="cs-dot"></span>
+            <b>{{ t.label }}</b>
+            {% if t.on %}<span class="cs-you">You</span>{% endif %}
+            <small>{{ t.low }}–{{ t.high }}</small>
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="cs-boxes" aria-label="Your activity">
+        <div class="cs-box"><b>{{ loans_total }}</b><span>Applied</span></div>
+        <div class="cs-box"><b>{{ loans_approved }}</b><span>Approved</span></div>
+        <div class="cs-box"><b>{{ withdrawals_paid }}</b><span>Paid out</span></div>
+      </section>
+
+      <div class="cs-acts">
+        <a class="cs-btn cs-btn-line cs-back-link" href="{% url 'profile' %}"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg>Profile</a>
+        <a class="cs-btn cs-btn-green" href="{% url 'dashboard' %}"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg>Dashboard</a>
       </div>
-    </div>
 
-    <!-- Progress rail -->
-    <div class="cs-rail-wrap">
-      <div class="cs-rail-head">
-        <span class="cs-rail-head-lbl">Score Progress</span>
-        <span class="cs-rail-head-val" id="csRailVal">{{ cs }} / 500</span>
-      </div>
-      <div class="cs-rail-track">
-        <div class="cs-rail-fill" id="csRailFill"></div>
-      </div>
-      <div class="cs-rail-milestones">
-        <span class="cs-rail-ms">0</span>
-        <span class="cs-rail-ms" id="ms100">100</span>
-        <span class="cs-rail-ms" id="ms250">250</span>
-        <span class="cs-rail-ms" id="ms400">400</span>
-        <span class="cs-rail-ms">500</span>
-      </div>
-    </div>
-
-    <!-- Stats -->
-    <div class="cs-stats">
-      <div class="cs-stat">
-        <div class="cs-stat-val">{{ request.user.loan_applications.count|default:0 }}</div>
-        <div class="cs-stat-lbl">Loans</div>
-      </div>
-      <div class="cs-stat">
-        <div class="cs-stat-val">{{ active_loans|default:0 }}</div>
-        <div class="cs-stat-lbl">Active</div>
-      </div>
-      <div class="cs-stat">
-        <div class="cs-stat-val">{{ completed_payments|default:0 }}</div>
-        <div class="cs-stat-lbl">Paid</div>
-      </div>
-    </div>
-
-    <!-- Actions -->
-    <div class="cs-actions">
-      <a class="cs-act-back" href="/profile/">Back</a>
-      <a class="cs-act-dash" href="{% url 'dashboard' %}">Dashboard</a>
-    </div>
-
-  </div><!-- /.cs-body -->
-
-</div><!-- /.cs-outer -->
-
-<script>
-(function(){
-  var score = parseInt("{{ cs }}") || 100;
-  var max   = 500;
-
-  /* ── tier determination ── */
-  var tier, tierClass, tipTitle, tipDesc, iconPath, stripClass, icoClass;
-
-  if(score <= 50){
-    tier      = 0;
-    tierClass = "tb-critical";
-    stripClass= "critical";
-    icoClass  = "ico-critical";
-    tipTitle  = "Critical Score";
-    tipDesc   = "Your credit score is critically low. Immediate action is required to improve your financial standing.";
-    iconPath  = "M12 9v4m0 4h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z";
-  } else if(score <= 100){
-    tier      = 1;
-    tierClass = "tb-low";
-    stripClass= "low";
-    icoClass  = "ico-low";
-    tipTitle  = "Needs Improvement";
-    tipDesc   = "Your credit score is at the starting point. Make on-time payments to start building your score.";
-    iconPath  = "M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z";
-  } else if(score <= 250){
-    tier      = 2;
-    tierClass = "tb-mid";
-    stripClass= "mid";
-    icoClass  = "ico-mid";
-    tipTitle  = "Building Credit";
-    tipDesc   = "Good progress! Keep making regular payments to continue growing your credit score.";
-    iconPath  = "M13 2L3 14h9l-1 8 10-12h-9l1-8z";
-  } else if(score <= 400){
-    tier      = 3;
-    tierClass = "tb-good";
-    stripClass= "good";
-    icoClass  = "ico-good";
-    tipTitle  = "Good Standing";
-    tipDesc   = "Your credit score is in good shape. You qualify for better loan terms and higher limits.";
-    iconPath  = "M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4 12 14.01l-3-3";
-  } else {
-    tier      = 4;
-    tierClass = "tb-good";
-    stripClass= "good";
-    icoClass  = "ico-good";
-    tipTitle  = "Excellent Credit";
-    tipDesc   = "Outstanding! You have the highest credit rating and qualify for the best rates and maximum loan limits.";
-    iconPath  = "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z";
-  }
-
-  /* ── score number color ── */
-  var numEl = document.getElementById("csScoreNum");
-  if(numEl){
-    if(score <= 100) numEl.classList.add("is-low");
-    else if(score <= 250) numEl.classList.add("is-mid");
-    else numEl.classList.add("is-good");
-  }
-
-  /* ── tier tiles ── */
-  var tiles = document.querySelectorAll("#csTiles .cs-tile");
-  tiles.forEach(function(t, i){
-    t.classList.remove("active","passed");
-    if(i < tier)  t.classList.add("passed");
-    if(i === tier) t.classList.add("active");
-  });
-
-  /* ── tier badge ── */
-  var badge = document.getElementById("csTierBadge");
-  var badgeTxt = document.getElementById("csBadgeTxt");
-  if(badge){
-    badge.className = "cs-tier-badge " + tierClass;
-    var labels = ["Critical","Low Score","Building","Good Standing","Excellent"];
-    if(badgeTxt) badgeTxt.textContent = labels[tier];
-  }
-
-  /* ── insight card ── */
-  var strip = document.getElementById("csStrip");
-  var ico   = document.getElementById("csIco");
-  var icoSvg= document.getElementById("csIcoSvg");
-  var insTitle = document.getElementById("csInsightTitle");
-  var insDesc  = document.getElementById("csInsightDesc");
-
-  if(strip) strip.className = "cs-insight-strip " + stripClass;
-  if(ico)   ico.className   = "cs-insight-ico "   + icoClass;
-  if(icoSvg) icoSvg.setAttribute("viewBox","0 0 24 24");
-  if(insTitle) insTitle.textContent = tipTitle;
-  if(insDesc)  insDesc.textContent  = tipDesc;
-
-  /* ── rail fill ── */
-  var rail = document.getElementById("csRailFill");
-  var pct  = Math.min(score / max * 100, 100).toFixed(1);
-  setTimeout(function(){
-    if(rail) rail.style.width = pct + "%";
-  }, 280);
-
-  /* highlight nearest milestone */
-  var milestones = [
-    {id:"ms100", val:100},
-    {id:"ms250", val:250},
-    {id:"ms400", val:400}
-  ];
-  var closest = null, closestDiff = Infinity;
-  milestones.forEach(function(m){
-    var d = Math.abs(score - m.val);
-    if(d < closestDiff){ closestDiff = d; closest = m.id; }
-  });
-  if(closest && closestDiff < 80){
-    var el = document.getElementById(closest);
-    if(el) el.classList.add("current");
-  }
-})();
-</script>
-
-{% endwith %}
-{% endwith %}
+      <footer class="cs-foot">
+        <p><i></i> APEX <span>•</span> <b>v2.2.1</b></p>
+        <p>© 2026 All rights reserved</p>
+      </footer>
+    </main>
+  </div>
+</div>
 {% endblock %}

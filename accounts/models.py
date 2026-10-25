@@ -134,13 +134,25 @@ class User(AbstractBaseUser, PermissionsMixin):
         super().save(*args, **kwargs)
 
 
+DEFAULT_RATE_MONTHLY = Decimal("0.005")   # 0.5% per month
+LOAN_TERMS = (6, 12, 24, 36)              # months the company offers
+
+
+def loan_rate():
+    """Monthly interest rate for new loans: the admin's LoanConfig, else 0.5%."""
+    cfg = LoanConfig.objects.first()
+    if cfg and cfg.interest_rate_monthly is not None:
+        return Decimal(str(cfg.interest_rate_monthly))
+    return DEFAULT_RATE_MONTHLY
+
+
 class LoanConfig(models.Model):
     """
     Admin can change interest/min/max later (no code change).
     Keep only 1 row in DB.
     """
     interest_rate_monthly = models.DecimalField(
-        max_digits=10, decimal_places=6, default=Decimal("0.000500")
+        max_digits=10, decimal_places=6, default=Decimal("0.005000")   # 0.5% per month
     )
     min_amount = models.DecimalField(
         max_digits=14, decimal_places=2, default=Decimal("80000.00")

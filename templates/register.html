@@ -1,849 +1,692 @@
 {% extends "base.html" %}
-{% block title %}Register - Overseas FilipinoLoan{% endblock %}
+{% block title %}Register — APEX{% endblock %}
 {% load static %}
 {% block nav %}{% endblock %}
 
 {% block extra_css %}
 {{ block.super }}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <style>
 html body,html body *,html body button,html body input,
-html body select,html body textarea,html body a,html body th,html body td{
-  font-family:'Noto Sans','Hind','Lato',system-ui,sans-serif!important;
+html body select,html body textarea,html body a{
+  font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif!important;
 }
 </style>
 {% endblock %}
 
 {% block content %}
 <style>
-#pageRoot.wrap{max-width:100%!important;width:100%!important;padding:0!important;display:block!important;}
-body{padding-bottom:0!important;overflow-x:hidden!important;min-height:100vh;
-  background:linear-gradient(160deg,#071540 0%,#0c1f5c 60%,#0a1a4a 100%)!important;
-  color:#0a1a3a;}
-body,body *{font-family:inherit!important;box-sizing:border-box;}
-*{margin:0;padding:0;box-sizing:border-box;}
-
+/* ════════════════════════════════════════════
+   APEX REGISTER — Forest Green · Glass Guide
+   Same look in light and dark theme
+════════════════════════════════════════════ */
 :root{
-  --navy:#0A2463;--navy-dk:#061540;--navy-md:#1a3a7a;
-  --orange:#FF8C00;--orange-dk:#D97200;--orange-lt:#FFA533;
-  --white:#ffffff;--ink:#0a1a3a;--mut:#7a8299;--line:#e2e6f0;
+  --rg-green:#1B4332;--rg-green-dk:#122e22;--rg-green-lt:#E8F3ED;
+  --rg-accent:#F97316;
+  --rg-ink:#374151;--rg-mut:#9ca3af;--rg-line:#e5e7eb;--rg-line-lt:#f3f4f6;
+  --rg-glass:rgba(17,42,31,.85);
+}
+#pageRoot.wrap{max-width:100%!important;width:100%!important;padding:0!important;display:block!important;}
+html body,html[data-theme] body{
+  padding-bottom:0!important;overflow-x:hidden!important;
+  background:#f3f4f6!important;color:var(--rg-ink)!important;
+  -webkit-font-smoothing:antialiased;
 }
 
-/* ── Keyframes ── */
-@keyframes cardPop {0%{opacity:0;transform:translateY(18px) scale(.95)}100%{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes bubPop  {0%{opacity:0;transform:scale(.88) translateY(8px)}70%{transform:scale(1.03) translateY(-2px)}100%{opacity:1;transform:scale(1) translateY(0)}}
-@keyframes spin    {to{transform:rotate(360deg)}}
-@keyframes shakeX  {0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
-@keyframes pulseOrg{0%,100%{box-shadow:0 6px 20px rgba(255,140,0,.40)}50%{box-shadow:0 6px 32px rgba(255,140,0,.72)}}
-@keyframes typeDot {0%,80%,100%{transform:scale(0);opacity:.4}40%{transform:scale(1);opacity:1}}
+/* ── Page shell (full screen on phones, rounded app card on desktop) ──
+   No overflow:hidden here: the guide must never be clipped. */
+.rg{min-height:100vh;min-height:100dvh;display:flex;justify-content:center;}
+.rg-app{
+  position:relative;width:100%;max-width:400px;
+  min-height:100vh;min-height:100dvh;
+  display:flex;flex-direction:column;background:#f9fafb;
+}
 
-/* PAGE */
-.rp{
-  min-height:100vh;
+/* ── Header ── */
+.rg-hero{
+  position:relative;flex-shrink:0;overflow:hidden;text-align:center;
+  padding:40px 24px 144px;border-radius:0 0 2.5rem 2.5rem;
+  background:linear-gradient(to bottom,#133224,#1B4332,#0F281C);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.05);
+}
+.rg-glow{position:absolute;border-radius:50%;filter:blur(64px);pointer-events:none;}
+.rg-glow-a{top:0;left:-20%;width:288px;height:288px;background:rgba(45,90,68,.2);}
+.rg-glow-b{bottom:-10%;right:-10%;width:256px;height:256px;background:rgba(0,0,0,.4);}
+.rg-hero-text{position:relative;z-index:1;margin:64px 0 16px;}
+.rg-title{margin:0 0 8px;font-size:30px;line-height:36px;font-weight:700;letter-spacing:-.025em;color:#fff;}
+.rg-sub{margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(232,243,237,.8);}
+
+/* ── Form card ── */
+.rg-main{position:relative;z-index:1;flex:1;margin-top:-112px;padding:0 20px;}
+.rg-card{
+  padding:24px;border-radius:2rem;background:#fff;border:1px solid var(--rg-line-lt);
+  box-shadow:0 8px 30px rgba(0,0,0,.1);
+}
+.rg-kicker{display:flex;align-items:center;gap:12px;margin:8px 0 24px;}
+.rg-kicker::before,.rg-kicker::after{content:'';height:1px;background:var(--rg-line);}
+.rg-kicker::before{width:32px;flex-shrink:0;}
+.rg-kicker::after{flex:1;}
+.rg-kicker h2{margin:0;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--rg-mut);}
+
+.rg-app svg{display:block;width:auto;height:1em;fill:currentColor;}
+
+/* alerts (number taken / server errors) */
+.rg-alert{
+  display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;padding:12px 14px;border-radius:16px;
+  font-size:13px;line-height:1.5;font-weight:500;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;
+}
+.rg-app .rg-alert svg{flex-shrink:0;height:16px;margin-top:2px;}
+.rg-alert strong{display:block;font-weight:700;}
+.rg-alert a{color:#991b1b;font-weight:700;text-decoration:underline;}
+
+/* fields */
+.rg-form{position:relative;display:flex;flex-direction:column;gap:20px;margin:48px 0 0;}
+.rg-alert + .rg-form,.rg-alert + .rg-alert{margin-top:0;}
+.rg-alert + .rg-form{margin-top:28px;}
+.rg-label{
+  display:block;margin:0 0 8px;padding-left:4px;
+  font-size:11px;line-height:16px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--rg-green);
+}
+.rg-label-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 0 8px;padding-left:4px;}
+.rg-label-row .rg-label{margin:0;padding:0;}
+.rg-field{position:relative;}
+.rg-ico{
+  position:absolute;left:16px;top:50%;transform:translateY(-50%);
+  display:flex;color:var(--rg-mut);pointer-events:none;transition:color .15s;
+}
+.rg-field:focus-within .rg-ico{color:var(--rg-green);}
+/* #rgForm beats base.html's dark-theme input overrides */
+#rgForm .rg-input{
+  width:100%;margin:0;padding:16px 16px 16px 48px;
+  font-size:16px;line-height:24px;font-weight:500;
+  color:var(--rg-ink)!important;background:rgba(249,250,251,.5)!important;
+  border:1px solid var(--rg-line)!important;border-radius:16px;
+  outline:none;box-shadow:none!important;-webkit-appearance:none;appearance:none;
+  transition:border-color .15s,box-shadow .15s;
+}
+#rgForm .rg-input.has-eye{padding-right:52px;}
+#rgForm .rg-input::placeholder{color:var(--rg-mut)!important;font-weight:400;}
+#rgForm .rg-input:focus{border-color:var(--rg-green)!important;box-shadow:0 0 0 1px var(--rg-green)!important;}
+#rgForm .rg-field.is-taken .rg-input{border-color:#fca5a5!important;background:#fef2f2!important;}
+#rgForm .rg-input:-webkit-autofill{
+  -webkit-text-fill-color:var(--rg-ink)!important;
+  -webkit-box-shadow:0 0 0 1000px #fff inset!important;
+  transition:background-color 9999s ease-in-out 0s;
+}
+.rg-eye{
+  position:absolute;right:16px;top:50%;transform:translateY(-50%);
+  display:flex;padding:0;border:0;background:none;cursor:pointer;
+  color:var(--rg-mut);transition:color .15s;
+}
+.rg-eye:hover{color:#4b5563;}
+.rg-eye .i-shown,.rg-eye.on .i-hidden{display:none;}
+.rg-eye.on .i-shown{display:block;}
+
+@keyframes rgShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.rg-step.shake{animation:rgShake .4s ease;}
+
+/* password strength — sits in the label row so typing never shifts the layout */
+.rg-str{
+  display:flex;align-items:center;gap:6px;
+  font-size:10.5px;line-height:16px;font-weight:700;letter-spacing:.04em;color:var(--rg-mut);
+  opacity:0;transition:opacity .2s;
+}
+.rg-str.on{opacity:1;}
+.rg-str-bars{display:flex;gap:3px;}
+.rg-str-bars i{width:14px;height:4px;border-radius:999px;background:var(--rg-line);transition:background .2s;}
+.rg-str[data-level="1"]{color:#dc2626;}
+.rg-str[data-level="1"] i:nth-child(1){background:#ef4444;}
+.rg-str[data-level="2"]{color:#b45309;}
+.rg-str[data-level="2"] i:nth-child(-n+2){background:#f59e0b;}
+.rg-str[data-level="3"]{color:#15803d;}
+.rg-str[data-level="3"] i{background:#16a34a;}
+
+/* buttons */
+.rg-actions{padding-top:8px;}
+.rg-btn,.rg-back{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:12px;
+  border-radius:999px;cursor:pointer;
+  font-size:16px;line-height:24px;font-weight:700;
+  transition:background .15s,transform .15s;
+}
+.rg-btn{
+  padding:16px;border:0;color:#fff!important;background:var(--rg-green);text-decoration:none!important;
+  box-shadow:0 10px 15px -3px rgba(27,67,50,.25),0 4px 6px -4px rgba(27,67,50,.25);
+}
+.rg-btn:hover{background:var(--rg-green-dk);}
+.rg-btn:disabled{opacity:.85;cursor:wait;}
+.rg-back{
+  padding:14px;border:2px solid var(--rg-green);background:transparent;
+  color:var(--rg-green)!important;text-decoration:none!important;
+}
+.rg-back:hover{background:rgba(232,243,237,.3);}
+.rg-btn:active,.rg-back:active{transform:scale(.98);}
+.rg-app .rg-btn svg,.rg-app .rg-back svg{height:14px;}
+.rg-spin{display:none;width:16px;height:16px;border-radius:50%;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;animation:rgSpin .7s linear infinite;}
+@keyframes rgSpin{to{transform:rotate(360deg)}}
+.rg-btn.is-loading .rg-spin{display:block;}
+.rg-app .rg-btn.is-loading svg{display:none;}
+
+.rg-or{display:flex;align-items:center;margin:24px 0;}
+.rg-or::before,.rg-or::after{content:'';flex:1;border-top:1px solid var(--rg-line-lt);}
+.rg-or span{padding:0 16px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--rg-mut);}
+
+/* ── Glass guide ──
+   Lives inside the form and is moved with transform relative to the form,
+   so it scrolls with the fields and can never drift away from them.
+   No filter/opacity on its ancestors: those would switch the glass blur off. */
+.rg-guide{
+  position:absolute;top:0;left:-4px;right:-4px;z-index:5;
+  transform-origin:50% 0;transition:transform .45s cubic-bezier(.22,1,.36,1);
+  pointer-events:none;
+}
+.rg-guide.is-above{transform-origin:50% 100%;}
+.rg-guide.is-on{pointer-events:auto;}
+.rg-gfloat{position:relative;animation:rgFloat 3.5s ease-in-out infinite;}
+@keyframes rgFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.rg-gbody{
+  position:relative;overflow:hidden;padding:16px;border-radius:16px;
+  background:var(--rg-glass);border:1px solid rgba(255,255,255,.2);
+  -webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+  box-shadow:0 15px 35px rgba(0,0,0,.25);
+  opacity:0;transition:opacity .3s ease;
+}
+/* pointer: upper half of a rotated glass square, same colour and blur as the body */
+.rg-garrow{
+  position:absolute;left:50%;width:14px;height:14px;margin-left:-7px;
+  background:var(--rg-glass);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,.2);border-right:0;border-bottom:0;
+  clip-path:polygon(0 0,100% 0,0 100%);
+  top:-6px;transform:rotate(45deg);
+  opacity:0;transition:opacity .3s ease;
+}
+.rg-guide.is-above .rg-garrow{top:auto;bottom:-6px;transform:rotate(225deg);}
+.rg-guide.is-on .rg-gbody,.rg-guide.is-on .rg-garrow{opacity:1;}
+.rg-gglow{position:absolute;top:-24px;right:-24px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.1);filter:blur(40px);pointer-events:none;}
+.rg-ghead{
+  position:relative;display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.1);
+}
+.rg-gwho{display:flex;align-items:center;gap:10px;}
+.rg-gava{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;color:#fff;
+  background:linear-gradient(to bottom right,#F97316,#d95d0b);border:1px solid rgba(255,255,255,.2);
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.05);
+}
+.rg-app .rg-gava svg{height:12px;}
+.rg-gstep{font-size:10px;line-height:15px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;}
+.rg-gdots{display:flex;gap:6px;}
+.rg-gdots i{width:6px;height:6px;border-radius:999px;background:rgba(255,255,255,.3);transition:width .3s,background .3s,box-shadow .3s;}
+.rg-gdots i.done{background:rgba(249,115,22,.75);}
+.rg-gdots i.on{width:14px;background:var(--rg-accent);box-shadow:0 0 8px rgba(249,115,22,.6);}
+.rg-gtext{position:relative;margin:0 0 16px;font-size:13px;line-height:1.625;color:rgba(255,255,255,.9);transition:opacity .15s;}
+.rg-gtext b{font-weight:700;color:#fff;}
+.rg-ghi{margin-right:4px;font-size:18px;line-height:28px;font-weight:700;color:#fff;}
+.rg-gerr{
+  position:relative;display:none;margin:-6px 0 14px;padding:8px 10px;border-radius:10px;
+  font-size:12px;line-height:1.45;font-weight:600;color:#fed7aa;
+  background:rgba(249,115,22,.16);border:1px solid rgba(249,115,22,.45);
+}
+.rg-gerr.on{display:block;}
+.rg-gacts{position:relative;display:flex;align-items:center;gap:12px;}
+.rg-gskip,.rg-gnext{
+  flex:1;padding:8px;border-radius:12px;cursor:pointer;
+  font-size:12px;line-height:16px;transition:background .15s,color .15s,transform .15s;
+}
+.rg-gskip{border:1px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.8);font-weight:600;}
+.rg-gskip:hover{background:rgba(255,255,255,.1);color:#fff;}
+.rg-gnext{
+  display:flex;align-items:center;justify-content:center;gap:6px;border:0;
+  background:#fff;color:var(--rg-green);font-weight:700;
+  box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);
+}
+.rg-gnext:hover{background:#f3f4f6;}
+.rg-gskip:active,.rg-gnext:active{transform:scale(.98);}
+.rg-app .rg-gnext svg{height:10px;}
+
+/* ── Already registered ── */
+.rg-done{display:flex;flex-direction:column;align-items:center;text-align:center;}
+.rg-done-ico{
+  width:64px;height:64px;margin-bottom:16px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;color:var(--rg-green);background:var(--rg-green-lt);
+}
+.rg-app .rg-done-ico svg{height:28px;}
+.rg-done-title{margin:0 0 4px;font-size:20px;line-height:28px;font-weight:700;color:#111827;}
+.rg-done-sub{margin:0 0 20px;font-size:14px;line-height:20px;color:#6b7280;}
+.rg-done-phone{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:24px;padding:14px 16px;
+  border-radius:16px;background:#f9fafb;border:1px solid var(--rg-line);
+  font-size:17px;line-height:24px;font-weight:700;letter-spacing:.06em;color:var(--rg-green);
+}
+
+/* footer */
+.rg-foot{padding:20px 16px 24px;text-align:center;font-size:12px;line-height:16px;font-weight:500;color:var(--rg-mut);}
+.rg-foot p{margin:0;}
+.rg-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
+.rg-dot{width:6px;height:6px;border-radius:50%;background:var(--rg-green);}
+.rg-ver{font-weight:700;color:var(--rg-accent);}
+
+/* ── Validation sheet ── */
+.rv-overlay{
+  position:fixed;inset:0;z-index:10001;display:flex;align-items:flex-end;justify-content:center;
+  background:rgba(15,40,28,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s linear .25s;
+}
+.rv-overlay.is-open{opacity:1;visibility:visible;transition:opacity .25s;}
+.rv-sheet{
+  width:100%;max-width:400px;padding:10px 22px calc(28px + env(safe-area-inset-bottom,0px));
+  border-radius:28px 28px 0 0;background:#fff;
+  transform:translateY(100%);transition:transform .32s cubic-bezier(.22,1,.36,1);
+}
+.rv-overlay.is-open .rv-sheet{transform:none;}
+.rv-handle{width:36px;height:4px;margin:0 auto 18px;border-radius:2px;background:var(--rg-line);}
+.rv-ico{
+  width:52px;height:52px;margin:0 auto 14px;border-radius:16px;
   display:flex;align-items:center;justify-content:center;
-  padding:30px 16px 30px;
-  position:relative;overflow:hidden;
+  color:var(--rg-accent);background:#fff7ed;border:1px solid #fed7aa;
 }
+.rv-ico svg{display:block;width:auto;height:22px;fill:currentColor;}
+.rv-title{margin:0 0 4px;text-align:center;font-size:18px;line-height:26px;font-weight:700;color:#111827;}
+.rv-sub{margin:0 0 18px;text-align:center;font-size:13px;line-height:18px;color:#6b7280;}
+.rv-list{list-style:none;margin:0 0 22px;padding:0;display:flex;flex-direction:column;gap:8px;}
+.rv-list li{
+  display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;
+  font-size:13px;line-height:18px;font-weight:600;color:var(--rg-ink);
+  background:#f9fafb;border-left:3px solid var(--rg-accent);
+}
+.rv-list li::before{content:'';flex-shrink:0;width:6px;height:6px;border-radius:50%;background:var(--rg-accent);}
+.rv-close{
+  width:100%;padding:16px;border:0;border-radius:999px;cursor:pointer;
+  font-size:15px;line-height:22px;font-weight:700;color:#fff;background:var(--rg-green);
+  box-shadow:0 10px 15px -3px rgba(27,67,50,.25),0 4px 6px -4px rgba(27,67,50,.25);
+  transition:background .15s,transform .15s;
+}
+.rv-close:hover{background:var(--rg-green-dk);}
+.rv-close:active{transform:scale(.98);}
 
-/* FORM CARD */
-.rp-card{
-  width:100%;max-width:390px;
-  background:#fff;border-radius:24px;
-  box-shadow:0 24px 64px rgba(0,0,0,.45);
-  overflow:visible;
-  animation:cardPop .7s cubic-bezier(.22,1,.36,1) .1s both;
-  position:relative;z-index:1;
+/* desktop: centred rounded app card */
+@media(min-width:640px){
+  .rg{align-items:center;padding:32px 0;}
+  .rg-app{min-height:0;border-radius:2.5rem;box-shadow:0 25px 50px -12px rgba(0,0,0,.25),0 0 0 1px var(--rg-line);}
+  .rg-hero{border-radius:2.5rem;}
+  .rg-card{padding:32px;}
 }
-.rp-head{padding:26px 24px 18px;text-align:center;border-bottom:1px solid var(--line);}
-.shield-ico{
-  width:62px;height:62px;border-radius:50%;
-  background:linear-gradient(135deg,var(--orange),var(--orange-dk));
-  border:3px solid var(--orange-dk);
-  display:flex;align-items:center;justify-content:center;
-  margin:0 auto 12px;box-shadow:0 6px 18px rgba(255,140,0,.38);
+@media (prefers-reduced-motion: reduce){
+  .rg-gfloat{animation:none;}
+  .rg-guide{transition:none;}
 }
-.shield-ico img{width:36px;height:36px;object-fit:contain;filter:brightness(10);}
-.rp-title{font-size:21px;font-weight:950;color:var(--navy-dk);letter-spacing:-.4px;margin-bottom:3px;}
-.rp-sub  {font-size:12.5px;color:var(--mut);}
-.rp-body{padding:18px 20px 22px;}
-
-/* SPOTLIGHT WRAPPERS */
-.sp{position:relative;border-radius:14px;margin-bottom:12px;transition:z-index 0s;}
-.sp.lit{z-index:200;border-radius:14px;}
-.sp.shake{animation:shakeX .4s ease;}
-
-.f-lbl{font-size:10px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);margin-bottom:6px;padding:0 2px;}
-.f-box{display:flex;align-items:center;gap:12px;background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:12px 14px;transition:border-color .2s,box-shadow .2s;}
-.sp.lit .f-box,.f-box:focus-within{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,140,0,.14);}
-.f-ico{width:36px;height:36px;flex-shrink:0;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,140,0,.10);}
-.f-ico svg{width:18px;height:18px;fill:none;stroke:var(--orange);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.f-inp{flex:1;border:none;outline:none;background:transparent;font-size:15px;font-weight:600;color:var(--ink);font-family:inherit;min-width:0;}
-.f-inp::placeholder{color:#b0b8cc;font-weight:500;}
-input:-webkit-autofill{-webkit-text-fill-color:var(--ink)!important;-webkit-box-shadow:0 0 0px 1000px #fff inset!important;}
-.eye-btn{background:transparent;border:none;cursor:pointer;padding:4px;border-radius:6px;display:flex;align-items:center;justify-content:center;transition:background .14s;color:var(--mut);}
-.eye-btn:hover{background:rgba(0,0,0,.06);}
-.eye-btn svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.f-err{font-size:11.5px;color:#dc2626;font-weight:700;margin-top:6px;padding:0 2px;display:none;}
-.str-row{display:flex;gap:4px;margin-top:7px;padding:0 2px;}
-.str-b{flex:1;height:4px;border-radius:99px;background:var(--line);transition:background .25s;}
-.str-row.weak   .str-b:nth-child(1)    {background:#ef4444;}
-.str-row.medium .str-b:nth-child(-n+2) {background:#f59e0b;}
-.str-row.strong .str-b                 {background:#22c55e;}
-.str-hint{font-size:10.5px;color:var(--mut);font-weight:600;margin-top:5px;padding:0 2px;}
-
-/* REGISTER BUTTON */
-.sp-reg{margin-bottom:0;}
-.reg-btn{
-  display:flex;align-items:center;justify-content:center;gap:10px;
-  width:100%;height:52px;
-  background:linear-gradient(135deg,#c26a00,#9a4f00);
-  border:none;border-radius:999px;color:#fff;font-size:14px;font-weight:950;
-  letter-spacing:.14em;text-transform:uppercase;cursor:pointer;font-family:inherit;
-  box-shadow:0 6px 20px rgba(154,79,0,.50);transition:transform .18s,box-shadow .18s;
-  animation:pulseOrg 2.5s ease-in-out infinite;
-}
-.reg-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(154,79,0,.65);animation:none;}
-.reg-btn:active{transform:scale(.99);}
-.reg-btn:disabled{opacity:.55;cursor:not-allowed;animation:none;box-shadow:none;}
-.reg-btn svg{width:18px;height:18px;stroke:#fff;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
-.reg-btn .spin-ico{display:none;width:18px;height:18px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
-.login-lnk{text-align:center;font-size:13px;color:var(--mut);margin-top:14px;font-weight:600;}
-.login-lnk a{color:var(--orange);font-weight:900;text-decoration:none;}
-.login-lnk a:hover{text-decoration:underline;}
-
-/* ════════════════════════════════════════
-   GUIDE CARD — coachmark floats near active field
-   ════════════════════════════════════════ */
-.chat-bubble{
-  position:fixed;
-  z-index:300;
-  background:#fff;
-  border-radius:18px;
-  padding:0;
-  width:min(320px, calc(100vw - 28px));
-  box-shadow:0 16px 48px rgba(0,0,0,.38),0 0 0 1px rgba(0,0,0,.06);
-  display:none;
-  opacity:0;
-  transition:opacity .22s;
-  animation:bubPop .45s cubic-bezier(.22,1,.36,1) both;
-}
-/* Upward tail — card below field, arrow points UP to field */
-.chat-bubble::before{
-  content:'';
-  position:absolute;
-  top:-12px;left:50%;transform:translateX(-50%);
-  width:0;height:0;
-  border-left:10px solid transparent;
-  border-right:10px solid transparent;
-  border-bottom:13px solid #0A2463; /* navy — matches header */
-}
-/* Downward tail — card above field, arrow points DOWN to field */
-.chat-bubble.arrow-dn::before{
-  top:auto;
-  bottom:-12px;
-  border-bottom:none;
-  border-top:13px solid #fff; /* white — matches footer */
-}
-
-/* Step header — navy culture matching banner */
-.cb-header{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:8px;
-  padding:12px 16px;
-  background:linear-gradient(135deg,#061540,#0A2463);
-  border-bottom:1px solid rgba(255,140,0,.22);
-  border-radius:18px 18px 0 0;
-}
-
-/* Mini staff character — matches banner avatar style */
-.cb-char-wrap{
-  width:54px;height:54px;
-  flex-shrink:0;
-  border-radius:50%;
-  border:2.5px solid rgba(255,140,0,.65);
-  background-size:cover;
-  background-position:center top;
-  background-repeat:no-repeat;
-  background-color:rgba(255,255,255,.08);
-  box-shadow:0 3px 12px rgba(0,0,0,.35);
-}
-.cb-step{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.65);}
-.cb-dots{display:flex;gap:5px;align-items:center;}
-.cb-dot{height:6px;width:6px;border-radius:99px;background:rgba(255,255,255,.25);transition:all .35s;flex-shrink:0;}
-.cb-dot.on{background:var(--orange);width:18px;}
-
-/* Message */
-.cb-msg{
-  padding:12px 18px 12px;
-  font-size:14px;font-weight:700;color:var(--ink);line-height:1.60;
-}
-.cb-msg b{color:var(--navy);}
-
-/* Typing dots (between steps) */
-.cb-typing{display:none;gap:5px;align-items:center;padding:0 18px 12px;}
-.cb-typing span{
-  width:8px;height:8px;border-radius:50%;background:var(--mut);
-  animation:typeDot 1.2s infinite ease-in-out both;
-}
-.cb-typing span:nth-child(2){animation-delay:.2s;}
-.cb-typing span:nth-child(3){animation-delay:.4s;}
-
-/* Footer */
-.cb-foot{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 18px 14px;
-  border-top:1px solid #f0f2f8;
-}
-.cb-label{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);}
-.cb-actions{display:flex;align-items:center;gap:10px;}
-.cb-skip{height:32px;padding:0 14px;border:1.5px solid #c0c8d8;border-radius:999px;background:transparent;color:#9aa3b8;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:border-color .15s,color .15s;}
-.cb-skip:hover{border-color:#0A2463;color:#0A2463;}
-.cb-back{
-  height:38px;padding:0 18px;border:2px solid var(--navy);border-radius:999px;
-  background:transparent;color:var(--navy);font-size:13px;font-weight:800;
-  cursor:pointer;font-family:inherit;letter-spacing:.04em;
-  display:inline-flex;align-items:center;justify-content:center;
-  transition:background .15s,color .15s;
-}
-.cb-back:hover{background:var(--navy);color:#fff;}
-.cb-next{
-  height:38px;padding:0 24px;border:none;border-radius:999px;
-  background:linear-gradient(135deg,var(--orange),var(--orange-dk));
-  color:#fff;font-size:13.5px;font-weight:900;cursor:pointer;font-family:inherit;
-  letter-spacing:.05em;box-shadow:0 4px 14px rgba(255,140,0,.42);
-  transition:transform .15s,box-shadow .15s;
-}
-.cb-next:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,140,0,.60);}
-
-/* Django messages */
-.msg-err{background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.25);border-left:4px solid #dc2626;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;font-weight:700;color:#991b1b;line-height:1.5;}
-.msg-ok{background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.25);border-left:4px solid #16a34a;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;font-weight:700;color:#166534;line-height:1.5;}
-
-/* Phone already taken banner */
-.phone-taken-wrap{background:#fff5f5;border:1.5px solid #fca5a5;border-radius:16px;padding:16px 16px 14px;margin-bottom:18px;display:flex;gap:13px;align-items:flex-start;}
-.phone-taken-ico{width:40px;height:40px;border-radius:12px;background:#fee2e2;display:flex;align-items:center;justify-content:center;flex:0 0 auto;}
-.phone-taken-ico svg{width:20px;height:20px;fill:none;stroke:#dc2626;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.phone-taken-title{font-size:13.5px;font-weight:900;color:#991b1b;margin-bottom:4px;}
-.phone-taken-sub{font-size:12px;font-weight:600;color:#b91c1c;line-height:1.55;}
-.phone-taken-sub a{color:#0A2463;text-decoration:underline;font-weight:800;}
-.f-box.is-taken{border-color:#dc2626 !important;box-shadow:0 0 0 3px rgba(220,38,38,.12);}
-
-/* ── Mobile ── */
-@media(max-width:600px){
-  .chat-bubble{width:calc(100vw - 20px);}
-}
-
-/* ══════════════════════════════════════
-   REGISTER — Same Design Culture as Login
-   ══════════════════════════════════════ */
-
-/* Extra keyframes */
-@keyframes orb1     {0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(45px,-55px) scale(1.14)}}
-@keyframes orb2     {0%,100%{transform:translate(0,0)}50%{transform:translate(-40px,50px) scale(.88)}}
-@keyframes orb3     {0%,100%{transform:translate(0,0)}33%{transform:translate(30px,28px)}66%{transform:translate(-22px,-30px)}}
-@keyframes orb4     {0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-28px,-38px) scale(1.10)}}
-@keyframes orb5     {0%,100%{transform:translate(0,0)}50%{transform:translate(20px,35px) scale(.94)}}
-@keyframes ringPop  {0%{transform:scale(.8);opacity:.8}100%{transform:scale(2.2);opacity:0}}
-@keyframes shimmer  {0%{left:-120%}100%{left:220%}}
-@keyframes btnShimmer{0%{left:-150%}100%{left:200%}}
-@keyframes starDrift{0%{transform:translateY(0) translateX(0);opacity:.7}100%{transform:translateY(-100vh) translateX(20px);opacity:0}}
-
-/* Orbs */
-.orb{position:absolute;border-radius:50%;filter:blur(72px);pointer-events:none;z-index:0;}
-.orb1{width:400px;height:400px;background:rgba(10,36,99,.75);top:-100px;left:-120px;animation:orb1 13s ease-in-out infinite;}
-.orb2{width:320px;height:320px;background:rgba(255,140,0,.20);bottom:-80px;right:-90px;animation:orb2 16s ease-in-out infinite;}
-.orb3{width:220px;height:220px;background:rgba(26,58,122,.65);top:45%;left:55%;animation:orb3 19s ease-in-out infinite;}
-.orb4{width:260px;height:260px;background:rgba(255,140,0,.11);top:15%;right:8%;animation:orb4 11s ease-in-out infinite;}
-.orb5{width:180px;height:180px;background:rgba(6,21,64,.80);bottom:10%;left:5%;animation:orb5 14s ease-in-out infinite;}
-.star{position:absolute;border-radius:50%;background:rgba(255,255,255,.55);pointer-events:none;z-index:0;}
-
-/* Card */
-.rp-card{border-radius:28px!important;box-shadow:0 36px 90px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.07)!important;overflow:visible!important;}
-
-/* Banner */
-.rp-banner{
-  position:relative;
-  background:linear-gradient(140deg,var(--navy-dk) 0%,var(--navy) 55%,var(--navy-md) 100%);
-  padding:30px 24px 0;text-align:center;overflow:hidden;min-height:145px;
-  border-radius:28px 28px 0 0;
-}
-.rp-banner::before{
-  content:'';position:absolute;inset:0;
-  background:conic-gradient(from 0deg at 75% 40%,transparent 0deg,rgba(255,140,0,.14) 55deg,transparent 110deg);
-  animation:spin 14s linear infinite;
-}
-.rp-banner::after{
-  content:'';position:absolute;top:0;width:50%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.09),transparent);
-  animation:shimmer 3.2s ease .9s 1;
-}
-.rp-wave{position:absolute;bottom:-1px;left:0;right:0;line-height:0;z-index:2;}
-.rp-wave svg{display:block;width:100%;}
-.rp-logo-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px;}
-.rp-ring{position:absolute;border-radius:50%;border:2px solid rgba(255,140,0,.55);}
-.rp-ring1{width:72px;height:72px;animation:ringPop 2.4s ease-out 1.1s infinite;}
-.rp-ring2{width:72px;height:72px;animation:ringPop 2.4s ease-out 1.8s infinite;}
-.rp-logo{
-  width:66px;height:66px;border-radius:50%;
-  background:linear-gradient(135deg,var(--orange),var(--orange-dk));
-  border:3px solid rgba(255,140,0,.45);
-  display:flex;align-items:center;justify-content:center;
-  overflow:hidden;position:relative;z-index:1;
-  box-shadow:0 8px 26px rgba(255,140,0,.38);
-}
-.rp-logo img{width:50px;height:50px;object-fit:contain;display:block;}
-.rp-banner-title{font-size:21px;font-weight:900;color:#fff;letter-spacing:.01em;position:relative;z-index:1;margin-bottom:2px;}
-.rp-banner-sub{font-size:11.5px;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.58);position:relative;z-index:1;padding-bottom:22px;}
-.rp-avatar{
-  position:absolute;bottom:0;right:16px;z-index:3;
-  width:54px;height:54px;border-radius:50%;
-  border:2.5px solid rgba(255,140,0,.55);
-  background-color:rgba(255,255,255,.08);
-  background-size:cover;background-position:center top;background-repeat:no-repeat;
-  box-shadow:0 4px 16px rgba(0,0,0,.35);
-}
-
-/* Section label */
-.rp-slabel{
-  font-size:10.5px;font-weight:900;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--orange);
-  display:flex;align-items:center;gap:8px;margin-bottom:16px;
-}
-.rp-slabel::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,140,0,.4),transparent);}
-
-/* Register button — updated orange */
-.reg-btn{
-  background:linear-gradient(135deg,var(--orange),var(--orange-dk))!important;
-  box-shadow:0 8px 24px rgba(255,140,0,.44)!important;
-  position:relative!important;overflow:hidden!important;
-}
-.reg-btn::before{
-  content:'';position:absolute;top:0;left:-150%;width:55%;height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);
-  animation:btnShimmer 4.5s ease-in-out 2.5s infinite;
-  border-radius:inherit;pointer-events:none;z-index:0;
-}
-.reg-btn>*{position:relative;z-index:1;}
-.reg-btn:hover{box-shadow:0 14px 34px rgba(255,140,0,.62)!important;}
-
-/* Account-already-created card */
-.acc-created-card{display:flex;flex-direction:column;align-items:center;text-align:center;padding:36px 24px 28px;}
-.acc-check{width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#22c55e);display:flex;align-items:center;justify-content:center;margin-bottom:18px;box-shadow:0 8px 24px rgba(22,163,74,.28);}
-.acc-check svg{width:34px;height:34px;stroke:#fff;}
-.acc-created-title{font-size:22px;font-weight:900;color:var(--navy);letter-spacing:-.4px;margin-bottom:6px;}
-.acc-created-sub{font-size:14px;color:var(--mut);font-weight:500;margin-bottom:22px;}
-.acc-phone-row{display:flex;align-items:center;gap:10px;background:#f0f4ff;border:1.5px solid #d0d9f7;border-radius:14px;padding:12px 20px;margin-bottom:28px;width:100%;}
-.acc-phone-row svg{width:18px;height:18px;stroke:var(--navy);flex-shrink:0;}
-.acc-phone-row span{font-size:18px;font-weight:800;color:var(--navy);letter-spacing:.06em;font-family:monospace,monospace;}
-.acc-dashboard-btn{display:block;width:100%;height:52px;line-height:52px;border-radius:999px;background:linear-gradient(135deg,var(--navy),var(--orange));color:#fff;font-size:15px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;text-align:center;box-shadow:0 6px 20px rgba(255,140,0,.3);transition:transform .18s,box-shadow .18s;}
-.acc-dashboard-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(255,140,0,.4);}
-
-/* ── Register Validation Modal ── */
-.rv-overlay{position:fixed;inset:0;z-index:10001;background:rgba(6,21,64,.68);backdrop-filter:blur(5px) saturate(1.4);display:flex;align-items:flex-end;justify-content:center;padding:0 0 env(safe-area-inset-bottom,0);opacity:0;visibility:hidden;transition:opacity .25s,visibility .25s;}
-.rv-overlay.is-open{opacity:1;visibility:visible;}
-.rv-sheet{background:#fff;border-radius:28px 28px 0 0;padding:10px 22px 32px;width:100%;max-width:540px;transform:translateY(100%);transition:transform .32s cubic-bezier(.34,1.3,.64,1);}
-.rv-overlay.is-open .rv-sheet{transform:translateY(0);}
-.rv-handle{width:36px;height:4px;border-radius:2px;background:#e2e6f0;margin:0 auto 18px;}
-.rv-ico{width:56px;height:56px;border-radius:18px;background:linear-gradient(135deg,#fff4d6,#ffe9a8);border:1.5px solid rgba(255,140,0,.20);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;}
-.rv-ico svg{width:26px;height:26px;fill:none;stroke:var(--orange-dk);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
-.rv-title{font-size:19px;font-weight:900;color:var(--ink);text-align:center;margin-bottom:5px;}
-.rv-sub{font-size:12.5px;color:var(--mut);font-weight:600;text-align:center;margin-bottom:18px;}
-.rv-list{list-style:none;padding:0;margin:0 0 22px;display:flex;flex-direction:column;gap:8px;}
-.rv-list li{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--ink);background:#f7f9fc;border-radius:12px;padding:11px 14px;border-left:3px solid var(--orange);}
-.rv-list li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--orange);flex:0 0 auto;}
-.rv-close{width:100%;padding:15px;border:0;border-radius:16px;font-family:inherit;font-size:14.5px;font-weight:900;letter-spacing:.08em;cursor:pointer;color:#fff;background:linear-gradient(135deg,var(--orange-lt),var(--orange),var(--orange-dk));box-shadow:0 8px 22px rgba(255,140,0,.36),inset 0 1px 0 rgba(255,255,255,.18);transition:transform .18s,filter .18s;}
-.rv-close:hover{filter:brightness(1.06);transform:translateY(-1px);}
-
-/* Back-to-login button */
-.back-login{
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  width:100%;height:48px;border-radius:999px;
-  background:linear-gradient(#fff,#fff) padding-box,
-    linear-gradient(135deg,var(--navy) 0%,var(--orange) 100%) border-box;
-  border:2.5px solid transparent;
-  color:var(--navy);font-size:13px;font-weight:800;
-  letter-spacing:.06em;text-transform:uppercase;
-  text-decoration:none;margin-top:10px;
-  transition:background .18s,color .18s,transform .18s,box-shadow .18s;
-}
-.back-login:hover{
-  background:linear-gradient(135deg,var(--navy-dk),var(--navy)) padding-box,
-    linear-gradient(135deg,var(--navy),var(--orange)) border-box;
-  color:#fff;transform:translateY(-2px);
-  box-shadow:0 8px 22px rgba(10,36,99,.35);
-}
-.back-login svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
 </style>
 
-<!-- ═══ PAGE ═══ -->
-<div class="rp">
-  <!-- Floating orbs -->
-  <div class="orb orb1"></div>
-  <div class="orb orb2"></div>
-  <div class="orb orb3"></div>
-  <div class="orb orb4"></div>
-  <div class="orb orb5"></div>
+<!-- Icons: Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0) Copyright 2023 Fonticons, Inc. -->
+<div class="rg">
+  <div class="rg-app">
 
-  <div class="rp-card">
-
-    <!-- Banner -->
-    <div class="rp-banner">
-      <div class="rp-logo-wrap">
-        <div class="rp-ring rp-ring1"></div>
-        <div class="rp-ring rp-ring2"></div>
-        <div class="rp-logo">
-          <img src="{% static 'img/peso-logo.webp' %}" alt="OFL" onerror="this.style.display='none'">
-        </div>
-      </div>
-      <div class="rp-banner-title">Create Account</div>
-      <div class="rp-banner-sub">Open your OFL account in minutes</div>
-      <div class="rp-wave">
-        <svg viewBox="0 0 390 28" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-          <path d="M0 28 Q50 0 100 14 Q150 28 195 10 Q240 0 290 16 Q340 28 390 8 L390 28 Z" fill="#ffffff"/>
-        </svg>
+    <!-- ── Header ── -->
+    <div class="rg-hero">
+      <div class="rg-glow rg-glow-a"></div>
+      <div class="rg-glow rg-glow-b"></div>
+      <div class="rg-hero-text">
+        <h1 class="rg-title">Create Account</h1>
+        <p class="rg-sub">Open your account in minutes</p>
       </div>
     </div>
 
-    <div class="rp-body">
+    <!-- ── Form card ── -->
+    <div class="rg-main">
+      <div class="rg-card">
+        {% if already_registered %}
+        <div class="rg-kicker"><h2>Your Account</h2></div>
+        <div class="rg-done">
+          <div class="rg-done-ico"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></div>
+          <p class="rg-done-title">Account Created</p>
+          <p class="rg-done-sub">You already have an APEX account</p>
+          <div class="rg-done-phone"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M347.1 24.6c7.7-18.6 28-28.5 47.4-23.2l88 24C499.9 30.2 512 46 512 64c0 247.4-200.6 448-448 448c-18 0-33.8-12.1-38.6-29.5l-24-88c-5.3-19.4 4.6-39.7 23.2-47.4l96-40c16.3-6.8 35.2-2.1 46.3 11.6L207.3 368c70.4-33.3 127.4-90.3 160.7-160.7L318.7 167c-13.7-11.2-18.4-30-11.6-46.3l40-96z"/></svg><span>{{ masked_phone }}</span></div>
+          <a href="{% url 'dashboard' %}" class="rg-btn"><span>GO TO DASHBOARD</span><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg></a>
+        </div>
+        {% else %}
+        <div class="rg-kicker"><h2>Your Information</h2></div>
 
-      {% if already_registered %}
-      <div class="acc-created-card">
-        <div class="acc-check">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        {% if phone_taken %}
+        <div class="rg-alert">
+          <svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>
+          <div><strong>Number Already Registered</strong>This phone number is already linked to an APEX account. Please use a different number, or <a href="{% url 'login' %}">sign in</a> if this is your account.</div>
         </div>
-        <div class="acc-created-title">Account Created</div>
-        <div class="acc-created-sub">You already have an OFL account</div>
-        <div class="acc-phone-row">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.21 12 19.79 19.79 0 0 1 1.14 3.38 2 2 0 0 1 3.11 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16.92z"/></svg>
-          <span>{{ masked_phone }}</span>
-        </div>
-        <a href="{% url 'dashboard' %}" class="acc-dashboard-btn">Go to Dashboard</a>
+        {% endif %}
+        {% for message in messages %}
+        <div class="rg-alert"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg><div>{{ message }}</div></div>
+        {% endfor %}
+
+        <form method="post" id="rgForm" class="rg-form" novalidate>
+          {% csrf_token %}
+
+          <div class="rg-step" id="rgStep1">
+            <label class="rg-label" for="rgPhone">Phone Number</label>
+            <div class="rg-field{% if phone_taken %} is-taken{% endif %}">
+              <span class="rg-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M347.1 24.6c7.7-18.6 28-28.5 47.4-23.2l88 24C499.9 30.2 512 46 512 64c0 247.4-200.6 448-448 448c-18 0-33.8-12.1-38.6-29.5l-24-88c-5.3-19.4 4.6-39.7 23.2-47.4l96-40c16.3-6.8 35.2-2.1 46.3 11.6L207.3 368c70.4-33.3 127.4-90.3 160.7-160.7L318.7 167c-13.7-11.2-18.4-30-11.6-46.3l40-96z"/></svg></span>
+              <input class="rg-input" id="rgPhone" name="phone" type="tel" maxlength="20"
+                     value="{{ submitted_phone|default:'' }}" placeholder="e.g. 09123456789"
+                     autocomplete="tel" enterkeyhint="next">
+            </div>
+          </div>
+
+          <div class="rg-step" id="rgStep2">
+            <div class="rg-label-row">
+              <label class="rg-label" for="rgPwd">Password</label>
+              <span class="rg-str" id="rgStr" data-level="0" aria-live="polite"><span class="rg-str-bars"><i></i><i></i><i></i></span><span id="rgStrTxt"></span></span>
+            </div>
+            <div class="rg-field">
+              <span class="rg-ico"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/></svg></span>
+              <input class="rg-input has-eye" id="rgPwd" name="password" type="password"
+                     placeholder="Create a strong password" autocomplete="new-password" enterkeyhint="next">
+              <button type="button" class="rg-eye" id="rgEye" aria-label="Show password"><svg viewBox="0 0 640 512" class="i-hidden" aria-hidden="true"><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c8.4-19.3 10.6-41.4 4.8-63.3c-11.1-41.5-47.8-69.4-88.6-71.1c-5.8-.2-9.2 6.1-7.4 11.7c2.1 6.4 3.3 13.2 3.3 20.3c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zM373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5L373 389.9z"/></svg><svg viewBox="0 0 576 512" class="i-shown" aria-hidden="true"><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM144 256a144 144 0 1 1 288 0 144 144 0 1 1 -288 0zm144-64c0 35.3-28.7 64-64 64c-7.1 0-13.9-1.2-20.3-3.3c-5.5-1.8-11.9 1.6-11.7 7.4c.3 6.9 1.3 13.8 3.2 20.7c13.7 51.2 66.4 81.6 117.6 67.9s81.6-66.4 67.9-117.6c-11.1-41.5-47.8-69.4-88.6-71.1c-5.8-.2-9.2 6.1-7.4 11.7c2.1 6.4 3.3 13.2 3.3 20.3z"/></svg></button>
+            </div>
+          </div>
+
+          <div class="rg-step" id="rgStep3">
+            <label class="rg-label" for="rgConf">Confirm Password</label>
+            <div class="rg-field">
+              <span class="rg-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg></span>
+              <input class="rg-input" id="rgConf" name="confirm_password" type="password"
+                     placeholder="Re-enter your password" autocomplete="new-password" enterkeyhint="go">
+            </div>
+          </div>
+
+          <div class="rg-actions">
+            <button type="submit" class="rg-btn" id="rgSubmit">
+              <svg viewBox="0 0 640 512" aria-hidden="true"><path d="M96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3zM504 312V248H440c-13.3 0-24-10.7-24-24s10.7-24 24-24h64V136c0-13.3 10.7-24 24-24s24 10.7 24 24v64h64c13.3 0 24 10.7 24 24s-10.7 24-24 24H552v64c0 13.3-10.7 24-24 24s-24-10.7-24-24z"/></svg><span class="rg-spin"></span>
+              <span id="rgSubmitTxt">REGISTER</span>
+            </button>
+            <div class="rg-or"><span>Or</span></div>
+            <a href="{% url 'login' %}" class="rg-back"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg><span>BACK TO LOGIN</span></a>
+          </div>
+
+          <!-- ── Glass guide (moved between the fields by the script below) ── -->
+          <div class="rg-guide" id="rgGuide" role="dialog" aria-label="Registration guide" hidden>
+            <div class="rg-gfloat">
+              <div class="rg-gbody">
+                <div class="rg-gglow"></div>
+                <div class="rg-ghead">
+                  <div class="rg-gwho">
+                    <span class="rg-gava"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M370.7 96.1C346.1 39.5 289.7 0 224 0S101.9 39.5 77.3 96.1C60.9 97.5 48 111.2 48 128v64c0 16.8 12.9 30.5 29.3 31.9C101.9 280.5 158.3 320 224 320s122.1-39.5 146.7-96.1c16.4-1.4 29.3-15.1 29.3-31.9V128c0-16.8-12.9-30.5-29.3-31.9zM336 144v16c0 53-43 96-96 96H208c-53 0-96-43-96-96V144c0-26.5 21.5-48 48-48H288c26.5 0 48 21.5 48 48zM189.3 162.7l-6-21.2c-.9-3.3-3.9-5.5-7.3-5.5s-6.4 2.2-7.3 5.5l-6 21.2-21.2 6c-3.3 .9-5.5 3.9-5.5 7.3s2.2 6.4 5.5 7.3l21.2 6 6 21.2c.9 3.3 3.9 5.5 7.3 5.5s6.4-2.2 7.3-5.5l6-21.2 21.2-6c3.3-.9 5.5-3.9 5.5-7.3s-2.2-6.4-5.5-7.3l-21.2-6zM112.7 316.5C46.7 342.6 0 407 0 482.3C0 498.7 13.3 512 29.7 512H128V448c0-17.7 14.3-32 32-32H288c17.7 0 32 14.3 32 32v64l98.3 0c16.4 0 29.7-13.3 29.7-29.7c0-75.3-46.7-139.7-112.7-165.8C303.9 338.8 265.5 352 224 352s-79.9-13.2-111.3-35.5zM176 448c-8.8 0-16 7.2-16 16v48h32V464c0-8.8-7.2-16-16-16zm96 32a16 16 0 1 0 0-32 16 16 0 1 0 0 32z"/></svg></span>
+                    <span class="rg-gstep" id="rgGStep">Step 1 of 4</span>
+                  </div>
+                  <div class="rg-gdots" id="rgGDots"><i></i><i></i><i></i><i></i></div>
+                </div>
+                <p class="rg-gtext" id="rgGText" aria-live="polite"></p>
+                <div class="rg-gerr" id="rgGErr" role="alert"></div>
+                <div class="rg-gacts">
+                  <button type="button" class="rg-gskip" id="rgGSkip">Skip guide</button>
+                  <button type="button" class="rg-gnext" id="rgGNext"><span id="rgGNextTxt">Next</span><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg></button>
+                </div>
+              </div>
+              <span class="rg-garrow"></span>
+            </div>
+          </div>
+        </form>
+        {% endif %}
       </div>
-      {% else %}
-      <div class="rp-slabel">Your Information</div>
+    </div>
 
-      {% if phone_taken %}
-      <div class="phone-taken-wrap">
-        <div class="phone-taken-ico">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        </div>
-        <div>
-          <div class="phone-taken-title">Number Already Registered</div>
-          <div class="phone-taken-sub">This phone number is already linked to an OFL account. Please use a different number, or <a href="{% url 'login' %}">sign in</a> if this is your account.</div>
-        </div>
-      </div>
-      {% endif %}
-
-      {% for message in messages %}
-        <div class="msg-err">{{ message }}</div>
-      {% endfor %}
-
-      <form method="post" action="" id="regForm" novalidate>
-        {% csrf_token %}
-
-        <!-- PHONE -->
-        <div class="sp" id="sp1">
-          <div class="f-lbl">Phone Number</div>
-          <div class="f-box {% if phone_taken %}is-taken{% endif %}">
-            <div class="f-ico">
-              <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-            </div>
-            <input class="f-inp" id="inp_phone" name="phone" type="tel"
-                   maxlength="20" value="{{ submitted_phone|default:'' }}"
-                   placeholder="e.g. 09123456789" autocomplete="tel">
-          </div>
-          <div class="f-err" id="e_phone">⚠️ Please enter your phone number first.</div>
-        </div>
-
-        <!-- PASSWORD -->
-        <div class="sp" id="sp2">
-          <div class="f-lbl">Password</div>
-          <div class="f-box">
-            <div class="f-ico">
-              <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            </div>
-            <input class="f-inp" id="inp_pwd" name="password" type="text"
-                   placeholder="Create a password">
-          </div>
-          <div class="str-row" id="strRow"><div class="str-b"></div><div class="str-b"></div><div class="str-b"></div></div>
-          <div class="str-hint" id="strHint">Use at least 8 characters with letters and numbers.</div>
-          <div class="f-err" id="e_pwd">⚠️ Password must be at least 8 characters long.</div>
-        </div>
-
-        <!-- CONFIRM PASSWORD -->
-        <div class="sp" id="sp3">
-          <div class="f-lbl">Confirm Password</div>
-          <div class="f-box">
-            <div class="f-ico">
-              <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            </div>
-            <input class="f-inp" id="inp_conf" name="confirm_password" type="text"
-                   placeholder="Retype your password">
-          </div>
-          <div class="f-err" id="e_conf">⚠️ Passwords do not match. Please try again.</div>
-        </div>
-
-        <!-- REGISTER BUTTON -->
-        <div class="sp sp-reg" id="sp4">
-          <button class="reg-btn" type="submit" id="submitBtn">
-            <svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-            <span id="regBtnLbl">REGISTER</span>
-            <span class="spin-ico" id="regSpin"></span>
-          </button>
-        </div>
-
-        <a href="/login/" class="back-login">
-          <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-          Back to Login
-        </a>
-      </form>
-      {% endif %}
+    <!-- ── Footer ── -->
+    <div class="rg-foot">
+      <p><span class="rg-dot"></span> APEX <span>•</span> <span class="rg-ver">v2.2.1</span></p>
+      <p>© 2026 All rights reserved</p>
     </div>
   </div>
 </div>
 
 {% if not already_registered %}
-<!-- ══ REGISTER VALIDATION MODAL ══ -->
+<!-- ── Validation sheet (shown when Register is tapped with missing details) ── -->
 <div class="rv-overlay" id="rvOverlay">
-  <div class="rv-sheet">
+  <div class="rv-sheet" role="dialog" aria-modal="true" aria-labelledby="rvTitle">
     <div class="rv-handle"></div>
-    <div class="rv-ico">
-      <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-    </div>
-    <div class="rv-title">Incomplete Registration</div>
-    <div class="rv-sub">Please complete the following before continuing:</div>
+    <div class="rv-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"/></svg></div>
+    <p class="rv-title" id="rvTitle">Incomplete Registration</p>
+    <p class="rv-sub">Please complete the following before continuing:</p>
     <ul class="rv-list" id="rvList"></ul>
-    <button class="rv-close" id="rvClose">Got it — I'll complete it</button>
+    <button type="button" class="rv-close" id="rvClose">Got it — I'll complete it</button>
   </div>
-</div>
-
-<!-- ══ GUIDE COACHMARK CARD ══ -->
-<div class="chat-bubble" id="tourCard">
-
-  <!-- Step label + progress dots -->
-  <div class="cb-header">
-    <div class="cb-char-wrap" style="background-image:url('{% static 'img/staff-guide.png' %}?v=5')"></div>
-    <span class="cb-step" id="tcStep">STEP 1 OF 4</span>
-    <div class="cb-dots" id="tcDots">
-      <span class="cb-dot on"></span>
-      <span class="cb-dot"></span>
-      <span class="cb-dot"></span>
-      <span class="cb-dot"></span>
-    </div>
-  </div>
-
-  <!-- Guide message -->
-  <div class="cb-msg" id="tcBody">
-    Enter your <b>Philippine mobile number</b> below. Start with <b>09</b> — example: 09171234567. Numbers only!
-  </div>
-
-  <!-- Typing indicator (shown during transition) -->
-  <div class="cb-typing" id="cbTyping">
-    <span></span><span></span><span></span>
-  </div>
-
-  <!-- Footer -->
-  <div class="cb-foot">
-    <button class="cb-skip" id="tcSkip" onclick="tourEnd()">Skip guide</button>
-    <div class="cb-actions">
-      <button class="cb-back" id="tcBack" onclick="tourBack()" style="display:none">← Back</button>
-      <button class="cb-next" id="tcNext" onclick="tourNext()">Next →</button>
-    </div>
-  </div>
-
 </div>
 
 <script>
 (function(){
 'use strict';
 
-/* ── OFL brand icons (svg strings, reused per step) ── */
-var _ico=[
-  /* [0] orange smiley — greeting */
-  '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="22" r="22" fill="#FF8C00"/><circle cx="15" cy="18" r="3.5" fill="white"/><circle cx="29" cy="18" r="3.5" fill="white"/><path d="M13 28 Q22 35 31 28" stroke="white" stroke-width="2.8" fill="none" stroke-linecap="round"/><path d="M34 7 L36 3" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M37 12 L41 10" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',
-  /* [1] navy shield + orange lock — security */
-  '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px" xmlns="http://www.w3.org/2000/svg"><path d="M22 2 L40 9 L40 24 Q40 37 22 43 Q4 37 4 24 L4 9 Z" fill="#0A2463"/><rect x="15" y="23" width="14" height="12" rx="2.5" fill="#FF8C00"/><path d="M17 23 L17 18 Q17 13 22 13 Q27 13 27 18 L27 23" stroke="#FF8C00" stroke-width="2.5" fill="none"/><circle cx="22" cy="29" r="2.2" fill="#0A2463"/></svg>',
-  /* [2] navy circle + orange double-check — confirm */
-  '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="22" r="22" fill="#0A2463"/><path d="M10 22 L18 30 L34 12" stroke="#FF8C00" stroke-width="3.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 22 L12 28" stroke="#FF8C00" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.55"/></svg>',
-  /* [3] OFL star badge — celebrate */
-  '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px" xmlns="http://www.w3.org/2000/svg"><circle cx="22" cy="22" r="22" fill="#FF8C00"/><polygon points="22,5 26.5,16.5 39,16.5 29.5,24.5 33,36.5 22,29.5 11,36.5 14.5,24.5 5,16.5 17.5,16.5" fill="#0A2463"/><circle cx="22" cy="22" r="4.5" fill="#FF8C00"/><circle cx="22" cy="22" r="2.5" fill="white"/></svg>'
-];
+function $(id){ return document.getElementById(id); }
+var form=$('rgForm');
+if(!form) return;
+var phone=$('rgPhone'), pwd=$('rgPwd'), conf=$('rgConf'), submit=$('rgSubmit');
 
-var STEPS=[
-  null,
-  {
-    sp:'sp1',inp:'inp_phone',
-    step:'Step 1 of 4',label:'STEP 1 OF 4',next:'Next →',
-    body:_ico[0]+' Hi! Please enter your <b>phone number</b> below. We\'ll use this to reach you — any format is fine!',
-    validate:function(){
-      var v=(document.getElementById('inp_phone')||{}).value||'';
-      if(v.trim().length<6){show('e_phone');return false;}
-      hide('e_phone');return true;
-    }
-  },
-  {
-    sp:'sp2',inp:'inp_pwd',
-    step:'Step 2 of 4',label:'STEP 2 OF 4',next:'Next →',
-    body:_ico[1]+' Now create a <b>password</b> you\'ll remember. At least <b>8 characters</b> — the stronger, the better!',
-    validate:function(){
-      var v=(document.getElementById('inp_pwd')||{}).value||'';
-      if(v.length<8){show('e_pwd');return false;}
-      hide('e_pwd');return true;
-    }
-  },
-  {
-    sp:'sp3',inp:'inp_conf',
-    step:'Step 3 of 4',label:'STEP 3 OF 4',next:'Next →',
-    body:_ico[2]+' Almost done! Type your password <b>one more time</b> to confirm — make sure they match!',
-    validate:function(){
-      var pw=(document.getElementById('inp_pwd')||{}).value||'';
-      var cf=(document.getElementById('inp_conf')||{}).value||'';
-      if(cf!==pw||cf.length<8){show('e_conf');return false;}
-      hide('e_conf');return true;
-    }
-  },
-  {
-    sp:'sp4',inp:null,
-    step:'Step 4 of 4',label:'STEP 4 OF 4',next:'Create Account!',
-    body:_ico[3]+' You\'re all set! Tap <b>REGISTER</b> to create your OFL account — welcome to the family!',
-    validate:function(){return true;}
-  }
-];
-
-var cur=1,tourActive=false;
-
-function $(id){return document.getElementById(id);}
-function show(id){var e=$(id);if(e)e.style.display='block';}
-function hide(id){var e=$(id);if(e)e.style.display='none';}
-
-/* Position card so it NEVER overlaps the active field */
-function posBubble(stepNum){
-  var card=$('tourCard');
-  if(!card||stepNum<1||stepNum>4)return;
-  var sp=$(STEPS[stepNum].sp);
-  if(!sp)return;
-  var rect=sp.getBoundingClientRect();
-  var ww=window.innerWidth;
-  var wh=window.innerHeight;
-  var cardW=card.offsetWidth||320;
-  var cardH=card.offsetHeight||220;
-  var gap=14;
-  var arrowUp=true;
-  var top;
-
-  /* ① Try BELOW the field — card top starts at field bottom + gap */
-  top=rect.bottom+gap;
-  if(top+cardH>wh-10){
-    /* ② Doesn't fit below — try ABOVE the field */
-    top=rect.top-cardH-gap;
-    arrowUp=false;
-    if(top<10){
-      /* ③ Doesn't fit above either — clamp below, closest we can get */
-      top=Math.max(10,wh-cardH-10);
-      arrowUp=true;
-    }
-  }
-
-  var left=rect.left+(rect.width/2)-(cardW/2);
-  left=Math.max(10,Math.min(left,ww-cardW-10));
-
-  card.style.top=top+'px';
-  card.style.left=left+'px';
-  card.style.bottom='auto';
-  card.style.right='auto';
-  card.classList.toggle('arrow-dn',!arrowUp);
-}
-
-/* Type text character by character; SVG icons shown instantly */
-function typeBody(el, fullHtml, speed){
-  var icon='';
-  var svgEnd=fullHtml.indexOf('</svg>');
-  if(svgEnd!==-1){icon=fullHtml.slice(0,svgEnd+6);fullHtml=fullHtml.slice(svgEnd+6);}
-  el.innerHTML=icon;
-  var n=0;
-  function tick(){
-    if(n>fullHtml.length)return;
-    /* Jump over HTML tags instantly so only visible text is typed */
-    if(fullHtml[n]==='<'){
-      var end=fullHtml.indexOf('>',n);
-      n=(end!==-1)?end+1:n+1;
-    } else {
-      n++;
-    }
-    el.innerHTML=icon+fullHtml.slice(0,n);
-    setTimeout(tick,speed||24);
-  }
-  tick();
-}
-
-function goStep(n){
-  var card=$('tourCard');
-  if(!card)return;
-  card.style.opacity='0';
-  var typing=$('cbTyping');
-  var msg=$('tcBody');
-  if(typing){typing.style.display='flex';}
-  if(msg){msg.innerHTML='';msg.style.display='none';}
-
-  setTimeout(function(){
-    for(var i=1;i<=4;i++){var el=$(STEPS[i].sp);if(el)el.classList.remove('lit');}
-    if(n<1||n>4){tourEnd();return;}
-    cur=n;
-    var s=STEPS[n];
-
-    var sp=$(s.sp);
-    if(sp){sp.classList.add('lit');sp.scrollIntoView({behavior:'smooth',block:'center'});}
-
-    var tcStep=$('tcStep');
-    var tcLabel=$('tcLabel');
-    var tcNext=$('tcNext');
-    var tcBack=$('tcBack');
-    var tcDots=$('tcDots');
-    if(tcStep)tcStep.textContent=s.step;
-    if(tcLabel)tcLabel.textContent=s.label;
-    if(tcNext)tcNext.textContent=s.next;
-    if(tcBack)tcBack.style.display=(n>1)?'inline-flex':'none';
-
-    if(tcDots){
-      var dots=tcDots.querySelectorAll('.cb-dot');
-      dots.forEach(function(d,i){d.className='cb-dot'+(i<n?' on':'');});
-    }
-
-    if(typing)typing.style.display='none';
-    if(msg)msg.style.display='block';
-    card.style.opacity='1';
-
-    posBubble(n);
-
-    /* Start live typewriter for message */
-    if(msg)typeBody(msg,s.body,24);
-
-    if(s.inp){
-      var inp=$(s.inp);
-      if(inp)setTimeout(function(){inp.focus();},400);
-    }
-  },350);
-}
-
-window.tourNext=function(){
-  var s=STEPS[cur];
-  if(!s)return;
-  if(!s.validate()){
-    var sp=$(s.sp);
-    if(sp){sp.classList.remove('shake');void sp.offsetWidth;sp.classList.add('shake');setTimeout(function(){sp.classList.remove('shake');},500);}
-    return;
-  }
-  if(cur<4){goStep(cur+1);}
-  else{
-    tourEnd();
-    var form=$('regForm');
-    if(form)form.requestSubmit?form.requestSubmit():form.submit();
-  }
-};
-
-window.tourBack=function(){
-  if(cur>1)goStep(cur-1);
-};
-
-window.tourEnd=function(){
-  tourActive=false;
-  for(var i=1;i<=4;i++){var el=$(STEPS[i].sp);if(el)el.classList.remove('lit');}
-  var card=$('tourCard');
-  if(card){card.style.opacity='0';setTimeout(function(){card.style.display='none';},250);}
-  var ph=$('inp_phone');if(ph)ph.focus();
-};
-
-/* Phone — digits only */
-var phEl=$('inp_phone');
-if(phEl){phEl.addEventListener('input',function(){this.value=this.value.replace(/[^0-9]/g,'');});}
-
-/* Password strength */
-var pwEl=$('inp_pwd'),strRow=$('strRow'),strHint=$('strHint');
-if(pwEl&&strRow&&strHint){
-  pwEl.addEventListener('input',function(){
-    var v=pwEl.value;strRow.classList.remove('weak','medium','strong');
-    if(!v){strHint.textContent='Use at least 8 characters with letters and numbers.';return;}
-    var s=0;
-    if(v.length>=8)s++;if(/[a-z]/.test(v)&&/[A-Z]/.test(v))s++;if(/\d/.test(v))s++;if(/[^A-Za-z0-9]/.test(v))s++;
-    if(s<=1){strRow.classList.add('weak');strHint.textContent='Too weak — add more characters!';}
-    else if(s<3){strRow.classList.add('medium');strHint.textContent='Getting better — try adding symbols!';}
-    else{strRow.classList.add('strong');strHint.textContent='Strong password — great job!';}
-  });
-}
-
-/* Enter key advances tour */
-document.querySelectorAll('.f-inp').forEach(function(inp){
-  inp.addEventListener('keydown',function(e){if(e.key==='Enter'&&tourActive){e.preventDefault();window.tourNext();}});
+/* ── Phone: digits only ── */
+phone.addEventListener('input',function(){
+  var v=phone.value.replace(/[^0-9]/g,'');
+  if(v!==phone.value) phone.value=v;
 });
 
-/* Register validation modal */
-(function(){
-  var overlay=document.getElementById('rvOverlay');
-  var list=document.getElementById('rvList');
-  var closeBtn=document.getElementById('rvClose');
-  var sbtn=document.getElementById('submitBtn');
-  if(!overlay||!sbtn) return;
-  function openModal(errors){
-    list.innerHTML=errors.map(function(m){return'<li>'+m+'</li>';}).join('');
-    overlay.classList.add('is-open');
-  }
-  closeBtn&&closeBtn.addEventListener('click',function(){overlay.classList.remove('is-open');});
-  overlay.addEventListener('click',function(e){if(e.target===overlay)overlay.classList.remove('is-open');});
-  sbtn.addEventListener('click',function(e){
-    var errors=[];
-    var phone=(document.getElementById('inp_phone')||{}).value||'';
-    if(!phone.trim()) errors.push('Phone number is required');
-    var pwd=(document.getElementById('inp_pwd')||{}).value||'';
-    if(!pwd.trim()) errors.push('Password is required');
-    else if(pwd.length<8) errors.push('Password must be at least 8 characters');
-    var conf=(document.getElementById('inp_conf')||{}).value||'';
-    if(!conf.trim()) errors.push('Please confirm your password');
-    else if(pwd&&conf&&pwd!==conf) errors.push('Passwords do not match');
-    if(errors.length){e.preventDefault();e.stopImmediatePropagation();openModal(errors);}
-  });
-})();
+/* ── Show / hide both password fields ── */
+var eye=$('rgEye');
+eye.addEventListener('mousedown',function(e){ e.preventDefault(); });  /* keep the keyboard open */
+eye.addEventListener('click',function(){
+  var show=(pwd.type==='password');
+  pwd.type=conf.type=show?'text':'password';
+  eye.classList.toggle('on',show);
+  eye.setAttribute('aria-label',show?'Hide password':'Show password');
+});
 
-/* Submit loading state */
-var form=$('regForm'),sbtn=$('submitBtn');
-if(form&&sbtn){
-  form.addEventListener('submit',function(){
-    sbtn.disabled=true;
-    var lbl=$('regBtnLbl'),sp2=$('regSpin');
-    if(lbl)lbl.textContent='Creating Account...';
-    if(sp2)sp2.style.display='block';
-    var ico=sbtn.querySelector('svg:first-of-type');if(ico)ico.style.display='none';
+/* ── Password strength ── */
+var str=$('rgStr'), strTxt=$('rgStrTxt');
+pwd.addEventListener('input',function(){
+  var v=pwd.value, s=0;
+  if(v.length>=8)s++;
+  if(/[a-z]/.test(v)&&/[A-Z]/.test(v))s++;
+  if(/\d/.test(v))s++;
+  if(/[^A-Za-z0-9]/.test(v))s++;
+  var level=!v?0:(s<=1?1:(s<3?2:3));
+  str.setAttribute('data-level',level);
+  str.classList.toggle('on',level>0);
+  strTxt.textContent=['','Weak','Fair','Strong'][level];
+});
+
+/* ── Guide ── */
+var guide=$('rgGuide'), gText=$('rgGText'), gErr=$('rgGErr'), gStep=$('rgGStep');
+var gNext=$('rgGNext'), gNextTxt=$('rgGNextTxt'), gDots=$('rgGDots').children;
+var card=form.parentNode;
+var STEPS=[
+  { el:$('rgStep1'), input:phone,
+    html:'<span class="rg-ghi">Hi!</span> Please enter your <b>phone number</b> above. We\'ll use this to reach you — any format is fine!',
+    check:function(){ return phone.value.trim().length>=6 ? '' : 'Please enter your phone number first (at least 6 digits).'; } },
+  { el:$('rgStep2'), input:pwd,
+    html:'Now create a <b>password</b> you\'ll remember. At least <b>8 characters</b> — the stronger, the better!',
+    check:function(){ return pwd.value.length>=8 ? '' : 'Your password needs at least 8 characters.'; } },
+  { el:$('rgStep3'), input:conf,
+    html:'Almost done! Type your password <b>one more time</b> to confirm — make sure they match!',
+    check:function(){ return (conf.value===pwd.value&&conf.value.length>=8) ? '' : 'Passwords do not match yet. Please check and try again.'; } },
+  { el:submit, input:null, above:true, next:'Create Account',
+    html:'You\'re all set! Tap <b>REGISTER</b> to create your APEX account — welcome to the family!',
+    check:function(){ return ''; } }
+];
+var cur=0, active=false, y=0, textTimer=0, revealTimer=0;
+
+/* Where the guide goes, in px from the top of the form. Below the field by
+   default; above it on the last step or when below would leave the card. */
+function targetY(i){
+  var s=STEPS[i], f=form.getBoundingClientRect(), r=s.el.getBoundingClientRect();
+  var h=guide.offsetHeight, gap=12;
+  var below=r.bottom-f.top+gap, above=r.top-f.top-gap-h;
+  var limit=card.getBoundingClientRect().bottom-f.top-8;
+  var up=s.above || (below+h>limit && above>=0);
+  guide.classList.toggle('is-above',up);
+  return Math.round(up?above:below);
+}
+function setTransform(lift){
+  guide.style.transform='translate3d(0,'+(y+(lift?15:0))+'px,0)'+(lift?' scale(.95)':'');
+}
+function place(){
+  if(!active) return;
+  y=targetY(cur);
+  setTransform(false);
+}
+function setErr(msg){
+  gErr.textContent=msg;
+  gErr.classList.toggle('on',!!msg);
+}
+function render(i){
+  var s=STEPS[i];
+  gStep.textContent='Step '+(i+1)+' of 4';
+  for(var k=0;k<gDots.length;k++){
+    gDots[k].className=(k===i)?'on':(k<i?'done':'');
+  }
+  gText.innerHTML=s.html;
+  gNextTxt.textContent=s.next||'Next';
+  setErr('');
+}
+
+/* Scroll just enough that the field and the guide are both on screen
+   (uses the visual viewport, so it accounts for the phone keyboard). */
+function reveal(){
+  clearTimeout(revealTimer);
+  revealTimer=setTimeout(function(){
+    if(!active) return;
+    var vv=window.visualViewport, vTop=vv?vv.offsetTop:0, vh=vv?vv.height:window.innerHeight;
+    var s=STEPS[cur], r=s.el.getBoundingClientRect(), f=form.getBoundingClientRect();
+    var gTop=f.top+y-10, gBot=f.top+y+guide.offsetHeight+10;
+    var top=Math.min(r.top,gTop)-vTop, bot=Math.max(r.bottom,gBot)-vTop, m=16, room=vh-2*m, d=0;
+    /* the input box itself (without its label) is what must stay visible */
+    var boxTop=(s.input?s.input.getBoundingClientRect().top:r.top)-vTop;
+    if(bot-top<=room){ if(top<m) d=top-m; else if(bot>vh-m) d=bot-(vh-m); }
+    else if(bot-boxTop<=room) d=bot-(vh-m);
+    else d=boxTop-m;
+    if(Math.abs(d)>4) window.scrollBy({top:d,behavior:'smooth'});
+  },80);
+}
+
+function goStep(i,opts){
+  opts=opts||{};
+  cur=i;
+  /* focus inside the tap itself so the phone keyboard stays open between fields */
+  if(opts.focus!==false){
+    var inp=STEPS[i].input;
+    if(inp) inp.focus({preventScroll:true});
+    else if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();
+  }
+  gText.style.opacity='0';
+  clearTimeout(textTimer);
+  textTimer=setTimeout(function(){
+    render(i);
+    place();
+    gText.style.opacity='';
+    reveal();
+  },120);
+}
+
+function shake(el){
+  el.classList.remove('shake');
+  void el.offsetWidth;
+  el.classList.add('shake');
+  setTimeout(function(){ el.classList.remove('shake'); },450);
+}
+
+function start(){
+  active=true;
+  guide.hidden=false;
+  render(cur);
+  y=targetY(cur);
+  guide.style.transition='none';
+  setTransform(true);
+  void guide.offsetWidth;
+  guide.style.transition='';
+  guide.classList.add('is-on');
+  setTransform(false);
+}
+function end(){
+  if(!active) return;
+  active=false;
+  guide.classList.remove('is-on');
+  setTransform(true);
+  setTimeout(function(){ if(!active) guide.hidden=true; },450);
+}
+
+/* buttons inside the guide must not steal focus from the field (keyboard flicker) */
+guide.addEventListener('mousedown',function(e){ if(e.target.closest('button')) e.preventDefault(); });
+$('rgGSkip').addEventListener('click',end);
+gNext.addEventListener('click',function(){
+  var s=STEPS[cur], msg=s.check();
+  if(msg){
+    setErr(msg);
+    shake(s.el);
+    if(s.input) s.input.focus({preventScroll:true});
+    place();
+    reveal();
+    return;
+  }
+  if(cur<STEPS.length-1) goStep(cur+1);
+  else if(form.requestSubmit) form.requestSubmit(submit);
+  else submit.click();
+});
+
+/* the guide follows the field the user taps; Enter moves forward */
+[phone,pwd,conf].forEach(function(inp,i){
+  inp.addEventListener('focus',function(){ if(active&&cur!==i) goStep(i,{focus:false}); });
+  /* the error disappears as soon as the user starts fixing the field */
+  inp.addEventListener('input',function(){ if(active&&cur===i&&gErr.textContent) setErr(''); });
+  inp.addEventListener('keydown',function(e){
+    if(e.key!=='Enter') return;
+    if(active){ e.preventDefault(); gNext.click(); }
+    else if(i<2){ e.preventDefault(); [pwd,conf][i].focus(); }
+  });
+});
+
+/* keep the guide attached when anything changes size (fonts, errors, rotation) */
+if(window.ResizeObserver){
+  var ro=new ResizeObserver(function(){ place(); });
+  ro.observe(form);
+  ro.observe(guide);
+}
+window.addEventListener('resize',place);
+/* phone keyboard opening/closing */
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize',function(){
+    var a=document.activeElement;
+    if(active&&a&&a.tagName==='INPUT') reveal();
   });
 }
 
-/* Reposition on resize */
-window.addEventListener('resize',function(){if(tourActive)posBubble(cur);});
+/* ── Validation sheet + submit ── */
+var sheet=$('rvOverlay'), list=$('rvList');
+function closeSheet(){ sheet.classList.remove('is-open'); }
+$('rvClose').addEventListener('click',closeSheet);
+sheet.addEventListener('click',function(e){ if(e.target===sheet) closeSheet(); });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeSheet(); });
 
-/* ── Floating stars ── */
-(function spawnStars(){
-  var rp=document.querySelector('.rp');
-  if(!rp)return;
-  for(var s=0;s<18;s++){
-    var star=document.createElement('div');
-    star.className='star';
-    var size=Math.random()*2.5+1;
-    star.style.cssText=[
-      'width:'+size+'px',
-      'height:'+size+'px',
-      'left:'+(Math.random()*100)+'%',
-      'top:'+(Math.random()*100+20)+'%',
-      'opacity:'+(Math.random()*.5+.2),
-      'animation:starDrift '+(Math.random()*18+12)+'s linear '+(Math.random()*8)+'s infinite'
-    ].join(';');
-    rp.appendChild(star);
+form.addEventListener('submit',function(e){
+  var errors=[];
+  if(!phone.value.trim()) errors.push('Phone number is required');
+  if(!pwd.value.trim()) errors.push('Password is required');
+  else if(pwd.value.length<8) errors.push('Password must be at least 8 characters');
+  if(!conf.value.trim()) errors.push('Please confirm your password');
+  else if(pwd.value&&conf.value&&pwd.value!==conf.value) errors.push('Passwords do not match');
+  if(errors.length){
+    e.preventDefault();
+    list.innerHTML='';
+    errors.forEach(function(m){ var li=document.createElement('li'); li.textContent=m; list.appendChild(li); });
+    if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();
+    sheet.classList.add('is-open');
+    return;
   }
-})();
+  end();
+  submit.disabled=true;
+  submit.classList.add('is-loading');
+  $('rgSubmitTxt').textContent='CREATING ACCOUNT...';
+});
+/* re-enable if the page comes back from the browser's back/forward cache */
+window.addEventListener('pageshow',function(){
+  submit.disabled=false;
+  submit.classList.remove('is-loading');
+  $('rgSubmitTxt').textContent='REGISTER';
+});
 
-/* START TOUR — after form card finishes animating in */
-setTimeout(function(){
-  tourActive=true;
-  var card=$('tourCard');
-  if(card)card.style.display='block';
-  goStep(1);
-},500);
+start();
 
 })();
 </script>

@@ -1,1045 +1,739 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Payment Method{% endblock %}
+{% block title %}Payment Method — APEX{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+html body,html body *,html body button,html body input,
+html body select,html body textarea,html body a{
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif!important;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <style>
-/* OFL Payment Method — Navy / Orange / White */
-:root {
-  --navy:#0A2463; --navy-dk:#061540; --navy-lt:#1a3a8a; --navy-mid:#0d2b75;
-  --orange:#FF8C00; --orange-dk:#D97200; --orange-lt:#FFA733;
-  --bg:#f0f3f9; --card:#fff;
-  --ink:#0d1b3e; --ink2:#5a6680; --ink3:#9aa3b8; --line:#e6eaf4;
+/* ════════════════════════════════════════════
+   APEX PAYMENT METHOD — Deep Forest · Glass Guide
+   Same look in light and dark theme
+════════════════════════════════════════════ */
+:root{
+  --pm-dark:#0B1C14;--pm-primary:#133224;--pm-green:#1B4332;--pm-green-dk:#122e22;--pm-sage:#E8F3ED;--pm-accent:#F97316;
+  --pm-ink:#111827;--pm-ink2:#374151;--pm-mut:#9ca3af;--pm-mut2:#6b7280;--pm-line:#f3f4f6;--pm-line2:#e5e7eb;
+  --pm-glass:rgba(17,42,31,.85);--pm-float:0 20px 40px -10px rgba(0,0,0,.1);--pm-ease:cubic-bezier(.22,1,.36,1);
 }
-html,body { width:100%; overflow-x:hidden; }
-body { margin:0; font-family:"Lato","Open Sans",system-ui,sans-serif; color:var(--ink); background:var(--bg); }
-body,body * { font-family:"Lato","Open Sans",system-ui,sans-serif !important; }
-.wrap { padding-top:0 !important; display:block !important; }
+#pageRoot.wrap{max-width:100%!important;width:100%!important;padding:0!important;display:block!important;}
+html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!important;overflow-x:clip!important;background:#e5e7eb!important;color:#1f2937!important;-webkit-font-smoothing:antialiased;}
+.pm a,.pm button{-webkit-tap-highlight-color:transparent;}
+.pm svg{display:block;width:auto;height:1em;fill:currentColor;flex-shrink:0;}
 
-@keyframes pmFadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-@keyframes pmDotBlink { 0%,100%{opacity:.3} 50%{opacity:1} }
-@keyframes pmShine {
-  0%,65%{transform:translateX(-200%)}
-  100%{transform:translateX(200%)}
-}
+/* ── App shell (no overflow:hidden: the guide must never be clipped) ── */
+.pm{min-height:100vh;min-height:100dvh;display:flex;justify-content:center;}
+.pm-app{position:relative;width:100%;max-width:420px;min-height:100vh;min-height:100dvh;background:#f9fafb;padding-bottom:calc(32px + env(safe-area-inset-bottom,0px));}
 
-/* ── Page wrap ── */
-.pm-page { width:min(520px,96vw); max-width:520px; margin:0 auto; padding:0 14px 60px; box-sizing:border-box; }
+/* ── Header ── */
+.pm-top{
+  position:relative;overflow:hidden;padding:24px 24px 128px;border-radius:0 0 2.5rem 2.5rem;
+  background:linear-gradient(to bottom,var(--pm-dark),var(--pm-primary));box-shadow:inset 0 2px 4px rgba(0,0,0,.05);
+}
+.pm-glow{position:absolute;border-radius:50%;pointer-events:none;}
+.pm-glow-a{top:0;right:0;width:256px;height:256px;background:rgba(255,255,255,.05);filter:blur(64px);transform:translate(33%,-33%);}
+.pm-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(249,115,22,.1);filter:blur(40px);transform:translate(-25%,25%);}
+.pm-bar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;min-height:44px;margin-bottom:22px;}
+.pm-glass-dark{background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);}
+.pm-back{
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;
+  color:#fff!important;text-decoration:none!important;transition:background-color .15s,transform .15s;
+}
+.pm-back:hover{background-color:rgba(255,255,255,.1);}
+.pm-back:active{transform:scale(.94);}
+.pm-badge{display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.04em;color:#fff;}
+.pm-badge i{width:7px;height:7px;border-radius:50%;background:#FDBA74;}
+.pm-badge.is-saved i{background:#4ade80;}
+.pm-hero{position:relative;z-index:1;}
+.pm-eyebrow{margin:0 0 6px;font-size:11px;line-height:16px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#FDBA74;}
+.pm-hero h1{margin:0 0 6px;font-size:30px;line-height:36px;font-weight:800;letter-spacing:-.025em;color:#fff;}
+.pm-hero p{margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(232,243,237,.75);}
 
-/* ── Hero ── */
-.pm-hero {
-  position:relative; overflow:hidden; margin:0 -14px;
-  background:linear-gradient(150deg,var(--navy-dk) 0%,var(--navy) 52%,var(--navy-mid) 100%);
-  padding:max(22px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-left)) 28px max(18px,env(safe-area-inset-left));
+/* journey: Calculator → Application → Payment */
+.pm-flow{position:relative;z-index:1;display:grid;grid-template-columns:auto 1fr auto 1fr auto;align-items:start;margin:20px 0 0;padding:0;list-style:none;}
+.pm-flow li{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.pm-flow li i{
+  width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-style:normal;
+  font-size:11px;font-weight:800;color:var(--pm-green);background:var(--pm-sage);border:1px solid var(--pm-sage);
 }
-.pm-hero::before {
-  content:""; position:absolute; inset:0;
-  background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1px);
-  background-size:20px 20px; pointer-events:none;
-}
-.pm-hero::after {
-  content:""; position:absolute; bottom:-60px; right:-50px;
-  width:180px; height:180px; border-radius:50%;
-  background:radial-gradient(circle,rgba(255,140,0,.18),transparent 70%);
-  pointer-events:none;
-}
-.pm-hero > * { position:relative; z-index:2; }
+.pm-flow li i svg{font-size:10px;}
+.pm-flow li span{font-size:10.5px;line-height:14px;font-weight:700;letter-spacing:.03em;color:#fff;white-space:nowrap;}
+.pm-flow li.is-now i{color:#fff;background:var(--pm-accent);border-color:var(--pm-accent);box-shadow:0 0 0 4px rgba(249,115,22,.22);}
+.pm-flow li.pm-fl{display:block;height:2px;margin:12px 8px 0;border-radius:2px;background:rgba(232,243,237,.7);}
 
-.pm-hero-top {
-  display:flex; align-items:center; justify-content:space-between;
-  margin-bottom:16px;
-  opacity:0; animation:pmFadeUp .38s ease-out .04s both;
-}
-.pm-badge {
-  display:flex; align-items:center; gap:7px;
-  background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.15);
-  border-radius:999px; padding:5px 13px;
-  font-size:9px; font-weight:900; color:var(--orange-lt); letter-spacing:.20em; text-transform:uppercase;
-}
-.pm-badge-dot { width:5px; height:5px; border-radius:50%; background:var(--orange-lt); animation:pmDotBlink 1.6s ease-in-out infinite; }
+/* ── Main column ── */
+.pm-main{position:relative;z-index:2;margin-top:-104px;padding:0 20px;display:flex;flex-direction:column;gap:20px;}
+.pm-fm,.pm-col{display:flex;flex-direction:column;gap:20px;}
+.pm-col{position:relative;}
+.pm-card{position:relative;padding:24px;border-radius:2rem;background:#fff;border:1px solid var(--pm-line);box-shadow:var(--pm-float);}
+.pm-head{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.pm-head-ico{position:relative;width:48px;height:48px;border-radius:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--pm-primary);background:linear-gradient(to bottom right,var(--pm-sage),#fff);border:1px solid #fff;box-shadow:0 1px 2px rgba(0,0,0,.05);}
+.pm-head h2{margin:0;font-size:16px;line-height:22px;font-weight:700;color:var(--pm-ink);}
+.pm-head p{margin:2px 0 0;font-size:12px;line-height:16px;font-weight:500;color:var(--pm-mut2);}
+.pm-tag{display:inline-block;margin-bottom:2px;font-size:10px;line-height:14px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--pm-accent);}
+@keyframes pmShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.shake{animation:pmShake .4s ease;}
+@keyframes pmIn{from{opacity:0;transform:translateY(-4px);}}
 
-.pm-status-pill {
-  display:inline-flex; align-items:center; gap:6px;
-  padding:5px 12px; border-radius:999px;
-  font-size:9.5px; font-weight:900; letter-spacing:.12em; text-transform:uppercase;
+/* ── Live preview card (sits across the header edge) ── */
+.pm-pcard{position:relative;height:196px;border-radius:24px;overflow:hidden;box-shadow:0 24px 40px -14px rgba(11,28,20,.55),0 2px 8px rgba(0,0,0,.12);}
+.pm-face{
+  position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;padding:20px 22px 18px;color:#fff;
+  transition:opacity .3s ease,transform .35s var(--pm-ease);
 }
-.pm-status-pill .sdot { width:5px; height:5px; border-radius:50%; background:currentColor; }
-.pm-status-pill.saved   { background:rgba(22,163,74,.18); color:#86efac; border:1px solid rgba(22,163,74,.45); }
-.pm-status-pill.pending { background:rgba(255,167,51,.15); color:var(--orange-lt); border:1px solid rgba(255,167,51,.35); }
+.pm-face::before{content:'';position:absolute;top:-40%;right:-18%;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none;}
+.pm-face > *{position:relative;}
+.pm-face-bank{background:linear-gradient(135deg,#24573f 0%,var(--pm-green) 45%,var(--pm-dark) 100%);}
+.pm-face-wallet{background:linear-gradient(135deg,#fb923c 0%,var(--pm-accent) 50%,#c2410c 100%);}
+.pm-face.is-out{opacity:0;transform:translateY(-10px) scale(.98);pointer-events:none;}
+.pm-face-top{display:flex;align-items:center;justify-content:space-between;}
+.pm-chip{width:40px;height:30px;border-radius:7px;background:linear-gradient(135deg,#fde68a,#d4a72c);box-shadow:inset 0 0 0 1px rgba(0,0,0,.08);}
+.pm-wico{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);}
+.pm-face-type{font-size:10px;line-height:14px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.75);}
+.pm-num{display:flex;gap:14px;font-size:19px;line-height:24px;font-weight:700;letter-spacing:.08em;font-variant-numeric:tabular-nums;}
+.pm-phone{font-size:21px;line-height:26px;font-weight:700;letter-spacing:.04em;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pm-face-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:14px;}
+.pm-face-foot > div{min-width:0;}
+.pm-face-foot .r{text-align:right;flex-shrink:0;max-width:55%;}
+.pm-face-foot small{display:block;white-space:nowrap;margin-bottom:2px;font-size:9.5px;line-height:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);}
+.pm-face-foot b{display:block;font-size:13.5px;line-height:18px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pm .dim{opacity:.55;}
 
-.pm-hero-title {
-  font-size:26px; font-weight:900; color:#fff; letter-spacing:-.3px; margin-bottom:3px;
-  opacity:0; animation:pmFadeUp .38s ease-out .10s both;
+/* screenshot protection: details stay covered until tapped, then hide again after 8 s */
+.pm-mask{
+  position:absolute;inset:0;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;
+  padding:0;border:0;border-radius:inherit;cursor:pointer;text-align:center;
+  -webkit-backdrop-filter:blur(18px) saturate(1.2);backdrop-filter:blur(18px) saturate(1.2);
+  transition:opacity .28s ease,visibility 0s linear 0s;
 }
-.pm-hero-sub {
-  font-size:12px; font-weight:600; color:rgba(255,255,255,.55);
-  margin-bottom:22px;
-  opacity:0; animation:pmFadeUp .38s ease-out .15s both;
-}
+/* covered details are also hidden outright, in case the blur is not supported */
+.pm-face > *,.pm-stack{transition:opacity .2s ease;}
+.pm-pcard.is-covered .pm-face > *,.pm-card.is-covered .pm-stack{opacity:0;}
+.pm-mask.is-revealed{opacity:0;visibility:hidden;transition:opacity .28s ease,visibility 0s linear .28s;}
+.pm-mask-dark{background:rgba(11,28,20,.5);color:#fff;}
+.pm-mask-light{background:rgba(249,250,251,.72);color:var(--pm-green);}
+.pm-mask-ring{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.28);}
+.pm-mask-light .pm-mask-ring{background:var(--pm-sage);border-color:#d7eadf;}
+.pm-mask b{font-size:11px;line-height:15px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;}
+.pm-mask small{font-size:11.5px;line-height:15px;font-weight:600;opacity:.75;}
+/* the bar runs out while the details are shown */
+.pm-timer{position:absolute;left:24px;right:24px;bottom:9px;z-index:4;height:3px;border-radius:3px;background:var(--pm-accent);opacity:0;transform:scaleX(0);transform-origin:left;pointer-events:none;}
+.pm-timer.is-running{opacity:1;animation:pmCount 8s linear forwards;}
+@keyframes pmCount{from{transform:scaleX(1);}to{transform:scaleX(0);}}
+.pm-secure-note{display:flex;gap:12px;padding:14px 16px;border-radius:18px;background:var(--pm-sage);border:1px solid #d7eadf;}
+.pm-secure-note > span{width:36px;height:36px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--pm-green);background:#fff;}
+.pm-secure-note b{display:block;margin-bottom:2px;font-size:13px;line-height:18px;font-weight:700;color:var(--pm-green);}
+.pm-secure-note p{margin:0;font-size:12.5px;line-height:18px;font-weight:500;color:var(--pm-ink2);}
 
-/* ── Preview card ── */
-.pm-preview {
-  position:relative; border-radius:18px; overflow:hidden;
-  height:170px;
-  box-shadow:0 16px 40px rgba(0,0,0,.32), 0 2px 8px rgba(0,0,0,.14);
-  opacity:0; animation:pmFadeUp .42s ease-out .22s both;
-}
-
-/* Bank face */
-.pm-face {
-  position:absolute; inset:0;
-  padding:18px 20px 16px;
-  display:flex; flex-direction:column; justify-content:space-between;
-  transition:opacity .28s ease, transform .28s ease;
-}
-.pm-face-bank {
-  background:linear-gradient(130deg,var(--navy-lt) 0%,var(--navy) 55%,var(--navy-dk) 100%);
-}
-.pm-face-bank::after {
-  content:""; position:absolute; top:0; left:0; width:55%; height:100%;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);
-  animation:pmShine 6s ease-in-out infinite; pointer-events:none;
-}
-.pm-face-wallet {
-  background:linear-gradient(130deg,var(--orange-lt) 0%,var(--orange) 52%,var(--orange-dk) 100%);
-  opacity:0; pointer-events:none; transform:translateY(8px);
-}
-.pm-face-wallet::before {
-  content:""; position:absolute; inset:0;
-  background-image:radial-gradient(rgba(255,255,255,.16) 1px,transparent 1px);
-  background-size:16px 16px; pointer-events:none;
-}
-.pm-face.is-out  { opacity:0; transform:translateY(-8px); pointer-events:none; }
-.pm-face.is-in   { opacity:1; transform:translateY(0);    pointer-events:auto; }
-.pm-face > * { position:relative; z-index:2; }
-
-.pm-face-top { display:flex; align-items:center; justify-content:space-between; }
-.pm-face-type { font-size:9px; font-weight:900; letter-spacing:.20em; text-transform:uppercase; color:rgba(255,255,255,.65); }
-
-/* Chip */
-.pm-chip {
-  width:34px; height:26px; border-radius:5px;
-  background:linear-gradient(135deg,var(--orange-lt),var(--orange-dk));
-  position:relative;
-}
-.pm-chip::before {
-  content:""; position:absolute; inset:4px; border-radius:3px;
-  background:linear-gradient(135deg,rgba(255,255,255,.38),transparent 60%);
-  border:1px solid rgba(255,255,255,.22);
-}
-
-/* Wallet badge */
-.pm-wico {
-  width:36px; height:36px; border-radius:10px;
-  background:rgba(255,255,255,.22); border:1px solid rgba(255,255,255,.32);
-  display:flex; align-items:center; justify-content:center;
-}
-.pm-wico svg { width:20px; height:20px; stroke:#fff; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-
-.pm-card-num {
-  display:flex; gap:10px; align-items:center;
-  font-size:14px; font-weight:900; letter-spacing:.18em; color:#fff;
-}
-.pm-card-phone {
-  font-size:18px; font-weight:900; letter-spacing:.06em; color:#fff; text-align:center;
-}
-.pm-face-foot { display:flex; justify-content:space-between; align-items:flex-end; }
-.pm-flbl { font-size:8.5px; font-weight:800; color:rgba(255,255,255,.52); letter-spacing:.16em; text-transform:uppercase; margin-bottom:3px; }
-.pm-fval { font-size:12px; font-weight:900; color:#fff; letter-spacing:.01em; word-break:break-all; max-width:150px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.pm-fval.dim { color:rgba(255,255,255,.38); font-weight:700; font-style:italic; }
-
-/* ── Body ── */
-.pm-body { margin-top:14px; }
+/* server messages */
+.pm-alerts{display:flex;flex-direction:column;gap:10px;}
+.pm-alert{display:flex;gap:10px;padding:14px 16px;border-radius:18px;font-size:13px;line-height:19px;font-weight:600;background:#fff;border:1px solid var(--pm-line);color:var(--pm-ink2);}
+.pm-alert svg{margin-top:2px;font-size:15px;}
+.pm-alert.is-error{color:#991b1b;background:#fef2f2;border-color:#fecaca;}
+.pm-alert.is-success{color:#166534;background:#f0fdf4;border-color:#bbf7d0;}
+.pm-alert.is-warning{color:#9a3412;background:#fff7ed;border-color:#fed7aa;}
 
 /* ── Method tiles ── */
-.pm-tiles {
-  display:grid; grid-template-columns:1fr 1fr; gap:12px;
-  margin-bottom:14px;
-  opacity:0; animation:pmFadeUp .40s ease-out .28s both;
+.pm-tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.pm-tile{
+  position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:16px;border-radius:18px;cursor:pointer;text-align:left;
+  border:1px solid var(--pm-line2);background:#fff;transition:border-color .2s,background-color .2s,box-shadow .2s,transform .15s;
 }
-.pm-tile {
-  position:relative; background:#fff; border-radius:18px;
-  border:1.5px solid var(--line);
-  padding:14px 14px 13px; cursor:pointer; user-select:none;
-  transition:border-color .2s, box-shadow .2s, transform .15s;
-  overflow:hidden;
+.pm-tile:active{transform:scale(.97);}
+.pm-tile:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(27,67,50,.22);}
+.pm-tile-ico{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--pm-green);background:var(--pm-sage);transition:background-color .2s,color .2s;}
+.pm-tile b{display:block;font-size:14px;line-height:19px;font-weight:700;color:var(--pm-ink);}
+.pm-tile small{display:block;margin-top:2px;font-size:11.5px;line-height:15px;font-weight:500;color:var(--pm-mut2);}
+.pm-tile-chk{
+  position:absolute;top:12px;right:12px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:#fff;background:var(--pm-green);opacity:0;transform:scale(.4);transition:opacity .2s,transform .3s var(--pm-ease);
 }
-.pm-tile:active { transform:scale(.97); }
-.pm-tile::before {
-  content:""; position:absolute; top:0; left:0; right:0; height:3px;
-  border-radius:18px 18px 0 0;
-  background:var(--line); transition:background .25s;
-}
-.pm-tile.active { border-color:var(--orange); box-shadow:0 4px 20px rgba(255,140,0,.20); }
-.pm-tile.active::before { background:linear-gradient(90deg,var(--orange-lt),var(--orange-dk)); }
+.pm-tile.active{border-color:var(--pm-green);background:#f4faf6;box-shadow:inset 0 0 0 1px var(--pm-green);}
+.pm-tile.active .pm-tile-ico{color:#fff;background:var(--pm-green);}
+.pm-tile.active .pm-tile-chk{opacity:1;transform:none;}
 
-.pm-tile-ico {
-  width:42px; height:42px; border-radius:14px; margin-bottom:10px;
-  display:flex; align-items:center; justify-content:center;
-  background:rgba(10,36,99,.08); border:1.5px solid rgba(10,36,99,.12);
-  transition:background .22s, border-color .22s, box-shadow .22s;
+/* ── Fields (#pmForm beats base.html's dark-theme input overrides) ── */
+.pm-stack{display:grid;}
+.pm-sec{
+  grid-area:1 / 1;display:flex;flex-direction:column;gap:16px;opacity:0;visibility:hidden;transform:translateX(14px);
+  transition:opacity .25s ease,transform .35s var(--pm-ease),visibility 0s linear .35s;
 }
-.pm-tile-ico svg { width:21px; height:21px; stroke:var(--navy); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; transition:stroke .22s; }
-.pm-tile.active .pm-tile-ico {
-  background:linear-gradient(135deg,var(--orange-lt),var(--orange-dk));
-  border-color:var(--orange-dk); box-shadow:0 4px 14px rgba(255,140,0,.34);
+.pm-sec.active{opacity:1;visibility:visible;transform:none;transition:opacity .25s ease,transform .35s var(--pm-ease);}
+.pm-label{display:block;margin:0 0 8px;padding-left:4px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--pm-green);}
+.pm-field{position:relative;}
+.pm-ico{position:absolute;left:16px;top:50%;transform:translateY(-50%);display:flex;font-size:15px;color:var(--pm-mut);pointer-events:none;transition:color .15s;}
+.pm-field:focus-within .pm-ico{color:var(--pm-green);}
+#pmForm .pm-input{
+  display:block;width:100%;margin:0;padding:14px 16px 14px 46px;font-size:16px;line-height:22px;font-weight:500;
+  color:var(--pm-ink)!important;background:rgba(249,250,251,.6)!important;border:1px solid var(--pm-line2)!important;border-radius:16px;
+  outline:none;box-shadow:none!important;-webkit-appearance:none;appearance:none;transition:border-color .15s,box-shadow .15s;
 }
-.pm-tile.active .pm-tile-ico svg { stroke:#fff; }
-
-.pm-tile-name { font-size:13px; font-weight:900; color:var(--ink); letter-spacing:-.1px; margin-bottom:2px; }
-.pm-tile-sub  { font-size:10.5px; font-weight:600; color:var(--ink3); }
-.pm-tile.active .pm-tile-name { color:var(--orange-dk); }
-
-.pm-tile-chk {
-  position:absolute; top:10px; right:10px;
-  width:20px; height:20px; border-radius:50%;
-  background:linear-gradient(135deg,var(--orange-lt),var(--orange-dk));
-  display:flex; align-items:center; justify-content:center;
-  opacity:0; transform:scale(.4); transition:opacity .2s, transform .22s;
-}
-.pm-tile-chk svg { width:11px; height:11px; stroke:#fff; fill:none; stroke-width:2.8; stroke-linecap:round; stroke-linejoin:round; }
-.pm-tile.active .pm-tile-chk { opacity:1; transform:scale(1); }
-
-html[data-theme="dark"] .pm-tile { background:#1a2440; border-color:rgba(255,255,255,.10); }
-html[data-theme="dark"] .pm-tile.active { border-color:var(--orange); }
-html[data-theme="dark"] .pm-tile::before { background:rgba(255,255,255,.08); }
-html[data-theme="dark"] .pm-tile.active::before { background:linear-gradient(90deg,var(--orange-lt),var(--orange-dk)); }
-html[data-theme="dark"] .pm-tile-ico { background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.12); }
-html[data-theme="dark"] .pm-tile-ico svg { stroke:rgba(200,220,255,.80); }
-html[data-theme="dark"] .pm-tile-name { color:#fff; }
-html[data-theme="dark"] .pm-tile-sub  { color:rgba(255,255,255,.40); }
-html[data-theme="dark"] .pm-tile.active .pm-tile-name { color:var(--orange-lt); }
-
-/* ── Form card ── */
-.pm-card {
-  background:#fff; border-radius:20px;
-  border:1px solid var(--line);
-  box-shadow:0 8px 28px rgba(10,36,99,.09), 0 2px 6px rgba(0,0,0,.04);
-  overflow:hidden; margin-bottom:14px;
-  opacity:0; animation:pmFadeUp .40s ease-out .34s both;
-}
-.pm-card-hd {
-  display:flex; align-items:center; gap:12px;
-  padding:14px 18px 13px; border-bottom:1px solid var(--line);
-}
-.pm-hd-ico {
-  width:40px; height:40px; border-radius:13px; flex:0 0 auto;
-  display:flex; align-items:center; justify-content:center;
-  background:linear-gradient(135deg,var(--orange-lt),var(--orange-dk));
-  box-shadow:0 4px 14px rgba(255,140,0,.30);
-}
-.pm-hd-ico svg { width:19px; height:19px; stroke:#fff; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
-.pm-hd-eyebrow { font-size:8.5px; font-weight:900; color:var(--ink3); letter-spacing:.18em; text-transform:uppercase; margin-bottom:2px; }
-.pm-hd-name { font-size:14.5px; font-weight:900; color:var(--navy); letter-spacing:-.1px; }
-
-html[data-theme="dark"] .pm-card { background:#1a2440; border-color:rgba(255,255,255,.10); }
-html[data-theme="dark"] .pm-hd-name { color:#fff; }
-html[data-theme="dark"] .pm-hd-eyebrow { color:rgba(255,255,255,.35); }
-html[data-theme="dark"] .pm-card-hd { border-color:rgba(255,255,255,.08); }
-
-.pm-card-body { padding:18px 18px 16px; }
-
-/* ── Sections ── */
-.pm-section { display:none; }
-.pm-section.active { display:block; }
-
-/* ── Fields ── */
-.pm-field { margin-bottom:15px; }
-.pm-field:last-child { margin-bottom:0; }
-.pm-lbl {
-  display:block; font-size:10.5px; font-weight:900; color:var(--ink2);
-  letter-spacing:.12em; text-transform:uppercase; margin-bottom:7px;
-}
-.pm-iw { position:relative; }
-.pm-iw-ico {
-  position:absolute; left:14px; top:50%; transform:translateY(-50%); pointer-events:none;
-}
-.pm-iw-ico svg { width:18px; height:18px; stroke:var(--ink3); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-.pm-input {
-  width:100%; box-sizing:border-box;
-  padding:13px 14px 13px 42px;
-  border-radius:13px; border:1.5px solid var(--line);
-  background:#fff; color:var(--ink);
-  font-size:14px; font-weight:700; font-family:inherit;
-  outline:none; transition:border-color .2s, box-shadow .2s;
-  letter-spacing:.01em;
-}
-.pm-input::placeholder { color:var(--ink3); font-weight:600; font-size:13px; }
-.pm-input:focus { border-color:var(--orange); box-shadow:0 0 0 4px rgba(255,140,0,.10); }
-.pm-input:read-only { background:rgba(10,36,99,.04); border-color:rgba(10,36,99,.14); color:var(--navy); cursor:default; }
-
-html[data-theme="dark"] .pm-input { background:#111927; border-color:rgba(255,255,255,.10); color:#fff; }
-html[data-theme="dark"] .pm-input:focus { border-color:var(--orange); box-shadow:0 0 0 4px rgba(255,140,0,.12); }
-html[data-theme="dark"] .pm-input:read-only { background:rgba(255,255,255,.05); color:rgba(200,220,255,.80); border-color:rgba(255,255,255,.10); }
-html[data-theme="dark"] .pm-iw-ico svg { stroke:rgba(255,255,255,.30); }
-html[data-theme="dark"] .pm-lbl { color:rgba(255,255,255,.45); }
-
-/* ── Error banner ── */
-.pm-err {
-  display:flex; align-items:flex-start; gap:10px;
-  background:rgba(220,38,38,.07); border:1px solid rgba(220,38,38,.20);
-  border-left:3px solid #dc2626; border-radius:13px;
-  padding:11px 14px; margin-bottom:14px;
-  font-size:12.5px; font-weight:700; color:#b91c1c; line-height:1.5;
-}
-.pm-err svg { flex:0 0 auto; width:16px; height:16px; stroke:#dc2626; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; margin-top:1px; }
-html[data-theme="dark"] .pm-err { color:#fca5a5; }
-
-/* ── Lock notice (inside card) ── */
-.pm-lock {
-  display:flex; align-items:center; gap:12px;
-  background:rgba(255,140,0,.07); border:1px solid rgba(255,140,0,.22);
-  border-radius:14px; padding:13px 14px; margin-top:15px;
-}
-.pm-lock-ico {
-  width:36px; height:36px; border-radius:11px; flex:0 0 auto;
-  background:rgba(255,140,0,.14); display:flex; align-items:center; justify-content:center;
-}
-.pm-lock-ico svg { width:17px; height:17px; stroke:var(--orange-dk); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-.pm-lock-lbl { font-size:10.5px; font-weight:900; color:var(--orange-dk); letter-spacing:.08em; text-transform:uppercase; margin-bottom:2px; }
-.pm-lock-sub { font-size:11.5px; font-weight:600; color:var(--ink2); line-height:1.4; }
-html[data-theme="dark"] .pm-lock-sub { color:rgba(255,255,255,.45); }
+#pmForm .pm-input::placeholder{color:var(--pm-mut)!important;font-weight:400;}
+#pmForm .pm-input:focus{border-color:var(--pm-green)!important;box-shadow:0 0 0 1px var(--pm-green)!important;background:#fff!important;}
+#pmForm .pm-input.is-error{border-color:#f87171!important;box-shadow:0 0 0 1px #f87171!important;background:#fef2f2!important;}
+#pmForm .pm-input[readonly]{color:var(--pm-ink2)!important;background:#f3f4f6!important;-webkit-user-select:none;user-select:none;}
+#pmForm .pm-input:-webkit-autofill{-webkit-text-fill-color:var(--pm-ink)!important;-webkit-box-shadow:0 0 0 1000px #fff inset!important;transition:background-color 9999s ease-in-out 0s;}
+.pm-ferr{display:none;margin:14px 0 0;padding-left:4px;font-size:12px;line-height:17px;font-weight:600;color:#dc2626;}
+.pm-ferr.on{display:block;animation:pmIn .25s var(--pm-ease);}
+.pm-lock{display:flex;align-items:center;gap:12px;margin-top:18px;padding:12px 14px;border-radius:14px;background:#f9fafb;border:1px dashed var(--pm-line2);}
+.pm-lock span{width:32px;height:32px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--pm-green);background:var(--pm-sage);}
+.pm-lock b{display:block;font-size:12.5px;line-height:17px;font-weight:700;color:var(--pm-ink);}
+.pm-lock p{margin:0;font-size:12px;line-height:17px;font-weight:500;color:var(--pm-mut2);}
 
 /* ── Actions ── */
-.pm-actions { opacity:0; animation:pmFadeUp .40s ease-out .40s both; }
-.pm-btn {
-  width:100%; height:56px; border:0; border-radius:16px;
-  background:linear-gradient(135deg,var(--orange-lt) 0%,var(--orange) 45%,var(--orange-dk) 100%);
-  color:#fff; font-size:13.5px; font-weight:900; letter-spacing:.14em; text-transform:uppercase;
-  font-family:inherit; cursor:pointer;
-  display:flex; align-items:center; justify-content:center; gap:10px;
-  box-shadow:0 8px 24px rgba(255,140,0,.36), 0 2px 6px rgba(0,0,0,.08);
-  transition:box-shadow .2s, transform .15s;
+.pm-acts{display:flex;flex-direction:column;gap:12px;border-radius:999px;}
+.pm-cta{
+  position:relative;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:17px;border:0;border-radius:999px;cursor:pointer;
+  font-size:15.5px;line-height:22px;font-weight:700;color:#fff!important;background:var(--pm-accent);text-decoration:none!important;
+  box-shadow:0 10px 15px -3px rgba(249,115,22,.3),0 4px 6px -4px rgba(249,115,22,.3);transition:background-color .15s,transform .15s,opacity .2s;
 }
-.pm-btn:hover { box-shadow:0 12px 32px rgba(255,140,0,.52); transform:translateY(-1px); }
-.pm-btn:active { transform:scale(.98); }
-.pm-btn.is-loading { cursor:not-allowed; opacity:.9; pointer-events:none; }
-.pm-btn svg { width:18px; height:18px; stroke:#fff; fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
-.pm-btn-spinner { display:none; width:18px; height:18px; border:2.5px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; animation:pmSpin .7s linear infinite; }
-.pm-btn.is-loading .pm-btn-spinner { display:block; }
-.pm-btn.is-loading .pm-btn-lbl { display:none; }
-@keyframes pmSpin { to{transform:rotate(360deg)} }
+.pm-cta:hover{background:#ea580c;}
+.pm-cta:active{transform:scale(.98);}
+.pm-cta svg{font-size:14px;}
+.pm-cta::before{content:'';position:absolute;inset:0;border-radius:inherit;box-shadow:0 0 0 6px rgba(249,115,22,.16),0 14px 30px rgba(249,115,22,.45);opacity:0;pointer-events:none;}
+.pm-cta.is-ready::before{animation:pmGlow 2.6s ease-in-out infinite;}
+@keyframes pmGlow{0%,100%{opacity:0;}50%{opacity:1;}}
+.pm-spin{display:none;width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;}
+.pm-cta.is-loading{pointer-events:none;opacity:.92;}
+.pm-cta.is-loading::before{animation:none;}
+.pm-cta.is-loading .pm-spin{display:block;animation:pmSpin .7s linear infinite;}
+.pm-cta.is-loading .pm-cta-ico{display:none;}
+@keyframes pmSpin{to{transform:rotate(360deg);}}
+.pm-cta:disabled{cursor:default;background:var(--pm-sage);color:var(--pm-green)!important;box-shadow:none;transform:none;}
+.pm-fine{margin:0;text-align:center;font-size:12px;line-height:17px;font-weight:500;color:var(--pm-mut2);}
 
-.pm-saved-btn {
-  width:100%; height:56px; border-radius:16px;
-  background:rgba(22,163,74,.09); border:2px solid rgba(22,163,74,.28);
-  color:#16a34a; font-size:13px; font-weight:900; letter-spacing:.12em; text-transform:uppercase;
-  font-family:inherit; cursor:default;
-  display:flex; align-items:center; justify-content:center; gap:10px;
-}
-.pm-saved-btn svg { width:19px; height:19px; stroke:#16a34a; fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+/* footer */
+.pm-foot{padding-top:4px;text-align:center;font-size:12px;line-height:16px;font-weight:500;color:var(--pm-mut);}
+.pm-foot p{margin:0;}
+.pm-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
+.pm-foot i{width:6px;height:6px;border-radius:50%;background:var(--pm-primary);}
+.pm-foot b{font-weight:700;color:var(--pm-accent);}
 
-@media (max-width:380px) {
-  .pm-tile-name { font-size:12px; }
-  .pm-tile-sub  { font-size:9.5px; }
-  .pm-tile-ico  { width:36px; height:36px; }
+/* ── Glass guide (same as the register / dashboard / loan guides) ── */
+.pm-guide{position:absolute;top:0;left:-6px;right:-6px;z-index:5;transform-origin:50% 0;transition:transform .45s var(--pm-ease);pointer-events:none;}
+.pm-guide.is-above{transform-origin:50% 100%;}
+.pm-guide.is-on{pointer-events:auto;}
+.pm-gfloat{position:relative;animation:pmFloat 3.5s ease-in-out infinite;}
+@keyframes pmFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.pm-gbody{
+  position:relative;overflow:hidden;padding:16px;border-radius:16px;background:var(--pm-glass);
+  -webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.2);box-shadow:0 15px 35px rgba(0,0,0,.25);
+  opacity:0;transition:opacity .3s ease;
 }
+.pm-garrow{
+  position:absolute;left:50%;width:14px;height:14px;margin-left:-7px;top:-6px;background:var(--pm-glass);
+  -webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.2);border-right:0;border-bottom:0;
+  clip-path:polygon(0 0,100% 0,0 100%);transform:rotate(45deg);opacity:0;transition:opacity .3s ease;
+}
+.pm-guide.is-above .pm-garrow{top:auto;bottom:-6px;transform:rotate(225deg);}
+.pm-guide.is-on .pm-gbody,.pm-guide.is-on .pm-garrow{opacity:1;}
+.pm-gglow{position:absolute;top:-24px;right:-24px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.1);filter:blur(40px);pointer-events:none;}
+.pm-ghead{position:relative;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.1);}
+.pm-gwho{display:flex;align-items:center;gap:10px;}
+.pm-gava{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;background:linear-gradient(to bottom right,#F97316,#d95d0b);border:1px solid rgba(255,255,255,.2);}
+.pm-gstep{font-size:10px;line-height:15px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;}
+.pm-gdots{display:flex;gap:6px;}
+.pm-gdots i{width:6px;height:6px;border-radius:999px;background:rgba(255,255,255,.3);transition:width .3s,background-color .3s;}
+.pm-gdots i.done{background:rgba(249,115,22,.75);}
+.pm-gdots i.on{width:14px;background:var(--pm-accent);box-shadow:0 0 8px rgba(249,115,22,.6);}
+.pm-gtext{position:relative;margin:0 0 14px;font-size:13px;line-height:1.625;color:rgba(255,255,255,.9);transition:opacity .15s;}
+.pm-gtext b{font-weight:700;color:#fff;}
+.pm-gerr{position:relative;display:none;margin:-4px 0 14px;padding:8px 10px;border-radius:10px;font-size:12px;line-height:1.45;font-weight:600;color:#fed7aa;background:rgba(249,115,22,.16);border:1px solid rgba(249,115,22,.45);}
+.pm-gerr.on{display:block;}
+.pm-gacts{position:relative;display:flex;align-items:center;gap:12px;}
+.pm-gskip,.pm-gnext{flex:1;padding:9px 8px;border-radius:12px;cursor:pointer;font-size:12px;line-height:16px;transition:background-color .15s,color .15s,transform .15s;}
+.pm-gskip{border:1px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.8);font-weight:600;}
+.pm-gskip:hover{background:rgba(255,255,255,.1);color:#fff;}
+.pm-gnext{display:flex;align-items:center;justify-content:center;gap:6px;border:0;background:#fff;color:var(--pm-green);font-weight:700;box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);}
+.pm-gnext:hover{background:#f3f4f6;}
+.pm-gnext.is-ready{background:var(--pm-accent);color:#fff;}
+.pm-gnext.is-ready:hover{background:#ea580c;}
+.pm-gskip:active,.pm-gnext:active{transform:scale(.98);}
+.pm-gnext svg{font-size:10px;}
 
-/* ── Screenshot protection ── */
-.pm-preview { position:relative; }
-.pm-card    { position:relative; }
-.pm-secure-mask {
-  position:absolute; inset:0; z-index:50; border-radius:inherit;
-  backdrop-filter:blur(20px) saturate(1.2);
-  -webkit-backdrop-filter:blur(20px) saturate(1.2);
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
-  cursor:pointer; transition:opacity .28s ease, backdrop-filter .28s ease;
+@media (min-width:640px){
+  .pm{padding:32px 0;}
+  .pm-app{min-height:0;border-radius:2.5rem;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);}
+  .pm-top{border-radius:2.5rem;}
 }
-.pm-secure-mask.is-revealed { opacity:0; pointer-events:none; backdrop-filter:blur(0); -webkit-backdrop-filter:blur(0); }
-.pm-preview-mask { background:rgba(6,21,64,.44); }
-.pm-card-mask    { background:rgba(240,243,249,.55); }
-html[data-theme="dark"] .pm-card-mask { background:rgba(10,18,36,.60); }
-.pm-mask-ring {
-  width:48px; height:48px; border-radius:16px; margin-bottom:2px;
-  background:rgba(255,255,255,.16); border:1.5px solid rgba(255,255,255,.28);
-  display:flex; align-items:center; justify-content:center;
+@media (max-width:359px){
+  .pm-top{padding-left:20px;padding-right:20px;}
+  .pm-main{padding:0 14px;}
+  .pm-card{padding:20px 16px;}
+  .pm-pcard{height:180px;}
+  .pm-face{padding:16px 18px 14px;}
+  .pm-num{gap:10px;font-size:17px;}
+  .pm-tile{padding:14px 12px;}
+  .pm-flow li.pm-fl{margin-left:5px;margin-right:5px;}
 }
-.pm-card-mask .pm-mask-ring {
-  background:rgba(10,36,99,.12); border-color:rgba(10,36,99,.20);
+@media (prefers-reduced-motion: reduce){
+  .pm-gfloat,.pm-cta.is-ready::before,.shake{animation:none;}
+  .pm-guide,.pm-face,.pm-sec{transition:none;}
 }
-html[data-theme="dark"] .pm-card-mask .pm-mask-ring { background:rgba(255,255,255,.10); border-color:rgba(255,255,255,.18); }
-.pm-mask-ring svg { width:22px; height:22px; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-.pm-preview-mask .pm-mask-ring svg { stroke:#fff; }
-.pm-card-mask .pm-mask-ring svg { stroke:var(--navy); }
-html[data-theme="dark"] .pm-card-mask .pm-mask-ring svg { stroke:rgba(200,220,255,.85); }
-.pm-mask-lbl { font-size:11px; font-weight:900; letter-spacing:.14em; text-transform:uppercase; }
-.pm-preview-mask .pm-mask-lbl { color:#fff; }
-.pm-card-mask    .pm-mask-lbl { color:var(--navy); }
-html[data-theme="dark"] .pm-card-mask .pm-mask-lbl { color:rgba(200,220,255,.90); }
-.pm-mask-sub { font-size:9.5px; font-weight:700; }
-.pm-preview-mask .pm-mask-sub { color:rgba(255,255,255,.62); }
-.pm-card-mask    .pm-mask-sub { color:var(--ink2); }
-html[data-theme="dark"] .pm-card-mask .pm-mask-sub { color:rgba(255,255,255,.45); }
-.pm-mask-timer {
-  display:none; margin-top:2px;
-  font-size:10px; font-weight:900; letter-spacing:.10em;
-  border-radius:999px; padding:3px 12px;
-}
-.pm-preview-mask .pm-mask-timer { color:#fff; background:rgba(255,255,255,.16); }
-.pm-card-mask    .pm-mask-timer { color:var(--navy); background:rgba(10,36,99,.10); }
-html[data-theme="dark"] .pm-card-mask .pm-mask-timer { color:rgba(200,220,255,.90); background:rgba(255,255,255,.10); }
-
-/* Security notice */
-.pm-notice {
-  display:flex; align-items:center; gap:10px;
-  background:rgba(10,36,99,.06); border:1px solid rgba(10,36,99,.13);
-  border-radius:14px; padding:11px 14px; margin-bottom:14px;
-  opacity:0; animation:pmFadeUp .38s ease-out .26s both;
-}
-.pm-notice-ring {
-  width:34px; height:34px; border-radius:10px; flex:0 0 auto;
-  background:rgba(10,36,99,.10); display:flex; align-items:center; justify-content:center;
-}
-.pm-notice-ring svg { width:16px; height:16px; stroke:var(--navy); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-.pm-notice-title { font-size:11.5px; font-weight:900; color:var(--navy); margin-bottom:2px; }
-.pm-notice-sub   { font-size:11px; font-weight:600; color:var(--ink2); line-height:1.45; }
-html[data-theme="dark"] .pm-notice { background:rgba(255,255,255,.05); border-color:rgba(255,255,255,.08); }
-html[data-theme="dark"] .pm-notice-ring { background:rgba(255,255,255,.08); }
-html[data-theme="dark"] .pm-notice-ring svg { stroke:rgba(200,220,255,.80); }
-html[data-theme="dark"] .pm-notice-title { color:rgba(200,220,255,.90); }
-html[data-theme="dark"] .pm-notice-sub   { color:rgba(255,255,255,.45); }
-
-/* ── OFL Coachmark Guide ── */
-@keyframes bubPop{0%{opacity:0;transform:scale(.88) translateY(8px)}70%{transform:scale(1.03) translateY(-2px)}100%{opacity:1;transform:scale(1) translateY(0)}}
-@keyframes shakeX{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
-@keyframes typeDot{0%,80%,100%{transform:scale(0);opacity:.4}40%{transform:scale(1);opacity:1}}
-.sp{position:relative;border-radius:14px;}
-.sp.shake{animation:shakeX .4s ease;}
-.chat-bubble{position:fixed;z-index:10000;background:#fff;border-radius:18px;padding:0;width:min(320px,calc(100vw - 28px));box-shadow:0 16px 48px rgba(0,0,0,.38),0 0 0 1px rgba(0,0,0,.06);display:none;opacity:0;transition:opacity .22s;}
-.chat-bubble::before{content:'';position:absolute;top:-12px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:13px solid #0A2463;}
-.chat-bubble.arrow-dn::before{top:auto;bottom:-12px;border-bottom:none;border-top:13px solid #fff;}
-.cb-header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 16px;background:linear-gradient(135deg,#061540,#0A2463);border-bottom:1px solid rgba(255,140,0,.22);border-radius:18px 18px 0 0;}
-.cb-char-wrap{width:54px;height:54px;flex-shrink:0;border-radius:50%;border:2.5px solid rgba(255,140,0,.65);background-size:cover;background-position:center top;background-repeat:no-repeat;background-color:rgba(255,255,255,.08);box-shadow:0 3px 12px rgba(0,0,0,.35);}
-.cb-step{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.65);}
-.cb-dots{display:flex;gap:5px;align-items:center;}
-.cb-dot{height:6px;width:6px;border-radius:99px;background:rgba(255,255,255,.25);transition:all .35s;flex-shrink:0;}
-.cb-dot.on{background:#FF8C00;width:18px;}
-.cb-msg{padding:12px 18px;font-size:14px;font-weight:700;color:#0a1a3a;line-height:1.60;}
-.cb-msg b{color:#0A2463;}
-.cb-typing{display:none;gap:5px;align-items:center;padding:0 18px 12px;}
-.cb-typing span{width:8px;height:8px;border-radius:50%;background:#7a8299;animation:typeDot 1.2s infinite ease-in-out both;}
-.cb-typing span:nth-child(2){animation-delay:.2s;}
-.cb-typing span:nth-child(3){animation-delay:.4s;}
-.cb-foot{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 14px;border-top:1px solid #f0f2f8;}
-.cb-label{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#7a8299;}
-.cb-actions{display:flex;align-items:center;gap:10px;}
-.cb-back{height:38px;padding:0 18px;border:2px solid #0A2463;border-radius:999px;background:transparent;color:#0A2463;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:.04em;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,color .15s;}
-.cb-back:hover{background:#0A2463;color:#fff;}
-.cb-next{height:38px;padding:0 24px;border:none;border-radius:999px;background:linear-gradient(135deg,#FF8C00,#D97200);color:#fff;font-size:13.5px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.05em;box-shadow:0 4px 14px rgba(255,140,0,.42);transition:transform .15s,box-shadow .15s;}
-.cb-next:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,140,0,.60);}
-.cb-skip{height:32px;padding:0 14px;border:1.5px solid #c0c8d8;border-radius:999px;background:transparent;color:#9aa3b8;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:border-color .15s,color .15s;}
-.cb-skip:hover{border-color:#0A2463;color:#0A2463;}
-@media(max-width:600px){.chat-bubble{width:calc(100vw - 20px);}}
 </style>
 
-<div class="pm-page">
+<!-- Icons: Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0) Copyright 2023 Fonticons, Inc. -->
+<div class="pm">
+  <div class="pm-app">
 
-  <!-- ═══ HERO ═══ -->
-  <div class="pm-hero">
-    <div class="pm-hero-top">
-      <div class="pm-badge">
-        <span class="pm-badge-dot"></span>
-        OFL · Payout
+    <!-- ── Header ── -->
+    <header class="pm-top">
+      <div class="pm-glow pm-glow-a"></div>
+      <div class="pm-glow pm-glow-b"></div>
+      <div class="pm-bar">
+        {% if locked or not has_draft %}
+        <a class="pm-back pm-glass-dark" href="{% url 'dashboard' %}" aria-label="Back to dashboard"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></a>
+        {% else %}
+        <span></span>
+        {% endif %}
+        <div class="pm-badge pm-glass-dark{% if saved %} is-saved{% endif %}"><i></i>{% if saved %}Saved{% else %}Pending{% endif %}</div>
       </div>
-      <span class="pm-status-pill {% if saved %}saved{% else %}pending{% endif %}">
-        <span class="sdot"></span>
-        {% if saved %}Saved{% else %}Pending{% endif %}
-      </span>
-    </div>
+      <div class="pm-hero">
+        <p class="pm-eyebrow">Payout</p>
+        <h1>Payment Method</h1>
+        <p>Where we'll send your loan funds</p>
+      </div>
+      {% if has_draft %}
+      <ol class="pm-flow" aria-label="Application progress">
+        <li><i><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></i><span>Calculator</span></li>
+        <li class="pm-fl" aria-hidden="true"></li>
+        <li><i><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></i><span>Application</span></li>
+        <li class="pm-fl" aria-hidden="true"></li>
+        <li class="is-now" aria-current="step"><i>3</i><span>Payment</span></li>
+      </ol>
+      {% endif %}
+    </header>
 
-    <div class="pm-hero-title">Payment Method</div>
-    <div class="pm-hero-sub">Where we'll send your loan funds</div>
+    <main class="pm-main">
 
-    <!-- Live preview card -->
-    <div class="pm-preview">
-
-      {% if locked %}
-      <div class="pm-secure-mask pm-preview-mask" id="previewMask">
-        <div class="pm-mask-ring">
-          <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+      <!-- ── Live preview card ── -->
+      <div class="pm-pcard{% if locked %} is-covered{% endif %}" id="pmPreview">
+        <div class="pm-face pm-face-bank" id="faceBank" aria-hidden="true">
+          <div class="pm-face-top"><span class="pm-chip"></span><span class="pm-face-type">Bank Account</span></div>
+          <div class="pm-num"><span>••••</span><span>••••</span><span>••••</span><span id="prevLast4" class="dim">????</span></div>
+          <div class="pm-face-foot">
+            <div><small>Account Name</small><b id="prevBankName" class="dim">Not entered</b></div>
+            <div class="r"><small>Account No.</small><b id="prevBankAcc" class="dim">—</b></div>
+          </div>
         </div>
-        <div class="pm-mask-lbl">Protected</div>
-        <div class="pm-mask-sub">Tap to view for 8 seconds</div>
-        <div class="pm-mask-timer" id="previewTimer"></div>
+        <div class="pm-face pm-face-wallet is-out" id="faceWallet" aria-hidden="true">
+          <div class="pm-face-top"><span class="pm-wico"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M16 64C16 28.7 44.7 0 80 0H304c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H80c-35.3 0-64-28.7-64-64V64zM224 448a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zM304 64H80V384H304V64z"/></svg></span><span class="pm-face-type">Mobile Wallet</span></div>
+          <div class="pm-phone dim" id="prevWPhone">+63 — — — — — —</div>
+          <div class="pm-face-foot">
+            <div><small>Wallet Name</small><b id="prevWName" class="dim">Not entered</b></div>
+            <div class="r"><small>Network</small><b>GCash / Maya</b></div>
+          </div>
+        </div>
+        {% if locked %}
+        <button type="button" class="pm-mask pm-mask-dark" id="previewMask" aria-label="Show your payout card for 8 seconds">
+          <span class="pm-mask-ring"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/></svg></span><b>Protected</b><small>Tap to view for 8 seconds</small>
+        </button>
+        <span class="pm-timer" id="previewTimer"></span>
+        {% endif %}
+      </div>
+
+      {% if messages or form.errors %}
+      <div class="pm-alerts" role="status">
+        {% for message in messages %}
+        <div class="pm-alert is-{{ message.level_tag|default:'info' }}">{% if message.level_tag == 'success' %}<svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>{% else %}<svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>{% endif %}<span>{{ message }}</span></div>
+        {% endfor %}
+        {% if form.errors %}
+        <div class="pm-alert is-error"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg><span>{% for e in form.non_field_errors %}{{ e }} {% endfor %}{% for f in form %}{% for e in f.errors %}{{ f.label }}: {{ e }} {% endfor %}{% endfor %}</span></div>
+        {% endif %}
       </div>
       {% endif %}
 
-      <!-- Bank face -->
-      <div class="pm-face pm-face-bank is-in" id="faceBank">
-        <div class="pm-face-top">
-          <div class="pm-chip"></div>
-          <div class="pm-face-type">Bank Account</div>
-        </div>
-        <div class="pm-card-num">
-          <span>••••</span>
-          <span>••••</span>
-          <span>••••</span>
-          <span id="prevLast4" class="dim">????</span>
-        </div>
-        <div class="pm-face-foot">
-          <div>
-            <div class="pm-flbl">Account Name</div>
-            <div class="pm-fval dim" id="prevBankName">Not entered</div>
-          </div>
-          <div style="text-align:right">
-            <div class="pm-flbl">Account No.</div>
-            <div class="pm-fval dim" id="prevBankAcc">—</div>
-          </div>
-        </div>
+      {% if locked %}
+      <div class="pm-secure-note">
+        <span><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 0c4.6 0 9.2 1 13.4 2.9L457.7 82.8c22 9.3 38.4 31 38.3 57.2c-.5 99.2-41.3 280.7-213.6 363.2c-16.7 8-36.1 8-52.8 0C57.3 420.7 16.5 239.2 16 140c-.1-26.2 16.3-47.9 38.3-57.2L242.7 2.9C246.8 1 251.4 0 256 0zm0 66.8V444.8C394 378 431.1 230.1 432 141.4L256 66.8l0 0z"/></svg></span>
+        <div><b>Screenshot Protected</b><p>Your account details are hidden. Tap the card to see them for a few seconds.</p></div>
       </div>
+      {% endif %}
 
-      <!-- Wallet face -->
-      <div class="pm-face pm-face-wallet" id="faceWallet">
-        <div class="pm-face-top">
-          <div class="pm-wico">
-            <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-          </div>
-          <div class="pm-face-type" style="color:rgba(255,255,255,.82)">Mobile Wallet</div>
-        </div>
-        <div class="pm-card-phone dim" id="prevWPhone">+63 — — — — — —</div>
-        <div class="pm-face-foot">
-          <div>
-            <div class="pm-flbl">Wallet Name</div>
-            <div class="pm-fval dim" id="prevWName">Not entered</div>
-          </div>
-          <div style="text-align:right">
-            <div class="pm-flbl">Network</div>
-            <div class="pm-fval">GCash / Maya</div>
-          </div>
-        </div>
-      </div>
+      <form class="pm-fm" id="pmForm" method="post" novalidate>
+        {% csrf_token %}
+        <div class="pm-col" id="pmCol">
 
-    </div><!-- /.pm-preview -->
-  </div><!-- /.pm-hero -->
+          {% if not locked %}
+          <!-- ── 1 · Choose the method ── -->
+          <section class="pm-card" id="pmSp1">
+            <div class="pm-head">
+              <div class="pm-head-ico"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M312 24V34.5c6.4 1.2 12.6 2.7 18.2 4.2c12.8 3.4 20.4 16.6 17 29.4s-16.6 20.4-29.4 17c-10.9-2.9-21.1-4.9-30.2-5c-7.3-.1-14.7 1.7-19.4 4.4c-2.1 1.3-3.1 2.4-3.5 3c-.3 .5-.7 1.2-.7 2.8c0 .3 0 .5 0 .6c.2 .2 .9 1.2 3.3 2.6c5.8 3.5 14.4 6.2 27.4 10.1l.9 .3 0 0c11.1 3.3 25.9 7.8 37.9 15.3c13.7 8.6 26.1 22.9 26.4 44.9c.3 22.5-11.4 38.9-26.7 48.5c-6.7 4.1-13.9 7-21.3 8.8V232c0 13.3-10.7 24-24 24s-24-10.7-24-24V220.6c-9.5-2.3-18.2-5.3-25.6-7.8c-2.1-.7-4.1-1.4-6-2c-12.6-4.2-19.4-17.8-15.2-30.4s17.8-19.4 30.4-15.2c2.6 .9 5 1.7 7.3 2.5c13.6 4.6 23.4 7.9 33.9 8.3c8 .3 15.1-1.6 19.2-4.1c1.9-1.2 2.8-2.2 3.2-2.9c.4-.6 .9-1.8 .8-4.1l0-.2c0-1 0-2.1-4-4.6c-5.7-3.6-14.3-6.4-27.1-10.3l-1.9-.6c-10.8-3.2-25-7.5-36.4-14.4c-13.5-8.1-26.5-22-26.6-44.1c-.1-22.9 12.9-38.6 27.7-47.4c6.4-3.8 13.3-6.4 20.2-8.2V24c0-13.3 10.7-24 24-24s24 10.7 24 24zM568.2 336.3c13.1 17.8 9.3 42.8-8.5 55.9L433.1 485.5c-23.4 17.2-51.6 26.5-80.7 26.5H192 32c-17.7 0-32-14.3-32-32V416c0-17.7 14.3-32 32-32H68.8l44.9-36c22.7-18.2 50.9-28 80-28H272h16 64c17.7 0 32 14.3 32 32s-14.3 32-32 32H288 272c-8.8 0-16 7.2-16 16s7.2 16 16 16H392.6l119.7-88.2c17.8-13.1 42.8-9.3 55.9 8.5zM193.6 384l0 0-.9 0c.3 0 .6 0 .9 0z"/></svg></div>
+              <div><h2>Choose Payout Method</h2><p>Pick one — bank or mobile wallet</p></div>
+            </div>
+            <div class="pm-tiles" role="radiogroup" aria-label="Payout method">
+              <button type="button" class="pm-tile" id="tileBank" data-method="bank" role="radio" aria-checked="false">
+                <span class="pm-tile-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M243.4 2.6l-224 96c-14 6-21.8 21-18.7 35.8S16.8 160 32 160v8c0 13.3 10.7 24 24 24H456c13.3 0 24-10.7 24-24v-8c15.2 0 28.3-10.7 31.3-25.6s-4.8-29.9-18.7-35.8l-224-96c-8-3.4-17.2-3.4-25.2 0zM128 224H64V420.3c-.6 .3-1.2 .7-1.8 1.1l-48 32c-11.7 7.8-17 22.4-12.9 35.9S17.9 512 32 512H480c14.1 0 26.5-9.2 30.6-22.7s-1.1-28.1-12.9-35.9l-48-32c-.6-.4-1.2-.7-1.8-1.1V224H384V416H344V224H280V416H232V224H168V416H128V224zM256 64a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg></span><span><b>Bank</b><small>Bank transfer</small></span><span class="pm-tile-chk"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></span>
+              </button>
+              <button type="button" class="pm-tile" id="tileWallet" data-method="wallet" role="radio" aria-checked="false">
+                <span class="pm-tile-ico"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M16 64C16 28.7 44.7 0 80 0H304c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H80c-35.3 0-64-28.7-64-64V64zM224 448a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zM304 64H80V384H304V64z"/></svg></span><span><b>Wallet</b><small>GCash / Maya</small></span><span class="pm-tile-chk"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></span>
+              </button>
+            </div>
+          </section>
+          {% endif %}
 
-  <!-- ═══ BODY ═══ -->
-  <div class="pm-body">
-
-    <!-- Security notice (locked state only) -->
-    {% if locked %}
-    <div class="pm-notice">
-      <div class="pm-notice-ring">
-        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-      </div>
-      <div>
-        <div class="pm-notice-title">Screenshot Protected</div>
-        <div class="pm-notice-sub">Your account details are hidden. Tap the card to view them briefly.</div>
-      </div>
-    </div>
-    {% endif %}
-
-    <!-- Error banner -->
-    {% if form.errors %}
-    <div class="pm-err">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <div>{% for e in form.non_field_errors %}{{ e }}{% endfor %}{% for f in form %}{% for e in f.errors %}{{ f.label }}: {{ e }} {% endfor %}{% endfor %}</div>
-    </div>
-    {% endif %}
-
-    <!-- Method tiles (hidden when locked) -->
-    {% if not locked %}
-    <div class="sp" id="pmSp1">
-    <div class="pm-tiles">
-
-      <div class="pm-tile" id="tileBank" data-method="bank">
-        <div class="pm-tile-chk">
-          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <div class="pm-tile-ico">
-          <!-- Bank / building icon -->
-          <svg viewBox="0 0 24 24">
-            <line x1="3" y1="22" x2="21" y2="22"/>
-            <line x1="3" y1="11" x2="21" y2="11"/>
-            <polyline points="3 11 12 3 21 11"/>
-            <line x1="6"  y1="11" x2="6"  y2="22"/>
-            <line x1="12" y1="11" x2="12" y2="22"/>
-            <line x1="18" y1="11" x2="18" y2="22"/>
-          </svg>
-        </div>
-        <div class="pm-tile-name">Bank</div>
-        <div class="pm-tile-sub">Bank transfer</div>
-      </div>
-
-      <div class="pm-tile" id="tileWallet" data-method="wallet">
-        <div class="pm-tile-chk">
-          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-        </div>
-        <div class="pm-tile-ico">
-          <!-- Phone / mobile wallet icon -->
-          <svg viewBox="0 0 24 24">
-            <rect x="5" y="2" width="14" height="20" rx="2"/>
-            <line x1="12" y1="18" x2="12.01" y2="18"/>
-          </svg>
-        </div>
-        <div class="pm-tile-name">Wallet</div>
-        <div class="pm-tile-sub">GCash / Maya</div>
-      </div>
-
-    </div>
-    </div>
-    {% endif %}
-
-    <!-- Form -->
-    <form method="post">
-      {% csrf_token %}
-
-      <!-- Form card -->
-      <div class="sp" id="pmSp2">
-      <div class="pm-card">
-        {% if locked %}
-        <div class="pm-secure-mask pm-card-mask" id="cardMask">
-          <div class="pm-mask-ring">
-            <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-          </div>
-          <div class="pm-mask-lbl">Protected</div>
-          <div class="pm-mask-sub">Tap to view for 8 seconds</div>
-          <div class="pm-mask-timer" id="cardTimer"></div>
-        </div>
-        {% endif %}
-        <div class="pm-card-hd">
-          <div class="pm-hd-ico" id="hdIco">
-            <!-- icon swaps via JS -->
-            <svg id="hdSvgBank" viewBox="0 0 24 24"><line x1="3" y1="22" x2="21" y2="22"/><line x1="3" y1="11" x2="21" y2="11"/><polyline points="3 11 12 3 21 11"/><line x1="6" y1="11" x2="6" y2="22"/><line x1="12" y1="11" x2="12" y2="22"/><line x1="18" y1="11" x2="18" y2="22"/></svg>
-            <svg id="hdSvgWallet" viewBox="0 0 24 24" style="display:none"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
-          </div>
-          <div>
-            <div class="pm-hd-eyebrow">Payout Details</div>
-            <div class="pm-hd-name" id="hdName">Bank Account</div>
-          </div>
-        </div>
-
-        <div class="pm-card-body">
-
-          <!-- Bank section -->
-          <div class="pm-section" id="sectionBank">
-            <div class="pm-field">
-              <label class="pm-lbl">Account Name</label>
-              <div class="pm-iw">
-                <div class="pm-iw-ico">
-                  <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <!-- ── 2 · Details ── -->
+          <section class="pm-card{% if locked %} is-covered{% endif %}" id="pmSp2">
+            <div class="pm-head">
+              <div class="pm-head-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M243.4 2.6l-224 96c-14 6-21.8 21-18.7 35.8S16.8 160 32 160v8c0 13.3 10.7 24 24 24H456c13.3 0 24-10.7 24-24v-8c15.2 0 28.3-10.7 31.3-25.6s-4.8-29.9-18.7-35.8l-224-96c-8-3.4-17.2-3.4-25.2 0zM128 224H64V420.3c-.6 .3-1.2 .7-1.8 1.1l-48 32c-11.7 7.8-17 22.4-12.9 35.9S17.9 512 32 512H480c14.1 0 26.5-9.2 30.6-22.7s-1.1-28.1-12.9-35.9l-48-32c-.6-.4-1.2-.7-1.8-1.1V224H384V416H344V224H280V416H232V224H168V416H128V224zM256 64a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg></div>
+              <div><span class="pm-tag">Payout Details</span><h2 id="hdName">Bank Account</h2></div>
+            </div>
+            <div class="pm-stack">
+              <div class="pm-sec" id="sectionBank">
+                <div>
+                  <label class="pm-label" for="inBankName">Account name</label>
+                  <div class="pm-field"><span class="pm-ico"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg></span>
+                    <input class="pm-input" type="text" name="bank_name" id="inBankName" placeholder="Full account name" autocomplete="name" enterkeyhint="next"
+                           value="{{ form.bank_name.value|default:'' }}"{% if locked %} readonly{% endif %}></div>
                 </div>
-                <input class="pm-input" type="text" name="bank_name" id="inBankName"
-                       placeholder="Full account name"
-                       value="{{ form.bank_name.value|default:'' }}"
-                       autocomplete="name"
-                       {% if locked %}readonly{% endif %}>
+                <div>
+                  <label class="pm-label" for="inBankAcc">Account number</label>
+                  <div class="pm-field"><span class="pm-ico"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M64 32C28.7 32 0 60.7 0 96v32H576V96c0-35.3-28.7-64-64-64H64zM576 224H0V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V224zM112 352h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16s7.2-16 16-16zm112 16c0-8.8 7.2-16 16-16H368c8.8 0 16 7.2 16 16s-7.2 16-16 16H240c-8.8 0-16-7.2-16-16z"/></svg></span>
+                    <input class="pm-input" type="text" name="bank_account" id="inBankAcc" placeholder="e.g. 1234 5678 9012" inputmode="numeric" autocomplete="off" enterkeyhint="done"
+                           value="{{ form.bank_account.value|default:'' }}"{% if locked %} readonly{% endif %}></div>
+                </div>
+              </div>
+              <div class="pm-sec" id="sectionWallet">
+                <div>
+                  <label class="pm-label" for="inWName">Wallet account name</label>
+                  <div class="pm-field"><span class="pm-ico"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg></span>
+                    <input class="pm-input" type="text" name="wallet_name" id="inWName" placeholder="Name on GCash / Maya" autocomplete="name" enterkeyhint="next"
+                           value="{{ form.wallet_name.value|default:'' }}"{% if locked %} readonly{% endif %}></div>
+                </div>
+                <div>
+                  <label class="pm-label" for="inWPhone">Phone number</label>
+                  <div class="pm-field"><span class="pm-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z"/></svg></span>
+                    <input class="pm-input" type="tel" name="wallet_phone" id="inWPhone" placeholder="+63 9XX XXX XXXX" autocomplete="tel" enterkeyhint="done"
+                           value="{{ form.wallet_phone.value|default:'' }}"{% if locked %} readonly{% endif %}></div>
+                </div>
               </div>
             </div>
-            <div class="pm-field">
-              <label class="pm-lbl">Account Number</label>
-              <div class="pm-iw">
-                <div class="pm-iw-ico">
-                  <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-                </div>
-                <input class="pm-input" type="text" name="bank_account" id="inBankAcc"
-                       placeholder="e.g. 1234 5678 9012"
-                       value="{{ form.bank_account.value|default:'' }}"
-                       inputmode="numeric"
-                       {% if locked %}readonly{% endif %}>
-              </div>
-            </div>
+            <p class="pm-ferr" id="pmErr" role="alert"></p>
+            {% if locked %}
+            <div class="pm-lock"><span><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/></svg></span><div><b>Locked</b><p>Contact staff to update your payout details.</p></div></div>
+            <button type="button" class="pm-mask pm-mask-light" id="cardMask" aria-label="Show your payout details for 8 seconds">
+              <span class="pm-mask-ring"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/></svg></span><b>Protected</b><small>Tap to view for 8 seconds</small>
+            </button>
+            <span class="pm-timer" id="cardTimer"></span>
+            {% endif %}
+          </section>
+
+          <!-- ── 3 · Save ── -->
+          <div class="pm-acts" id="pmSp3">
+            {% if not locked %}
+            <button type="submit" class="pm-cta" id="pmBtn"><svg viewBox="0 0 448 512" class="pm-cta-ico" aria-hidden="true"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V173.3c0-17-6.7-33.3-18.7-45.3L352 50.7C340 38.7 323.7 32 306.7 32H64zm0 96c0-17.7 14.3-32 32-32H288c17.7 0 32 14.3 32 32v64c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V128zM224 288a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg><i class="pm-spin" aria-hidden="true"></i><span id="pmBtnTxt">Save &amp; Continue</span></button>
+            <p class="pm-fine">Please check the details — your loan will be sent here.</p>
+            {% elif has_draft and saved %}
+            <button type="submit" class="pm-cta is-ready" id="pmUseBtn" name="action" value="use_saved"><svg viewBox="0 0 512 512" class="pm-cta-ico" aria-hidden="true"><path d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480V396.4c0-4 1.5-7.8 4.2-10.7L331.8 202.8c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8 17.7 316.6C7.1 311.3 .3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z"/></svg><i class="pm-spin" aria-hidden="true"></i><span>Submit My Application</span></button>
+            <p class="pm-fine">Your saved payment method will be used for this loan.</p>
+            {% elif has_draft %}
+            <button type="button" class="pm-cta" disabled><svg viewBox="0 0 448 512" class="pm-cta-ico" aria-hidden="true"><path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/></svg><span>Contact staff to add your details</span></button>
+            {% else %}
+            <button type="button" class="pm-cta" disabled><svg viewBox="0 0 512 512" class="pm-cta-ico" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg><span>Payment Method Saved</span></button>
+            {% endif %}
           </div>
 
-          <!-- Wallet section -->
-          <div class="pm-section" id="sectionWallet">
-            <div class="pm-field">
-              <label class="pm-lbl">Wallet Account Name</label>
-              <div class="pm-iw">
-                <div class="pm-iw-ico">
-                  <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          {% if not locked %}
+          <!-- ── Guide (moved between the sections by the script below) ── -->
+          <div class="pm-guide" id="pmGuide" role="dialog" aria-label="Payment method guide" hidden>
+            <div class="pm-gfloat">
+              <div class="pm-gbody">
+                <div class="pm-gglow"></div>
+                <div class="pm-ghead">
+                  <div class="pm-gwho"><span class="pm-gava"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M370.7 96.1C346.1 39.5 289.7 0 224 0S101.9 39.5 77.3 96.1C60.9 97.5 48 111.2 48 128v64c0 16.8 12.9 30.5 29.3 31.9C101.9 280.5 158.3 320 224 320s122.1-39.5 146.7-96.1c16.4-1.4 29.3-15.1 29.3-31.9V128c0-16.8-12.9-30.5-29.3-31.9zM336 144v16c0 53-43 96-96 96H208c-53 0-96-43-96-96V144c0-26.5 21.5-48 48-48H288c26.5 0 48 21.5 48 48zM189.3 162.7l-6-21.2c-.9-3.3-3.9-5.5-7.3-5.5s-6.4 2.2-7.3 5.5l-6 21.2-21.2 6c-3.3 .9-5.5 3.9-5.5 7.3s2.2 6.4 5.5 7.3l21.2 6 6 21.2c.9 3.3 3.9 5.5 7.3 5.5s6.4-2.2 7.3-5.5l6-21.2 21.2-6c3.3-.9 5.5-3.9 5.5-7.3s-2.2-6.4-5.5-7.3l-21.2-6zM112.7 316.5C46.7 342.6 0 407 0 482.3C0 498.7 13.3 512 29.7 512H128V448c0-17.7 14.3-32 32-32H288c17.7 0 32 14.3 32 32v64l98.3 0c16.4 0 29.7-13.3 29.7-29.7c0-75.3-46.7-139.7-112.7-165.8C303.9 338.8 265.5 352 224 352s-79.9-13.2-111.3-35.5zM176 448c-8.8 0-16 7.2-16 16v48h32V464c0-8.8-7.2-16-16-16zm96 32a16 16 0 1 0 0-32 16 16 0 1 0 0 32z"/></svg></span><span class="pm-gstep" id="pmGStep">Step 1 of 3</span></div>
+                  <div class="pm-gdots" id="pmGDots"><i></i><i></i><i></i></div>
                 </div>
-                <input class="pm-input" type="text" name="wallet_name" id="inWName"
-                       placeholder="Name on GCash / Maya"
-                       value="{{ form.wallet_name.value|default:'' }}"
-                       autocomplete="name"
-                       {% if locked %}readonly{% endif %}>
-              </div>
-            </div>
-            <div class="pm-field">
-              <label class="pm-lbl">Phone Number</label>
-              <div class="pm-iw">
-                <div class="pm-iw-ico">
-                  <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                <p class="pm-gtext" id="pmGText" aria-live="polite"></p>
+                <div class="pm-gerr" id="pmGErr" role="alert"></div>
+                <div class="pm-gacts">
+                  <button type="button" class="pm-gskip" id="pmGSkip">Skip guide</button>
+                  <button type="button" class="pm-gnext" id="pmGNext"><span id="pmGNextTxt">Next</span><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg></button>
                 </div>
-                <input class="pm-input" type="tel" name="wallet_phone" id="inWPhone"
-                       placeholder="+63 9XX XXX XXXX"
-                       value="{{ form.wallet_phone.value|default:'' }}"
-                       autocomplete="tel"
-                       {% if locked %}readonly{% endif %}>
               </div>
-            </div>
-          </div>
-
-          <!-- Lock notice -->
-          {% if locked %}
-          <div class="pm-lock">
-            <div class="pm-lock-ico">
-              <svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-            </div>
-            <div>
-              <div class="pm-lock-lbl">Locked</div>
-              <div class="pm-lock-sub">Contact staff to update your payout details.</div>
+              <span class="pm-garrow"></span>
             </div>
           </div>
           {% endif %}
-
         </div>
-      </div><!-- /.pm-card -->
-      </div>
+      </form>
 
-      <!-- Actions -->
-      <div class="pm-actions">
-        {% if locked %}
-          <div class="pm-saved-btn">
-            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            Payment Method Saved
-          </div>
-        {% else %}
-          <div class="sp" id="pmSp3">
-          <button class="pm-btn" type="submit" id="pmBtn">
-            <span class="pm-btn-lbl">Save &amp; Continue</span>
-            <div class="pm-btn-spinner"></div>
-          </button>
-          </div>
-        {% endif %}
-      </div>
-
-    </form>
-  </div><!-- /.pm-body -->
-</div><!-- /.pm-page -->
-
-<!-- ══ PAYMENT METHOD GUIDE ══ -->
-<div class="chat-bubble" id="pmCard">
-  <div class="cb-header">
-    <div class="cb-char-wrap" style="background-image:url('{% static 'img/staff-guide.png' %}?v=5')"></div>
-    <span class="cb-step" id="pmStep">STEP 1 OF 3</span>
-    <div class="cb-dots" id="pmDots">
-      <span class="cb-dot on"></span>
-      <span class="cb-dot"></span>
-      <span class="cb-dot"></span>
-    </div>
-  </div>
-  <div class="cb-msg" id="pmBody"></div>
-  <div class="cb-typing" id="pmTyping"><span></span><span></span><span></span></div>
-  <div class="cb-foot">
-    <button class="cb-skip" id="pmSkip">Skip</button>
-    <div class="cb-actions">
-      <button class="cb-next" id="pmNxt">Next &#8594;</button>
-    </div>
+      <footer class="pm-foot">
+        <p><i></i> APEX <span>•</span> <b>v2.2.1</b></p>
+        <p>© 2026 All rights reserved</p>
+      </footer>
+    </main>
   </div>
 </div>
+<template id="pmIcoBank"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M243.4 2.6l-224 96c-14 6-21.8 21-18.7 35.8S16.8 160 32 160v8c0 13.3 10.7 24 24 24H456c13.3 0 24-10.7 24-24v-8c15.2 0 28.3-10.7 31.3-25.6s-4.8-29.9-18.7-35.8l-224-96c-8-3.4-17.2-3.4-25.2 0zM128 224H64V420.3c-.6 .3-1.2 .7-1.8 1.1l-48 32c-11.7 7.8-17 22.4-12.9 35.9S17.9 512 32 512H480c14.1 0 26.5-9.2 30.6-22.7s-1.1-28.1-12.9-35.9l-48-32c-.6-.4-1.2-.7-1.8-1.1V224H384V416H344V224H280V416H232V224H168V416H128V224zM256 64a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg></template>
+<template id="pmIcoWallet"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M16 64C16 28.7 44.7 0 80 0H304c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H80c-35.3 0-64-28.7-64-64V64zM224 448a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zM304 64H80V384H304V64z"/></svg></template>
 
 <script>
-try{localStorage.removeItem('ofl_loan_apply_draft');}catch(e){}
-try{localStorage.removeItem('ofl_quick_amount');}catch(e){}
-try{localStorage.removeItem('ofl_quick_term');}catch(e){}
-/* Block browser back — client must complete payment method */
-history.pushState(null,'',location.href);
-window.addEventListener('popstate',function(){history.pushState(null,'',location.href);});
+/* the application is saved on the server now: drop the copies kept on this phone */
+try{ localStorage.removeItem('ofl_loan_apply_draft'); localStorage.removeItem('ofl_quick_amount'); localStorage.removeItem('ofl_quick_term'); }catch(e){}
 (function(){
-  const BANK = "bank", WALLET = "wallet";
-  const isLocked = {% if locked %}true{% else %}false{% endif %};
+'use strict';
+function $(id){ return document.getElementById(id); }
+function shake(el){ el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(function(){ el.classList.remove('shake'); },450); }
+var SMOOTH=(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)?'auto':'smooth';
+var LOCKED={{ locked|yesno:"true,false" }}, HAS_DRAFT={{ has_draft|yesno:"true,false" }}, BANK='bank', WALLET='wallet';
 
-  const tileBank   = document.getElementById("tileBank");
-  const tileWallet = document.getElementById("tileWallet");
-  const secBank    = document.getElementById("sectionBank");
-  const secWallet  = document.getElementById("sectionWallet");
-  const faceBank   = document.getElementById("faceBank");
-  const faceWallet = document.getElementById("faceWallet");
-  const hdName     = document.getElementById("hdName");
-  const hdSvgBank  = document.getElementById("hdSvgBank");
-  const hdSvgWallet= document.getElementById("hdSvgWallet");
+/* an application is waiting for this step: the back button stays on this page until it is saved */
+if(!LOCKED&&HAS_DRAFT){
+  history.pushState(null,'',location.href);
+  window.addEventListener('popstate',function(){ history.pushState(null,'',location.href); });
+}
 
-  const inBankName = document.getElementById("inBankName");
-  const inBankAcc  = document.getElementById("inBankAcc");
-  const inWName    = document.getElementById("inWName");
-  const inWPhone   = document.getElementById("inWPhone");
+var inBankName=$('inBankName'), inBankAcc=$('inBankAcc'), inWName=$('inWName'), inWPhone=$('inWPhone');
+var secBank=$('sectionBank'), secWallet=$('sectionWallet'), faceBank=$('faceBank'), faceWallet=$('faceWallet');
+var hdName=$('hdName'), hdIco=document.querySelector('#pmSp2 .pm-head-ico'), errEl=$('pmErr');
+var tileBank=$('tileBank'), tileWallet=$('tileWallet'), method=BANK, refresh=function(){};
 
-  const prevBankName = document.getElementById("prevBankName");
-  const prevBankAcc  = document.getElementById("prevBankAcc");
-  const prevLast4    = document.getElementById("prevLast4");
-  const prevWName    = document.getElementById("prevWName");
-  const prevWPhone   = document.getElementById("prevWPhone");
-
-  const pmBtn = document.getElementById("pmBtn");
-
-  function setVal(el, val, fallback){
-    if(!el) return;
-    if(val && val.trim()){ el.textContent = val.trim(); el.classList.remove("dim"); }
-    else { el.textContent = fallback; el.classList.add("dim"); }
-  }
-
-  function updateBankPreview(){
-    const n = inBankName?.value || "";
-    const a = inBankAcc?.value  || "";
-    setVal(prevBankName, n, "Not entered");
-    setVal(prevBankAcc,  a, "—");
-    const last4 = a.replace(/\D/g,"").slice(-4);
-    if(prevLast4){ prevLast4.textContent = last4 || "????"; prevLast4.classList.toggle("dim", !last4); }
-  }
-
-  function updateWalletPreview(){
-    const n = inWName?.value  || "";
-    const p = inWPhone?.value || "";
-    setVal(prevWName,  n, "Not entered");
-    setVal(prevWPhone, p, "+63 — — — — — —");
-  }
-
-  function switchMethod(m){
-    /* Tiles */
-    tileBank   && tileBank.classList.toggle("active",   m === BANK);
-    tileWallet && tileWallet.classList.toggle("active", m === WALLET);
-
-    /* Sections */
-    secBank   && secBank.classList.toggle("active",   m === BANK);
-    secWallet && secWallet.classList.toggle("active", m === WALLET);
-
-    /* Disable inactive fields so they don't POST */
-    if(!isLocked){
-      if(inBankName) inBankName.disabled = (m !== BANK);
-      if(inBankAcc)  inBankAcc.disabled  = (m !== BANK);
-      if(inWName)    inWName.disabled    = (m !== WALLET);
-      if(inWPhone)   inWPhone.disabled   = (m !== WALLET);
-    }
-
-    /* Preview card faces */
-    if(faceBank){
-      faceBank.classList.toggle("is-out", m !== BANK);
-      faceBank.classList.toggle("is-in",  m === BANK);
-    }
-    if(faceWallet){
-      faceWallet.classList.toggle("is-in",  m === WALLET);
-      faceWallet.classList.toggle("is-out", m !== WALLET);
-    }
-
-    /* Card header */
-    if(hdName)     hdName.textContent     = m === BANK ? "Bank Account" : "Mobile Wallet";
-    if(hdSvgBank)  hdSvgBank.style.display  = m === BANK   ? "" : "none";
-    if(hdSvgWallet)hdSvgWallet.style.display = m === WALLET ? "" : "none";
-  }
-
-  /* Detect initial method from pre-filled values */
-  const hasBankData   = !!(inBankName?.value || inBankAcc?.value);
-  const hasWalletData = !!(inWName?.value    || inWPhone?.value);
-  const initMethod = (hasWalletData && !hasBankData) ? WALLET : BANK;
-
-  /* Init */
-  switchMethod(initMethod);
-  updateBankPreview();
-  updateWalletPreview();
-
-  /* Tile clicks */
-  tileBank   && tileBank.addEventListener("click",   () => switchMethod(BANK));
-  tileWallet && tileWallet.addEventListener("click", () => switchMethod(WALLET));
-
-  /* Live preview */
-  inBankName && inBankName.addEventListener("input", updateBankPreview);
-  inBankAcc  && inBankAcc.addEventListener("input",  updateBankPreview);
-  inWName    && inWName.addEventListener("input",    updateWalletPreview);
-  inWPhone   && inWPhone.addEventListener("input",   updateWalletPreview);
-
-  /* Submit loading state */
-  pmBtn && pmBtn.closest("form").addEventListener("submit", function(){
-    if(pmBtn){ pmBtn.classList.add("is-loading"); pmBtn.disabled = true; }
+function setVal(el,v,fallback){ v=(v||'').trim(); el.textContent=v||fallback; el.classList.toggle('dim',!v); }
+function preview(){
+  setVal($('prevBankName'),inBankName.value,'Not entered');
+  setVal($('prevBankAcc'),inBankAcc.value,'—');
+  var last4=inBankAcc.value.replace(/\D/g,'').slice(-4), l4=$('prevLast4');
+  l4.textContent=last4||'????'; l4.classList.toggle('dim',!last4);
+  setVal($('prevWName'),inWName.value,'Not entered');
+  setVal($('prevWPhone'),inWPhone.value,'+63 — — — — — —');
+}
+function switchMethod(m){
+  method=m;
+  [ [tileBank,BANK],[tileWallet,WALLET] ].forEach(function(p){
+    if(!p[0]) return;
+    p[0].classList.toggle('active',m===p[1]); p[0].setAttribute('aria-checked',String(m===p[1]));
   });
+  secBank.classList.toggle('active',m===BANK); secWallet.classList.toggle('active',m===WALLET);
+  /* only the chosen method is sent: the server accepts exactly one */
+  if(!LOCKED){ inBankName.disabled=inBankAcc.disabled=(m!==BANK); inWName.disabled=inWPhone.disabled=(m!==WALLET); }
+  faceBank.classList.toggle('is-out',m!==BANK); faceWallet.classList.toggle('is-out',m!==WALLET);
+  hdName.textContent=m===BANK?'Bank Account':'Mobile Wallet';
+  hdIco.innerHTML=$(m===BANK?'pmIcoBank':'pmIcoWallet').innerHTML;
+  setErr('');
+}
+function setErr(m){ errEl.textContent=m||''; errEl.classList.toggle('on',!!m); }
+/* bring a field into view (above the keyboard) when it is not already */
+function showField(el){
+  var vv=window.visualViewport, vTop=vv?vv.offsetTop:0, vh=vv?vv.height:window.innerHeight, r=el.getBoundingClientRect();
+  if(r.top-vTop<80||r.bottom-vTop>vh-24) window.scrollBy({top:r.top-vTop-96,behavior:SMOOTH});
+}
+function fields(){ return method===BANK?[ [inBankName,'account name'],[inBankAcc,'account number'] ]:[ [inWName,'wallet account name'],[inWPhone,'phone number'] ]; }
+function missing(){ var f=fields(); for(var i=0;i<f.length;i++){ if(!f[i][0].value.trim()) return f[i]; } return null; }
 
-  /* ── Screenshot protection ── */
-  if(isLocked){
-    const previewMask  = document.getElementById("previewMask");
-    const cardMask     = document.getElementById("cardMask");
-    const previewTimer = document.getElementById("previewTimer");
-    const cardTimer    = document.getElementById("cardTimer");
-    const masks        = [previewMask, cardMask].filter(Boolean);
-    const timers       = [previewTimer, cardTimer].filter(Boolean);
-    const REVEAL_SEC   = 8;
-    let revealTO = null;
-    let countIV  = null;
-    let secLeft  = REVEAL_SEC;
+/* start on the method that already has details (wallet only when the bank is empty) */
+var hasBank=!!(inBankName.value||inBankAcc.value), hasWallet=!!(inWName.value||inWPhone.value);
+switchMethod(hasWallet&&!hasBank?WALLET:BANK);
+preview();
+[inBankName,inBankAcc,inWName,inWPhone].forEach(function(el){
+  el.addEventListener('input',function(){
+    el.classList.remove('is-error');
+    if(errEl.textContent){ var m=missing(); setErr(m?'Please enter your '+m[1]+'.':''); }
+    preview(); refresh();
+  });
+});
 
-    function reBlur(){
-      masks.forEach(m => m.classList.remove("is-revealed"));
-      timers.forEach(t => { t.style.display = "none"; t.textContent = ""; });
-      clearTimeout(revealTO);
-      clearInterval(countIV);
-    }
+/* ── Screenshot protection (saved details) ── */
+if(LOCKED){
+  var masks=[$('previewMask'),$('cardMask')], timers=[$('previewTimer'),$('cardTimer')], hideTimer=0;
+  var covers=[$('pmPreview'),$('pmSp2')];
+  var hide=function(){
+    clearTimeout(hideTimer);
+    masks.forEach(function(m){ m.classList.remove('is-revealed'); });
+    covers.forEach(function(c){ c.classList.add('is-covered'); });
+    timers.forEach(function(t){ t.classList.remove('is-running'); });
+  };
+  var show=function(){
+    masks.forEach(function(m){ m.classList.add('is-revealed'); });
+    covers.forEach(function(c){ c.classList.remove('is-covered'); });
+    timers.forEach(function(t){ t.classList.remove('is-running'); void t.offsetWidth; t.classList.add('is-running'); });
+    clearTimeout(hideTimer); hideTimer=setTimeout(hide,8000);
+  };
+  masks.forEach(function(m){ m.addEventListener('click',show); });
+  /* cover them again the moment the user leaves the page or switches apps */
+  document.addEventListener('visibilitychange',function(){ if(document.hidden) hide(); });
+  window.addEventListener('blur',hide);
+  window.addEventListener('pagehide',hide);
+  $('pmForm').addEventListener('keydown',function(e){ if(e.key==='Enter'&&e.target.tagName==='INPUT') e.preventDefault(); });
+  var useBtn=$('pmUseBtn');
+  if(useBtn) $('pmForm').addEventListener('submit',function(e){
+    if(useBtn.classList.contains('is-loading')){ e.preventDefault(); return; }
+    useBtn.classList.add('is-loading');
+  });
+  window.addEventListener('pageshow',function(e){ if(e.persisted&&useBtn) useBtn.classList.remove('is-loading'); });
+  return;
+}
 
-    function startReveal(){
-      masks.forEach(m => m.classList.add("is-revealed"));
-      secLeft = REVEAL_SEC;
-      timers.forEach(t => { t.textContent = secLeft + "s"; t.style.display = "block"; });
-      clearTimeout(revealTO);
-      clearInterval(countIV);
-      countIV  = setInterval(function(){
-        secLeft--;
-        timers.forEach(t => { t.textContent = secLeft + "s"; });
-        if(secLeft <= 0){ reBlur(); }
-      }, 1000);
-      revealTO = setTimeout(reBlur, REVEAL_SEC * 1000);
-    }
-
-    masks.forEach(m => m.addEventListener("click", startReveal));
-
-    /* Re-blur the instant the user leaves the page / switches apps */
-    document.addEventListener("visibilitychange", function(){
-      if(document.hidden) reBlur();
-    });
-    window.addEventListener("blur", reBlur);
-
-    /* Prevent text selection on sensitive fields */
-    document.querySelectorAll(".pm-section input").forEach(function(el){
-      el.style.userSelect = "none";
-      el.style.webkitUserSelect = "none";
-    });
+{% if not locked %}
+/* ── Choosing + saving ── */
+var form=$('pmForm'), btn=$('pmBtn'), btnTxt=$('pmBtnTxt'), sending=false, guide=null;
+refresh=function(){ btn.classList.toggle('is-ready',!missing()); if(guide) guide.update(); };
+tileBank.addEventListener('click',function(){ switchMethod(BANK); refresh(); });
+tileWallet.addEventListener('click',function(){ switchMethod(WALLET); refresh(); });
+document.querySelector('.pm-tiles').addEventListener('keydown',function(e){
+  if(!/^Arrow/.test(e.key)) return;
+  e.preventDefault();
+  var next=method===BANK?tileWallet:tileBank; next.focus(); next.click();
+});
+/* Enter moves to the next field instead of sending the form */
+form.addEventListener('keydown',function(e){
+  if(e.key!=='Enter'||e.isComposing||e.target.tagName!=='INPUT') return;
+  e.preventDefault();
+  var f=fields(), i=f.map(function(x){ return x[0]; }).indexOf(e.target);
+  if(i===0) f[1][0].focus(); else e.target.blur();
+});
+form.addEventListener('submit',function(e){
+  if(sending){ e.preventDefault(); return; }
+  var m=missing();
+  if(m){
+    e.preventDefault();
+    m[0].classList.add('is-error'); setErr('Please enter your '+m[1]+'.'); shake($('pmSp2'));
+    m[0].focus({preventScroll:true});
+    var r=m[0].getBoundingClientRect(), vv=window.visualViewport, top=r.top-(vv?vv.offsetTop:0)-110;
+    if(Math.abs(top)>4) window.scrollBy({top:top,behavior:SMOOTH});
+    return;
   }
-})();
+  sending=true; btn.classList.add('is-loading'); btnTxt.textContent='Saving…';
+});
+window.addEventListener('pageshow',function(e){ if(e.persisted){ sending=false; btn.classList.remove('is-loading'); btnTxt.textContent='Save & Continue'; } });
 
-/* ══ PAYMENT METHOD GUIDE ══ */
-(function(){
-  if(localStorage.getItem('ofl_onboard')!=='pm') return;
-  localStorage.setItem('ofl_onboard','done');
-  var _ico=[
-    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="22" r="22" fill="#FF8C00"/><circle cx="15" cy="18" r="3.5" fill="white"/><circle cx="29" cy="18" r="3.5" fill="white"/><path d="M13 28 Q22 35 31 28" stroke="white" stroke-width="2.8" fill="none" stroke-linecap="round"/></svg>',
-    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><rect x="4" y="10" width="36" height="24" rx="4" fill="#0A2463"/><rect x="4" y="16" width="36" height="6" fill="white" opacity="0.2"/><rect x="8" y="26" width="14" height="3" rx="1.5" fill="#FF8C00"/><circle cx="34" cy="27.5" r="4" fill="#FF8C00"/></svg>',
-    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="14" r="8" fill="#0A2463"/><path d="M6 40 Q6 30 22 30 Q38 30 38 40" fill="#0A2463"/></svg>',
-    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="22" r="22" fill="#FF8C00"/><polygon points="22,5 26.5,16.5 39,16.5 29.5,24.5 33,36.5 22,29.5 11,36.5 14.5,24.5 5,16.5 17.5,16.5" fill="#0A2463"/></svg>'
-  ];
+/* ── Guide: continues the first-loan guide from the application page ── */
+guide=(function(){
+  var onboard=null; try{ onboard=localStorage.getItem('ofl_onboard'); }catch(e){}
+  if(onboard!=='pm') return null;
+  try{ localStorage.setItem('ofl_onboard','done'); }catch(e){}
+  var col=$('pmCol'), g=$('pmGuide'), gText=$('pmGText'), gErr=$('pmGErr'), gStep=$('pmGStep');
+  var gNext=$('pmGNext'), gNextTxt=$('pmGNextTxt'), gDots=$('pmGDots').children;
   var STEPS=[
-    null,
-    {sp:'pmSp1',inp:null,step:'Step 1 of 3',label:'STEP 1 OF 3',next:'Next →',
-     body:_ico[1]+' Choose how you\'d like to receive your funds — tap <b>Bank</b> or <b>Wallet</b> (GCash/Maya).',
-     validate:function(){return !!(document.querySelector('.pm-tile.active'));},
-     autoOn:function(done){
-       var ts=document.querySelectorAll('.pm-tile');
-       function h(){setTimeout(done,600);ts.forEach(function(t){t.removeEventListener('click',h);});}
-       ts.forEach(function(t){t.addEventListener('click',h);});
-       return function(){ts.forEach(function(t){t.removeEventListener('click',h);});};
-     }},
-    {sp:'pmSp2',inp:null,step:'Step 2 of 3',label:'STEP 2 OF 3',next:'Next →',
-     body:_ico[2]+' Enter your <b>account name</b> and <b>account number</b> carefully — this is where your funds will be sent.',
-     validate:function(){
-       var sb=document.getElementById('sectionBank'),sw=document.getElementById('sectionWallet');
-       var bVis=sb&&sb.offsetParent!==null;
-       if(bVis){
-         var bn=document.getElementById('inBankName'),ba=document.getElementById('inBankAcc');
-         if(!bn||!bn.value.trim())return false;
-         if(!ba||!ba.value.trim())return false;
-       } else {
-         var wn=document.getElementById('inWName'),wp=document.getElementById('inWPhone');
-         if(!wn||!wn.value.trim())return false;
-         if(!wp||!wp.value.trim())return false;
-       }
-       return true;
-     }},
-    {sp:'pmSp3',inp:null,step:'Step 3 of 3',label:'STEP 3 OF 3',next:'Save & Continue →',
-     body:_ico[3]+' All done! Tap <b>Save &amp; Continue</b> to finalize your payment method and complete your application.',
-     validate:function(){return true;},
-     isLast:true,
-     onNext:function(){var b=document.getElementById('pmBtn');if(b)b.click();}}
+    { el:$('pmSp1'), below:true,
+      html:'Choose how you\'d like to receive your money — tap <b>Bank</b> or <b>Wallet</b> (GCash / Maya).',
+      check:function(){ return null; } },
+    { el:$('pmSp2'),
+      html:'Enter your <b>account name</b> and <b>account number</b> carefully — this is where your loan will be sent.',
+      ready:true,
+      check:function(){ var m=missing(); return m?{msg:'Please enter your '+m[1]+'.',focus:m[0]}:null; } },
+    { el:$('pmSp3'), next:'Save & Continue',
+      html:'All done! Tap <b>Save &amp; Continue</b> to save your payment method and send your application.',
+      check:function(){ return null; } }
   ];
-  var N=3,cur=1,active=false,cleanup=null;
-  var ov=document.createElement('div');
-  ov.style.cssText='position:fixed;inset:0;z-index:9998;display:none;pointer-events:none;';
-  ov.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%"><path fill="rgba(6,21,64,.82)" fill-rule="evenodd"/></svg>';
-  document.body.appendChild(ov);
-  var _card=document.getElementById('pmCard');
-  if(_card)document.body.appendChild(_card);
-  function $(id){return document.getElementById(id);}
-  function posOverlay(sp){
-    var path=ov.querySelector('path');if(!path)return;
-    var vw=window.innerWidth,vh=window.innerHeight;
-    if(!sp){path.setAttribute('d','M0 0H'+vw+'V'+vh+'H0Z');}
-    else{
-      var r=sp.getBoundingClientRect(),pad=10;
-      var l=Math.max(0,r.left-pad),t=Math.max(0,r.top-pad);
-      var rr=Math.min(vw,r.right+pad),rb=Math.min(vh,r.bottom+pad);
-      path.setAttribute('d','M0 0H'+vw+'V'+vh+'H0Z M'+l+' '+t+'H'+rr+'V'+rb+'H'+l+'Z');
-    }
-    ov.style.display='block';
+  var cur=0, active=false, y=0, textTimer=0, revealTimer=0, autoTimer=0;
+  function targetY(i){
+    var s=STEPS[i], c=col.getBoundingClientRect(), r=s.el.getBoundingClientRect(), h=g.offsetHeight, gap=14;
+    var above=r.top-c.top-gap-h, up=!s.below&&above>=0;
+    g.classList.toggle('is-above',up);
+    return Math.round(up?above:r.bottom-c.top+gap);
   }
-  function hideOverlay(){ov.style.display='none';}
-  function posBubble(n){
-    var card=$('pmCard');if(!card||n<1||n>N)return;
-    var sp=$(STEPS[n].sp);if(!sp)return;
-    var r=sp.getBoundingClientRect(),ww=window.innerWidth,wh=window.innerHeight;
-    var cW=card.offsetWidth||320,cH=card.offsetHeight||230,gap=14,up=false,top;
-    top=r.top-cH-gap;
-    if(top<10){top=r.bottom+gap;up=true;if(top+cH>wh-10){top=Math.max(10,wh-cH-10);}}
-    var left=r.left+r.width/2-cW/2;
-    left=Math.max(10,Math.min(left,ww-cW-10));
-    card.style.top=top+'px';card.style.left=left+'px';card.style.bottom='auto';card.style.right='auto';
-    card.classList.toggle('arrow-dn',!up);
+  function setTransform(lift){ g.style.transform='translate3d(0,'+(y+(lift?15:0))+'px,0)'+(lift?' scale(.95)':''); }
+  function place(){
+    if(!active) return; y=targetY(cur); setTransform(false);
+    /* a guide below the last card gets room at the end of the page, so its buttons can be reached */
+    var over=y+g.offsetHeight-col.offsetHeight; col.style.marginBottom=over>0?(over+16)+'px':'';
   }
-  function typeBody(el,html,spd){
-    var icon='',se=html.indexOf('</svg>');
-    if(se!==-1){icon=html.slice(0,se+6);html=html.slice(se+6);}
-    el.innerHTML=icon;var n=0;
-    (function tick(){
-      if(n>html.length)return;
-      if(html[n]==='<'){var e=html.indexOf('>',n);n=(e!==-1)?e+1:n+1;}else{n++;}
-      el.innerHTML=icon+html.slice(0,n);setTimeout(tick,spd||24);
-    })();
+  function setGErr(m){ gErr.textContent=m||''; gErr.classList.toggle('on',!!m); }
+  function update(){
+    if(!active) return;
+    var p=STEPS[cur].check();
+    gNext.classList.toggle('is-ready',!p&&!!STEPS[cur].ready);
+    if(gErr.textContent) setGErr(p?p.msg:'');   /* follow what is still missing */
   }
-  function goStep(n){
-    var card=$('pmCard');if(!card)return;
-    card.style.opacity='0';
-    var typ=$('pmTyping'),msg=$('pmBody');
-    if(typ)typ.style.display='flex';
-    if(msg){msg.innerHTML='';msg.style.display='none';}
-    for(var i=1;i<=N;i++){var si=STEPS[i];if(si){var ei=$(si.sp);if(ei)ei.classList.remove('shake');}}
-    hideOverlay();
-    setTimeout(function(){
-      if(n<1||n>N){tourEnd();return;}
-      cur=n;var s=STEPS[n];
-      var sp=$(s.sp);
-      if(sp){
-        sp.scrollIntoView({block:'center'});
-        posOverlay(sp);
-      }
-      var stepEl=$('pmStep'),lbl=$('pmLabel'),nxt=$('pmNxt'),bck=$('pmBck'),dots=$('pmDots');
-      if(stepEl)stepEl.textContent=s.step;
-      if(lbl)lbl.textContent=s.label;
-      if(nxt)nxt.textContent=s.next;
-
-      if(dots){var ds=dots.querySelectorAll('.cb-dot');ds.forEach(function(d,i){d.className='cb-dot'+(i<n?' on':'');});}
-      if(typ)typ.style.display='none';
-      if(msg)msg.style.display='block';
-      card.style.opacity='1';
-      if(cleanup){cleanup();cleanup=null;}
-      if(s.autoOn)cleanup=s.autoOn(function(){advance();});
-      if(sp)setTimeout(function(){posBubble(n);},300);
-      if(msg)typeBody(msg,s.body,24);
-      if(s.inp){var inp=$(s.inp);if(inp)setTimeout(function(){inp.focus();},400);}
-    },350);
+  function render(i){
+    var s=STEPS[i];
+    gStep.textContent='Step '+(i+1)+' of '+STEPS.length;
+    for(var k=0;k<gDots.length;k++) gDots[k].className=(k===i)?'on':(k<i?'done':'');
+    gText.innerHTML=s.html; gNextTxt.textContent=s.next||'Next'; setGErr('');
+    update();
   }
-  function advance(){
-    if(cleanup){cleanup();cleanup=null;}
-    var s=STEPS[cur];if(!s)return;
-    if(s.validate&&!s.validate()){
-      var sp=$(s.sp);
-      if(sp){sp.classList.remove('shake');void sp.offsetWidth;sp.classList.add('shake');setTimeout(function(){sp.classList.remove('shake');},500);}
+  function reveal(){
+    clearTimeout(revealTimer);
+    revealTimer=setTimeout(function(){
+      if(!active) return;
+      var vv=window.visualViewport, vTop=vv?vv.offsetTop:0, vh=vv?vv.height:window.innerHeight, m=16, room=vh-2*m;
+      var c=col.getBoundingClientRect(), r=STEPS[cur].el.getBoundingClientRect();
+      var gTop=c.top+y-vTop-8, gBot=c.top+y+g.offsetHeight-vTop+8;
+      var top=Math.min(gTop,r.top-vTop), bot=Math.max(gBot,r.bottom-vTop), d=0;
+      if(bot-top<=room){ if(top<m) d=top-m; else if(bot>vh-m) d=bot-(vh-m); }
+      else d=g.classList.contains('is-above')?gTop-m:gBot-(vh-m);
+      if(Math.abs(d)>4) window.scrollBy({top:d,behavior:SMOOTH});
+    },80);
+  }
+  function goStep(i,quiet){
+    clearTimeout(autoTimer);
+    cur=i;
+    var a=document.activeElement;
+    if(!quiet&&a&&a.tagName==='INPUT'&&!STEPS[i].el.contains(a)) a.blur();
+    gText.style.opacity='0';
+    clearTimeout(textTimer);
+    stepping=true;
+    textTimer=setTimeout(function(){ render(i); place(); gText.style.opacity=''; if(!quiet) reveal(); setTimeout(function(){ stepping=false; },250); },120);
+  }
+  function start(){
+    active=true; g.hidden=false; render(cur); y=targetY(cur);
+    g.style.transition='none'; setTransform(true); void g.offsetWidth; g.style.transition='';
+    g.classList.add('is-on'); setTransform(false); reveal();
+  }
+  function end(){
+    if(!active) return;
+    col.style.marginBottom='';
+    active=false; clearTimeout(autoTimer); g.classList.remove('is-on'); setTransform(true);
+    setTimeout(function(){ if(!active) g.hidden=true; },450);
+  }
+  function next(){
+    var s=STEPS[cur], p=s.check();
+    if(p){
+      setGErr(p.msg); shake(s.el); place();
+      /* a field to fix: show that field (above the keyboard), not the guide */
+      if(p.focus){ p.focus.focus({preventScroll:true}); p.focus.classList.add('is-error'); showField(p.focus); } else reveal();
       return;
     }
-    if(s.isLast){tourEnd();if(s.onNext)s.onNext();return;}
-    goStep(cur+1);
+    if(cur<STEPS.length-1) return goStep(cur+1);
+    end();
+    if(form.requestSubmit) form.requestSubmit(btn); else btn.click();
   }
-  function tourBack(){if(cur>1){goStep(cur-1);}else{tourEnd();}}
-  function tourEnd(){
-    active=false;if(cleanup){cleanup();cleanup=null;}
-    hideOverlay();
-    var card=$('pmCard');
-    if(card){card.style.opacity='0';setTimeout(function(){card.style.display='none';},250);}
+  g.addEventListener('mousedown',function(e){ if(e.target.closest('button')) e.preventDefault(); });
+  /* the second tap of a double tap must not land on what was under the guide */
+  var blockUntil=0, blockRect=null;
+  function armBlock(){ blockUntil=performance.now()+450; blockRect=g.querySelector('.pm-gbody').getBoundingClientRect(); }
+  /* the press, not just the click: a field under it must not get focus (keyboard) either */
+  function swallow(e){
+    if(!e.isTrusted||performance.now()>=blockUntil||g.contains(e.target)) return;
+    var t=(e.changedTouches&&e.changedTouches[0])||e, r=blockRect;   /* only where the guide was when it was tapped */
+    if(t.clientX>=r.left-8&&t.clientX<=r.right+8&&t.clientY>=r.top-8&&t.clientY<=r.bottom+8){ e.preventDefault(); e.stopPropagation(); }
   }
-  var nb=$('pmNxt'),sk=$('pmSkip');
-  if(nb)nb.addEventListener('click',advance);
-  if(sk)sk.addEventListener('click',tourEnd);
-  window.addEventListener('resize',function(){
-    if(active){var sp=$(STEPS[cur].sp);if(sp)posOverlay(sp);posBubble(cur);}
+  ['click','mousedown','touchend'].forEach(function(t){ col.addEventListener(t,swallow,{capture:true,passive:false}); });
+  /* while it glides to the next step, a second tap must not count for the new step */
+  var stepping=false;
+  $('pmGSkip').addEventListener('click',function(){ armBlock(); end(); });
+  gNext.addEventListener('click',function(){ if(stepping) return; armBlock(); next(); });
+  /* the guide follows the user; a method tap moves on to the details by itself */
+  [tileBank,tileWallet].forEach(function(t){
+    t.addEventListener('click',function(){
+      if(!active||cur!==0) return;
+      clearTimeout(autoTimer); autoTimer=setTimeout(function(){ if(active&&cur===0) goStep(1); },450);
+    });
   });
-  setTimeout(function(){
-    active=true;var card=$('pmCard');
-    if(card)card.style.display='block';
-    goStep(1);
-  },500);
+  [inBankName,inBankAcc,inWName,inWPhone].forEach(function(el){ el.addEventListener('focus',function(){ if(active&&cur!==1) goStep(1,true); }); });
+  if(window.ResizeObserver){ var ro=new ResizeObserver(function(){ place(); }); ro.observe(col); ro.observe(g); }
+  /* turning the phone: bring the guide back if it ended up off screen */
+  var lastW=window.innerWidth;
+  window.addEventListener('resize',function(){
+    place();
+    if(!active||window.innerWidth===lastW) return;
+    lastW=window.innerWidth;
+    var top=col.getBoundingClientRect().top+y;
+    if(top<0||top+g.offsetHeight>window.innerHeight) reveal();
+  });
+  setTimeout(start,450);
+  return { update:update };
+})();
+refresh();
+{% endif %}
 })();
 </script>
 {% endblock %}

@@ -1,1387 +1,1262 @@
 {% extends "base.html" %}
 {% load static %}
+{% block title %}Loan Application — APEX{% endblock %}
 
-{% block title %}Loan Application - Overseas FilipinoLoan{% endblock %}
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+html body,html body *,html body button,html body input,
+html body select,html body textarea,html body a{
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif!important;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <style>
-/* ===== OFL Loan Application — Navy / Orange / White Culture ===== */
-:root {
-  --navy:#0A2463; --navy-dk:#061540; --navy-lt:#1a3a8a; --navy-mid:#0d2b75;
-  --orange:#FF8C00; --orange-dk:#D97200; --orange-lt:#FFA733;
-  --bg:#f0f3f9; --card:#ffffff;
-  --ink:#0d1b3e; --ink2:#5a6680; --ink3:#9aa3b8; --line:#e6eaf4;
-  --green:#16a34a; --red:#dc2626; --red-dk:#b91c1c;
+/* ════════════════════════════════════════════
+   APEX LOAN APPLICATION — Deep Forest · Glass Guide
+   Same look in light and dark theme
+════════════════════════════════════════════ */
+:root{
+  --la-dark:#0B1C14;--la-primary:#133224;--la-green:#1B4332;--la-green-dk:#122e22;--la-sage:#E8F3ED;--la-accent:#F97316;
+  --la-ink:#111827;--la-ink2:#374151;--la-mut:#9ca3af;--la-mut2:#6b7280;--la-line:#f3f4f6;--la-line2:#e5e7eb;
+  --la-glass:rgba(17,42,31,.85);--la-float:0 20px 40px -10px rgba(0,0,0,.1);--la-ease:cubic-bezier(.22,1,.36,1);
 }
+#pageRoot.wrap{max-width:100%!important;width:100%!important;padding:0!important;display:block!important;}
+html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!important;overflow-x:clip!important;background:#e5e7eb!important;color:#1f2937!important;-webkit-font-smoothing:antialiased;}
+.la a,.la button,.la label{-webkit-tap-highlight-color:transparent;}
+.la svg,.la-vwrap svg{display:block;width:auto;height:1em;fill:currentColor;flex-shrink:0;}
 
-html:not([data-theme="dark"]) body { background:var(--bg) !important; }
-html, body { width:100%; overflow-x:hidden; }
-html body, html body * {
-  font-family:"Lato","Open Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif !important;
+/* ── App shell (no overflow:hidden: the guide must never be clipped) ── */
+.la{min-height:100vh;min-height:100dvh;display:flex;justify-content:center;}
+.la-app{position:relative;width:100%;max-width:420px;min-height:100vh;min-height:100dvh;background:#f9fafb;padding-bottom:calc(32px + env(safe-area-inset-bottom,0px));}
+
+/* ── Header ── */
+.la-top{
+  position:relative;overflow:hidden;padding:24px 24px 100px;border-radius:0 0 2.5rem 2.5rem;
+  background:linear-gradient(to bottom,var(--la-dark),var(--la-primary));box-shadow:inset 0 2px 4px rgba(0,0,0,.05);
 }
-.wrap { padding-top:0 !important; }
-
-/* dark mode */
-html[data-theme="dark"] .la-card  { background:#0a132e !important; border-color:rgba(255,255,255,.08) !important; }
-html[data-theme="dark"] .la-card-title { color:#eaf2ff !important; }
-html[data-theme="dark"] .la-card-sub   { color:rgba(234,242,255,.55) !important; }
-html[data-theme="dark"] .type-tile { background:rgba(255,255,255,.04) !important; border-color:rgba(255,255,255,.10) !important; }
-html[data-theme="dark"] .type-tile:hover { background:rgba(255,255,255,.07) !important; }
-html[data-theme="dark"] .type-tile-name { color:#eaf2ff !important; }
-html[data-theme="dark"] .type-tile-desc { color:rgba(234,242,255,.45) !important; }
-html[data-theme="dark"] .type-tile-ico { background:rgba(255,255,255,.08) !important; border-color:rgba(255,255,255,.15) !important; }
-html[data-theme="dark"] .type-tile:has(input:checked) { background:linear-gradient(135deg,var(--orange-lt),var(--orange-dk)) !important; border-color:var(--orange-dk) !important; }
-html[data-theme="dark"] input[type="text"],
-html[data-theme="dark"] input[type="number"],
-html[data-theme="dark"] input[type="tel"],
-html[data-theme="dark"] input[type="email"],
-html[data-theme="dark"] textarea,
-html[data-theme="dark"] select { background:rgba(255,255,255,.06) !important; border-color:rgba(255,255,255,.14) !important; color:#eaf2ff !important; }
-html[data-theme="dark"] .field label { color:rgba(234,242,255,.55) !important; }
-html[data-theme="dark"] .section-title { color:var(--orange-lt) !important; }
-html[data-theme="dark"] .summary .k { color:rgba(234,242,255,.65) !important; }
-html[data-theme="dark"] .summary .v { color:#fff !important; -webkit-text-fill-color:#fff !important; }
-html[data-theme="dark"] .summary .row:last-child .v { color:var(--orange-lt) !important; -webkit-text-fill-color:var(--orange-lt) !important; }
-html[data-theme="dark"] .idbox { background:rgba(255,255,255,.04) !important; border-color:rgba(255,255,255,.15) !important; }
-html[data-theme="dark"] .sig-canvas { background:#0d1b3e !important; }
-
-/* keyframes */
-@keyframes laFadeUp  { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-@keyframes laShimmer { 0%{transform:translateX(-120%) skewX(-15deg)} 100%{transform:translateX(300%) skewX(-15deg)} }
-@keyframes laPulse   { 0%,100%{box-shadow:0 8px 24px rgba(255,140,0,.38),inset 0 1px 0 rgba(255,255,255,.18)} 50%{box-shadow:0 12px 32px rgba(255,140,0,.60),inset 0 1px 0 rgba(255,255,255,.18)} }
-@keyframes dotBlink  { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.45;transform:scale(.65)} }
-@keyframes orbFloat  { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-@keyframes ctaSpin   { to{transform:rotate(360deg)} }
-
-/* ─── HERO ─── */
-.la-hero {
-  position:relative;
-  background:linear-gradient(150deg,var(--navy-dk) 0%,var(--navy) 52%,var(--navy-mid) 100%);
-  padding:max(22px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-left)) 30px max(18px,env(safe-area-inset-left));
-  margin:0 -14px; overflow:hidden;
+.la-glow{position:absolute;border-radius:50%;pointer-events:none;}
+.la-glow-a{top:0;right:0;width:256px;height:256px;background:rgba(255,255,255,.05);filter:blur(64px);transform:translate(33%,-33%);}
+.la-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(249,115,22,.1);filter:blur(40px);transform:translate(-25%,25%);}
+.la-bar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.la-glass-dark{background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);}
+.la-back{
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;
+  color:#fff!important;text-decoration:none!important;transition:background-color .15s,transform .15s;
 }
-.la-hero-orb  { position:absolute; top:-55px; right:-55px; width:210px; height:210px; border-radius:50%; background:radial-gradient(circle,rgba(255,140,0,.28) 0%,transparent 68%); animation:orbFloat 7s ease-in-out infinite; pointer-events:none; }
-.la-hero-orb2 { position:absolute; bottom:-40px; left:-40px; width:170px; height:170px; border-radius:50%; background:radial-gradient(circle,rgba(26,58,138,.50) 0%,transparent 70%); pointer-events:none; }
-.la-dot-grid  { position:absolute; inset:0; z-index:0; background-image:radial-gradient(rgba(255,255,255,.06) 1px,transparent 1px); background-size:22px 22px; pointer-events:none; }
+.la-back:hover{background-color:rgba(255,255,255,.1);}
+.la-back:active{transform:scale(.94);}
+.la-badge{display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.04em;color:#fff;}
+.la-badge svg{font-size:11px;color:#FDBA74;}
+.la-hero{position:relative;z-index:1;}
+.la-eyebrow{margin:0 0 6px;font-size:11px;line-height:16px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#FDBA74;}
+.la-hero h1{margin:0 0 6px;font-size:30px;line-height:36px;font-weight:800;letter-spacing:-.025em;color:#fff;}
+.la-hero p{margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(232,243,237,.75);}
 
-.la-nav { position:relative; z-index:4; display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
-.la-nav-back { width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,.11); border:1px solid rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; text-decoration:none; flex-shrink:0; transition:background .18s; }
-.la-nav-back:hover { background:rgba(255,255,255,.22); }
-.la-nav-back svg { width:16px; height:16px; fill:none; stroke:#fff; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
-
-.la-hero-eyebrow { position:relative; z-index:3; font-size:10px; font-weight:900; color:rgba(255,255,255,.50); letter-spacing:.24em; text-transform:uppercase; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
-.la-hero-eyebrow::before { content:""; display:block; width:24px; height:2px; background:var(--orange); border-radius:1px; }
-.la-hero-title { position:relative; z-index:3; font-size:28px; font-weight:900; color:#fff; letter-spacing:-.4px; line-height:1.05; margin:0 0 6px; }
-.la-hero-sub   { position:relative; z-index:3; font-size:13px; color:rgba(255,255,255,.50); font-weight:600; }
-
-/* ─── PAGE ─── */
-.la-page { width:min(540px,96vw); max-width:540px; margin:0 auto; padding:0 14px 70px; box-sizing:border-box; }
-.la-body { margin-top:-22px; }
-
-/* ─── LOAN PREVIEW / REMINDER CARD ─── */
-.la-preview {
-  overflow:hidden; border-radius:20px; margin-bottom:14px;
-  background:#fff; border:1px solid var(--line);
-  box-shadow:0 8px 28px rgba(10,36,99,.13), 0 2px 6px rgba(0,0,0,.06);
-  opacity:0; animation:laFadeUp .42s ease-out .06s both;
+/* journey: Calculator → Application → Payment */
+.la-flow{position:relative;z-index:1;display:grid;grid-template-columns:auto 1fr auto 1fr auto;align-items:start;margin:20px 0 0;padding:0;list-style:none;}
+.la-flow li{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.la-flow li i{
+  width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-style:normal;
+  font-size:11px;font-weight:800;color:rgba(255,255,255,.6);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
 }
-.lpb-top {
-  position:relative; overflow:hidden;
-  background:linear-gradient(130deg,var(--orange-lt) 0%,var(--orange) 52%,var(--orange-dk) 100%);
-  padding:14px 18px 13px;
+.la-flow li i svg{font-size:10px;}
+.la-flow li span{font-size:10.5px;line-height:14px;font-weight:700;letter-spacing:.03em;color:rgba(232,243,237,.55);white-space:nowrap;}
+.la-flow li.is-done i{color:var(--la-green);background:var(--la-sage);border-color:var(--la-sage);}
+.la-flow li.is-now i{color:#fff;background:var(--la-accent);border-color:var(--la-accent);box-shadow:0 0 0 4px rgba(249,115,22,.22);}
+.la-flow li.is-done span,.la-flow li.is-now span{color:#fff;}
+.la-flow li.la-fl{display:block;height:2px;margin:12px 8px 0;border-radius:2px;background:rgba(255,255,255,.14);}
+.la-flow li.la-fl.is-done{background:rgba(232,243,237,.7);}
+
+/* ── Cards ── */
+.la-main{position:relative;z-index:2;margin-top:-72px;padding:0 20px;display:flex;flex-direction:column;gap:20px;}
+.la-form,.la-col{display:flex;flex-direction:column;gap:20px;}
+.la-col{position:relative;}
+.la-card{position:relative;padding:24px;border-radius:2rem;background:#fff;border:1px solid var(--la-line);box-shadow:var(--la-float);}
+.la-head{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+.la-head-ico{width:48px;height:48px;border-radius:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--la-primary);background:linear-gradient(to bottom right,var(--la-sage),#fff);border:1px solid #fff;box-shadow:0 1px 2px rgba(0,0,0,.05);}
+.la-head h2{margin:0;font-size:16px;line-height:22px;font-weight:700;color:var(--la-ink);}
+.la-head p{margin:2px 0 0;font-size:12px;line-height:16px;font-weight:500;color:var(--la-mut2);}
+.la-tag{display:inline-block;margin-bottom:2px;font-size:10px;line-height:14px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--la-accent);}
+@keyframes laShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
+.sp.shake,.shake{animation:laShake .4s ease;}
+@keyframes laIn{from{opacity:0;transform:translateY(-4px);}}
+
+/* server messages */
+.la-alerts{display:flex;flex-direction:column;gap:10px;}
+.la-alert{display:flex;gap:10px;padding:14px 16px;border-radius:18px;font-size:13px;line-height:19px;font-weight:600;background:#fff;border:1px solid var(--la-line);box-shadow:var(--la-float);color:var(--la-ink2);}
+.la-alert svg{margin-top:2px;font-size:15px;}
+.la-alert.is-error{color:#991b1b;background:#fef2f2;border-color:#fecaca;}
+.la-alert.is-success{color:#166534;background:#f0fdf4;border-color:#bbf7d0;}
+.la-alert.is-warning{color:#9a3412;background:#fff7ed;border-color:#fed7aa;}
+
+/* labels + inputs (#laForm beats base.html's dark-theme input overrides) */
+.la-label{display:block;margin:0 0 8px;padding-left:4px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--la-green);}
+.la-label i{font-style:normal;font-weight:600;letter-spacing:0;text-transform:none;color:var(--la-mut);}
+.la-label-gap{margin-top:20px;}
+.la-amt{position:relative;display:flex;align-items:center;}
+.la-amt span{position:absolute;left:18px;font-size:20px;font-weight:800;color:var(--la-green);pointer-events:none;}
+#laForm #laAmount{
+  width:100%;margin:0;padding:14px 16px 14px 44px;font-size:22px;line-height:28px;font-weight:800;letter-spacing:.01em;
+  color:var(--la-ink)!important;background:rgba(249,250,251,.6)!important;border:1px solid var(--la-line2)!important;border-radius:16px;
+  outline:none;box-shadow:none!important;-webkit-appearance:none;appearance:none;transition:border-color .15s,box-shadow .15s;
 }
-.lpb-top::before { content:""; position:absolute; inset:0; background-image:radial-gradient(rgba(255,255,255,.14) 1px,transparent 1px); background-size:16px 16px; pointer-events:none; }
-.lpb-top::after  { content:""; position:absolute; bottom:-22px; right:-22px; width:90px; height:90px; border-radius:50%; background:rgba(255,255,255,.10); pointer-events:none; }
-.lpb-top > * { position:relative; z-index:2; }
+#laForm #laAmount::placeholder{color:#c4c9d4!important;font-weight:600;}
+#laForm #laAmount:focus{border-color:var(--la-green)!important;box-shadow:0 0 0 1px var(--la-green)!important;}
+#laForm #laAmount.is-error{border-color:#f87171!important;box-shadow:0 0 0 1px #f87171!important;}
+#laForm #laAmount[readonly]{color:var(--la-mut2)!important;background:#f3f4f6!important;}
+.la-err{display:none;margin:8px 0 0;padding-left:4px;font-size:12px;line-height:17px;font-weight:600;color:#dc2626;}
+.la-err.is-visible{display:block;animation:laIn .25s var(--la-ease);}
 
-.lpb-label { font-size:8px; font-weight:900; color:rgba(255,255,255,.82); letter-spacing:.22em; text-transform:uppercase; margin-bottom:7px; display:flex; align-items:center; gap:7px; }
-.lpb-dot   { width:5px; height:5px; border-radius:50%; background:#fff; opacity:.9; animation:dotBlink 1.6s ease-in-out infinite; flex:0 0 auto; }
-
-.lpb-amount-row { display:flex; align-items:baseline; gap:6px; flex-wrap:wrap; }
-.lpb-currency   { font-size:15px; font-weight:900; color:rgba(255,255,255,.85); }
-.lpb-amount     { font-size:30px; font-weight:900; color:#fff; letter-spacing:-1px; line-height:1; text-shadow:0 2px 8px rgba(0,0,0,.18); }
-input.lpb-amount{background:transparent;border:none;border-bottom:2px dashed rgba(255,255,255,.4);outline:none;font-family:inherit;width:190px;caret-color:#fff;padding:0;-moz-appearance:textfield;}
-input.lpb-amount::-webkit-outer-spin-button,input.lpb-amount::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
-input.lpb-amount::placeholder{color:rgba(255,255,255,.45);}
-.lpb-edit-hint{font-size:9px;font-weight:700;color:rgba(255,255,255,.55);letter-spacing:.12em;text-transform:uppercase;margin-top:5px;}
-select.lpb-term-sel{background:transparent;border:none;border-bottom:1.5px dashed rgba(10,36,99,.35);outline:none;font-family:inherit;font-size:13px;font-weight:900;color:var(--navy);cursor:pointer;padding:0 14px 0 0;-webkit-appearance:none;-moz-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%230A2463' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0 center;}
-.lpb-amt-err{font-size:9.5px;font-weight:700;color:#dc2626;margin-top:4px;display:none;letter-spacing:.02em;}
-.lpb-amt-err.show{display:block;}
-.lpb-reminder{background:#fff8ed;border:1.5px solid #ffe0a3;border-radius:12px;padding:10px 14px;display:flex;align-items:flex-start;gap:9px;margin:10px 0 0;font-size:11.5px;color:#8b6200;font-weight:600;line-height:1.5;}
-.lpb-reminder svg{width:15px;height:15px;flex:0 0 auto;margin-top:1px;fill:none;stroke:#D97200;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-
-/* stats strip — white */
-.lpb-stats { display:flex; align-items:stretch; background:#fff; padding:12px 8px; gap:0; }
-.lpb-stat { flex:1; text-align:center; padding:0 6px; }
-.lpb-stat-sep { width:1px; background:var(--line); flex:0 0 auto; margin:2px 0; }
-.lpb-stat-lbl { font-size:8px; font-weight:900; color:var(--ink3); letter-spacing:.16em; text-transform:uppercase; margin-bottom:5px; }
-.lpb-stat-val { font-size:13px; font-weight:900; color:var(--navy); letter-spacing:.01em; }
-.lpb-stat-hi .lpb-stat-val { color:var(--orange-dk); }
-
-/* ─── SECTION CARDS ─── */
-.la-card {
-  position:relative; background:var(--card); border-radius:24px;
-  padding:22px; margin-bottom:14px; overflow:hidden;
-  box-shadow:0 8px 30px rgba(10,36,99,.09), 0 2px 6px rgba(0,0,0,.04);
-  border:1px solid var(--line);
-  opacity:0; animation:laFadeUp .42s ease-out both;
+.la-fields{display:flex;flex-direction:column;gap:16px;}
+.la-field{position:relative;border-radius:16px;}
+.la-ico{position:absolute;left:16px;top:16px;display:flex;font-size:15px;color:var(--la-mut);pointer-events:none;transition:color .15s;}
+.la-ico.is-peso{top:13px;font-size:17px;font-weight:800;}
+.la-field:focus-within .la-ico{color:var(--la-green);}
+#laForm .la-input{
+  display:block;width:100%;margin:0;padding:14px 16px 14px 46px;
+  font-size:16px;line-height:22px;font-weight:500;
+  color:var(--la-ink)!important;background:rgba(249,250,251,.6)!important;
+  border:1px solid var(--la-line2)!important;border-radius:16px;
+  outline:none;box-shadow:none!important;-webkit-appearance:none;appearance:none;resize:none;
+  transition:border-color .15s,box-shadow .15s;
 }
-.la-card::before { content:""; position:absolute; top:18px; left:0; width:4px; height:calc(100% - 36px); border-radius:0 4px 4px 0; background:linear-gradient(180deg,var(--orange-lt),var(--orange-dk)); }
-.la-card:nth-child(2) { animation-delay:.12s; }
-.la-card:nth-child(3) { animation-delay:.18s; }
-.la-card:nth-child(4) { animation-delay:.24s; }
-.la-card:nth-child(5) { animation-delay:.30s; }
+#laForm textarea.la-input{min-height:76px;}
+#laForm .la-input::placeholder{color:var(--la-mut)!important;font-weight:400;}
+#laForm .la-input:focus{border-color:var(--la-green)!important;box-shadow:0 0 0 1px var(--la-green)!important;background:#fff!important;}
+#laForm .la-input.is-error{border-color:#f87171!important;box-shadow:0 0 0 1px #f87171!important;background:#fef2f2!important;}
+#laForm .la-input[readonly]{color:var(--la-mut2)!important;background:#f3f4f6!important;}
+#laForm .la-input:-webkit-autofill{-webkit-text-fill-color:var(--la-ink)!important;-webkit-box-shadow:0 0 0 1000px #fff inset!important;transition:background-color 9999s ease-in-out 0s;}
 
-.la-card-head  { display:flex; align-items:center; gap:14px; margin-bottom:18px; }
-.la-card-ico   { width:46px; height:46px; border-radius:15px; display:flex; align-items:center; justify-content:center; flex:0 0 auto; }
-.la-card-ico svg { width:22px; height:22px; fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
-.la-ico-orange { background:linear-gradient(135deg,var(--orange-lt),var(--orange-dk)); box-shadow:0 4px 14px rgba(255,140,0,.32); }
-.la-ico-orange svg { stroke:#fff; fill:none; }
-.la-ico-navy   { background:rgba(10,36,99,.10); border:1.5px solid rgba(10,36,99,.18); }
-.la-ico-navy svg { stroke:var(--navy); fill:none; }
-html[data-theme="dark"] .la-ico-navy { background:rgba(255,255,255,.10) !important; border-color:rgba(255,255,255,.18) !important; }
-html[data-theme="dark"] .la-ico-navy svg { stroke:rgba(200,220,255,.80) !important; }
-.la-card-info  { flex:1; min-width:0; }
-.la-card-title { font-size:15.5px; font-weight:900; color:var(--ink); letter-spacing:-.1px; }
-.la-card-sub   { font-size:12px; color:var(--ink2); font-weight:600; margin-top:2px; }
-
-.section-title { font-size:9.5px; font-weight:900; color:var(--orange); letter-spacing:.22em; text-transform:uppercase; margin-bottom:12px; padding-bottom:10px; border-bottom:1px solid var(--line); }
-
-/* ─── Loan purpose tile grid ─── */
-.type-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-top:12px; }
-.type-tile {
-  position:relative; display:flex; flex-direction:column;
-  align-items:center; justify-content:flex-start;
-  gap:0; padding:20px 12px 16px;
-  border-radius:20px; border:1.5px solid var(--line); background:#fff;
-  cursor:pointer; user-select:none; text-align:center;
-  min-height:120px; transition:all .26s ease;
+/* ── Offer ── */
+.la-terms{position:relative;display:grid;grid-template-columns:repeat(4,1fr);padding:4px;border-radius:18px;background:#f3f4f6;}
+.la-terms.is-error{box-shadow:0 0 0 1px #f87171;}
+.la-term-ind{
+  position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 4);border-radius:14px;background:var(--la-green);
+  box-shadow:0 6px 14px -4px rgba(27,67,50,.45);opacity:0;transform:translateX(calc(100% * var(--i,0)));
+  transition:transform .35s var(--la-ease),opacity .2s;
 }
-.type-tile:hover {
-  border-color:rgba(10,36,99,.28); background:rgba(10,36,99,.03);
-  box-shadow:0 8px 22px rgba(10,36,99,.11); transform:translateY(-2px);
+.la-terms.has-pick .la-term-ind{opacity:1;}
+.term-btn{
+  position:relative;padding:11px 0;border:0;background:none;cursor:pointer;border-radius:14px;
+  font-size:17px;line-height:22px;font-weight:800;color:var(--la-ink2);transition:color .2s;
 }
-.type-tile:active { transform:translateY(0) scale(.98); }
-.type-tile input { display:none; }
-.type-tile-ico {
-  width:52px; height:52px; border-radius:16px;
-  background:rgba(10,36,99,.09); border:1.5px solid rgba(10,36,99,.16);
-  display:flex; align-items:center; justify-content:center;
-  margin-bottom:10px; transition:all .26s ease;
-}
-.type-tile-ico svg { width:24px; height:24px; stroke:var(--navy); fill:none; stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; transition:stroke .22s; }
-.type-tile-name { font-size:12px; font-weight:900; color:var(--ink); letter-spacing:.01em; line-height:1.2; margin-bottom:4px; }
-.type-tile-desc { font-size:10px; color:var(--ink2); font-weight:600; line-height:1.35; }
+.term-btn span{display:block;font-size:10px;line-height:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--la-mut);transition:color .2s;}
+.term-btn.active,.term-btn.active span{color:#fff;}
+.term-btn:disabled{cursor:default;}
+.la-terms.is-locked .term-btn:not(.active){opacity:.45;}
+.la-hint{margin:8px 0 0;padding-left:4px;font-size:12px;line-height:17px;font-weight:600;color:var(--la-green);}
+.la-stats{display:grid;grid-template-columns:1fr 1.25fr;gap:10px;margin-top:16px;}
+.la-stat{padding:12px 14px;border-radius:16px;background:#f9fafb;border:1px solid var(--la-line);}
+.la-stat span{display:block;margin-bottom:2px;font-size:10.5px;line-height:15px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--la-mut2);}
+.la-stat b{display:block;font-size:15px;line-height:22px;font-weight:800;color:var(--la-ink);}
+.la-stat-main{background:var(--la-sage);border-color:#d7eadf;}
+.la-stat-main span{color:var(--la-green);}
+.la-stat-main b{font-size:18px;color:var(--la-green);}
 
-/* selected → full orange gradient tile */
-.type-tile:has(input:checked) {
-  background:linear-gradient(145deg,var(--orange-lt) 0%,var(--orange) 55%,var(--orange-dk) 100%);
-  border-color:var(--orange-dk);
-  box-shadow:0 10px 28px rgba(255,140,0,.42); transform:translateY(-2px);
+/* ── Purpose tiles ── */
+.la-purp{display:grid;grid-template-columns:1fr 1fr;gap:10px;border-radius:18px;}
+.la-purp.is-error .la-pt{border-color:#fca5a5;}
+.la-pt{
+  position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:10px;min-height:104px;padding:14px;
+  border-radius:18px;border:1px solid var(--la-line2);background:#fff;cursor:pointer;
+  transition:border-color .2s,background-color .2s,box-shadow .2s,transform .15s;
 }
-.type-tile:has(input:checked) .type-tile-ico {
-  background:rgba(255,255,255,.22); border-color:rgba(255,255,255,.32);
-  box-shadow:0 4px 14px rgba(0,0,0,.14);
+.la-pt:active{transform:scale(.97);}
+.la-pt input{position:absolute;top:0;left:0;width:1px;height:1px;margin:0;opacity:0;pointer-events:none;}
+.la-pt-ico{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--la-green);background:var(--la-sage);transition:background-color .2s,color .2s;}
+.la-pt b{display:block;font-size:13.5px;line-height:18px;font-weight:700;color:var(--la-ink);}
+.la-pt small{display:block;margin-top:2px;font-size:11.5px;line-height:15px;font-weight:500;color:var(--la-mut2);}
+.la-pt-chk{
+  position:absolute;top:12px;right:12px;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:#fff;background:var(--la-green);opacity:0;transform:scale(.4);transition:opacity .2s,transform .3s var(--la-ease);
 }
-.type-tile:has(input:checked) .type-tile-ico svg { stroke:#fff; }
-.type-tile:has(input:checked) .type-tile-name { color:#fff; }
-.type-tile:has(input:checked) .type-tile-desc { color:rgba(255,255,255,.65); }
+.la-pt.is-on{border-color:var(--la-green);background:#f4faf6;box-shadow:inset 0 0 0 1px var(--la-green);}
+.la-pt.is-on .la-pt-ico{color:#fff;background:var(--la-green);}
+.la-pt.is-on .la-pt-chk{opacity:1;transform:none;}
+.la-pt:has(input:focus-visible){box-shadow:0 0 0 3px rgba(27,67,50,.22);}
+.la-purp.is-locked .la-pt{cursor:default;}
+.la-purp.is-locked .la-pt:active{transform:none;}
+.la-purp.is-locked .la-pt:not(.is-on){opacity:.45;}
 
-/* ─── Fields ─── */
-.field { margin-bottom:12px; }
-label, .field > label { display:block; color:var(--navy); font-weight:900; font-size:10px; letter-spacing:.18em; text-transform:uppercase; margin-bottom:6px; }
-input[type="text"], input[type="number"], input[type="tel"], input[type="email"], input[type="password"], textarea {
-  width:100%; height:44px; min-height:44px; max-height:44px;
-  background:#f7f9fc; border:1.5px solid var(--line); border-radius:12px;
-  color:var(--ink); padding:12px 14px; font-size:14px; font-family:inherit;
-  box-sizing:border-box; outline:none; caret-color:var(--orange); resize:none;
-  transition:border-color .2s, box-shadow .2s, background .2s; appearance:none; -webkit-appearance:none;
+/* ── ID uploads ── */
+.la-ups{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.la-up{
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:120px;padding:12px;
+  border-radius:18px;border:1.5px dashed #cdd9d2;background:#f9fafb;cursor:pointer;overflow:hidden;text-align:center;
+  transition:border-color .2s,background-color .2s,box-shadow .2s,transform .15s;
 }
-textarea { height:auto; max-height:none; }
-input::placeholder, textarea::placeholder { color:var(--ink3); }
-input:focus, textarea:focus { border-color:var(--orange); background:#fff; box-shadow:0 0 0 4px rgba(255,140,0,.10); }
-input[readonly], textarea[readonly] { opacity:.75; cursor:default; background:#f0f3f9 !important; }
-input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus {
-  -webkit-text-fill-color:var(--ink) !important;
-  -webkit-box-shadow:0 0 0px 1000px #fff inset !important;
-  caret-color:var(--orange) !important;
-  transition:background-color 9999s ease-in-out 0s;
+.la-up-selfie{grid-column:1 / -1;height:132px;}
+.la-up:not(.is-locked):hover{border-color:var(--la-green);background:#f4faf6;}
+.la-up:active{transform:scale(.98);}
+.la-up:focus-within{box-shadow:0 0 0 3px rgba(27,67,50,.22);}
+.la-up.is-error{border-color:#f87171;background:#fef2f2;}
+.la-file{position:absolute;top:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none;}
+.la-up-ico{width:40px;height:40px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--la-green);background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.08);}
+.la-up b{font-size:12.5px;line-height:17px;font-weight:700;color:var(--la-ink);}
+.la-up small{margin-top:-4px;font-size:11px;line-height:15px;font-weight:500;color:var(--la-mut2);}
+.la-up img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .3s;}
+.la-up.has-img{border-style:solid;border-color:var(--la-green);}
+.la-up.has-img img{opacity:1;}
+.la-up-ok{
+  position:absolute;top:8px;left:8px;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:#fff;background:var(--la-green);box-shadow:0 2px 6px rgba(0,0,0,.2);opacity:0;transform:scale(.4);transition:opacity .2s,transform .3s var(--la-ease);
 }
-input[type="number"]::-webkit-outer-spin-button, input[type="number"]::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
-input[type="number"] { -moz-appearance:textfield; }
-
-.grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-@media (max-width:520px) { .grid-2 { grid-template-columns:1fr; } }
-@media (min-width:900px) {
-  #sigBox { grid-column:1 / span 2; height:auto; padding:14px; }
-  #sigBox .sig-canvas { height:260px; }
-  .sig-clear-wrap { grid-column:1 / span 2; justify-content:flex-end; margin-top:10px; }
+.la-up.has-img .la-up-ok{opacity:1;transform:none;}
+.la-up-chg{
+  position:absolute;right:8px;bottom:8px;display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;
+  font-size:10.5px;line-height:14px;font-weight:700;color:#fff;background:rgba(11,28,20,.72);opacity:0;transition:opacity .2s;
 }
-
-.term-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:9px; margin-top:10px; }
-.term-btn { padding:12px 8px; border-radius:12px; border:1.5px solid var(--line); background:#f7f9fc; color:var(--ink2); font-weight:900; font-size:14px; font-family:inherit; cursor:pointer; transition:all .22s; }
-.term-btn:hover { color:var(--navy); border-color:rgba(10,36,99,.30); background:#fff; box-shadow:0 4px 12px rgba(10,36,99,.10); }
-.term-btn:active { transform:scale(.97); }
-.term-btn.active { color:#fff; background:linear-gradient(135deg,var(--orange-lt),var(--orange),var(--orange-dk)); border-color:var(--orange-dk); box-shadow:0 6px 18px rgba(255,140,0,.36); }
-
-.hint { margin-top:8px; font-size:12px; font-weight:600; color:var(--ink3); display:flex; align-items:center; gap:5px; }
-.hint::before { content:""; width:4px; height:4px; border-radius:50%; background:var(--orange-lt); flex:0 0 auto; }
-hr { border:0; border-top:1px solid var(--line); margin:18px 0; }
-
-/* ID upload */
-.id-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; align-items:stretch; width:100%; margin-top:10px; }
-.id-grid .idbox.selfie-box { grid-column:1/-1; }
-@media (max-width:520px) { .id-grid { grid-template-columns:1fr; } .id-grid .idbox.selfie-box { grid-column:auto; } }
-.idbox { height:180px; padding:14px 10px; border-radius:14px; border:1.5px dashed rgba(10,36,99,.25); background:#f7f9fc; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:8px; cursor:pointer; position:relative; overflow:hidden; color:var(--ink2); transition:border-color .2s, background .2s, box-shadow .2s; }
-.idbox.selfie-box { height:150px; }
-.idbox:hover { border-color:var(--orange); background:rgba(255,140,0,.04); box-shadow:0 0 18px rgba(255,140,0,.18); }
-.idbox small  { color:var(--ink2); font-weight:700; font-size:12px; }
-.idbox strong { color:var(--ink); font-weight:900; }
-.id-text strong { color:var(--ink); font-weight:900; }
-.id-text small  { color:var(--ink2); }
-.id-ico { color:var(--orange); font-size:26px; }
-.id-guide { position:absolute; inset:0; width:100%; height:100%; border-radius:12px; z-index:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; padding:12px 10px; box-sizing:border-box; background:transparent; border:none; }
-.id-guide .id-art { width:44px; height:44px; display:block; color:var(--navy); }
-.idbox.selfie-box .id-guide .id-art { width:48px; height:40px; }
-.id-guide .id-caption { text-align:center; line-height:1.4; }
-.id-guide .id-caption strong { color:var(--ink); font-weight:900; font-size:12px; letter-spacing:.03em; text-transform:uppercase; display:block; }
-.id-guide .id-caption span { display:block; font-size:11px; color:var(--ink2); font-weight:600; margin-top:3px; }
-.id-preview { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; border-radius:12px; z-index:2; display:none; }
-.idbox.has-img { border-style:solid; border-color:var(--orange); box-shadow:0 0 18px rgba(255,140,0,.18); }
-.idbox.has-img .id-preview { display:block; }
-.idbox.has-img .id-guide  { display:none; }
-.idbox.has-img .id-text   { display:none; }
-
-/* Signature */
-#sigBox { height:220px; padding:12px; justify-content:flex-start !important; align-items:stretch !important; text-align:left !important; gap:10px !important; }
-.sig-canvas { width:100%; height:150px; border-radius:12px; border:1.5px dashed rgba(10,36,99,.25); background:#f7f9fc; box-sizing:border-box; display:block; position:relative; z-index:1; cursor:crosshair; }
-#sigBox { position:relative; }
-#sigBox .sig-canvas { position:relative; z-index:2; }
-#sigBox img#sigPreviewImg { background:#f7f9fc; }
-.sig-clear-wrap { width:100%; display:flex; justify-content:flex-end; margin-top:10px; }
-.sig-clear-wrap .sig-btn { padding:8px 16px; border-radius:10px; border:1.5px solid var(--line); background:#fff; color:var(--red); font-weight:800; font-size:12px; cursor:pointer; font-family:inherit; transition:all .2s; }
-.sig-clear-wrap .sig-btn:hover { background:rgba(220,38,38,.06); border-color:var(--red); }
-.sig-clear-wrap .sig-btn:active { transform:scale(.97); }
-
-/* Summary */
-.summary { margin-top:18px; padding-top:14px; border-top:1px solid var(--line); }
-.summary .row { display:flex; align-items:center; justify-content:space-between; gap:10px; border-bottom:1px solid var(--line); padding:11px 0; font-size:13px; }
-.summary .row:last-child { border-bottom:none; border-top:2px solid rgba(255,140,0,.28); margin-top:4px; padding-top:14px; font-size:15px; }
-.summary .k { color:var(--ink2); font-weight:600; }
-.summary .v { color:var(--navy); font-weight:900; }
-.summary .row:last-child .v { color:var(--orange-dk); font-weight:900; font-size:17px; }
-
-/* CTA */
-.cta { margin-top:16px; width:100%; }
-.btn.btn-primary {
-  width:100%; padding:16px;
-  background:linear-gradient(135deg,var(--orange-lt) 0%,var(--orange) 45%,var(--orange-dk) 100%);
-  color:#fff; border:0; border-radius:16px;
-  font-weight:900; font-size:15px; letter-spacing:.10em; text-transform:uppercase;
-  font-family:inherit; cursor:pointer;
-  box-shadow:0 8px 24px rgba(255,140,0,.40), inset 0 1px 0 rgba(255,255,255,.18);
-  animation:laPulse 2.8s ease-in-out infinite;
-  transition:transform .2s, filter .2s; position:relative; overflow:hidden;
+.la-up-chg svg{font-size:10px;}
+.la-up.has-img .la-up-chg{opacity:1;}
+.la-up.is-locked .la-up-chg{display:none;}
+.la-up-busy{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:8px;font-size:11.5px;font-weight:700;color:var(--la-green);
+  background:rgba(249,250,251,.9);opacity:0;visibility:hidden;transition:opacity .2s,visibility 0s linear .2s;
 }
-.btn.btn-primary::after { content:""; position:absolute; inset:0; background:linear-gradient(105deg,transparent 30%,rgba(255,255,255,.13) 50%,transparent 70%); animation:laShimmer 3.5s ease-in-out 1.2s infinite; }
-.btn.btn-primary:hover  { transform:translateY(-2px); filter:brightness(1.07); }
-.btn.btn-primary:active { transform:translateY(0); }
-.btn.btn-primary:disabled { opacity:.36; cursor:not-allowed; transform:none; animation:none; background:var(--line); color:var(--ink3); box-shadow:none; }
-.btn.btn-primary:disabled::after { animation:none; }
+.la-up.is-busy .la-up-busy{opacity:1;visibility:visible;transition:opacity .2s;}
+/* spinners only turn while they are shown */
+.la-spin{width:16px;height:16px;border-radius:50%;border:2px solid rgba(27,67,50,.2);border-top-color:var(--la-green);}
+.la-up.is-busy .la-spin,.la-cta.is-loading .la-spin{animation:laSpin .7s linear infinite;}
+@keyframes laSpin{to{transform:rotate(360deg);}}
+.la-up.is-locked{cursor:default;}
+.la-up.is-locked:active{transform:none;}
+.la-up.is-locked:not(.has-img){opacity:.6;}
 
-#confirmApplyBtn .cta-spinner { display:none; width:18px; height:18px; margin-left:10px; border:2.5px solid rgba(255,255,255,.35); border-top-color:#fff; border-radius:50%; vertical-align:middle; animation:ctaSpin .7s linear infinite; }
-#confirmApplyBtn.is-loading { cursor:not-allowed; opacity:.9; pointer-events:none; }
-#confirmApplyBtn.is-loading .cta-spinner { display:inline-block; }
+/* signature */
+.la-sig-head{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin:22px 0 8px;}
+.la-sig-head .la-label{margin:0;}
+.la-clear{display:flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;cursor:pointer;font-size:12px;line-height:16px;font-weight:700;color:#b91c1c;background:#fff;border:1px solid var(--la-line2);transition:background-color .15s,transform .15s;}
+.la-clear:hover{background:#fef2f2;}
+.la-clear:active{transform:scale(.96);}
+.la-clear svg{font-size:11px;}
+.la-pad{position:relative;height:160px;border-radius:18px;border:1.5px dashed #cdd9d2;background:#fff;overflow:hidden;transition:border-color .2s,background-color .2s;}
+.la-pad canvas{position:absolute;inset:0;display:block;width:100%;height:100%;cursor:crosshair;touch-action:none;}
+.la-pad-line{position:absolute;left:20px;right:20px;bottom:36px;display:flex;align-items:flex-end;gap:10px;padding-bottom:6px;border-bottom:1.5px solid var(--la-line2);pointer-events:none;}
+.la-pad-line svg{font-size:13px;color:#c4c9d4;}
+.la-pad-line span{font-size:13px;line-height:16px;font-weight:600;color:#c4c9d4;transition:opacity .2s;}
+.la-pad.has-ink{border-style:solid;border-color:var(--la-green);}
+.la-pad.has-ink .la-pad-line span{opacity:0;}
+.la-pad.is-error{border-color:#f87171;background:#fef2f2;}
+.la-pad img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;}
+.la-pad.is-locked{border-style:solid;}
 
-.muted { color:var(--ink2); font-size:13px; }
-.top-row  { display:none !important; }
-.back-btn { display:none !important; }
-.page     { display:none !important; }
+/* ── Confirm ── */
+.la-confirm{display:flex;flex-direction:column;gap:12px;border-radius:999px;}
+.la-cta{
+  position:relative;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:17px;border:0;border-radius:999px;cursor:pointer;
+  font-size:15.5px;line-height:22px;font-weight:700;color:#fff!important;background:var(--la-accent);text-decoration:none!important;
+  box-shadow:0 10px 15px -3px rgba(249,115,22,.3),0 4px 6px -4px rgba(249,115,22,.3);transition:background-color .15s,transform .15s,opacity .2s;
+}
+.la-cta:hover{background:#ea580c;}
+.la-cta:active{transform:scale(.98);}
+.la-cta svg{font-size:14px;}
+/* soft glow on its own layer once everything is filled in (opacity only, never repaints the button) */
+.la-cta::before{content:'';position:absolute;inset:0;border-radius:inherit;box-shadow:0 0 0 6px rgba(249,115,22,.16),0 14px 30px rgba(249,115,22,.45);opacity:0;pointer-events:none;}
+.la-cta.is-ready::before{animation:laGlow 2.6s ease-in-out infinite;}
+@keyframes laGlow{0%,100%{opacity:0;}50%{opacity:1;}}
+.la-cta .la-spin{display:none;border-color:rgba(255,255,255,.35);border-top-color:#fff;}
+.la-cta.is-loading{pointer-events:none;opacity:.92;}
+.la-cta.is-loading::before{animation:none;}
+.la-cta.is-loading .la-spin{display:block;}
+.la-cta.is-loading .la-cta-ico{display:none;}
+.la-cta-green{background:var(--la-green);box-shadow:0 10px 15px -3px rgba(27,67,50,.25),0 4px 6px -4px rgba(27,67,50,.25);}
+.la-cta-green:hover{background:var(--la-green-dk);}
+.la-cta-line{background:transparent;color:var(--la-green)!important;border:2px solid var(--la-green);padding:15px;box-shadow:none;}
+.la-cta-line:hover{background:rgba(232,243,237,.5);}
+.la-cta:disabled{cursor:default;background:var(--la-sage);color:var(--la-green)!important;box-shadow:none;transform:none;}
+.la-fine{margin:0;text-align:center;font-size:12px;line-height:17px;font-weight:500;color:var(--la-mut2);}
 
-@media (max-width:768px) {
-  .la-card { animation:none !important; opacity:1 !important; }
-  .la-preview { animation:none !important; opacity:1 !important; }
-}
+/* locked state card */
+.la-state p.la-state-text{margin:0 0 18px;font-size:13px;line-height:20px;font-weight:500;color:var(--la-mut2);}
+.la-state-draft{border-color:#fed7aa;}
+.la-state-draft .la-head-ico{color:var(--la-accent);background:linear-gradient(to bottom right,#ffedd5,#fff);}
 
-/* ─── Validation Modal ─── */
-@keyframes valSlideUp { from{opacity:0;transform:translateY(28px) scale(.97)} to{opacity:1;transform:translateY(0) scale(1)} }
-.val-overlay {
-  position:fixed; inset:0; z-index:10001;
-  background:rgba(6,21,64,.68); backdrop-filter:blur(5px) saturate(1.4);
-  display:flex; align-items:flex-end; justify-content:center;
-  padding:0 0 env(safe-area-inset-bottom,0);
-  opacity:0; visibility:hidden; transition:opacity .25s, visibility .25s;
-}
-.val-overlay.is-open { opacity:1; visibility:visible; }
-.val-sheet {
-  background:#fff; border-radius:28px 28px 0 0;
-  padding:10px 22px 32px; width:100%; max-width:540px;
-  transform:translateY(100%); transition:transform .32s cubic-bezier(.34,1.3,.64,1);
-}
-.val-overlay.is-open .val-sheet { transform:translateY(0); }
-.val-handle { width:36px; height:4px; border-radius:2px; background:var(--line); margin:0 auto 18px; }
-.val-ico {
-  width:56px; height:56px; border-radius:18px;
-  background:linear-gradient(135deg,#fff4d6,#ffe9a8);
-  border:1.5px solid rgba(255,140,0,.20);
-  display:flex; align-items:center; justify-content:center; margin:0 auto 14px;
-}
-.val-ico svg { width:26px; height:26px; fill:none; stroke:var(--orange-dk); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
-.val-title { font-size:19px; font-weight:900; color:var(--ink); text-align:center; margin-bottom:5px; }
-.val-sub { font-size:12.5px; color:var(--ink2); font-weight:600; text-align:center; margin-bottom:18px; }
-.val-list { list-style:none; padding:0; margin:0 0 22px; display:flex; flex-direction:column; gap:8px; }
-.val-list li {
-  display:flex; align-items:center; gap:10px;
-  font-size:13px; font-weight:700; color:var(--ink);
-  background:#f7f9fc; border-radius:12px; padding:11px 14px;
-  border-left:3px solid var(--orange);
-}
-.val-list li::before { content:""; width:6px; height:6px; border-radius:50%; background:var(--orange); flex:0 0 auto; }
-.val-close {
-  width:100%; padding:15px; border:0; border-radius:16px; font-family:inherit;
-  font-size:14.5px; font-weight:900; letter-spacing:.08em; cursor:pointer; color:#fff;
-  background:linear-gradient(135deg,var(--orange-lt),var(--orange),var(--orange-dk));
-  box-shadow:0 8px 22px rgba(255,140,0,.36), inset 0 1px 0 rgba(255,255,255,.18);
-  transition:transform .18s, filter .18s;
-}
-.val-close:hover { filter:brightness(1.06); transform:translateY(-1px); }
-.val-close:active { transform:scale(.98); }
+/* footer */
+.la-foot{padding-top:4px;text-align:center;font-size:12px;line-height:16px;font-weight:500;color:var(--la-mut);}
+.la-foot p{margin:0;}
+.la-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
+.la-foot i{width:6px;height:6px;border-radius:50%;background:var(--la-primary);}
+.la-foot b{font-weight:700;color:var(--la-accent);}
 
-/* ── OFL Coachmark Guide ── */
-@keyframes bubPop{0%{opacity:0;transform:scale(.88) translateY(8px)}70%{transform:scale(1.03) translateY(-2px)}100%{opacity:1;transform:scale(1) translateY(0)}}
-@keyframes shakeX{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(4px)}}
-@keyframes typeDot{0%,80%,100%{transform:scale(0);opacity:.4}40%{transform:scale(1);opacity:1}}
-.sp{position:relative;border-radius:14px;}
-.sp.shake{animation:shakeX .4s ease;}
-.chat-bubble{position:fixed;z-index:10000;background:#fff;border-radius:18px;padding:0;width:min(320px,calc(100vw - 28px));box-shadow:0 16px 48px rgba(0,0,0,.38),0 0 0 1px rgba(0,0,0,.06);display:none;opacity:0;transition:opacity .22s;}
-.chat-bubble::before{display:none;}
-.chat-bubble.arrow-dn::before{display:none;}
-.cb-header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 16px;background:linear-gradient(135deg,#061540,#0A2463);border-bottom:1px solid rgba(255,140,0,.22);border-radius:18px 18px 0 0;}
-.cb-char-wrap{width:54px;height:54px;flex-shrink:0;border-radius:50%;border:2.5px solid rgba(255,140,0,.65);background-size:cover;background-position:center top;background-repeat:no-repeat;background-color:rgba(255,255,255,.08);box-shadow:0 3px 12px rgba(0,0,0,.35);}
-.cb-step{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.65);}
-.cb-dots{display:flex;gap:5px;align-items:center;}
-.cb-dot{height:6px;width:6px;border-radius:99px;background:rgba(255,255,255,.25);transition:all .35s;flex-shrink:0;}
-.cb-dot.on{background:#FF8C00;width:18px;}
-.cb-msg{padding:12px 18px;font-size:14px;font-weight:700;color:#0a1a3a;line-height:1.60;}
-.cb-msg b{color:#0A2463;}
-.cb-typing{display:none;gap:5px;align-items:center;padding:0 18px 12px;}
-.cb-typing span{width:8px;height:8px;border-radius:50%;background:#7a8299;animation:typeDot 1.2s infinite ease-in-out both;}
-.cb-typing span:nth-child(2){animation-delay:.2s;}
-.cb-typing span:nth-child(3){animation-delay:.4s;}
-.cb-foot{display:flex;align-items:center;justify-content:space-between;padding:10px 18px 14px;border-top:1px solid #f0f2f8;}
-.cb-label{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#7a8299;}
-.cb-actions{display:flex;align-items:center;gap:10px;}
-.cb-back{height:38px;padding:0 18px;border:2px solid #0A2463;border-radius:999px;background:transparent;color:#0A2463;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:.04em;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,color .15s;}
-.cb-back:hover{background:#0A2463;color:#fff;}
-.cb-next{height:38px;padding:0 24px;border:none;border-radius:999px;background:linear-gradient(135deg,#FF8C00,#D97200);color:#fff;font-size:13.5px;font-weight:900;cursor:pointer;font-family:inherit;letter-spacing:.05em;box-shadow:0 4px 14px rgba(255,140,0,.42);transition:transform .15s,box-shadow .15s;}
-.cb-next:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(255,140,0,.60);}
-.cb-skip{height:32px;padding:0 14px;border:1.5px solid #c0c8d8;border-radius:999px;background:transparent;color:#9aa3b8;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;letter-spacing:.04em;transition:border-color .15s,color .15s;}
-.cb-skip:hover{border-color:#0A2463;color:#0A2463;}
-@media(max-width:600px){.chat-bubble{width:calc(100vw - 20px);}}
-/* ── fill toast ── */
-.la-fill-toast{
-  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%) scale(.85);
-  background:#fff;border-radius:999px;padding:13px 22px;
-  display:none;align-items:center;gap:10px;
-  box-shadow:0 12px 40px rgba(0,0,0,.22),0 0 0 1px rgba(0,0,0,.06);
-  z-index:20000;white-space:nowrap;
-  font-size:13.5px;font-weight:800;letter-spacing:.01em;
-  opacity:0;transition:opacity .2s,transform .2s;
+/* ── Validation sheet (no full-screen blur: it drops frames on phones) ── */
+.la-vwrap{
+  position:fixed;inset:0;z-index:10001;display:flex;align-items:flex-end;justify-content:center;background:rgba(11,28,20,.55);
+  opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s linear .25s;
 }
-.la-fill-toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
-.la-fill-toast.loading{color:#0A2463;}
-.la-fill-toast.done{color:#16a34a;}
-.la-fill-toast svg{flex-shrink:0;width:20px;height:20px;}
-@keyframes la-spin{to{transform:rotate(360deg);}}
-.la-fill-toast.loading svg{animation:la-spin .9s linear infinite;}
+.la-vwrap.is-open{opacity:1;visibility:visible;transition:opacity .25s;}
+.la-vsheet{
+  display:flex;flex-direction:column;width:100%;max-width:420px;max-height:88vh;max-height:88dvh;
+  padding:10px 22px calc(24px + env(safe-area-inset-bottom,0px));border-radius:28px 28px 0 0;background:#fff;
+  transform:translateY(100%);transition:transform .32s var(--la-ease);
+}
+.la-vwrap.is-open .la-vsheet{transform:none;}
+.la-vhandle{flex-shrink:0;width:36px;height:4px;margin:0 auto 18px;border-radius:2px;background:var(--la-line2);}
+.la-vico{flex-shrink:0;width:52px;height:52px;margin:0 auto 14px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--la-accent);background:#fff7ed;border:1px solid #fed7aa;}
+.la-vtitle{margin:0 0 4px;text-align:center;font-size:18px;line-height:26px;font-weight:700;color:var(--la-ink);}
+.la-vsub{margin:0 0 16px;text-align:center;font-size:13px;line-height:18px;color:var(--la-mut2);}
+.la-vlist{list-style:none;margin:0 0 18px;padding:0;display:flex;flex-direction:column;gap:8px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;}
+.la-vitem{
+  width:100%;display:flex;align-items:center;gap:10px;padding:11px 14px;border:0;border-left:3px solid var(--la-accent);border-radius:12px;cursor:pointer;text-align:left;
+  font-size:13px;line-height:18px;font-weight:600;color:var(--la-ink);background:#f9fafb;transition:background-color .15s;
+}
+.la-vitem:hover{background:#f3f4f6;}
+.la-vitem::before{content:'';flex-shrink:0;width:6px;height:6px;border-radius:50%;background:var(--la-accent);}
+.la-vitem span{flex:1;}
+.la-vitem svg{font-size:11px;color:var(--la-mut);}
+.la-vclose{
+  flex-shrink:0;width:100%;padding:16px;border:0;border-radius:999px;cursor:pointer;font-size:15px;line-height:22px;font-weight:700;color:#fff;background:var(--la-green);
+  box-shadow:0 10px 15px -3px rgba(27,67,50,.25),0 4px 6px -4px rgba(27,67,50,.25);transition:background-color .15s,transform .15s;
+}
+.la-vclose:hover{background:var(--la-green-dk);}
+.la-vclose:active{transform:scale(.98);}
+
+/* ── Glass guide (same as the register / dashboard / quick loan guide) ── */
+.la-guide{position:absolute;top:0;left:-6px;right:-6px;z-index:5;transform-origin:50% 0;transition:transform .45s var(--la-ease);pointer-events:none;}
+.la-guide.is-above{transform-origin:50% 100%;}
+.la-guide.is-on{pointer-events:auto;}
+.la-gfloat{position:relative;animation:laFloat 3.5s ease-in-out infinite;}
+@keyframes laFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.la-gbody{
+  position:relative;overflow:hidden;padding:16px;border-radius:16px;background:var(--la-glass);
+  -webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.2);box-shadow:0 15px 35px rgba(0,0,0,.25);
+  opacity:0;transition:opacity .3s ease;
+}
+.la-garrow{
+  position:absolute;left:50%;width:14px;height:14px;margin-left:-7px;top:-6px;background:var(--la-glass);
+  -webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.2);border-right:0;border-bottom:0;
+  clip-path:polygon(0 0,100% 0,0 100%);transform:rotate(45deg);opacity:0;transition:opacity .3s ease;
+}
+.la-guide.is-above .la-garrow{top:auto;bottom:-6px;transform:rotate(225deg);}
+.la-guide.is-on .la-gbody,.la-guide.is-on .la-garrow{opacity:1;}
+.la-gglow{position:absolute;top:-24px;right:-24px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.1);filter:blur(40px);pointer-events:none;}
+.la-ghead{position:relative;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.1);}
+.la-gwho{display:flex;align-items:center;gap:10px;}
+.la-gava{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;background:linear-gradient(to bottom right,#F97316,#d95d0b);border:1px solid rgba(255,255,255,.2);}
+.la-gstep{font-size:10px;line-height:15px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;}
+.la-gdots{display:flex;gap:6px;}
+.la-gdots i{width:6px;height:6px;border-radius:999px;background:rgba(255,255,255,.3);transition:width .3s,background-color .3s;}
+.la-gdots i.done{background:rgba(249,115,22,.75);}
+.la-gdots i.on{width:14px;background:var(--la-accent);box-shadow:0 0 8px rgba(249,115,22,.6);}
+.la-gtext{position:relative;margin:0 0 14px;font-size:13px;line-height:1.625;color:rgba(255,255,255,.9);transition:opacity .15s;}
+.la-gtext b{font-weight:700;color:#fff;}
+.la-gprog{position:relative;display:flex;flex-wrap:wrap;gap:6px;margin:-4px 0 14px;}
+.la-gprog:empty{display:none;}
+.la-gprog span{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;font-size:11px;line-height:15px;font-weight:700;color:rgba(255,255,255,.75);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);transition:color .2s,background-color .2s,border-color .2s;}
+.la-gprog span.ok{color:#bbf7d0;background:rgba(34,197,94,.16);border-color:rgba(34,197,94,.4);}
+.la-gprog span svg{font-size:9px;}
+.la-gerr{position:relative;display:none;margin:-4px 0 14px;padding:8px 10px;border-radius:10px;font-size:12px;line-height:1.45;font-weight:600;color:#fed7aa;background:rgba(249,115,22,.16);border:1px solid rgba(249,115,22,.45);}
+.la-gerr.on{display:block;}
+.la-gacts{position:relative;display:flex;align-items:center;gap:12px;}
+.la-gskip,.la-gnext{flex:1;padding:9px 8px;border-radius:12px;cursor:pointer;font-size:12px;line-height:16px;transition:background-color .15s,color .15s,transform .15s;}
+.la-gskip{border:1px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.8);font-weight:600;}
+.la-gskip:hover{background:rgba(255,255,255,.1);color:#fff;}
+.la-gnext{display:flex;align-items:center;justify-content:center;gap:6px;border:0;background:#fff;color:var(--la-green);font-weight:700;box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);}
+.la-gnext:hover{background:#f3f4f6;}
+.la-gnext.is-ready{background:var(--la-accent);color:#fff;}
+.la-gnext.is-ready:hover{background:#ea580c;}
+.la-gskip:active,.la-gnext:active{transform:scale(.98);}
+.la-gnext svg{font-size:10px;}
+
+@media (min-width:640px){
+  .la{padding:32px 0;}
+  .la-app{min-height:0;border-radius:2.5rem;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);}
+  .la-top{border-radius:2.5rem;}
+}
+@media (max-width:359px){
+  .la-top{padding-left:20px;padding-right:20px;}
+  .la-main{padding:0 14px;}
+  .la-card{padding:20px 16px;}
+  .term-btn{font-size:15px;}
+  .la-pt{padding:12px;}
+  .la-flow li.la-fl{margin-left:5px;margin-right:5px;}
+}
+@media (prefers-reduced-motion: reduce){
+  .la-gfloat,.la-cta.is-ready::before,.shake,.sp.shake{animation:none;}
+  .la-guide,.la-term-ind,.la-vwrap,.la-vsheet{transition:none;}
+}
 </style>
 
-<div class="la-page">
+<!-- Icons: Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0) Copyright 2023 Fonticons, Inc. -->
+<div class="la">
+  <div class="la-app">
 
-  <!-- HERO -->
-  <div class="la-hero">
-    <div class="la-dot-grid" aria-hidden="true"></div>
-    <div class="la-hero-orb"  aria-hidden="true"></div>
-    <div class="la-hero-orb2" aria-hidden="true"></div>
-
-    <div class="la-nav">
-      <a class="la-nav-back" href="{% url 'quick_loan' %}" aria-label="Back">
-        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      </a>
-      <div style="width:38px;"></div>
-    </div>
-
-    <div class="la-hero-eyebrow">Loan Application</div>
-    <h1 class="la-hero-title">Complete Simple Steps</h1>
-    <div class="la-hero-sub">Review your loan details and confirm below</div>
-  </div>
-
-  <!-- legacy top-row (hidden) -->
-  <div class="top-row" aria-hidden="true">
-    <div class="page-title">Loan Application <small>Complete simple steps</small></div>
-    <a class="back-btn" href="{% url 'quick_loan' %}">Back</a>
-  </div>
-
-  <div class="la-body">
-    <form method="POST" enctype="multipart/form-data">
-      {% csrf_token %}
-
-      <!-- ══ SECTION 1: Loan Purpose ══ -->
-      <div class="sp" id="laSp2">
-      <div class="la-card">
-        <div class="la-card-head">
-          <div class="la-card-ico la-ico-navy">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-          </div>
-          <div class="la-card-info">
-            <div class="la-card-title">Loan Purpose</div>
-            <div class="la-card-sub">Select the type that best fits your need</div>
-          </div>
-        </div>
-
-        <div class="type-grid">
-
-          <label class="type-tile">
-            <input type="checkbox" name="loan_purposes" value="Personal Loan"
-              {% if loan and "Personal Loan" in loan.loan_purposes %}checked{% endif %}
-              {% if locked %}disabled{% endif %}>
-            <div class="type-tile-ico">
-              <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            </div>
-            <div class="type-tile-name">Personal</div>
-            <div class="type-tile-desc">Daily expenses &amp; travel</div>
-          </label>
-
-          <label class="type-tile">
-            <input type="checkbox" name="loan_purposes" value="Business"
-              {% if loan and "Business" in loan.loan_purposes %}checked{% endif %}
-              {% if locked %}disabled{% endif %}>
-            <div class="type-tile-ico">
-              <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-            </div>
-            <div class="type-tile-name">Business</div>
-            <div class="type-tile-desc">Expand operations</div>
-          </label>
-
-          <label class="type-tile">
-            <input type="checkbox" name="loan_purposes" value="Medical"
-              {% if loan and "Medical" in loan.loan_purposes %}checked{% endif %}
-              {% if locked %}disabled{% endif %}>
-            <div class="type-tile-ico">
-              <svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-            </div>
-            <div class="type-tile-name">Medical</div>
-            <div class="type-tile-desc">Healthcare expenses</div>
-          </label>
-
-          <label class="type-tile">
-            <input type="checkbox" name="loan_purposes" value="Education"
-              {% if loan and "Education" in loan.loan_purposes %}checked{% endif %}
-              {% if locked %}disabled{% endif %}>
-            <div class="type-tile-ico">
-              <svg viewBox="0 0 24 24"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
-            </div>
-            <div class="type-tile-name">Education</div>
-            <div class="type-tile-desc">Tuition &amp; learning</div>
-          </label>
-
-          <label class="type-tile">
-            <input type="checkbox" name="loan_purposes" value="Home repair"
-              {% if loan and "Home repair" in loan.loan_purposes %}checked{% endif %}
-              {% if locked %}disabled{% endif %}>
-            <div class="type-tile-ico">
-              <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            </div>
-            <div class="type-tile-name">Home Repair</div>
-            <div class="type-tile-desc">Property &amp; renovation</div>
-          </label>
-
-          <label class="type-tile">
-            <input type="checkbox" name="loan_purposes" value="Debt consolidation"
-              {% if loan and "Debt consolidation" in loan.loan_purposes %}checked{% endif %}
-              {% if locked %}disabled{% endif %}>
-            <div class="type-tile-ico">
-              <svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-            </div>
-            <div class="type-tile-name">Debt</div>
-            <div class="type-tile-desc">Combine multiple debts</div>
-          </label>
-
-          <label class="type-tile">
-            <input type="checkbox" name="loan_purposes" value="Emergency"
-              {% if loan and "Emergency" in loan.loan_purposes %}checked{% endif %}
-              {% if locked %}disabled{% endif %}>
-            <div class="type-tile-ico">
-              <svg viewBox="0 0 24 24"><path d="M12 2L3 6v6c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V6L12 2z"/></svg>
-            </div>
-            <div class="type-tile-name">Emergency</div>
-            <div class="type-tile-desc">Urgent financial needs</div>
-          </label>
-
-          <label class="type-tile">
-            <input type="checkbox" name="loan_purposes" value="Other"
-              {% if loan and "Other" in loan.loan_purposes %}checked{% endif %}
-              {% if locked %}disabled{% endif %}>
-            <div class="type-tile-ico">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
-            </div>
-            <div class="type-tile-name">Other</div>
-            <div class="type-tile-desc">Other purposes</div>
-          </label>
-
-        </div>
-
-        <div class="hint">Choose one option</div>
+    <!-- ── Header ── -->
+    <header class="la-top">
+      <div class="la-glow la-glow-a"></div>
+      <div class="la-glow la-glow-b"></div>
+      <div class="la-bar">
+        <a class="la-back la-glass-dark" href="{% url 'quick_loan' %}" aria-label="Back to quick loan"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></a>
+        {% if locked %}
+        <div class="la-badge la-glass-dark"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>Submitted</div>
+        {% else %}
+        <div class="la-badge la-glass-dark"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/></svg>Secure Form</div>
+        {% endif %}
       </div>
+      <div class="la-hero">
+        <p class="la-eyebrow">Loan Application</p>
+        <h1>{% if locked %}Your Application{% else %}Complete Simple Steps{% endif %}</h1>
+        <p>{% if locked %}Here are the details you sent us{% else %}Check your offer, then fill in your details below{% endif %}</p>
       </div>
+      <ol class="la-flow" aria-label="Application progress">
+        <li class="is-done"><i><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></i><span>Calculator</span></li>
+        <li class="la-fl is-done" aria-hidden="true"></li>
+        <li class="{% if locked %}is-done{% else %}is-now{% endif %}"{% if not locked %} aria-current="step"{% endif %}><i>{% if locked %}<svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>{% else %}2{% endif %}</i><span>Application</span></li>
+        <li class="la-fl{% if locked %} is-done{% endif %}" aria-hidden="true"></li>
+        <li class="{% if locked and loan.status == 'DRAFT' %}is-now{% elif locked %}is-done{% endif %}"{% if locked and loan.status == 'DRAFT' %} aria-current="step"{% endif %}><i>{% if locked and loan.status != 'DRAFT' %}<svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>{% else %}3{% endif %}</i><span>Payment</span></li>
+      </ol>
+    </header>
 
-      <!-- ══ LOAN OFFER ══ -->
-      <div class="la-preview sp" id="laSp1">
-        <div class="lpb-top">
-          <div class="lpb-label">
-            <span class="lpb-dot"></span>
-            Loan Offer
-          </div>
-          <div class="lpb-amount-row">
-            <span class="lpb-currency">&#8369;</span>
-            <input class="lpb-amount" id="lpbAmount" type="number" min="80000" max="5000000" placeholder="0" inputmode="numeric">
-          </div>
-          <div class="lpb-amt-err" id="lpbAmtErr"></div>
-          <div class="lpb-edit-hint">Tap to edit</div>
-        </div>
-        <div class="lpb-stats">
-          <div class="lpb-stat">
-            <div class="lpb-stat-lbl">Term</div>
-            <div class="lpb-stat-val">
-              <select class="lpb-term-sel" id="lpbTermInp">
-                <option value="">—</option>
-                <option value="6">6 mo</option>
-                <option value="12">12 mo</option>
-                <option value="24">24 mo</option>
-                <option value="36">36 mo</option>
-              </select>
-            </div>
-          </div>
-          <div class="lpb-stat-sep"></div>
-          <div class="lpb-stat">
-            <div class="lpb-stat-lbl">Interest</div>
-            <div class="lpb-stat-val">0.5% / mo</div>
-          </div>
-          <div class="lpb-stat-sep"></div>
-          <div class="lpb-stat lpb-stat-hi">
-            <div class="lpb-stat-lbl">Monthly</div>
-            <div class="lpb-stat-val">&#8369;&nbsp;<span id="lpbMonthly">&#8212;</span></div>
-          </div>
-        </div>
+    <main class="la-main">
+
+      {% if messages %}
+      <div class="la-alerts" role="status">
+        {% for message in messages %}
+        <div class="la-alert is-{{ message.level_tag|default:'info' }}">{% if message.level_tag == 'success' %}<svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>{% else %}<svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg>{% endif %}<span>{{ message }}</span></div>
+        {% endfor %}
       </div>
-      <div class="lpb-reminder">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span>This is your loan offer based on your selected amount and term. You can tap the <b>amount</b> or <b>term</b> fields above to adjust them before submitting. Your monthly payment will update automatically.</span>
-      </div>
-
-      <!-- ══ SECTION 2: Personal Details ══ -->
-      <div class="sp" id="laSp3">
-      <div class="la-card">
-        <div class="la-card-head">
-          <div class="la-card-ico la-ico-orange">
-            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          </div>
-          <div class="la-card-info">
-            <div class="la-card-title">Personal Details</div>
-            <div class="la-card-sub">Your information for the application</div>
-          </div>
-        </div>
-
-        <div class="grid-2">
-          <div class="field">
-            <label>Full name</label>
-            <input type="text" name="full_name" id="fullName"
-              value="{{ loan.full_name|default:'' }}"
-              {% if locked %}readonly{% endif %}
-              required pattern="[A-Za-z ]+" title="Letters and spaces only">
-          </div>
-          <div class="field">
-            <label>Age</label>
-            <input type="number" name="age" id="ageInput" min="18" max="90"
-              value="{{ loan.age|default:'' }}"
-              {% if locked %}readonly{% endif %} required>
-          </div>
-          <div class="field">
-            <label>Current living</label>
-            <textarea name="current_living" id="currentLiving" rows="2"
-              required {% if locked %}readonly{% endif %}
-              pattern="[A-Za-z0-9 ]+" title="Letters, numbers and spaces only">{{ loan.current_living|default:'' }}</textarea>
-          </div>
-          <div class="field">
-            <label>Hometown</label>
-            <textarea name="hometown" id="hometownInput" rows="2"
-              required {% if locked %}readonly{% endif %}>{{ loan.hometown|default:'' }}</textarea>
-          </div>
-          <div class="field">
-            <label>Income (optional)</label>
-            <input type="text" name="income" id="incomeInput"
-              inputmode="numeric" pattern="[0-9]*"
-              value="{{ loan.income|default:'' }}"
-              {% if locked %}readonly{% endif %}>
-          </div>
-          <div class="field">
-            <label>Monthly expenses</label>
-            <input type="text" name="monthly_expenses" id="expensesInput"
-              inputmode="numeric" pattern="[0-9]*"
-              value="{{ loan.monthly_expenses|default:'' }}"
-              {% if locked %}readonly{% endif %} required>
-          </div>
-          <div class="field">
-            <label>Identity name</label>
-            <input type="text" name="identity_name" id="identityName"
-              value="{{ loan.identity_name|default:'' }}"
-              placeholder="Identity Name"
-              {% if locked %}readonly{% endif %}
-              required pattern="[A-Za-z0-9 ]+" title="Letters, numbers and spaces only">
-          </div>
-          <div class="field">
-            <label>Identity number</label>
-            <input type="text" name="identity_number" id="identityNumber"
-              value="{{ loan.identity_number|default:'' }}"
-              placeholder="Identity Number"
-              inputmode="numeric" pattern="[0-9]*"
-              {% if locked %}readonly{% endif %} required>
-          </div>
-        </div>
-      </div>
-
-      </div>
-
-      <!-- ══ SECTION 3: ID Upload ══ -->
-      <div class="sp" id="laSp4">
-      <div class="la-card">
-        <div class="la-card-head">
-          <div class="la-card-ico la-ico-navy">
-            <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M13 9h5M13 12h4M13 15h2"/></svg>
-          </div>
-          <div class="la-card-info">
-            <div class="la-card-title">ID Required</div>
-            <div class="la-card-sub">Upload clear photos of your government ID</div>
-          </div>
-        </div>
-
-        <div class="id-grid">
-          <label class="idbox {% if loan and loan.id_front %}has-img{% endif %}" id="boxFront">
-            <img class="id-preview" id="prevFront"
-              {% if loan and loan.id_front %}src="{{ loan.id_front.url }}"{% endif %}
-              alt="ID Front preview">
-            <div class="id-guide" aria-hidden="true">
-              <svg class="id-art" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2.5" y="4" width="27" height="16" rx="2.5"/>
-                <rect x="5.5" y="8" width="6" height="8" rx="1"/>
-                <line x1="14" y1="9" x2="26" y2="9"/><line x1="14" y1="13" x2="23" y2="13"/><line x1="14" y1="16" x2="25" y2="16"/>
-              </svg>
-              <div class="id-caption"><strong>ID Card Front</strong><span>Tap to upload photo</span></div>
-            </div>
-            <input type="file" name="id_front" accept="image/*" class="compress-img"
-              {% if not locked %}required{% endif %}
-              {% if locked %}disabled{% endif %} hidden>
-          </label>
-
-          <label class="idbox {% if loan and loan.id_back %}has-img{% endif %}" id="boxBack">
-            <img class="id-preview" id="prevBack"
-              {% if loan and loan.id_back %}src="{{ loan.id_back.url }}"{% endif %}
-              alt="ID Back preview">
-            <div class="id-guide" aria-hidden="true">
-              <svg class="id-art" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="2.5" y="4" width="27" height="16" rx="2.5"/>
-                <line x1="2.5" y1="9" x2="29.5" y2="9"/><line x1="6" y1="14" x2="26" y2="14"/><line x1="6" y1="17" x2="20" y2="17"/>
-              </svg>
-              <div class="id-caption"><strong>ID Card Back</strong><span>Tap to upload photo</span></div>
-            </div>
-            <input type="file" name="id_back" accept="image/*" class="compress-img"
-              {% if not locked %}required{% endif %}
-              {% if locked %}disabled{% endif %} hidden>
-          </label>
-
-          <label class="idbox selfie-box {% if loan and loan.selfie_with_id %}has-img{% endif %}" id="boxSelfie">
-            <img class="id-preview" id="prevSelfie"
-              {% if loan and loan.selfie_with_id %}src="{{ loan.selfie_with_id.url }}"{% endif %}
-              alt="Selfie preview">
-            <div class="id-guide" aria-hidden="true">
-              <svg class="id-art" viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10 6 L12.5 3.5 H19.5 L22 6 H27 A2 2 0 0 1 29 8 V18 A2 2 0 0 1 27 20 H5 A2 2 0 0 1 3 18 V8 A2 2 0 0 1 5 6 Z"/>
-                <circle cx="16" cy="13" r="4"/>
-              </svg>
-              <div class="id-caption"><strong>Selfie with Your ID</strong><span>Face clearly visible</span></div>
-            </div>
-            <input type="file" name="selfie_with_id" accept="image/*" class="compress-img"
-              {% if not locked %}required{% endif %}
-              {% if locked %}disabled{% endif %} hidden>
-          </label>
-        </div>
-
-        <div style="margin-top:14px;">
-          <div class="idbox" id="sigBox">
-            <div class="id-text" style="position:relative;z-index:2;display:flex;align-items:center;gap:10px;width:100%;">
-              <div style="width:38px;height:38px;border-radius:11px;background:rgba(255,140,0,.12);border:1.5px solid rgba(255,140,0,.26);display:flex;align-items:center;justify-content:center;flex:0 0 auto;">
-                <svg style="width:19px;height:19px;" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 20h9"/>
-                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-                </svg>
-              </div>
-              <div>
-                <strong style="display:block;font-size:13.5px;font-weight:900;color:var(--ink);">Signature</strong>
-                <small style="font-size:11px;color:var(--ink2);font-weight:600;">Draw your signature below</small>
-              </div>
-            </div>
-            <canvas id="sigCanvas" class="sig-canvas"></canvas>
-            {% if loan and loan.signature_image %}
-              <img id="sigPreviewImg" src="{{ loan.signature_image.url }}"
-                style="width:100%;height:100%;object-fit:contain;border-radius:14px;position:absolute;inset:0;z-index:3;">
-            {% else %}
-              <img id="sigPreviewImg" style="display:none;">
-            {% endif %}
-            <input type="hidden" name="signature_data" id="signatureData" value=""
-              {% if locked %}disabled{% endif %}>
-          </div>
-          <div class="sig-clear-wrap">
-            <button type="button" class="sig-btn" id="sigClear"
-              {% if locked %}disabled{% endif %}>Clear</button>
-          </div>
-        </div>
-      </div>
-
-      </div>
-
-      <!-- hidden loan fields — values populated from URL params / autosave -->
-      <input type="hidden" name="loan_amount" id="loanAmount">
-      <input type="hidden" name="loan_terms" id="loanTerms">
-      <!-- hidden summary targets (kept for JS compat) -->
-      <span id="sumAmount" hidden></span>
-      <span id="sumTerm"   hidden></span>
-      <span id="sumMonthly" hidden></span>
-      <span id="termHint"  hidden></span>
-
-      {% if locked %}
-        <button class="btn btn-primary cta" type="button" disabled>
-          Submitted &middot; Waiting for review
-        </button>
-      {% else %}
-        <div class="sp" id="laSp5">
-        <button class="btn btn-primary cta" id="confirmApplyBtn" type="submit" name="action" value="apply_loan">
-          <span class="cta-label">Confirm Apply</span>
-          <span class="cta-spinner" aria-hidden="true"></span>
-        </button>
-        </div>
       {% endif %}
 
-    </form>
+      {% if locked %}
+      <!-- ── Where this application stands ── -->
+      {% if loan.status == "DRAFT" %}
+      <section class="la-card la-state la-state-draft">
+        <div class="la-head">
+          <div class="la-head-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zm0-384c13.3 0 24 10.7 24 24V264c0 13.3-10.7 24-24 24s-24-10.7-24-24V152c0-13.3 10.7-24 24-24zM224 352a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></div>
+          <div><span class="la-tag">Action Required</span><h2>Payment Method Missing</h2></div>
+        </div>
+        <p class="la-state-text">Your details are saved, but we can't review your application until you add your payment method.</p>
+        <a class="la-cta" href="{% url 'payment_method' %}"><span>Complete Payment Method</span><svg viewBox="0 0 448 512" class="la-cta-ico" aria-hidden="true"><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg></a>
+      </section>
+      {% elif loan.status == "APPROVED" or loan.status == "PAID" %}
+      <section class="la-card la-state">
+        <div class="la-head">
+          <div class="la-head-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg></div>
+          <div><span class="la-tag">Approved</span><h2>Your loan is approved</h2></div>
+        </div>
+        <p class="la-state-text">Congratulations! You can open your loan contract any time.</p>
+        <a class="la-cta la-cta-green" href="{% url 'contract' %}"><span>View Contract</span><svg viewBox="0 0 448 512" class="la-cta-ico" aria-hidden="true"><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg></a>
+      </section>
+      {% else %}
+      <section class="la-card la-state">
+        <div class="la-head">
+          <div class="la-head-ico"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M32 0C14.3 0 0 14.3 0 32S14.3 64 32 64V75c0 42.4 16.9 83.1 46.9 113.1L146.7 256 78.9 323.9C48.9 353.9 32 394.6 32 437v11c-17.7 0-32 14.3-32 32s14.3 32 32 32H64 320h32c17.7 0 32-14.3 32-32s-14.3-32-32-32V437c0-42.4-16.9-83.1-46.9-113.1L237.3 256l67.9-67.9c30-30 46.9-70.7 46.9-113.1V64c17.7 0 32-14.3 32-32s-14.3-32-32-32H320 64 32zM96 75V64H288V75c0 19-5.6 37.4-16 53H112c-10.3-15.6-16-34-16-53zm16 309c3.5-5.3 7.6-10.3 12.1-14.9L192 301.3l67.9 67.9c4.6 4.6 8.6 9.6 12.1 14.9H112z"/></svg></div>
+          <div><span class="la-tag">Submitted</span><h2>Waiting for review</h2></div>
+        </div>
+        <p class="la-state-text">Our team is checking your application. You can follow every step on the Quick Loan page.</p>
+        <a class="la-cta la-cta-line" href="{% url 'quick_loan' %}"><span>Track Application Status</span><svg viewBox="0 0 448 512" class="la-cta-ico" aria-hidden="true"><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg></a>
+      </section>
+      {% endif %}
+      {% endif %}
+
+      <form class="la-form" id="laForm" method="POST" action="{% url 'loan_apply' %}" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="loan_amount" id="loanAmount">
+        <input type="hidden" name="loan_terms" id="loanTerms">
+
+        <div class="la-col" id="laCol">
+
+          <!-- ── 1 · Loan offer ── -->
+          <section class="la-card sp" id="laSp1">
+            <div class="la-head">
+              <div class="la-head-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V192c0-35.3-28.7-64-64-64H80c-8.8 0-16-7.2-16-16s7.2-16 16-16H448c17.7 0 32-14.3 32-32s-14.3-32-32-32H64zM416 272a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg></div>
+              <div>
+                <h2>Your Loan Offer</h2>
+                <p>{% if locked %}As you submitted it{% else %}You can still change the amount or term{% endif %}</p>
+              </div>
+            </div>
+            <label class="la-label" for="laAmount">Loan amount</label>
+            <div class="la-amt">
+              <span aria-hidden="true">₱</span>
+              <input type="text" inputmode="decimal" id="laAmount" autocomplete="off" placeholder="e.g. 150,000"
+                     enterkeyhint="done" aria-describedby="laAmtErr"{% if locked %} readonly value="{{ loan.amount|default_if_none:''|floatformat:"-2" }}"{% endif %}>
+            </div>
+            <p class="la-err" id="laAmtErr" role="alert"></p>
+
+            <span class="la-label la-label-gap" id="laTermLabel">Loan term</span>
+            <div class="la-terms{% if locked %} is-locked{% endif %}" id="laTerms" role="radiogroup" aria-labelledby="laTermLabel"{% if locked %} data-term="{{ loan.term_months|default_if_none:'' }}"{% endif %}>
+              <span class="la-term-ind" aria-hidden="true"></span>
+              <button type="button" class="term-btn" data-term="6" role="radio" aria-checked="false"{% if locked %} disabled{% endif %}>6<span>months</span></button>
+              <button type="button" class="term-btn" data-term="12" role="radio" aria-checked="false"{% if locked %} disabled{% endif %}>12<span>months</span></button>
+              <button type="button" class="term-btn" data-term="24" role="radio" aria-checked="false"{% if locked %} disabled{% endif %}>24<span>months</span></button>
+              <button type="button" class="term-btn" data-term="36" role="radio" aria-checked="false"{% if locked %} disabled{% endif %}>36<span>months</span></button>
+            </div>
+            {% if locked %}<p class="la-hint" id="laTermNote" hidden></p>{% endif %}
+
+            <div class="la-stats" aria-live="polite">
+              <div class="la-stat"><span>Interest</span><b>{{ loan_rate_pct }}% / mo</b></div>
+              <div class="la-stat la-stat-main"><span>Monthly</span><b id="laMonthly">—</b></div>
+            </div>
+          </section>
+
+          <!-- ── 2 · Loan purpose ── -->
+          <section class="la-card sp" id="laSp2">
+            <div class="la-head">
+              <div class="la-head-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M448 256A192 192 0 1 0 64 256a192 192 0 1 0 384 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256 80a80 80 0 1 0 0-160 80 80 0 1 0 0 160zm0-224a144 144 0 1 1 0 288 144 144 0 1 1 0-288zM224 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0z"/></svg></div>
+              <div>
+                <h2>Loan Purpose</h2>
+                <p>Choose the one that fits your need best</p>
+              </div>
+            </div>
+            <div class="la-purp{% if locked %} is-locked{% endif %}" id="laPurp" role="group" aria-label="Loan purpose">
+              <label class="la-pt"><input type="checkbox" name="loan_purposes" value="Personal Loan"{% if loan and "Personal Loan" in loan.loan_purposes %} checked{% endif %}{% if locked %} disabled{% endif %}><span class="la-pt-ico"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg></span><span><b>Personal</b><small>Daily needs &amp; travel</small></span><span class="la-pt-chk"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></span></label>
+              <label class="la-pt"><input type="checkbox" name="loan_purposes" value="Business"{% if loan and "Business" in loan.loan_purposes %} checked{% endif %}{% if locked %} disabled{% endif %}><span class="la-pt-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M184 48H328c4.4 0 8 3.6 8 8V96H176V56c0-4.4 3.6-8 8-8zm-56 8V96H64C28.7 96 0 124.7 0 160v96H192 320 512V160c0-35.3-28.7-64-64-64H384V56c0-30.9-25.1-56-56-56H184c-30.9 0-56 25.1-56 56zM512 288H320v32c0 17.7-14.3 32-32 32H224c-17.7 0-32-14.3-32-32V288H0V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V288z"/></svg></span><span><b>Business</b><small>Grow your business</small></span><span class="la-pt-chk"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></span></label>
+              <label class="la-pt"><input type="checkbox" name="loan_purposes" value="Medical"{% if loan and "Medical" in loan.loan_purposes %} checked{% endif %}{% if locked %} disabled{% endif %}><span class="la-pt-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M228.3 469.1L47.6 300.4c-4.2-3.9-8.2-8.1-11.9-12.4h87c22.6 0 43-13.6 51.7-34.5l10.5-25.2 49.3 109.5c3.8 8.5 12.1 14 21.4 14.1s17.8-5 22-13.3L320 253.7l1.7 3.4c9.5 19 28.9 31 50.1 31H476.3c-3.7 4.3-7.7 8.5-11.9 12.4L283.7 469.1c-7.5 7-17.4 10.9-27.7 10.9s-20.2-3.9-27.7-10.9zM503.7 240h-132c-3 0-5.8-1.7-7.2-4.4l-23.2-46.3c-4.1-8.1-12.4-13.3-21.5-13.3s-17.4 5.1-21.5 13.3l-41.4 82.8L205.9 158.2c-3.9-8.7-12.7-14.3-22.2-14.1s-18.1 5.9-21.8 14.8l-31.8 76.3c-1.2 3-4.2 4.9-7.4 4.9H16c-2.6 0-5 .4-7.3 1.1C3 225.2 0 208.2 0 190.9v-5.8c0-69.9 50.5-129.5 119.4-141C165 36.5 211.4 51.4 244 84l12 12 12-12c32.6-32.6 79-47.5 124.6-39.9C461.5 55.6 512 115.2 512 185.1v5.8c0 16.9-2.8 33.5-8.3 49.1z"/></svg></span><span><b>Medical</b><small>Health &amp; hospital bills</small></span><span class="la-pt-chk"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></span></label>
+              <label class="la-pt"><input type="checkbox" name="loan_purposes" value="Education"{% if loan and "Education" in loan.loan_purposes %} checked{% endif %}{% if locked %} disabled{% endif %}><span class="la-pt-ico"><svg viewBox="0 0 640 512" aria-hidden="true"><path d="M320 32c-8.1 0-16.1 1.4-23.7 4.1L15.8 137.4C6.3 140.9 0 149.9 0 160s6.3 19.1 15.8 22.6l57.9 20.9C57.3 229.3 48 259.8 48 291.9v28.1c0 28.4-10.8 57.7-22.3 80.8c-6.5 13-13.9 25.8-22.5 37.6C0 442.7-.9 448.3 .9 453.4s6 8.9 11.2 10.2l64 16c4.2 1.1 8.7 .3 12.4-2s6.3-6.1 7.1-10.4c8.6-42.8 4.3-81.2-2.1-108.7C90.3 344.3 86 329.8 80 316.5V291.9c0-30.2 10.2-58.7 27.9-81.5c12.9-15.5 29.6-28 49.2-35.7l157-61.7c8.2-3.2 17.5 .8 20.7 9s-.8 17.5-9 20.7l-157 61.7c-12.4 4.9-23.3 12.4-32.2 21.6l159.6 57.6c7.6 2.7 15.6 4.1 23.7 4.1s16.1-1.4 23.7-4.1L624.2 182.6c9.5-3.4 15.8-12.5 15.8-22.6s-6.3-19.1-15.8-22.6L343.7 36.1C336.1 33.4 328.1 32 320 32zM128 408c0 35.3 86 72 192 72s192-36.7 192-72L496.7 262.6 354.5 314c-11.1 4-22.8 6-34.5 6s-23.5-2-34.5-6L143.3 262.6 128 408z"/></svg></span><span><b>Education</b><small>Tuition &amp; school fees</small></span><span class="la-pt-chk"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></span></label>
+              <label class="la-pt"><input type="checkbox" name="loan_purposes" value="Home repair"{% if loan and "Home repair" in loan.loan_purposes %} checked{% endif %}{% if locked %} disabled{% endif %}><span class="la-pt-ico"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M543.8 287.6c17 0 32-14 32-32.1c1-9-3-17-11-24L512 185V64c0-17.7-14.3-32-32-32H448c-17.7 0-32 14.3-32 32v36.7L309.5 7c-6-5-14-7-21-7s-15 1-22 8L10 231.5c-7 7-10 15-10 24c0 18 14 32.1 32 32.1h32v69.7c-.1 .9-.1 1.8-.1 2.8V472c0 22.1 17.9 40 40 40h16c1.2 0 2.4-.1 3.6-.2c1.5 .1 3 .2 4.5 .2H160h24c22.1 0 40-17.9 40-40V448 384c0-17.7 14.3-32 32-32h64c17.7 0 32 14.3 32 32v64 24c0 22.1 17.9 40 40 40h24 32.5c1.4 0 2.8 0 4.2-.1c1.1 .1 2.2 .1 3.3 .1h16c22.1 0 40-17.9 40-40V455.8c.3-2.6 .5-5.3 .5-8.1l-.7-160.2h32z"/></svg></span><span><b>Home Repair</b><small>Fix or renovate</small></span><span class="la-pt-chk"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></span></label>
+              <label class="la-pt"><input type="checkbox" name="loan_purposes" value="Debt consolidation"{% if loan and "Debt consolidation" in loan.loan_purposes %} checked{% endif %}{% if locked %} disabled{% endif %}><span class="la-pt-ico"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M64 32C28.7 32 0 60.7 0 96v32H576V96c0-35.3-28.7-64-64-64H64zM576 224H0V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V224zM112 352h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16s7.2-16 16-16zm112 16c0-8.8 7.2-16 16-16H368c8.8 0 16 7.2 16 16s-7.2 16-16 16H240c-8.8 0-16-7.2-16-16z"/></svg></span><span><b>Debt</b><small>Combine your debts</small></span><span class="la-pt-chk"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></span></label>
+              <label class="la-pt"><input type="checkbox" name="loan_purposes" value="Emergency"{% if loan and "Emergency" in loan.loan_purposes %} checked{% endif %}{% if locked %} disabled{% endif %}><span class="la-pt-ico"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H96V32H64zm64 0V480H448V32H128zM512 480c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H480V480h32zM256 176c0-8.8 7.2-16 16-16h32c8.8 0 16 7.2 16 16v48h48c8.8 0 16 7.2 16 16v32c0 8.8-7.2 16-16 16H320v48c0 8.8-7.2 16-16 16H272c-8.8 0-16-7.2-16-16V288H208c-8.8 0-16-7.2-16-16V240c0-8.8 7.2-16 16-16h48V176z"/></svg></span><span><b>Emergency</b><small>Urgent money needs</small></span><span class="la-pt-chk"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></span></label>
+              <label class="la-pt"><input type="checkbox" name="loan_purposes" value="Other"{% if loan and "Other" in loan.loan_purposes %} checked{% endif %}{% if locked %} disabled{% endif %}><span class="la-pt-ico"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M8 256a56 56 0 1 1 112 0A56 56 0 1 1 8 256zm160 0a56 56 0 1 1 112 0 56 56 0 1 1 -112 0zm216-56a56 56 0 1 1 0 112 56 56 0 1 1 0-112z"/></svg></span><span><b>Other</b><small>Something else</small></span><span class="la-pt-chk"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></span></label>
+            </div>
+          </section>
+
+          <!-- ── 3 · Personal details ── -->
+          <section class="la-card sp" id="laSp3">
+            <div class="la-head">
+              <div class="la-head-ico"><svg viewBox="0 0 640 512" aria-hidden="true"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H322.8c-3.1-8.8-3.7-18.4-1.4-27.8l15-60.1c2.8-11.3 8.6-21.5 16.8-29.7l40.3-40.3c-32.1-31-75.7-50.1-123.9-50.1H178.3zm435.5-68.3c-15.6-15.6-40.9-15.6-56.6 0l-29.4 29.4 71 71 29.4-29.4c15.6-15.6 15.6-40.9 0-56.6l-14.4-14.4zM375.9 417c-4.1 4.1-7 9.2-8.4 14.9l-15 60.1c-1.4 5.5 .2 11.2 4.2 15.2s9.7 5.6 15.2 4.2l60.1-15c5.6-1.4 10.8-4.3 14.9-8.4L576.1 358.7l-71-71L375.9 417z"/></svg></div>
+              <div>
+                <h2>Personal Details</h2>
+                <p>Please use the name on your ID</p>
+              </div>
+            </div>
+            <div class="la-fields">
+              <div>
+                <label class="la-label" for="fullName">Full name</label>
+                <div class="la-field"><span class="la-ico"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg></span>
+                  <input class="la-input" type="text" name="full_name" id="fullName" autocomplete="name" autocapitalize="words" enterkeyhint="next" placeholder="Juan Dela Cruz"
+                         value="{{ loan.full_name|default:'' }}"{% if locked %} readonly{% endif %}></div>
+              </div>
+              <div>
+                <label class="la-label" for="ageInput">Age</label>
+                <div class="la-field"><span class="la-ico"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z"/></svg></span>
+                  <input class="la-input" type="text" name="age" id="ageInput" inputmode="numeric" autocomplete="off" enterkeyhint="next" placeholder="18 – 90"
+                         value="{{ loan.age|default:'' }}"{% if locked %} readonly{% endif %}></div>
+              </div>
+              <div>
+                <label class="la-label" for="currentLiving">Current living address</label>
+                <div class="la-field"><span class="la-ico"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg></span>
+                  <textarea class="la-input" name="current_living" id="currentLiving" rows="2" enterkeyhint="next" placeholder="Where you live now"{% if locked %} readonly{% endif %}>{{ loan.current_living|default:'' }}</textarea></div>
+              </div>
+              <div>
+                <label class="la-label" for="hometownInput">Hometown</label>
+                <div class="la-field"><span class="la-ico"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M543.8 287.6c17 0 32-14 32-32.1c1-9-3-17-11-24L512 185V64c0-17.7-14.3-32-32-32H448c-17.7 0-32 14.3-32 32v36.7L309.5 7c-6-5-14-7-21-7s-15 1-22 8L10 231.5c-7 7-10 15-10 24c0 18 14 32.1 32 32.1h32v69.7c-.1 .9-.1 1.8-.1 2.8V472c0 22.1 17.9 40 40 40h16c1.2 0 2.4-.1 3.6-.2c1.5 .1 3 .2 4.5 .2H160h24c22.1 0 40-17.9 40-40V448 384c0-17.7 14.3-32 32-32h64c17.7 0 32 14.3 32 32v64 24c0 22.1 17.9 40 40 40h24 32.5c1.4 0 2.8 0 4.2-.1c1.1 .1 2.2 .1 3.3 .1h16c22.1 0 40-17.9 40-40V455.8c.3-2.6 .5-5.3 .5-8.1l-.7-160.2h32z"/></svg></span>
+                  <textarea class="la-input" name="hometown" id="hometownInput" rows="2" enterkeyhint="next" placeholder="Your home province or city"{% if locked %} readonly{% endif %}>{{ loan.hometown|default:'' }}</textarea></div>
+              </div>
+              <div>
+                <label class="la-label" for="incomeInput">Monthly income <i>(optional)</i></label>
+                <div class="la-field"><span class="la-ico is-peso">₱</span>
+                  <input class="la-input" type="text" name="income" id="incomeInput" inputmode="numeric" autocomplete="off" enterkeyhint="next" placeholder="0"
+                         value="{{ loan.income|default:'' }}"{% if locked %} readonly{% endif %}></div>
+              </div>
+              <div>
+                <label class="la-label" for="expensesInput">Monthly expenses</label>
+                <div class="la-field"><span class="la-ico is-peso">₱</span>
+                  <input class="la-input" type="text" name="monthly_expenses" id="expensesInput" inputmode="numeric" autocomplete="off" enterkeyhint="next" placeholder="0"
+                         value="{{ loan.monthly_expenses|default:'' }}"{% if locked %} readonly{% endif %}></div>
+              </div>
+              <div>
+                <label class="la-label" for="identityName">Identity name</label>
+                <div class="la-field"><span class="la-ico"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H64zm96 320h64c44.2 0 80 35.8 80 80c0 8.8-7.2 16-16 16H96c-8.8 0-16-7.2-16-16c0-44.2 35.8-80 80-80zm-32-96a64 64 0 1 1 128 0 64 64 0 1 1 -128 0zM144 64h96c8.8 0 16 7.2 16 16s-7.2 16-16 16H144c-8.8 0-16-7.2-16-16s7.2-16 16-16z"/></svg></span>
+                  <input class="la-input" type="text" name="identity_name" id="identityName" autocomplete="off" enterkeyhint="next" placeholder="Identity name"
+                         value="{{ loan.identity_name|default:'' }}"{% if locked %} readonly{% endif %}></div>
+              </div>
+              <div>
+                <label class="la-label" for="identityNumber">Identity number</label>
+                <div class="la-field"><span class="la-ico"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M181.3 32.4c17.4 2.9 29.2 19.4 26.3 36.8L197.8 128h95.1l11.5-69.3c2.9-17.4 19.4-29.2 36.8-26.3s29.2 19.4 26.3 36.8L357.8 128H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H347.1L325.8 320H384c17.7 0 32 14.3 32 32s-14.3 32-32 32H315.1l-11.5 69.3c-2.9 17.4-19.4 29.2-36.8 26.3s-29.2-19.4-26.3-36.8l9.8-58.7H155.1l-11.5 69.3c-2.9 17.4-19.4 29.2-36.8 26.3s-29.2-19.4-26.3-36.8L90.2 384H32c-17.7 0-32-14.3-32-32s14.3-32 32-32h68.9l21.3-128H64c-17.7 0-32-14.3-32-32s14.3-32 32-32h68.9l11.5-69.3c2.9-17.4 19.4-29.2 36.8-26.3zM187.1 192L165.8 320h95.1l21.3-128H187.1z"/></svg></span>
+                  <input class="la-input" type="text" name="identity_number" id="identityNumber" inputmode="numeric" autocomplete="off" enterkeyhint="done" placeholder="Identity number"
+                         value="{{ loan.identity_number|default:'' }}"{% if locked %} readonly{% endif %}></div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ── 4 · ID photos + signature ── -->
+          <section class="la-card sp" id="laSp4">
+            <div class="la-head">
+              <div class="la-head-ico"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M0 96l576 0c0-35.3-28.7-64-64-64H64C28.7 32 0 60.7 0 96zm0 32V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V128H0zM64 405.3c0-29.5 23.9-53.3 53.3-53.3H234.7c29.5 0 53.3 23.9 53.3 53.3c0 5.9-4.8 10.7-10.7 10.7H74.7c-5.9 0-10.7-4.8-10.7-10.7zM176 192a64 64 0 1 1 0 128 64 64 0 1 1 0-128zm176 16c0-8.8 7.2-16 16-16H496c8.8 0 16 7.2 16 16s-7.2 16-16 16H368c-8.8 0-16-7.2-16-16zm0 64c0-8.8 7.2-16 16-16H496c8.8 0 16 7.2 16 16s-7.2 16-16 16H368c-8.8 0-16-7.2-16-16zm0 64c0-8.8 7.2-16 16-16H496c8.8 0 16 7.2 16 16s-7.2 16-16 16H368c-8.8 0-16-7.2-16-16z"/></svg></div>
+              <div>
+                <h2>ID Verification</h2>
+                <p>Clear photos of your government ID</p>
+              </div>
+            </div>
+            <div class="la-ups">
+              <label class="la-up{% if locked %} is-locked{% if loan.id_front %} has-img{% endif %}{% endif %}" id="boxFront">
+                <input class="la-file" type="file" name="id_front" accept="image/*"{% if locked %} disabled{% endif %}>
+                <span class="la-up-ico"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M0 96l576 0c0-35.3-28.7-64-64-64H64C28.7 32 0 60.7 0 96zm0 32V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V128H0zM64 405.3c0-29.5 23.9-53.3 53.3-53.3H234.7c29.5 0 53.3 23.9 53.3 53.3c0 5.9-4.8 10.7-10.7 10.7H74.7c-5.9 0-10.7-4.8-10.7-10.7zM176 192a64 64 0 1 1 0 128 64 64 0 1 1 0-128zm176 16c0-8.8 7.2-16 16-16H496c8.8 0 16 7.2 16 16s-7.2 16-16 16H368c-8.8 0-16-7.2-16-16zm0 64c0-8.8 7.2-16 16-16H496c8.8 0 16 7.2 16 16s-7.2 16-16 16H368c-8.8 0-16-7.2-16-16zm0 64c0-8.8 7.2-16 16-16H496c8.8 0 16 7.2 16 16s-7.2 16-16 16H368c-8.8 0-16-7.2-16-16z"/></svg></span><b>ID Front</b><small>Tap to upload</small>
+                <img alt="ID front"{% if locked and loan.id_front %} src="{{ loan.id_front.url }}"{% endif %}>
+                <span class="la-up-ok"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></span>
+                <span class="la-up-chg"><svg viewBox="0 0 640 512" aria-hidden="true"><path d="M213.1 64.8L202.7 96H128c-35.3 0-64 28.7-64 64V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H437.3L426.9 64.8C420.4 45.2 402.1 32 381.4 32H258.6c-20.7 0-39 13.2-45.5 32.8zM448 256c0 8.8-7.2 16-16 16H355.3c-6.2 0-11.3-5.1-11.3-11.3c0-3 1.2-5.9 3.3-8L371 229c-13.6-13.4-31.9-21-51-21c-19.2 0-37.7 7.6-51.3 21.3L249 249c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l19.7-19.7C257.4 172.7 288 160 320 160c31.8 0 62.4 12.6 85 35l23.7-23.7c2.1-2.1 5-3.3 8-3.3c6.2 0 11.3 5.1 11.3 11.3V256zM192 320c0-8.8 7.2-16 16-16h76.7c6.2 0 11.3 5.1 11.3 11.3c0 3-1.2 5.9-3.3 8L269 347c13.6 13.4 31.9 21 51 21c19.2 0 37.7-7.6 51.3-21.3L391 327c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-19.7 19.7C382.6 403.3 352 416 320 416c-31.8 0-62.4-12.6-85-35l-23.7 23.7c-2.1 2.1-5 3.3-8 3.3c-6.2 0-11.3-5.1-11.3-11.3V320z"/></svg>Change</span>
+                <span class="la-up-busy"><i class="la-spin"></i>Preparing…</span>
+              </label>
+              <label class="la-up{% if locked %} is-locked{% if loan.id_back %} has-img{% endif %}{% endif %}" id="boxBack">
+                <input class="la-file" type="file" name="id_back" accept="image/*"{% if locked %} disabled{% endif %}>
+                <span class="la-up-ico"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M528 160V416c0 8.8-7.2 16-16 16H320c0-44.2-35.8-80-80-80H176c-44.2 0-80 35.8-80 80H64c-8.8 0-16-7.2-16-16V160H528zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zM272 256a64 64 0 1 0 -128 0 64 64 0 1 0 128 0zm104-48c-13.3 0-24 10.7-24 24s10.7 24 24 24h80c13.3 0 24-10.7 24-24s-10.7-24-24-24H376zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24h80c13.3 0 24-10.7 24-24s-10.7-24-24-24H376z"/></svg></span><b>ID Back</b><small>Tap to upload</small>
+                <img alt="ID back"{% if locked and loan.id_back %} src="{{ loan.id_back.url }}"{% endif %}>
+                <span class="la-up-ok"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></span>
+                <span class="la-up-chg"><svg viewBox="0 0 640 512" aria-hidden="true"><path d="M213.1 64.8L202.7 96H128c-35.3 0-64 28.7-64 64V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H437.3L426.9 64.8C420.4 45.2 402.1 32 381.4 32H258.6c-20.7 0-39 13.2-45.5 32.8zM448 256c0 8.8-7.2 16-16 16H355.3c-6.2 0-11.3-5.1-11.3-11.3c0-3 1.2-5.9 3.3-8L371 229c-13.6-13.4-31.9-21-51-21c-19.2 0-37.7 7.6-51.3 21.3L249 249c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l19.7-19.7C257.4 172.7 288 160 320 160c31.8 0 62.4 12.6 85 35l23.7-23.7c2.1-2.1 5-3.3 8-3.3c6.2 0 11.3 5.1 11.3 11.3V256zM192 320c0-8.8 7.2-16 16-16h76.7c6.2 0 11.3 5.1 11.3 11.3c0 3-1.2 5.9-3.3 8L269 347c13.6 13.4 31.9 21 51 21c19.2 0 37.7-7.6 51.3-21.3L391 327c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-19.7 19.7C382.6 403.3 352 416 320 416c-31.8 0-62.4-12.6-85-35l-23.7 23.7c-2.1 2.1-5 3.3-8 3.3c-6.2 0-11.3-5.1-11.3-11.3V320z"/></svg>Change</span>
+                <span class="la-up-busy"><i class="la-spin"></i>Preparing…</span>
+              </label>
+              <label class="la-up la-up-selfie{% if locked %} is-locked{% if loan.selfie_with_id %} has-img{% endif %}{% endif %}" id="boxSelfie">
+                <input class="la-file" type="file" name="selfie_with_id" accept="image/*"{% if locked %} disabled{% endif %}>
+                <span class="la-up-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M149.1 64.8L138.7 96H64C28.7 96 0 124.7 0 160V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H373.3L362.9 64.8C356.4 45.2 338.1 32 317.4 32H194.6c-20.7 0-39 13.2-45.5 32.8zM256 192a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"/></svg></span><b>Selfie With Your ID</b><small>Hold your ID next to your face</small>
+                <img alt="Selfie with ID"{% if locked and loan.selfie_with_id %} src="{{ loan.selfie_with_id.url }}"{% endif %}>
+                <span class="la-up-ok"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></span>
+                <span class="la-up-chg"><svg viewBox="0 0 640 512" aria-hidden="true"><path d="M213.1 64.8L202.7 96H128c-35.3 0-64 28.7-64 64V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H437.3L426.9 64.8C420.4 45.2 402.1 32 381.4 32H258.6c-20.7 0-39 13.2-45.5 32.8zM448 256c0 8.8-7.2 16-16 16H355.3c-6.2 0-11.3-5.1-11.3-11.3c0-3 1.2-5.9 3.3-8L371 229c-13.6-13.4-31.9-21-51-21c-19.2 0-37.7 7.6-51.3 21.3L249 249c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l19.7-19.7C257.4 172.7 288 160 320 160c31.8 0 62.4 12.6 85 35l23.7-23.7c2.1-2.1 5-3.3 8-3.3c6.2 0 11.3 5.1 11.3 11.3V256zM192 320c0-8.8 7.2-16 16-16h76.7c6.2 0 11.3 5.1 11.3 11.3c0 3-1.2 5.9-3.3 8L269 347c13.6 13.4 31.9 21 51 21c19.2 0 37.7-7.6 51.3-21.3L391 327c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9l-19.7 19.7C382.6 403.3 352 416 320 416c-31.8 0-62.4-12.6-85-35l-23.7 23.7c-2.1 2.1-5 3.3-8 3.3c-6.2 0-11.3-5.1-11.3-11.3V320z"/></svg>Change</span>
+                <span class="la-up-busy"><i class="la-spin"></i>Preparing…</span>
+              </label>
+            </div>
+
+            <div class="la-sig-head">
+              <span class="la-label">Signature</span>
+              {% if not locked %}<button type="button" class="la-clear" id="sigClear"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M290.7 57.4L57.4 290.7c-25 25-25 65.5 0 90.5l80 80c12 12 28.3 18.7 45.3 18.7H288h9.4H512c17.7 0 32-14.3 32-32s-14.3-32-32-32H387.9L518.6 285.3c25-25 25-65.5 0-90.5L381.3 57.4c-25-25-65.5-25-90.5 0zM297.4 416H288l-105.4 0-80-80L227.3 211.3 364.7 348.7 297.4 416z"/></svg>Clear</button>{% endif %}
+            </div>
+            {% if locked %}
+            <div class="la-pad is-locked{% if loan.signature_image %} has-ink{% endif %}" id="laPad">
+              {% if loan.signature_image %}<img src="{{ loan.signature_image.url }}" alt="Your signature">{% endif %}
+            </div>
+            {% else %}
+            <div class="la-pad" id="laPad">
+              <div class="la-pad-line"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg><span>Sign here with your finger</span></div>
+              <canvas id="sigCanvas" aria-label="Signature pad"></canvas>
+              <input type="hidden" name="signature_data" id="signatureData" value="">
+            </div>
+            {% endif %}
+          </section>
+
+          <!-- ── 5 · Confirm ── -->
+          <div class="la-confirm sp" id="laSp5">
+            {% if not locked %}
+            <button type="submit" class="la-cta" id="confirmApplyBtn" name="action" value="apply_loan"><svg viewBox="0 0 512 512" class="la-cta-ico" aria-hidden="true"><path d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480V396.4c0-4 1.5-7.8 4.2-10.7L331.8 202.8c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8 17.7 316.6C7.1 311.3 .3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z"/></svg><i class="la-spin" aria-hidden="true"></i><span id="laCtaTxt">Confirm Apply</span></button>
+            <p class="la-fine">Please check your details before you confirm.</p>
+            {% elif loan.status == "APPROVED" or loan.status == "PAID" %}
+            <button type="button" class="la-cta" disabled><svg viewBox="0 0 512 512" class="la-cta-ico" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg><span>Application Approved</span></button>
+            {% elif loan.status == "DRAFT" %}
+            <a class="la-cta" href="{% url 'payment_method' %}"><span>Complete Payment Method</span><svg viewBox="0 0 448 512" class="la-cta-ico" aria-hidden="true"><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg></a>
+            {% else %}
+            <button type="button" class="la-cta" disabled><svg viewBox="0 0 512 512" class="la-cta-ico" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg><span>Submitted · Waiting for review</span></button>
+            {% endif %}
+          </div>
+
+          {% if not locked %}
+          <!-- ── Guide (moved between the sections by the script below) ── -->
+          <div class="la-guide" id="laGuide" role="dialog" aria-label="Loan application guide" hidden>
+            <div class="la-gfloat">
+              <div class="la-gbody">
+                <div class="la-gglow"></div>
+                <div class="la-ghead">
+                  <div class="la-gwho"><span class="la-gava"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M370.7 96.1C346.1 39.5 289.7 0 224 0S101.9 39.5 77.3 96.1C60.9 97.5 48 111.2 48 128v64c0 16.8 12.9 30.5 29.3 31.9C101.9 280.5 158.3 320 224 320s122.1-39.5 146.7-96.1c16.4-1.4 29.3-15.1 29.3-31.9V128c0-16.8-12.9-30.5-29.3-31.9zM336 144v16c0 53-43 96-96 96H208c-53 0-96-43-96-96V144c0-26.5 21.5-48 48-48H288c26.5 0 48 21.5 48 48zM189.3 162.7l-6-21.2c-.9-3.3-3.9-5.5-7.3-5.5s-6.4 2.2-7.3 5.5l-6 21.2-21.2 6c-3.3 .9-5.5 3.9-5.5 7.3s2.2 6.4 5.5 7.3l21.2 6 6 21.2c.9 3.3 3.9 5.5 7.3 5.5s6.4-2.2 7.3-5.5l6-21.2 21.2-6c3.3-.9 5.5-3.9 5.5-7.3s-2.2-6.4-5.5-7.3l-21.2-6zM112.7 316.5C46.7 342.6 0 407 0 482.3C0 498.7 13.3 512 29.7 512H128V448c0-17.7 14.3-32 32-32H288c17.7 0 32 14.3 32 32v64l98.3 0c16.4 0 29.7-13.3 29.7-29.7c0-75.3-46.7-139.7-112.7-165.8C303.9 338.8 265.5 352 224 352s-79.9-13.2-111.3-35.5zM176 448c-8.8 0-16 7.2-16 16v48h32V464c0-8.8-7.2-16-16-16zm96 32a16 16 0 1 0 0-32 16 16 0 1 0 0 32z"/></svg></span><span class="la-gstep" id="laGStep">Step 1 of 5</span></div>
+                  <div class="la-gdots" id="laGDots"><i></i><i></i><i></i><i></i><i></i></div>
+                </div>
+                <p class="la-gtext" id="laGText" aria-live="polite"></p>
+                <div class="la-gprog" id="laGProg"></div>
+                <div class="la-gerr" id="laGErr" role="alert"></div>
+                <div class="la-gacts">
+                  <button type="button" class="la-gskip" id="laGSkip">Skip guide</button>
+                  <button type="button" class="la-gnext" id="laGNext"><span id="laGNextTxt">Next</span><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg></button>
+                </div>
+              </div>
+              <span class="la-garrow"></span>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+      </form>
+
+      <footer class="la-foot">
+        <p><i></i> APEX <span>•</span> <b>v2.2.1</b></p>
+        <p>© 2026 All rights reserved</p>
+      </footer>
+    </main>
   </div>
 </div>
 
-<!-- OFL Validation Modal -->
-<div class="val-overlay" id="valOverlay" role="dialog" aria-modal="true" aria-labelledby="valTitle">
-  <div class="val-sheet">
-    <div class="val-handle"></div>
-    <div class="val-ico">
-      <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-    </div>
-    <div class="val-title" id="valTitle">Incomplete Application</div>
-    <div class="val-sub">Please complete the following before submitting:</div>
-    <ul class="val-list" id="valList"></ul>
-    <button class="val-close" id="valClose">Got it — I'll complete it</button>
+{% if not locked %}
+<!-- ── What is still missing (bottom sheet) ── -->
+<div class="la-vwrap" id="laVal" aria-hidden="true">
+  <div class="la-vsheet" role="dialog" aria-modal="true" aria-labelledby="laValTitle">
+    <div class="la-vhandle"></div>
+    <div class="la-vico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480H40c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24V296c0 13.3 10.7 24 24 24s24-10.7 24-24V184c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"/></svg></div>
+    <p class="la-vtitle" id="laValTitle">Incomplete Application</p>
+    <p class="la-vsub">Tap an item to go straight to it:</p>
+    <ul class="la-vlist" id="laValList"></ul>
+    <button type="button" class="la-vclose" id="laValClose">Got it — I'll complete it</button>
   </div>
 </div>
+<template id="laCheckIco"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></template>
+<template id="laArrowIco"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg></template>
+{% endif %}
 
-<!-- ══ LOAN APPLY GUIDE ══ -->
-<div class="la-fill-toast loading" id="laFillToast">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 0 0 12 2v2a8 8 0 0 1 5.66 2.34M4.93 4.93A10 10 0 0 0 2 12h2a8 8 0 0 1 2.34-5.66M4.93 19.07A10 10 0 0 0 12 22v-2a8 8 0 0 1-5.66-2.34M19.07 19.07A10 10 0 0 0 22 12h-2a8 8 0 0 1-2.34 5.66"/></svg>
-  <span id="laFillToastMsg">Updating detail, wait a sec...</span>
-</div>
-<div class="chat-bubble" id="laCard">
-  <div class="cb-header">
-    <div class="cb-char-wrap" style="background-image:url('{% static 'img/staff-guide.png' %}?v=5')"></div>
-    <span class="cb-step" id="laStep">STEP 1 OF 4</span>
-    <div class="cb-dots" id="laDots">
-      <span class="cb-dot on"></span>
-      <span class="cb-dot"></span>
-      <span class="cb-dot"></span>
-      <span class="cb-dot"></span>
-    </div>
-  </div>
-  <div class="cb-msg" id="laBody"></div>
-  <div class="cb-typing" id="laTyping"><span></span><span></span><span></span></div>
-  <div class="cb-foot">
-    <button class="cb-skip" id="laSkip">Skip</button>
-  </div>
-</div>
-
-<script>
-  function bindPreview(boxId, inputName, prevId){
-    const box = document.getElementById(boxId);
-    if(!box) return;
-    const input = box.querySelector(`input[name="${inputName}"]`);
-    const prev = document.getElementById(prevId);
-    if(!input || !prev) return;
-    input.addEventListener('change', () => {
-      const f = input.files && input.files[0];
-      if(!f) return;
-      const url = URL.createObjectURL(f);
-      prev.src = url;
-      box.classList.add('has-img');
-    });
-  }
-  bindPreview('boxFront', 'id_front', 'prevFront');
-  bindPreview('boxBack', 'id_back', 'prevBack');
-  bindPreview('boxSelfie', 'selfie_with_id', 'prevSelfie');
-
-  (function(){
-    const hidden = document.getElementById("loanTerms");
-    const hint = document.getElementById("termHint");
-    const btns = document.querySelectorAll(".term-btn");
-    btns.forEach(b=>{
-      b.addEventListener("click", ()=>{
-        btns.forEach(x=>x.classList.remove("active"));
-        b.classList.add("active");
-        hidden.value = b.dataset.term;
-        if(hint) hint.textContent = b.dataset.term + " months";
-        var lpbT=document.getElementById("lpbTermInp");
-        if(lpbT) lpbT.value = b.dataset.term;
-        if(window.updateSummary) window.updateSummary();
-        if(window.updateBanner) window.updateBanner();
-      });
-    });
-  })();
-
-  function updateSummary(){
-    const amountEl = document.getElementById("loanAmount");
-    const termEl   = document.getElementById("loanTerms");
-    const outAmount = document.getElementById("sumAmount");
-    const outTerm   = document.getElementById("sumTerm");
-    const outMonthly= document.getElementById("sumMonthly");
-    if(!amountEl || !termEl || !outAmount || !outTerm || !outMonthly) return;
-    const amount = Number(amountEl.value || 0);
-    const term   = Number(termEl.value || 0);
-    outAmount.textContent = amount ? amount.toLocaleString() : "—";
-    outTerm.textContent   = term ? (term + " months") : "—";
-    const rate = 0.005;
-    if(amount > 0 && term > 0){
-      const total = amount + (amount * rate * term);
-      const monthly = total / term;
-      outMonthly.textContent = Math.round(monthly).toLocaleString();
-    }else{
-      outMonthly.textContent = "—";
-    }
-  }
-
-  document.addEventListener("input", (e)=>{
-    if(e.target && e.target.id === "loanAmount") updateSummary();
-  });
-  document.addEventListener("DOMContentLoaded", updateSummary);
-
-  (function(){
-    const qs = new URLSearchParams(window.location.search);
-    const a = qs.get("amount");
-    const t = qs.get("term");
-    const amountEl = document.getElementById("loanAmount");
-    const termHidden = document.getElementById("loanTerms");
-    const hint = document.getElementById("termHint");
-    const btns = document.querySelectorAll(".term-btn");
-    if(a && amountEl) amountEl.value = a;
-    var lpbInpInit = document.getElementById("lpbAmount");
-    if(a && lpbInpInit) lpbInpInit.value = a;
-    var lpbTrmInit = document.getElementById("lpbTermInp");
-    if(t && lpbTrmInit) lpbTrmInit.value = t;
-    if(t && termHidden){
-      termHidden.value = t;
-      btns.forEach(b=>{
-        if(b.dataset.term === String(t)){
-          btns.forEach(x=>x.classList.remove("active"));
-          b.classList.add("active");
-        }
-      });
-      if(hint) hint.textContent = t + " months";
-    }
-    if(window.updateSummary) window.updateSummary();
-  })();
-
-  (function(){
-    const full = document.getElementById("fullName");
-    if(!full) return;
-    full.addEventListener("input", function(){ this.value = this.value.replace(/[^A-Za-z ]+/g, ""); });
-  })();
-  (function(){
-    const el = document.getElementById("identityName");
-    if(!el) return;
-    el.addEventListener("input", function(){ this.value = this.value.replace(/[^A-Za-z0-9 ]+/g, ""); });
-  })();
-  (function(){
-    const el = document.getElementById("identityNumber");
-    if(!el) return;
-    el.addEventListener("input", function(){ this.value = this.value.replace(/[^0-9]/g, ""); });
-  })();
-  (function(){
-    const living = document.getElementById("currentLiving");
-    if(!living) return;
-    living.addEventListener("input", function(){ this.value = this.value.replace(/[^A-Za-z0-9 ]+/g, ""); });
-  })();
-  (function(){
-    function onlyNumber(el){ if(!el) return; el.addEventListener("input", function(){ this.value = this.value.replace(/[^0-9]/g, ""); }); }
-    onlyNumber(document.getElementById("incomeInput"));
-    onlyNumber(document.getElementById("expensesInput"));
-  })();
-
-  (function(){
-    const canvas = document.getElementById("sigCanvas");
-    const hidden = document.getElementById("signatureData");
-    const clearBtn = document.getElementById("sigClear");
-    const form = document.querySelector("form");
-    if(!canvas || !hidden) return;
-    const ctx = canvas.getContext("2d");
-    function resizeCanvas(){
-      const rect = canvas.getBoundingClientRect();
-      const ratio = window.devicePixelRatio || 1;
-      canvas.width  = Math.floor(rect.width * ratio);
-      canvas.height = Math.floor(rect.height * ratio);
-      ctx.setTransform(ratio,0,0,ratio,0,0);
-      ctx.lineWidth = 3; ctx.lineCap = "round"; ctx.lineJoin = "round";
-      ctx.strokeStyle = "#38bdf8";
-    }
-    let drawing = false, hasInk = false, lastX = 0, lastY = 0;
-    function getPos(e){ const rect = canvas.getBoundingClientRect(); const touch = e.touches && e.touches[0]; const clientX = touch ? touch.clientX : e.clientX; const clientY = touch ? touch.clientY : e.clientY; return { x: clientX - rect.left, y: clientY - rect.top }; }
-    function start(e){ if(canvas.hasAttribute("disabled")) return; drawing = true; const p = getPos(e); lastX = p.x; lastY = p.y; e.preventDefault(); }
-    function move(e){ if(!drawing) return; const p = getPos(e); ctx.beginPath(); ctx.moveTo(lastX, lastY); ctx.lineTo(p.x, p.y); ctx.stroke(); lastX = p.x; lastY = p.y; hasInk = true; e.preventDefault(); }
-    function end(){ if(!drawing) return; drawing = false; if(hasInk){ hidden.value = canvas.toDataURL("image/png"); } }
-    function clear(){ ctx.clearRect(0,0,canvas.width,canvas.height); hidden.value = ""; hasInk = false; }
-    clearBtn && clearBtn.addEventListener("click", clear);
-    resizeCanvas(); window.addEventListener("resize", resizeCanvas);
-    // Restore canvas from draft if autosave refilled the hidden value
-    setTimeout(function(){
-      if(hidden.value && hidden.value.startsWith('data:image')){
-        var img=new Image();
-        img.onload=function(){
-          var ratio=window.devicePixelRatio||1;
-          ctx.drawImage(img,0,0,canvas.width/ratio,canvas.height/ratio);
-          hasInk=true;
-        };
-        img.src=hidden.value;
-      }
-    },150);
-    canvas.addEventListener("mousedown", start); canvas.addEventListener("mousemove", move); window.addEventListener("mouseup", end);
-    canvas.addEventListener("touchstart", start, {passive:false}); canvas.addEventListener("touchmove", move, {passive:false}); canvas.addEventListener("touchend", end);
-    form && form.addEventListener("submit", (e)=>{ if(hidden.disabled) return; if(!hidden.value){ e.preventDefault(); alert("Please draw your signature first."); } });
-  })();
-
-  (function(){
-    const locked = "{{ locked|yesno:'1,0' }}";
-    if(locked !== "1") return;
-    const canvas = document.getElementById("sigCanvas");
-    const img = document.getElementById("sigPreviewImg");
-    const clearBtn = document.getElementById("sigClear") || document.querySelector(".sig-btn");
-    if(img && img.getAttribute("src")){ if(canvas) canvas.style.display = "none"; if(clearBtn) clearBtn.style.display = "none"; }
-  })();
-
-  document.querySelectorAll('input[name="loan_purposes"]').forEach(cb => {
-    cb.addEventListener('change', function () {
-      if (this.checked) {
-        document.querySelectorAll('input[name="loan_purposes"]').forEach(other => {
-          if (other !== this) other.checked = false;
-        });
-      }
-    });
-  });
-
-  {% if not locked %}
-  (function loanApplyAutosave(){
-    const STORAGE_KEY = "ofl_loan_apply_draft";
-    const form = document.querySelector("form[method='POST'], form[method='post']") || document.querySelector("form");
-    if (!form) return;
-    let draft = {};
-    try { const raw = localStorage.getItem(STORAGE_KEY); if (raw) draft = JSON.parse(raw) || {}; } catch(e) { draft = {}; }
-    Object.keys(draft).forEach((name) => {
-      if(name==='csrfmiddlewaretoken') return;
-      const val = draft[name];
-      const elements = form.querySelectorAll('[name="' + name + '"]');
-      if (!elements.length) return;
-      const first = elements[0];
-      if (first.type === "checkbox"){ const checkedSet = new Set(Array.isArray(val) ? val : [val]); elements.forEach(el => { el.checked = checkedSet.has(el.value); }); }
-      else if (first.type === "radio") { elements.forEach(el => { el.checked = (el.value === val); }); }
-      else if (first.type === "file") { }
-      else { if (val !== undefined && val !== null) first.value = val; }
-    });
-    function saveDraft(){
-      const data = {};
-      form.querySelectorAll("input, textarea, select").forEach((el) => {
-        if (!el.name) return; if (el.name==='csrfmiddlewaretoken') return; if (el.type === "file") return; if (el.type === "submit") return; if (el.type === "button") return;
-        if (el.type === "checkbox"){ if (!data[el.name]) data[el.name] = []; if (el.checked) data[el.name].push(el.value); }
-        else if (el.type === "radio") { if (el.checked) data[el.name] = el.value; }
-        else { data[el.name] = el.value; }
-      });
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e){}
-    }
-    form.addEventListener("input", saveDraft, true);
-    form.addEventListener("change", saveDraft, true);
-    form.addEventListener("submit", function(e){
-      var amt = document.getElementById("loanAmount");
-      var trm = document.getElementById("loanTerms");
-      if(!amt||!amt.value||!trm||!trm.value){
-        e.preventDefault();
-        alert("Session expired or loan amount missing.\nPlease go back to Quick Loan and start again.");
-        return;
-      }
-      // Draft cleared only on payment_method (successful arrival), not here
-      const btn = document.getElementById("confirmApplyBtn");
-      if (btn){ btn.classList.add("is-loading"); btn.disabled = true; const lbl = btn.querySelector(".cta-label"); if (lbl) lbl.textContent = "Submitting..."; }
-    });
-    setTimeout(() => {
-      form.querySelectorAll("input, textarea, select").forEach((el) => {
-        try { el.dispatchEvent(new Event("input", { bubbles: true })); } catch(e){}
-      });
-    }, 50);
-  })();
-  {% endif %}
-</script>
-
-<!-- Loan reminder banner updater -->
 <script>
 (function(){
-  function fmt(n){ try { return Number(n).toLocaleString(); } catch(e){ return String(n); } }
+'use strict';
+function $(id){ return document.getElementById(id); }
+function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v); }catch(e){ return null; } }
+/* digits and one decimal point (2 decimals at most), like the old number field; no leading zeros,
+   9 digits at most — cleaned before any cut, so a pasted "PHP 1,500,000" stays 1500000 */
+function money(v){
+  v=String(v||'').replace(/[^0-9.]/g,'');
+  var k=v.indexOf('.'), i=(k<0?v:v.slice(0,k)).replace(/^0+(?=\d)/,'').slice(0,9);
+  return k<0?i:(i||'0')+'.'+v.slice(k+1).replace(/\./g,'').slice(0,2);
+}
+function peso(n,cents){
+  var s=cents?(Math.round(n*100)/100).toFixed(2).replace(/\.00$/,''):String(Math.round(n)), p=s.split('.');
+  return '₱'+p[0].replace(/\B(?=(\d{3})+(?!\d))/g,',')+(p[1]?'.'+p[1]:'');
+}
+function shake(el){ el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(function(){ el.classList.remove('shake'); },450); }
 
-  /* URL params always win over stale localStorage — re-stamp hidden fields
-     at 60 ms so autosave restore (50 ms) cannot overwrite them.            */
+var SMOOTH=(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)?'auto':'smooth';
+var LOCKED={{ locked|yesno:"true,false" }}, AMT_MIN=80000, AMT_MAX=5000000, RATE={{ loan_rate }}, DRAFT_KEY='ofl_loan_apply_draft';
+/* the payment method page continues the first-loan guide (only when that step is still to do) */
+{% if not locked or loan.status == "DRAFT" %}store('ofl_onboard','pm');{% endif %}
+
+/* ── Offer: amount + term + monthly repayment ── */
+var form=$('laForm'), amountIn=$('laAmount'), amountHidden=$('loanAmount'), termHidden=$('loanTerms');
+var terms=$('laTerms'), amtErr=$('laAmtErr'), monthlyEl=$('laMonthly');
+var termBtns=[].slice.call(terms.querySelectorAll('.term-btn')), lastMonthly='—';
+
+function byTerm(t){ return termBtns.filter(function(b){ return b.getAttribute('data-term')===String(t); })[0]||null; }
+function pickTerm(b,quiet){
+  termBtns.forEach(function(x){ var on=(x===b); x.classList.toggle('active',on); x.setAttribute('aria-checked',String(on)); });
+  if(!b){ termHidden.value=''; return; }
+  terms.style.setProperty('--i',termBtns.indexOf(b));
+  terms.classList.add('has-pick');
+  terms.classList.remove('is-error');
+  termHidden.value=b.getAttribute('data-term');
+  if(!quiet) store('ofl_quick_term',termHidden.value);
+}
+function setAmtErr(m){ amtErr.textContent=m||''; amtErr.classList.toggle('is-visible',!!m); amountIn.classList.toggle('is-error',!!m); }
+/* the minimum is only flagged once the user leaves the field or tries to go on,
+   not from the first digit (it made the guide jump while typing) */
+var minArmed=false;
+function updateOffer(){
+  var v=amountIn.value, n=Number(v||0);
+  var low=!LOCKED&&!!v&&!(n>=AMT_MIN), high=!LOCKED&&n>AMT_MAX, bad=low||high;
+  if(!bad) minArmed=false;
+  setAmtErr(high?'Maximum loan amount is ₱5,000,000.':(low&&minArmed?'Minimum loan amount is ₱80,000.':''));
+  amountHidden.value=(v&&!bad)?String(n):'';
+  var t=Number(termHidden.value||0), m=(n>0&&!bad&&t>0)?peso((n+n*RATE*t)/t):'—';
+  if(m!==lastMonthly){
+    monthlyEl.textContent=m; lastMonthly=m;
+    if(monthlyEl.animate) monthlyEl.animate([{opacity:.3,transform:'translateY(4px)'},{opacity:1,transform:'none'}],{duration:350,easing:'cubic-bezier(.22,1,.36,1)'});
+  }
+}
+
+if(LOCKED){
+  var lockedTerm=terms.getAttribute('data-term')||'';
+  pickTerm(byTerm(lockedTerm),true);
+  if(lockedTerm&&!byTerm(lockedTerm)){   /* an older loan may have 48 or 60 months: no pill, so say it in words */
+    termHidden.value=lockedTerm; $('laTermNote').textContent=lockedTerm+' months'; $('laTermNote').hidden=false;
+  }
+  [].forEach.call(document.querySelectorAll('#laPurp input'),function(i){ i.parentNode.classList.toggle('is-on',i.checked); });
+  updateOffer();
+  return;   /* a submitted application is only shown, never edited */
+}
+
+{% if not locked %}
+/* ── Fields ── */
+var F={ fullName:$('fullName'), age:$('ageInput'), living:$('currentLiving'), home:$('hometownInput'),
+        income:$('incomeInput'), expenses:$('expensesInput'), idName:$('identityName'), idNo:$('identityNumber') };
+var ORDER=[F.fullName,F.age,F.living,F.home,F.income,F.expenses,F.idName,F.idNo];
+var FILTERS=[ [amountIn,money],[F.fullName,/[^A-Za-z ]+/g],[F.age,function(v){ return v.replace(/[^0-9]/g,'').slice(0,2); }],[F.living,/[^A-Za-z0-9 ]+/g],
+             [F.income,/[^0-9]/g],[F.expenses,/[^0-9]/g],[F.idName,/[^A-Za-z0-9 ]+/g],[F.idNo,/[^0-9]/g]];
+var REQ=[
+  {el:F.fullName,name:'full name',msg:'Full name is required'},
+  {el:F.age,name:'age',msg:'Age is required',chk:function(v){ v=Number(v); return (v<18||v>90)?'Age must be between 18 and 90':''; }},
+  {el:F.living,name:'current living address',msg:'Current living address is required'},
+  {el:F.home,name:'hometown',msg:'Hometown is required'},
+  {el:F.expenses,name:'monthly expenses',msg:'Monthly expenses is required'},
+  {el:F.idName,name:'identity name',msg:'Identity name is required'},
+  {el:F.idNo,name:'identity number',msg:'Identity number is required'}
+];
+/* keep only the allowed characters without making the cursor jump */
+function clean(el,re){
+  var v=typeof re==='function'?re(el.value):el.value.replace(re,'');
+  if(v===el.value) return;
+  var at=el.selectionStart, cut=el.value.length-v.length;
+  el.value=v;
+  if(at!=null&&document.activeElement===el){ try{ el.setSelectionRange(Math.max(0,at-cut),Math.max(0,at-cut)); }catch(e){} }
+}
+FILTERS.forEach(function(p){ p[0].addEventListener('input',function(){ clean(p[0],p[1]); }); });
+function filled(r){ var v=r.el.value.trim(); return !!v&&!(r.chk&&r.chk(v)); }
+
+/* ── Purpose: one choice (kept as checkboxes, the server reads a list) ── */
+var purp=$('laPurp'), purpIns=[].slice.call(purp.querySelectorAll('input[name="loan_purposes"]'));
+function purpOn(){ return purpIns.some(function(i){ return i.checked; }); }
+function paintPurp(){ purpIns.forEach(function(i){ i.parentNode.classList.toggle('is-on',i.checked); }); }
+purpIns.forEach(function(inp){
+  inp.addEventListener('change',function(){
+    if(inp.checked) purpIns.forEach(function(o){ if(o!==inp) o.checked=false; });
+    paintPurp(); purp.classList.remove('is-error');
+  });
+});
+
+/* ── ID photos: preview at once, shrink big photos before upload ── */
+var MAX_BYTES=2*1024*1024, MAX_SIDE=1920, QUALITY=.85, busy=0, waitPhotos=false;
+var UPS=[
+  {box:$('boxFront'),label:'Front',msg:'ID front photo is required',ask:'Please add a photo of your ID front.'},
+  {box:$('boxBack'),label:'Back',msg:'ID back photo is required',ask:'Please add a photo of your ID back.'},
+  {box:$('boxSelfie'),label:'Selfie',msg:'Selfie with ID is required',ask:'Please add a selfie holding your ID.'}
+];
+function hasFile(u){ return !!(u.input.files&&u.input.files.length); }
+function decode(file){
+  function viaImg(){
+    return new Promise(function(res,rej){
+      var url=URL.createObjectURL(file), img=new Image();
+      img.onload=function(){ URL.revokeObjectURL(url); res(img); };
+      img.onerror=function(){ URL.revokeObjectURL(url); rej(new Error('decode')); };
+      img.src=url;
+    });
+  }
+  if(window.createImageBitmap) return createImageBitmap(file,{imageOrientation:'from-image'}).catch(viaImg);
+  return viaImg();
+}
+function shrink(file){
+  if(!/^image\//.test(file.type)||file.size<=MAX_BYTES) return Promise.resolve(file);
+  return decode(file).then(function(src){
+    var w=src.width, h=src.height, s=Math.min(1,MAX_SIDE/Math.max(w,h)), c=document.createElement('canvas');
+    c.width=Math.max(1,Math.round(w*s)); c.height=Math.max(1,Math.round(h*s));
+    var x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); x.drawImage(src,0,0,c.width,c.height);
+    if(src.close) src.close();
+    return new Promise(function(res){
+      c.toBlob(function(b){
+        if(!b||b.size>=file.size) return res(file);
+        try{ res(new File([b],file.name.replace(/\.[^.]+$/,'')+'.jpg',{type:'image/jpeg',lastModified:file.lastModified})); }catch(e){ res(file); }
+      },'image/jpeg',QUALITY);
+    });
+  }).catch(function(){ return file; });
+}
+function photoDone(){
+  busy=Math.max(0,busy-1);
+  if(!busy&&waitPhotos){ waitPhotos=false; setLoading(false); if(form.requestSubmit) form.requestSubmit(cta); else cta.click(); }
+}
+UPS.forEach(function(u){
+  u.input=u.box.querySelector('input[type=file]'); u.img=u.box.querySelector('img'); u.token=0; u.url='';
+  u.note=u.box.querySelector('small'); u.noteTxt=u.note.textContent;
+  u.input.addEventListener('change',function(){
+    var file=u.input.files&&u.input.files[0], token=++u.token;
+    u.box.classList.remove('is-error'); u.note.textContent=u.noteTxt;
+    if(!file){ u.box.classList.remove('has-img','is-busy'); refresh(); return; }   /* picker cancelled */
+    u.box.classList.add('is-busy'); busy++;
+    shrink(file).then(function(out){
+      if(token!==u.token) return;
+      if(out!==file){ try{ var dt=new DataTransfer(); dt.items.add(out); u.input.files=dt.files; }catch(e){} }
+      if(u.url) URL.revokeObjectURL(u.url);
+      u.url=URL.createObjectURL(out);
+      u.img.src=u.url;
+      var show=function(){ if(token===u.token) u.box.classList.add('has-img'); };
+      /* the browser cannot show it (a PDF, an unknown photo type): the server would refuse it too */
+      var bad=function(){
+        if(token!==u.token) return;
+        u.input.value=''; u.img.removeAttribute('src'); u.box.classList.remove('has-img'); u.box.classList.add('is-error');
+        u.note.textContent='Not a photo — tap to choose again';
+      };
+      return u.img.decode?u.img.decode().then(show,bad):show();
+    }).then(function(){
+      if(token===u.token) u.box.classList.remove('is-busy');
+      photoDone(); refresh();
+    });
+  });
+});
+
+/* ── Signature pad ── */
+var padBox=$('laPad'), pad=$('sigCanvas'), sigHidden=$('signatureData'), ctx=pad.getContext('2d');
+var ink=false, drawing=false, moved=false, pid=null, dirty=false, last=null, mid=null, padRect=null, encTimer=0, encToken=0, paintToken=0;
+function pen(){ ctx.lineWidth=2.6; ctx.lineCap='round'; ctx.lineJoin='round'; ctx.strokeStyle='#133224'; ctx.fillStyle='#133224'; }
+function hasSig(){ return ink&&(dirty||!!sigHidden.value); }
+function flushSig(){ if(!dirty) return; clearTimeout(encTimer); encToken++; sigHidden.value=ink?pad.toDataURL('image/png'):''; dirty=false; }
+function paintSig(src){
+  var tk=++paintToken, img=new Image();
+  img.onload=function(){
+    if(tk!==paintToken) return;
+    var r=pad.getBoundingClientRect(), s=Math.min(r.width/img.width,r.height/img.height), w=img.width*s, h=img.height*s;
+    ctx.drawImage(img,(r.width-w)/2,(r.height-h)/2,w,h);
+    ink=true; padBox.classList.add('has-ink'); refresh();
+  };
+  img.src=src;
+}
+function sizePad(){
+  var r=pad.getBoundingClientRect(), d=window.devicePixelRatio||1, w=Math.round(r.width*d), h=Math.round(r.height*d);
+  if(!w||!h||(pad.width===w&&pad.height===h)) return;
+  flushSig();   /* keep what is drawn: resizing a canvas wipes it */
+  pad.width=w; pad.height=h; ctx.setTransform(d,0,0,d,0,0); pen();
+  if(sigHidden.value) paintSig(sigHidden.value);
+}
+function encodeSoon(){
+  clearTimeout(encTimer);
+  encTimer=setTimeout(function(){
+    var tk=++encToken;
+    if(!pad.toBlob) return flushSig();
+    pad.toBlob(function(b){
+      if(tk!==encToken||!b) return;
+      var fr=new FileReader();
+      fr.onload=function(){ if(tk!==encToken) return; sigHidden.value=fr.result; dirty=false; saveSoon(); };
+      fr.readAsDataURL(b);
+    },'image/png');
+  },300);
+}
+function point(e){ return {x:e.clientX-padRect.left,y:e.clientY-padRect.top}; }
+pad.addEventListener('pointerdown',function(e){
+  if(e.button>0||drawing) return;   /* one finger at a time */
+  e.preventDefault();
+  pid=e.pointerId;
+  try{ pad.setPointerCapture(pid); }catch(err){}
+  padRect=pad.getBoundingClientRect(); paintToken++;
+  drawing=true; moved=false; last=mid=point(e);
+  padBox.classList.remove('is-error');
+  if(guide) guide.follow(3);
+});
+pad.addEventListener('pointermove',function(e){
+  if(!drawing||e.pointerId!==pid) return;
+  var list=(e.getCoalescedEvents&&e.getCoalescedEvents())||[];
+  if(!list.length) list=[e];
+  ctx.beginPath(); ctx.moveTo(mid.x,mid.y);
+  for(var i=0;i<list.length;i++){
+    var p=point(list[i]), m={x:(last.x+p.x)/2,y:(last.y+p.y)/2};
+    ctx.quadraticCurveTo(last.x,last.y,m.x,m.y);
+    last=p; mid=m;
+  }
+  ctx.stroke(); ink=moved=true;
+});
+function endStroke(e){
+  if(!drawing||(e&&e.pointerId!==pid)) return;
+  drawing=false;
+  if(moved){ ctx.beginPath(); ctx.moveTo(mid.x,mid.y); ctx.lineTo(last.x,last.y); ctx.stroke(); }
+  else if(ink){ ctx.beginPath(); ctx.arc(last.x,last.y,ctx.lineWidth/2,0,Math.PI*2); ctx.fill(); }   /* a dot on an i */
+  else return;   /* a lone tap is not a signature */
+  dirty=true; padBox.classList.add('has-ink'); encodeSoon(); refresh();
+}
+pad.addEventListener('pointerup',endStroke);
+pad.addEventListener('pointercancel',endStroke);
+pad.addEventListener('lostpointercapture',endStroke);
+$('sigClear').addEventListener('click',function(){
+  encToken++; paintToken++; clearTimeout(encTimer);
+  ctx.save(); ctx.setTransform(1,0,0,1,0,0); ctx.clearRect(0,0,pad.width,pad.height); ctx.restore();
+  sigHidden.value=''; ink=false; dirty=false; padBox.classList.remove('has-ink');
+  saveSoon(); refresh();
+});
+
+/* ── Draft: everything typed is kept on this phone until the payment method step ── */
+var saveTimer=0;
+var UID='{{ request.user.pk }}';
+function saveDraft(){
+  var data={__uid:UID};
+  [].forEach.call(form.elements,function(el){
+    if(!el.name||el.name==='csrfmiddlewaretoken'||el.type==='file'||el.type==='submit'||el.type==='button') return;
+    if(el.type==='checkbox'){ data[el.name]=data[el.name]||[]; if(el.checked) data[el.name].push(el.value); }
+    else data[el.name]=el.value;
+  });
+  store(DRAFT_KEY,JSON.stringify(data));
+}
+function saveSoon(){ clearTimeout(saveTimer); saveTimer=setTimeout(saveDraft,250); }
+(function restore(){
+  var d={};
+  try{ d=JSON.parse(store(DRAFT_KEY)||'{}')||{}; }catch(e){ d={}; }
+  /* a draft left on this phone by another account is never shown */
+  if(d.__uid!==UID){ d={}; try{ localStorage.removeItem(DRAFT_KEY); }catch(e){} }
+  [].forEach.call(form.elements,function(el){
+    if(!el.name||!Object.prototype.hasOwnProperty.call(d,el.name)) return;
+    if(el.name==='csrfmiddlewaretoken'||el.type==='file'||el.type==='submit'||el.type==='button') return;
+    var v=d[el.name];
+    if(el.type==='checkbox') el.checked=[].concat(v).indexOf(el.value)>-1;
+    else if(v!=null) el.value=String(v);
+  });
+  var first=null;   /* older drafts may hold several purposes: keep the first */
+  purpIns.forEach(function(i){ if(i.checked){ if(first) i.checked=false; else first=i; } });
+  FILTERS.forEach(function(p){ clean(p[0],p[1]); });
+  /* the offer: the link from Quick Loan first, then the draft, then the last Quick Loan values.
+     The link is read once and removed from the address, so a reload or a server error keeps
+     the client's own changes (saved in the draft) instead of the old link values. */
+  var qs=new URLSearchParams(location.search);
+  function amt(v){ v=money(v); return Number(v)>0?v:''; }
+  amountIn.value=amt(qs.get('amount'))||amt(amountHidden.value)||amt(store('ofl_quick_amount'));
+  pickTerm(byTerm(qs.get('term')||termHidden.value||store('ofl_quick_term')||''),true);
+  if(qs.has('amount')||qs.has('term')){
+    qs.delete('amount'); qs.delete('term');
+    try{ history.replaceState(history.state,'',location.pathname+(qs.toString()?'?'+qs:'')+location.hash); }catch(e){}
+  }
+  paintPurp();
+  updateOffer();
+  saveSoon();
+})();
+
+amountIn.addEventListener('input',function(){ store('ofl_quick_amount',amountIn.value); updateOffer(); });
+amountIn.addEventListener('blur',function(){ minArmed=true; updateOffer(); });
+termBtns.forEach(function(b){ b.addEventListener('click',function(){ pickTerm(b); updateOffer(); saveSoon(); refresh(); }); });
+terms.addEventListener('keydown',function(e){
+  var i=termBtns.indexOf(document.activeElement); if(i<0) return;
+  var n=e.key==='ArrowRight'||e.key==='ArrowDown'?i+1:e.key==='ArrowLeft'||e.key==='ArrowUp'?i-1:null;
+  if(n===null) return; e.preventDefault();
+  n=(n+termBtns.length)%termBtns.length; termBtns[n].focus(); pickTerm(termBtns[n]); updateOffer(); saveSoon(); refresh();
+});
+
+/* Enter moves to the next field instead of sending the form */
+form.addEventListener('keydown',function(e){
+  if(e.key!=='Enter'||e.isComposing) return;
+  var t=e.target, i=ORDER.indexOf(t);
+  if(t.type==='checkbox'){ e.preventDefault(); t.click(); return; }
+  if(t===amountIn){ e.preventDefault(); if(guide&&guide.at(0)) guide.next(); else amountIn.blur(); return; }
+  if(i<0) return;
+  e.preventDefault();
+  if(i<ORDER.length-1) ORDER[i+1].focus(); else t.blur();
+});
+
+/* ── What is missing (same order as the page) ── */
+function problems(){
+  var out=[], n=Number(amountIn.value||0);
+  if(!amountIn.value) out.push({msg:'Loan amount is required',el:$('laSp1'),focus:amountIn,mark:amountIn});
+  else if(!(n>=AMT_MIN&&n<=AMT_MAX)) out.push({msg:'Loan amount must be ₱80,000 – ₱5,000,000',el:$('laSp1'),focus:amountIn,mark:amountIn});
+  if(!termHidden.value) out.push({msg:'Loan term not selected',el:terms,mark:terms});
+  if(!purpOn()) out.push({msg:'Loan purpose not selected',el:purp,mark:purp});
+  REQ.forEach(function(r){
+    var v=r.el.value.trim(), m=!v?r.msg:(r.chk?r.chk(v):'');
+    if(m) out.push({msg:m,el:r.el.parentNode,focus:r.el,mark:r.el});
+  });
+  UPS.forEach(function(u){ if(!hasFile(u)) out.push({msg:u.msg,el:u.box,mark:u.box}); });
+  if(!hasSig()) out.push({msg:'Signature is required',el:padBox,mark:padBox});
+  return out;
+}
+
+var cta=$('confirmApplyBtn'), ctaTxt=$('laCtaTxt'), sending=false, guide=null;
+function setLoading(on,txt){ cta.classList.toggle('is-loading',on); cta.setAttribute('aria-busy',String(on)); ctaTxt.textContent=on?txt:'Confirm Apply'; }
+function refresh(){
+  cta.classList.toggle('is-ready',!problems().length);
+  if(guide) guide.update();
+}
+form.addEventListener('input',function(e){ if(e.target!==amountIn&&e.target.classList) e.target.classList.remove('is-error'); saveSoon(); refresh(); });
+form.addEventListener('change',function(){ saveSoon(); refresh(); });
+
+/* ── Bottom sheet ── */
+var sheet=$('laVal'), vList=$('laValList'), ARROW=$('laArrowIco').innerHTML;
+var sheetAt=0;   /* taps in the first moments belong to the tap that opened it */
+function settled(){ return performance.now()-sheetAt>400; }
+function closeSheet(){ sheet.classList.remove('is-open'); sheet.setAttribute('aria-hidden','true'); }
+/* bring a field into view (above the keyboard) when it is not already */
+function showField(el){
+  var vv=window.visualViewport, vTop=vv?vv.offsetTop:0, vh=vv?vv.height:window.innerHeight, r=el.getBoundingClientRect();
+  if(r.top-vTop<80||r.bottom-vTop>vh-24) window.scrollBy({top:r.top-vTop-96,behavior:SMOOTH});
+}
+function goTo(it){
+  if(it.focus) it.focus.focus({preventScroll:true});
+  else if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();
+  var vv=window.visualViewport, top=it.el.getBoundingClientRect().top-(vv?vv.offsetTop:0)-(it.focus?96:72);
+  if(Math.abs(top)>4) window.scrollBy({top:top,behavior:SMOOTH});
+  setTimeout(function(){ shake(it.el); },320);
+}
+function openSheet(list){
+  vList.textContent='';
+  list.forEach(function(it){
+    var li=document.createElement('li'), b=document.createElement('button'), s=document.createElement('span');
+    b.type='button'; b.className='la-vitem'; s.textContent=it.msg; b.appendChild(s); b.insertAdjacentHTML('beforeend',ARROW);
+    b.addEventListener('click',function(){ if(!settled()) return; closeSheet(); goTo(it); });
+    li.appendChild(b); vList.appendChild(li);
+    it.mark.classList.add('is-error');
+  });
+  vList.scrollTop=0; sheetAt=performance.now();
+  sheet.setAttribute('aria-hidden','false');
+  /* build first, slide up on the next frame so the animation starts clean */
+  requestAnimationFrame(function(){ sheet.classList.add('is-open'); });
+}
+$('laValClose').addEventListener('click',function(){ if(settled()) closeSheet(); });
+sheet.addEventListener('click',function(e){ if(e.target===sheet&&settled()) closeSheet(); });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&sheet.classList.contains('is-open')) closeSheet(); });
+
+/* ── Send ── */
+form.addEventListener('submit',function(e){
+  if(sending){ e.preventDefault(); return; }
+  flushSig();
+  var list=problems();
+  if(list.length){ e.preventDefault(); minArmed=true; updateOffer(); openSheet(list); return; }
+  if(busy){ e.preventDefault(); waitPhotos=true; setLoading(true,'Preparing photos…'); return; }
+  sending=true; setLoading(true,'Submitting…'); saveDraft();
+  /* the draft is cleared on the payment method page, after the server accepted it */
+});
+window.addEventListener('pageshow',function(e){ if(e.persisted){ sending=false; waitPhotos=false; setLoading(false); refresh(); } });
+window.addEventListener('pagehide',function(){ flushSig(); saveDraft(); });
+/* Back without the page cache: the browser puts the chosen photos back without telling the
+   page, so build their previews (otherwise the boxes say "Tap to upload" while files are attached) */
+window.addEventListener('pageshow',function(){
   setTimeout(function(){
-    const _qs  = new URLSearchParams(window.location.search);
-    const _a   = _qs.get("amount"); const _t = _qs.get("term");
-    const _ae  = document.getElementById("loanAmount");
-    const _te  = document.getElementById("loanTerms");
-    const _lpb  = document.getElementById("lpbAmount");
-    const _lpbt = document.getElementById("lpbTermInp");
-    if(_a && _ae)   _ae.value   = _a;
-    if(_a && _lpb)  _lpb.value  = _a;
-    if(_t && _te)   _te.value   = _t;
-    if(_t && _lpbt) _lpbt.value = _t;
-    if(window.updateBanner) window.updateBanner();
-  }, 60);
+    UPS.forEach(function(u){ if(hasFile(u)&&!u.box.classList.contains('has-img')&&!u.box.classList.contains('is-busy')) u.input.dispatchEvent(new Event('change')); });
+  },0);
+});
 
-  function updateBanner(){
-    const amountEl  = document.getElementById("loanAmount");
-    const termEl    = document.getElementById("loanTerms");
-    const lpbInp    = document.getElementById("lpbAmount");
-    const lpbTrmInp = document.getElementById("lpbTermInp");
-    const lpbMo     = document.getElementById("lpbMonthly");
-    const amount = Number((amountEl && amountEl.value) || 0);
-    const term   = Number((termEl && termEl.value) || 0);
-    /* populate visible inputs on load if still empty */
-    if(lpbInp && !lpbInp.value && amount) lpbInp.value = amount;
-    if(lpbTrmInp && !lpbTrmInp.value && term) lpbTrmInp.value = term;
-    const amtValid = amount >= 80000 && amount <= 5000000;
-    if(amtValid && term > 0){
-      const monthly = Math.round((amount + amount * 0.005 * term) / term);
-      if(lpbMo) lpbMo.textContent = fmt(monthly);
-    } else {
-      if(lpbMo) lpbMo.textContent = "—";
-    }
-  }
-  window.updateBanner = updateBanner;
-  /* sync lpbAmount input → hidden field with min/max guard */
-  (function(){
-    var lpbA  = document.getElementById("lpbAmount");
-    var errEl = document.getElementById("lpbAmtErr");
-    if(!lpbA) return;
-    lpbA.addEventListener("input", function(){
-      var v  = Number(this.value);
-      var ae = document.getElementById("loanAmount");
-      if(errEl) errEl.classList.remove("show");
-      if(this.value && v < 80000){
-        if(errEl){ errEl.textContent="₱80,000 minimum"; errEl.classList.add("show"); }
-        if(ae) ae.value = "";
-      } else if(this.value && v > 5000000){
-        if(errEl){ errEl.textContent="₱5,000,000 maximum"; errEl.classList.add("show"); }
-        if(ae) ae.value = "";
-      } else {
-        if(ae) ae.value = this.value;
-      }
-      updateBanner();
-    });
-  })();
-  /* sync lpbTermInp select → hidden field + term-btn active state */
-  (function(){
-    var lpbT = document.getElementById("lpbTermInp");
-    if(!lpbT) return;
-    lpbT.addEventListener("change", function(){
-      var te = document.getElementById("loanTerms");
-      if(te) te.value = this.value;
-      var v = this.value;
-      document.querySelectorAll(".term-btn").forEach(function(b){
-        b.classList.toggle("active", b.dataset.term === v);
-      });
-      updateBanner();
-    });
-  })();
-  setTimeout(updateBanner, 80);
-})();
-</script>
-
-<!-- OFL Validation Logic -->
-<script>
-(function(){
-  var overlay  = document.getElementById("valOverlay");
-  var list     = document.getElementById("valList");
-  var closeBtn = document.getElementById("valClose");
-  var btn      = document.getElementById("confirmApplyBtn");
-  if(!overlay || !btn) return;
-
-  function openModal(errors){
-    list.innerHTML = errors.map(function(m){ return "<li>" + m + "</li>"; }).join("");
-    overlay.classList.add("is-open");
-  }
-  closeBtn && closeBtn.addEventListener("click", function(){ overlay.classList.remove("is-open"); });
-  overlay.addEventListener("click", function(e){ if(e.target === overlay) overlay.classList.remove("is-open"); });
-
-  function validate(){
-    var errors = [];
-    var form = btn.closest("form") || document.querySelector("form");
-
-    if(!form) return errors;
-
-    /* Loan purpose */
-    if(!form.querySelectorAll('input[name="loan_purposes"]:checked').length)
-      errors.push("Loan purpose not selected");
-
-    /* Personal details */
-    var fn = document.getElementById("fullName");
-    if(!fn || !fn.value.trim()) errors.push("Full name is required");
-
-    var ag = document.getElementById("ageInput");
-    if(!ag || !ag.value.trim()) errors.push("Age is required");
-
-    var cl = document.getElementById("currentLiving");
-    if(!cl || !cl.value.trim()) errors.push("Current living address is required");
-
-    var ht = document.getElementById("hometownInput");
-    if(!ht || !ht.value.trim()) errors.push("Hometown is required");
-
-    var ex = document.getElementById("expensesInput");
-    if(!ex || !ex.value.trim()) errors.push("Monthly expenses is required");
-
-    var idn = document.getElementById("identityName");
-    if(!idn || !idn.value.trim()) errors.push("Identity name is required");
-
-    var idno = document.getElementById("identityNumber");
-    if(!idno || !idno.value.trim()) errors.push("Identity number is required");
-
-    /* ID photos */
-    var bf = document.getElementById("boxFront");
-    if(!bf || !bf.classList.contains("has-img")) errors.push("ID front photo is required");
-
-    var bb = document.getElementById("boxBack");
-    if(!bb || !bb.classList.contains("has-img")) errors.push("ID back photo is required");
-
-    var bs = document.getElementById("boxSelfie");
-    if(!bs || !bs.classList.contains("has-img")) errors.push("Selfie with ID is required");
-
-    /* Signature */
-    var sig = document.getElementById("signatureData");
-    if(!sig || !sig.value.trim()) errors.push("Signature is required");
-
-    return errors;
-  }
-
-  btn.addEventListener("click", function(e){
-    var errors = validate();
-    if(errors.length){
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      openModal(errors);
-    }
-  });
-})();
-
-/* ══ LOAN APPLY GUIDE ══ */
-(function(){
-  localStorage.setItem('ofl_onboard','pm');
-  var _ico=[
-    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="22" r="22" fill="#FF8C00"/><circle cx="15" cy="18" r="3.5" fill="white"/><circle cx="29" cy="18" r="3.5" fill="white"/><path d="M13 28 Q22 35 31 28" stroke="white" stroke-width="2.8" fill="none" stroke-linecap="round"/></svg>',
-    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><rect x="4" y="10" width="36" height="24" rx="4" fill="#0A2463"/><rect x="4" y="16" width="36" height="6" fill="white" opacity="0.2"/><rect x="8" y="26" width="14" height="3" rx="1.5" fill="#FF8C00"/><circle cx="34" cy="27.5" r="4" fill="#FF8C00"/></svg>',
-    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="22" r="22" fill="#0A2463"/><circle cx="22" cy="22" r="14" fill="none" stroke="#FF8C00" stroke-width="3"/><circle cx="22" cy="22" r="5" fill="#FF8C00"/></svg>',
-    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="14" r="8" fill="#0A2463"/><path d="M6 40 Q6 30 22 30 Q38 30 38 40" fill="#0A2463"/></svg>',
-    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><rect x="4" y="10" width="36" height="24" rx="4" fill="#0A2463"/><rect x="8" y="16" width="12" height="12" rx="2" fill="#FF8C00"/><rect x="24" y="16" width="14" height="3" rx="1.5" fill="rgba(255,255,255,.5)"/><rect x="24" y="23" width="10" height="3" rx="1.5" fill="rgba(255,255,255,.4)"/></svg>',
-    '<svg width="22" height="22" viewBox="0 0 44 44" style="vertical-align:-5px;margin-right:4px"><circle cx="22" cy="22" r="22" fill="#FF8C00"/><polygon points="22,5 26.5,16.5 39,16.5 29.5,24.5 33,36.5 22,29.5 11,36.5 14.5,24.5 5,16.5 17.5,16.5" fill="#0A2463"/></svg>'
-  ];
+/* ── Guide: 5 steps, attached above each section ── */
+guide=(function(){
+  var col=$('laCol'), g=$('laGuide'), gText=$('laGText'), gErr=$('laGErr'), gStep=$('laGStep'), gProg=$('laGProg');
+  var gNext=$('laGNext'), gNextTxt=$('laGNextTxt'), gDots=$('laGDots').children, CHECK=$('laCheckIco').innerHTML;
+  function chip(ok,txt){ return '<span class="'+(ok?'ok':'')+'">'+(ok?CHECK:'')+txt+'</span>'; }
+  function firstMissing(){ for(var i=0;i<REQ.length;i++){ if(!filled(REQ[i])) return REQ[i]; } return null; }
   var STEPS=[
-    null,
-    {sp:'laSp2',inp:null,step:'Step 1 of 4',label:'STEP 1 OF 4',next:'Next →',
-     body:_ico[2]+' <b>Select your loan purpose</b> — tap the option that best matches your need.',
-     validate:function(){return document.querySelectorAll('input[name="loan_purposes"]:checked').length>0;},
-     autoOn:function(done){
-       function chk(){if(document.querySelectorAll('input[name="loan_purposes"]:checked').length>0){rmv();setTimeout(done,400);}}
-       function rmv(){document.querySelectorAll('input[name="loan_purposes"]').forEach(function(el){el.removeEventListener('change',chk);});}
-       document.querySelectorAll('input[name="loan_purposes"]').forEach(function(el){el.addEventListener('change',chk);});
-       return rmv;
-     }},
-    {sp:'laSp3',inp:'fullName',step:'Step 2 of 4',label:'STEP 2 OF 4',next:'Next →',
-     body:_ico[3]+' Fill in your <b>personal details</b> — full name, current address, and financial information.',
-     validate:function(){
-       var fn=document.getElementById('fullName');if(!fn||!fn.value.trim())return false;
-       var ag=document.getElementById('ageInput');if(!ag||!ag.value.trim())return false;
-       var cl=document.getElementById('currentLiving');if(!cl||!cl.value.trim())return false;
-       var ht=document.getElementById('hometownInput');if(!ht||!ht.value.trim())return false;
-       var ex=document.getElementById('expensesInput');if(!ex||!ex.value.trim())return false;
-       var idn=document.getElementById('identityName');if(!idn||!idn.value.trim())return false;
-       var idno=document.getElementById('identityNumber');if(!idno||!idno.value.trim())return false;
-       return true;
-     },
-     autoOn:function(done){
-       var ids=['fullName','ageInput','currentLiving','hometownInput','expensesInput','identityName','identityNumber'];
-       function showToast(cb){
-         var t=document.getElementById('laFillToast'),msg=document.getElementById('laFillToastMsg');
-         if(!t){cb();return;}
-         t.className='la-fill-toast loading';t.style.display='flex';
-         setTimeout(function(){t.classList.add('show');},20);
-         setTimeout(function(){
-           t.className='la-fill-toast done show';
-           if(msg){msg.textContent='Done!';}
-           t.querySelector('svg').outerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-           setTimeout(function(){t.classList.remove('show');setTimeout(function(){t.style.display='none';if(msg)msg.textContent='Updating detail, wait a sec...';cb();},200);},700);
-         },1500);
-       }
-       function chk(){
-         var ok=ids.every(function(id){var el=document.getElementById(id);return el&&el.value.trim();});
-         if(ok){rmv();showToast(done);}
-       }
-       function rmv(){ids.forEach(function(id){var el=document.getElementById(id);if(el)el.removeEventListener('input',chk);});}
-       ids.forEach(function(id){var el=document.getElementById(id);if(el)el.addEventListener('input',chk);});
-       return rmv;
-     }},
-    {sp:'laSp4',inp:null,step:'Step 3 of 4',label:'STEP 3 OF 4',next:'Next →',
-     body:_ico[4]+' Upload your <b>government ID</b> (front &amp; back) and a selfie, then draw your <b>signature</b>.',
-     validate:function(){
-       var bf=document.getElementById('boxFront'),bb=document.getElementById('boxBack'),bs=document.getElementById('boxSelfie'),sig=document.getElementById('signatureData');
-       if(!bf||!bf.classList.contains('has-img'))return false;
-       if(!bb||!bb.classList.contains('has-img'))return false;
-       if(!bs||!bs.classList.contains('has-img'))return false;
-       if(!sig||!sig.value)return false;
-       return true;
-     },
-     autoOn:function(done){
-       var t=setInterval(function(){
-         var bf=document.getElementById('boxFront'),bb=document.getElementById('boxBack'),
-             bs=document.getElementById('boxSelfie'),sig=document.getElementById('signatureData');
-         if(bf&&bf.classList.contains('has-img')&&bb&&bb.classList.contains('has-img')&&
-            bs&&bs.classList.contains('has-img')&&sig&&sig.value){clearInterval(t);setTimeout(done,800);}
-       },800);
-       return function(){clearInterval(t);};
-     }},
-    {sp:'laSp5',inp:null,step:'Step 4 of 4',label:'STEP 4 OF 4',next:'Confirm Apply →',
-     body:_ico[0]+' You\'re all set! Tap <b>Confirm Apply</b> to submit your application.',
-     validate:function(){return true;},
-     isLast:true}
+    { el:$('laSp1'), below:true, next:'Looks Good',
+      html:'This is your <b>loan offer</b> from Quick Loan. Check the <b>amount</b> and <b>term</b> — you can still change them here.',
+      check:function(){
+        var n=Number(amountIn.value||0);
+        if(!(n>=AMT_MIN&&n<=AMT_MAX)) return {msg:'Please enter an amount between ₱80,000 and ₱5,000,000.',focus:amountIn};
+        return termHidden.value?null:{msg:'Please choose a loan term.'};
+      } },
+    { el:$('laSp2'),
+      html:'Pick your <b>loan purpose</b> — tap the one that fits your need best.',
+      check:function(){ return purpOn()?null:{msg:'Please tap a loan purpose first.'}; } },
+    { el:$('laSp3'),
+      html:'Now fill in your <b>personal details</b> — your name, age, address and ID information.',
+      prog:function(){ var n=REQ.filter(filled).length; return chip(n===REQ.length,n+' of '+REQ.length+' filled'); },
+      check:function(){
+        var r=firstMissing(); if(!r) return null;
+        var v=r.el.value.trim();
+        return {msg:v&&r.chk?r.chk(v)+'.':'Please fill in your '+r.name+'.',focus:r.el};
+      } },
+    { el:$('laSp4'),
+      html:'Add a photo of your <b>ID front &amp; back</b>, a <b>selfie holding your ID</b>, then <b>sign</b> in the box.',
+      prog:function(){ return UPS.map(function(u){ return chip(hasFile(u),u.label); }).join('')+chip(hasSig(),'Signature'); },
+      check:function(){
+        for(var i=0;i<UPS.length;i++){ if(!hasFile(UPS[i])) return {msg:UPS[i].ask}; }
+        return hasSig()?null:{msg:'Please sign in the box.'};
+      } },
+    { el:$('laSp5'), next:'Confirm Apply',
+      html:'You\'re all set! Tap <b>Confirm Apply</b> to send your application for review.',
+      check:function(){ return null; } }
   ];
-  var N=4,cur=1,active=false,cleanup=null;
-  var _card=document.getElementById('laCard');
-  if(_card)document.body.appendChild(_card);
-  function $(id){return document.getElementById(id);}
-  function posBubble(n){
-    var card=$('laCard');if(!card||n<1||n>N)return;
-    var ww=window.innerWidth,cW=card.offsetWidth||Math.min(320,ww-20);
-    var left=Math.max(10,Math.min(ww/2-cW/2,ww-cW-10));
-    card.style.top='10px';card.style.left=left+'px';card.style.bottom='auto';card.style.right='auto';
-    card.classList.remove('arrow-dn');
+  var cur=0, active=false, y=0, textTimer=0, revealTimer=0, autoTimer=0;
+
+  /* above the section (the instruction comes first); below only for the offer card */
+  function targetY(i){
+    var s=STEPS[i], c=col.getBoundingClientRect(), r=s.el.getBoundingClientRect(), h=g.offsetHeight, gap=14;
+    var above=r.top-c.top-gap-h, up=!s.below&&above>=0;
+    g.classList.toggle('is-above',up);
+    return Math.round(up?above:r.bottom-c.top+gap);
   }
-  function typeBody(el,html,spd){
-    var icon='',se=html.indexOf('</svg>');
-    if(se!==-1){icon=html.slice(0,se+6);html=html.slice(se+6);}
-    el.innerHTML=icon;var n=0;
-    (function tick(){
-      if(n>html.length)return;
-      if(html[n]==='<'){var e=html.indexOf('>',n);n=(e!==-1)?e+1:n+1;}else{n++;}
-      el.innerHTML=icon+html.slice(0,n);setTimeout(tick,spd||24);
-    })();
+  function setTransform(lift){ g.style.transform='translate3d(0,'+(y+(lift?15:0))+'px,0)'+(lift?' scale(.95)':''); }
+  function place(){ if(!active) return; y=targetY(cur); setTransform(false); }
+  function setErr(m){ gErr.textContent=m||''; gErr.classList.toggle('on',!!m); }
+  var lastProg=null;
+  function update(){
+    if(!active) return;
+    var s=STEPS[cur], html=s.prog?s.prog():'';
+    if(html!==lastProg){ gProg.innerHTML=html; lastProg=html; }
+    var p=s.check();
+    gNext.classList.toggle('is-ready',!p&&cur<STEPS.length-1&&!!s.prog);
+    if(gErr.textContent) setErr(p?p.msg:'');   /* follow what is still missing */
   }
-  function goStep(n){
-    var card=$('laCard');if(!card)return;
-    card.style.opacity='0';
-    var typ=$('laTyping'),msg=$('laBody');
-    if(typ)typ.style.display='flex';
-    if(msg){msg.innerHTML='';msg.style.display='none';}
-    for(var i=1;i<=N;i++){var si=STEPS[i];if(si){var ei=$(si.sp);if(ei)ei.classList.remove('shake');}}
-    setTimeout(function(){
-      if(n<1||n>N){tourEnd();return;}
-      cur=n;var s=STEPS[n];
-      var sp=$(s.sp);
-      if(sp){
-        sp.scrollIntoView({block:'center'});
-      }
-      var stepEl=$('laStep'),lbl=$('laLabel'),nxt=$('laNxt'),bck=$('laBck'),dots=$('laDots');
-      if(stepEl)stepEl.textContent=s.step;
-      if(lbl)lbl.textContent=s.label;
-      if(nxt){nxt.textContent=s.next;nxt.style.display=s.isLast?'none':'inline-flex';}
-      if(bck)bck.style.display='inline-flex';
-      if(dots){var ds=dots.querySelectorAll('.cb-dot');ds.forEach(function(d,i){d.className='cb-dot'+(i<n?' on':'');});}
-      if(typ)typ.style.display='none';
-      if(msg)msg.style.display='block';
-      card.style.opacity='1';
-      if(cleanup){cleanup();cleanup=null;}
-      if(s.autoOn)cleanup=s.autoOn(function(){advance();});
-      if(sp)setTimeout(function(){posBubble(n);},300);
-      if(msg)typeBody(msg,s.body,24);
-      if(s.inp){var inp=$(s.inp);if(inp)setTimeout(function(){inp.focus();},400);}
-    },350);
+  function render(i){
+    var s=STEPS[i];
+    gStep.textContent='Step '+(i+1)+' of '+STEPS.length;
+    for(var k=0;k<gDots.length;k++) gDots[k].className=(k===i)?'on':(k<i?'done':'');
+    gText.innerHTML=s.html; gNextTxt.textContent=s.next||'Next'; setErr('');
+    update();
   }
-  function advance(){
-    if(cleanup){cleanup();cleanup=null;}
-    var s=STEPS[cur];if(!s)return;
-    if(s.validate&&!s.validate()){
-      var sp=$(s.sp);
-      if(sp){sp.classList.remove('shake');void sp.offsetWidth;sp.classList.add('shake');setTimeout(function(){sp.classList.remove('shake');},500);}
+  /* scroll just enough to show the guide and its section; when both do not fit,
+     keep the guide in view next to the edge of the section it points at */
+  function reveal(){
+    clearTimeout(revealTimer);
+    revealTimer=setTimeout(function(){
+      if(!active) return;
+      var vv=window.visualViewport, vTop=vv?vv.offsetTop:0, vh=vv?vv.height:window.innerHeight, m=16, room=vh-2*m;
+      var c=col.getBoundingClientRect(), r=STEPS[cur].el.getBoundingClientRect();
+      var gTop=c.top+y-vTop-8, gBot=c.top+y+g.offsetHeight-vTop+8;
+      var top=Math.min(gTop,r.top-vTop), bot=Math.max(gBot,r.bottom-vTop), d=0;
+      if(bot-top<=room){ if(top<m) d=top-m; else if(bot>vh-m) d=bot-(vh-m); }
+      else d=g.classList.contains('is-above')?gTop-m:gBot-(vh-m);
+      if(Math.abs(d)>4) window.scrollBy({top:d,behavior:SMOOTH});
+    },80);
+  }
+  function goStep(i,quiet){
+    clearTimeout(autoTimer);
+    cur=i;
+    var a=document.activeElement;
+    if(!quiet&&a&&/^(INPUT|TEXTAREA)$/.test(a.tagName)&&!STEPS[i].el.contains(a)) a.blur();
+    gText.style.opacity='0';
+    clearTimeout(textTimer);
+    stepping=true;
+    textTimer=setTimeout(function(){ render(i); place(); gText.style.opacity=''; if(!quiet) reveal(); setTimeout(function(){ stepping=false; },250); },120);
+  }
+  function firstOpen(){
+    var started=purpOn()||REQ.some(function(r){ return r.el.value.trim(); });
+    if(!started) return 0;
+    for(var i=0;i<STEPS.length-1;i++){ if(STEPS[i].check()) return i; }
+    return STEPS.length-1;
+  }
+  function start(){
+    cur=firstOpen(); active=true; g.hidden=false; render(cur); y=targetY(cur);
+    /* the server refused the last try: say why right where the guide resumes */
+    var refused=document.querySelector('.la-alert.is-error');
+    if(refused) setErr(refused.textContent.trim());
+    g.style.transition='none'; setTransform(true); void g.offsetWidth; g.style.transition='';
+    g.classList.add('is-on'); setTransform(false); reveal();
+  }
+  function end(){
+    if(!active) return;
+    active=false; clearTimeout(autoTimer); g.classList.remove('is-on'); setTransform(true);
+    setTimeout(function(){ if(!active) g.hidden=true; },450);
+  }
+  function next(){
+    var s=STEPS[cur], p=s.check();
+    if(p){
+      if(cur===0){ minArmed=true; updateOffer(); }
+      setErr(p.msg); shake(s.el); place();
+      /* a field to fix: show that field (the keyboard opens for it), not the guide */
+      if(p.focus){ p.focus.focus({preventScroll:true}); if(p.focus!==amountIn) p.focus.classList.add('is-error'); showField(p.focus); }
+      else reveal();
       return;
     }
-    if(s.isLast){
-      tourEnd();
-      var btn=document.getElementById('confirmApplyBtn');
-      if(btn){btn.scrollIntoView({behavior:'smooth',block:'center'});}
-      return;
-    }
-    goStep(cur+1);
+    if(cur<STEPS.length-1) return goStep(cur+1);
+    end();
+    if(form.requestSubmit) form.requestSubmit(cta); else cta.click();
   }
-  function tourBack(){if(cur>1){goStep(cur-1);}else{tourEnd();window.history.back();}}
-  function tourEnd(){
-    active=false;if(cleanup){cleanup();cleanup=null;}
-    var card=$('laCard');
-    if(card){card.style.opacity='0';setTimeout(function(){card.style.display='none';},250);}
+
+  /* buttons inside the guide must not steal focus from a field (keyboard flicker) */
+  g.addEventListener('mousedown',function(e){ if(e.target.closest('button')) e.preventDefault(); });
+  /* the second tap of a double tap must not land on what was under the guide */
+  var blockUntil=0, blockRect=null;
+  function armBlock(){ blockUntil=performance.now()+450; blockRect=g.querySelector('.la-gbody').getBoundingClientRect(); }
+  /* the press, not just the click: a field under it must not get focus (keyboard) either */
+  function swallow(e){
+    if(!e.isTrusted||performance.now()>=blockUntil||g.contains(e.target)) return;
+    var t=(e.changedTouches&&e.changedTouches[0])||e, r=blockRect;   /* only where the guide was when it was tapped */
+    if(t.clientX>=r.left-8&&t.clientX<=r.right+8&&t.clientY>=r.top-8&&t.clientY<=r.bottom+8){ e.preventDefault(); e.stopPropagation(); }
   }
-  var nb=$('laNxt'),bb=$('laBck'),sk=$('laSkip');
-  if(nb)nb.addEventListener('click',advance);
-  if(bb)bb.addEventListener('click',tourBack);
-  if(sk)sk.addEventListener('click',tourEnd);
-  var _baseVH=window.innerHeight;
+  ['click','mousedown','touchend'].forEach(function(t){ col.addEventListener(t,swallow,{capture:true,passive:false}); });
+  /* while it glides to the next step, a second tap must not count for the new step */
+  var stepping=false;
+  $('laGSkip').addEventListener('click',function(){ armBlock(); end(); });
+  gNext.addEventListener('click',function(){ if(stepping) return; armBlock(); next(); });
+
+  /* the guide follows what the user works on, without scrolling the page */
+  function follow(i){ if(active&&cur!==i) goStep(i,true); }
+  amountIn.addEventListener('focus',function(){ follow(0); });
+  ORDER.forEach(function(el){ el.addEventListener('focus',function(){ follow(2); }); });
+  UPS.forEach(function(u){ u.input.addEventListener('click',function(){ follow(3); }); });
+  /* step 2 moves on by itself once a purpose is tapped */
+  purpIns.forEach(function(inp){
+    inp.addEventListener('change',function(){
+      if(!active) return;
+      if(!inp.checked){ clearTimeout(autoTimer); return; }   /* ticked then unticked: stay */
+      if(cur<=1){ if(cur!==1) goStep(1,true); clearTimeout(autoTimer); autoTimer=setTimeout(function(){ if(active&&cur===1&&purpOn()) goStep(2); },450); }
+    });
+  });
+
+  if(window.ResizeObserver){ var ro=new ResizeObserver(function(){ place(); }); ro.observe(col); ro.observe(g); }
+  /* turning the phone: bring the guide back if it ended up off screen */
+  var lastW=window.innerWidth;
   window.addEventListener('resize',function(){
-    if(!active)return;
-    var keyboardOpen=window.innerHeight<_baseVH*0.80;
-    if(!keyboardOpen){_baseVH=window.innerHeight;}
-    posBubble(cur);
+    place();
+    if(!active||window.innerWidth===lastW) return;
+    lastW=window.innerWidth;
+    var top=col.getBoundingClientRect().top+y;
+    if(top<0||top+g.offsetHeight>window.innerHeight) reveal();
   });
-  // Hide step card while typing; restore when keyboard closes
-  var _focusTimer=null;
-  document.addEventListener('focusin',function(e){
-    var el=e.target;if(!el||!el.tagName)return;
-    var t=el.tagName.toLowerCase();
-    if(t!=='input'&&t!=='textarea'&&t!=='select')return;
-    if(_focusTimer){clearTimeout(_focusTimer);_focusTimer=null;}
-    var card=$('laCard');
-    if(card){card.style.opacity='0';card.style.pointerEvents='none';}
-  });
-  document.addEventListener('focusout',function(){
-    _focusTimer=setTimeout(function(){
-      var f=document.activeElement;
-      if(f){var t=f.tagName.toLowerCase();if(t==='input'||t==='textarea'||t==='select')return;}
-      if(!active)return;
-      var card=$('laCard');
-      if(card){card.style.opacity='1';card.style.pointerEvents='';}
-      posBubble(cur);
-    },300);
-  });
-  setTimeout(function(){
-    active=true;var card=$('laCard');
-    if(card)card.style.display='block';
-    goStep(1);
-  },500);
+  /* wait for the page slide-in to finish */
+  setTimeout(start,450);
+  return { update:update, follow:follow, next:next, at:function(i){ return active&&cur===i; } };
+})();
+
+if(window.ResizeObserver) new ResizeObserver(sizePad).observe(pad);
+else window.addEventListener('resize',sizePad);
+sizePad();
+if(sigHidden.value&&!ink) paintSig(sigHidden.value);
+refresh();
+{% endif %}
 })();
 </script>
 {% endblock %}

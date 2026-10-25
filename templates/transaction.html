@@ -1,372 +1,267 @@
 {% extends "base.html" %}
-{% block title %}Transactions{% endblock %}
+{% load static humanize %}
+{% block title %}Transactions — APEX{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+html body,html body *,html body button,html body input,
+html body select,html body textarea,html body a{
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif!important;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <style>
-/* ===== OFL Transactions — Navy / Orange / White ===== */
-:root {
-  --navy:#0A2463;--navy-dk:#061540;--navy-lt:#1a3a8a;
-  --orange:#FF8C00;--orange-dk:#D97200;--orange-lt:#FFA733;
-  --bg:#f0f3f9;--card:#ffffff;
-  --ink:#0d1b3e;--ink2:#5a6680;--ink3:#9aa3b8;--line:#e6eaf4;
-  --green:#16a34a;--green-bg:rgba(22,163,74,.09);
-  --red:#dc2626;--red-bg:rgba(220,38,38,.08);
+/* ════════════════════════════════════════════
+   APEX TRANSACTIONS — Deep Forest
+   Same look in light and dark theme
+════════════════════════════════════════════ */
+:root{
+  --tx-dark:#0B1C14;--tx-primary:#133224;--tx-green:#1B4332;--tx-sage:#E8F3ED;--tx-accent:#F97316;
+  --tx-ink:#111827;--tx-ink2:#374151;--tx-mut:#9ca3af;--tx-mut2:#6b7280;--tx-line:#f3f4f6;--tx-line2:#e5e7eb;
+  --tx-float:0 20px 40px -10px rgba(0,0,0,.1);--tx-ease:cubic-bezier(.22,1,.36,1);
 }
+#pageRoot.wrap{max-width:100%!important;width:100%!important;padding:0!important;display:block!important;}
+html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!important;overflow-x:clip!important;background:#e5e7eb!important;color:#1f2937!important;-webkit-font-smoothing:antialiased;}
+.tx a,.tx button{-webkit-tap-highlight-color:transparent;}
+.tx svg{display:block;width:auto;height:1em;fill:currentColor;flex-shrink:0;}
 
-body,body *{font-family:"Lato","Open Sans",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif !important;}
-html,body{width:100%;overflow-x:hidden;}
-body{margin:0;min-height:100vh;background:var(--bg) !important;color:var(--ink) !important;}
-.wrap{padding-top:0 !important;}
+.tx{min-height:100vh;min-height:100dvh;display:flex;justify-content:center;}
+.tx-app{position:relative;width:100%;max-width:420px;min-height:100vh;min-height:100dvh;background:#f9fafb;padding-bottom:calc(32px + env(safe-area-inset-bottom,0px));}
 
-.tx-outer{width:100%;max-width:520px;margin:0 auto;}
-
-/* ══════════════════════════════
-   HERO
-══════════════════════════════ */
-.tx-hero{
-  position:relative;
-  padding:54px 20px 32px;
-  background:
-    radial-gradient(ellipse 160% 85% at 5% 5%, rgba(255,167,51,.22) 0%,transparent 50%),
-    radial-gradient(ellipse 80%  65% at 95% 95%,rgba(26,58,138,.55) 0%,transparent 55%),
-    linear-gradient(148deg,var(--navy-dk) 0%,var(--navy) 55%,var(--navy-lt) 100%);
-  overflow:hidden;
+/* ── Header ── */
+.tx-top{
+  position:relative;overflow:hidden;padding:24px 24px 120px;border-radius:0 0 2.5rem 2.5rem;
+  background:linear-gradient(to bottom,var(--tx-dark),var(--tx-primary));box-shadow:inset 0 2px 4px rgba(0,0,0,.05);
 }
-.tx-hero::before{content:"";position:absolute;bottom:-65px;left:-55px;width:230px;height:230px;border-radius:50%;border:1px solid rgba(255,255,255,.06);pointer-events:none;}
-.tx-hero::after{content:"";position:absolute;top:-55px;right:-45px;width:210px;height:210px;border-radius:50%;border:1px solid rgba(255,140,0,.14);pointer-events:none;}
-
-/* OFL Badge */
-.tx-badge{
-  position:absolute;top:16px;left:18px;
-  display:flex;align-items:center;gap:6px;
-  background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);
-  border-radius:999px;padding:4px 10px 4px 5px;z-index:3;
-}
-.tx-badge-dot{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--orange-lt),var(--orange));display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:900;color:#fff;}
-.tx-badge-txt{font-size:9.5px;font-weight:900;color:rgba(255,255,255,.82);letter-spacing:.06em;text-transform:uppercase;}
-
-/* Back button */
+.tx-glow{position:absolute;border-radius:50%;pointer-events:none;}
+.tx-glow-a{top:0;right:0;width:256px;height:256px;background:rgba(255,255,255,.05);filter:blur(64px);transform:translate(33%,-33%);}
+.tx-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(249,115,22,.1);filter:blur(40px);transform:translate(-25%,25%);}
+.tx-bar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
+.tx-glass-dark{background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);}
 .tx-back{
-  position:absolute;top:14px;right:18px;
-  display:inline-flex;align-items:center;gap:5px;
-  height:34px;padding:0 13px;border-radius:999px;
-  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.22);
-  color:rgba(255,255,255,.88) !important;text-decoration:none;
-  font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
-  transition:background .18s;z-index:3;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;
+  color:#fff!important;text-decoration:none!important;transition:background-color .15s,transform .15s;
 }
-.tx-back svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
-.tx-back:hover{background:rgba(255,255,255,.22);}
+.tx-back:hover{background-color:rgba(255,255,255,.1);}
+.tx-back:active{transform:scale(.94);}
+.tx-badge{display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.04em;color:#fff;}
+.tx-badge svg{font-size:11px;color:#FDBA74;}
+.tx-hero{position:relative;z-index:1;}
+.tx-eyebrow{margin:0 0 6px;font-size:11px;line-height:16px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#FDBA74;}
+.tx-hero h1{margin:0 0 6px;font-size:30px;line-height:36px;font-weight:800;letter-spacing:-.025em;color:#fff;}
+.tx-hero p{margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(232,243,237,.75);}
 
-.tx-hero-inner{position:relative;z-index:2;}
+/* ── Main ── */
+.tx-main{position:relative;z-index:2;margin-top:-88px;padding:0 20px;display:flex;flex-direction:column;gap:20px;}
+.tx-card{position:relative;padding:22px;border-radius:2rem;background:#fff;border:1px solid var(--tx-line);box-shadow:var(--tx-float);}
+.tx-sum-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.tx-label{display:block;margin-bottom:4px;font-size:11px;line-height:15px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--tx-mut2);}
+.tx-amt{display:grid;}
+.tx-amt > b{grid-area:1/1;font-size:clamp(24px,7.6vw,28px);line-height:34px;font-weight:800;color:var(--tx-ink);white-space:nowrap;transition:opacity .2s,transform .2s;}
+.tx-amt-real{opacity:0;transform:translateY(3px);}
+.tx-amt.is-shown .tx-amt-mask{opacity:0;transform:translateY(-3px);}
+.tx-amt.is-shown .tx-amt-real{opacity:1;transform:none;}
+.tx-eye{width:40px;height:40px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:0;cursor:pointer;font-size:16px;color:var(--tx-green);background:var(--tx-sage);transition:background-color .15s;}
+.tx-eye:hover{background:#d7eadf;}
+.tx-eye .i-shown,.tx-eye.on .i-hidden{display:none;}
+.tx-eye.on .i-shown{display:block;}
+.tx-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
+.tx-stat{display:flex;align-items:center;gap:10px;padding:12px;border-radius:16px;background:#f9fafb;border:1px solid var(--tx-line);}
+.tx-stat > span{width:34px;height:34px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.tx-stat.is-ok > span{color:#15803D;background:#E6F4EA;}
+.tx-stat.is-bad > span{color:#B91C1C;background:#FEE2E2;}
+.tx-stat div{min-width:0;}
+.tx-stat b{display:block;font-size:16px;line-height:20px;font-weight:800;color:var(--tx-ink);}
+.tx-stat small{display:block;font-size:11px;line-height:15px;font-weight:600;color:var(--tx-mut2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
-/* Page tag */
-.tx-hero-tag{
-  display:inline-flex;align-items:center;gap:6px;
-  background:rgba(255,140,0,.18);border:1px solid rgba(255,140,0,.38);
-  border-radius:999px;padding:5px 13px;
-  font-size:10px;font-weight:900;color:var(--orange-lt);
-  letter-spacing:.14em;text-transform:uppercase;
-  margin-bottom:14px;
+/* filter: the green pill slides under the chosen tab */
+.tx-tabs{position:relative;display:grid;grid-template-columns:repeat(3,1fr);padding:4px;margin-bottom:16px;border-radius:18px;background:#f3f4f6;}
+.tx-tab-ind{position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 3);border-radius:14px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.08);transform:translateX(calc(100% * var(--i,0)));transition:transform .35s var(--tx-ease);}
+.tx-tab{position:relative;padding:9px 0;border:0;background:none;cursor:pointer;border-radius:14px;font-size:13px;line-height:18px;font-weight:700;color:var(--tx-mut2);transition:color .2s;}
+.tx-tab[aria-selected="true"]{color:var(--tx-green);}
+.tx-tab i{font-style:normal;font-weight:600;color:var(--tx-mut);}
+
+.tx-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.tx-head h2{margin:0;font-size:16px;line-height:22px;font-weight:700;color:var(--tx-ink);}
+.tx-head small{font-size:12px;line-height:16px;font-weight:600;color:var(--tx-mut2);}
+.tx-list{list-style:none;margin:0;padding:0;}
+.tx-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px dashed var(--tx-line2);}
+.tx-row:last-child{border-bottom:0;padding-bottom:0;}
+.tx-row:first-child{padding-top:0;}
+.tx-row[hidden]{display:none;}
+.tx-list.is-swap .tx-row{animation:txIn .3s var(--tx-ease);}
+@keyframes txIn{from{opacity:0;transform:translateY(4px);}}
+.tx-row-ico{width:40px;height:40px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.tx-row.is-ok .tx-row-ico{color:#15803D;background:#E6F4EA;}
+.tx-row.is-bad .tx-row-ico{color:#B91C1C;background:#FEE2E2;}
+.tx-row-txt{flex:1;min-width:0;}
+.tx-row-txt b{display:block;font-size:14px;line-height:20px;font-weight:700;color:var(--tx-ink);}
+.tx-row-txt small{display:block;font-size:11.5px;line-height:16px;font-weight:500;color:var(--tx-mut2);}
+.tx-row-end{flex-shrink:0;text-align:right;}
+.tx-row-end b{display:block;font-size:14.5px;line-height:20px;font-weight:800;color:var(--tx-ink);white-space:nowrap;}
+.tx-row.is-bad .tx-row-end b{color:var(--tx-mut2);text-decoration:line-through;text-decoration-thickness:1px;}
+.tx-pill{display:inline-block;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:9.5px;line-height:14px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;}
+.tx-row.is-ok .tx-pill{color:#15803D;background:#E6F4EA;}
+.tx-row.is-bad .tx-pill{color:#B91C1C;background:#FEE2E2;}
+.tx-none{display:none;padding:18px 0 4px;text-align:center;font-size:13px;line-height:18px;font-weight:600;color:var(--tx-mut2);}
+.tx-none.on{display:block;}
+.tx-empty{display:flex;flex-direction:column;align-items:center;text-align:center;padding:12px 4px 4px;}
+.tx-empty span{width:64px;height:64px;margin-bottom:16px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--tx-green);background:var(--tx-sage);}
+.tx-empty h2{margin:0 0 6px;font-size:17px;line-height:24px;font-weight:700;color:var(--tx-ink);}
+.tx-empty p{margin:0 0 20px;font-size:13px;line-height:20px;font-weight:500;color:var(--tx-mut2);}
+.tx-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:999px;font-size:14px;line-height:20px;font-weight:700;text-decoration:none!important;transition:background-color .15s,transform .15s;}
+.tx-btn:active{transform:scale(.97);}
+.tx-btn svg{font-size:12px;}
+.tx-btn-green{color:#fff!important;background:var(--tx-green);box-shadow:0 10px 15px -3px rgba(27,67,50,.25);}
+.tx-btn-green:hover{background:#122e22;}
+.tx-btn-line{color:var(--tx-green)!important;border:2px solid var(--tx-green);padding:11px 20px;}
+.tx-btn-line:hover{background:rgba(232,243,237,.5);}
+.tx-acts{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+.tx-foot{padding-top:4px;text-align:center;font-size:12px;line-height:16px;font-weight:500;color:var(--tx-mut);}
+.tx-foot p{margin:0;}
+.tx-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
+.tx-foot i{width:6px;height:6px;border-radius:50%;background:var(--tx-primary);}
+.tx-foot b{font-weight:700;color:var(--tx-accent);}
+
+@media (min-width:640px){
+  .tx{padding:32px 0;}
+  .tx-app{min-height:0;border-radius:2.5rem;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);}
+  .tx-top{border-radius:2.5rem;}
 }
-.tx-hero-tag svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
-
-/* Balance card embedded in hero */
-.tx-acc-card{
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.14);
-  border-radius:20px;
-  padding:18px 20px 16px;
-  position:relative;
-  overflow:hidden;
+@media (max-width:359px){
+  .tx-top{padding-left:20px;padding-right:20px;}
+  .tx-main{padding:0 14px;}
+  .tx-card{padding:18px 16px;}
+  .tx-stat{padding:10px;gap:8px;}
 }
-.tx-acc-card::before{
-  content:"";position:absolute;top:0;left:0;right:0;height:1.5px;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent);
-}
-.tx-acc-card::after{
-  content:"";position:absolute;bottom:-28px;right:-20px;
-  width:100px;height:100px;border-radius:50%;
-  background:radial-gradient(circle,rgba(255,140,0,.12) 0%,transparent 70%);
-  pointer-events:none;
-}
-
-.tx-acc-label{
-  font-size:9.5px;font-weight:900;
-  color:rgba(255,255,255,.45);letter-spacing:.22em;text-transform:uppercase;
-  margin-bottom:6px;
-}
-.tx-acc-balance{
-  display:flex;align-items:baseline;gap:6px;
-  margin-bottom:16px;
-}
-.tx-acc-currency{font-size:20px;font-weight:800;color:rgba(255,255,255,.55);}
-.tx-acc-amount{font-size:40px;font-weight:900;color:#fff;letter-spacing:-.04em;line-height:1;}
-
-.tx-acc-stats{display:flex;gap:8px;flex-wrap:wrap;}
-.tx-acc-stat{
-  display:flex;align-items:center;gap:6px;
-  padding:7px 14px;border-radius:10px;
-  font-size:12px;font-weight:800;
-}
-.tx-acc-stat svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
-.tx-acc-stat.paid{background:rgba(22,163,74,.18);border:1px solid rgba(22,163,74,.32);color:#4ade80;}
-.tx-acc-stat.rej{background:rgba(220,38,38,.16);border:1px solid rgba(220,38,38,.28);color:#fca5a5;}
-
-/* ══════════════════════════════
-   BODY
-══════════════════════════════ */
-.tx-body{
-  background:var(--card);
-  border-radius:28px 28px 0 0;
-  box-shadow:0 -4px 24px rgba(10,36,99,.12);
-  padding:26px 16px 52px;
-  box-sizing:border-box;
-}
-
-/* Section divider */
-.tx-sec-hd{display:flex;align-items:center;gap:12px;margin-bottom:18px;}
-.tx-sec-line{flex:1;height:1px;background:var(--line);}
-.tx-sec-txt{font-size:9.5px;font-weight:900;color:var(--ink3);letter-spacing:.20em;text-transform:uppercase;white-space:nowrap;}
-
-/* ── Ledger container ── */
-.tx-ledger{
-  border-radius:18px;
-  border:1.5px solid var(--line);
-  overflow:hidden;
-  box-shadow:0 2px 14px rgba(10,36,99,.06);
-  margin-bottom:18px;
-}
-
-/* Transaction row */
-.tx-row{
-  display:flex;align-items:center;gap:12px;
-  padding:14px 16px 14px 20px;
-  border-bottom:1px solid var(--line);
-  transition:background .18s;
-  position:relative;
-}
-.tx-row:last-child{border-bottom:none;}
-.tx-row:hover{background:var(--bg);}
-
-/* Left accent bar */
-.tx-row::before{
-  content:"";position:absolute;left:0;top:10px;bottom:10px;
-  width:3.5px;border-radius:0 4px 4px 0;
-}
-.tx-row.paid::before{background:linear-gradient(180deg,#22c55e,var(--green));}
-.tx-row.rej::before{background:linear-gradient(180deg,#f87171,var(--red));}
-
-/* Status icon */
-.tx-row-ico{
-  width:40px;height:40px;border-radius:12px;
-  display:flex;align-items:center;justify-content:center;flex:0 0 auto;
-}
-.tx-row-ico svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
-.tx-row.paid .tx-row-ico{background:var(--green-bg);border:1px solid rgba(22,163,74,.22);color:var(--green);}
-.tx-row.rej  .tx-row-ico{background:var(--red-bg);border:1px solid rgba(220,38,38,.20);color:var(--red);}
-
-/* Row center */
-.tx-row-mid{flex:1;min-width:0;}
-.tx-row-type{font-size:13px;font-weight:800;color:var(--ink);}
-.tx-row-date{font-size:10.5px;font-weight:600;color:var(--ink3);margin-top:2px;}
-
-/* Row right */
-.tx-row-end{text-align:right;flex:0 0 auto;}
-.tx-row-amt{font-size:14.5px;font-weight:900;letter-spacing:-.01em;line-height:1.2;}
-.tx-row.paid .tx-row-amt{color:var(--green);}
-.tx-row.rej  .tx-row-amt{color:var(--red);}
-
-/* Status pill */
-.tx-pill{
-  display:inline-flex;align-items:center;gap:4px;
-  padding:3px 9px;border-radius:999px;
-  font-size:9.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;
-  margin-top:4px;
-}
-.tx-pill svg{width:9px;height:9px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
-.tx-row.paid .tx-pill{background:var(--green-bg);border:1px solid rgba(22,163,74,.24);color:var(--green);}
-.tx-row.rej  .tx-pill{background:var(--red-bg);border:1px solid rgba(220,38,38,.22);color:var(--red);}
-
-/* ── Empty state ── */
-.tx-empty{
-  text-align:center;padding:46px 20px;
-  border:1.5px dashed var(--line);border-radius:18px;
-  margin-bottom:18px;
-}
-.tx-empty-ring{
-  width:66px;height:66px;border-radius:50%;
-  background:rgba(10,36,99,.05);border:2px solid var(--line);
-  display:flex;align-items:center;justify-content:center;
-  margin:0 auto 14px;
-}
-.tx-empty-ring svg{width:28px;height:28px;fill:none;stroke:var(--ink3);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-.tx-empty-title{font-size:15px;font-weight:900;color:var(--navy);margin-bottom:6px;}
-.tx-empty-sub{font-size:13px;font-weight:500;color:var(--ink3);line-height:1.55;}
-
-/* ── Action buttons ── */
-.tx-actions{display:flex;gap:10px;}
-.tx-btn-back{
-  flex:1;padding:15px 18px;border-radius:999px;
-  border:2px solid var(--line);background:var(--bg);
-  color:var(--ink);font-weight:900;font-size:12px;
-  letter-spacing:.06em;text-transform:uppercase;
-  text-decoration:none;text-align:center;
-  transition:border-color .18s,background .18s;
-}
-.tx-btn-back:hover{border-color:var(--navy);background:#fff;}
-.tx-btn-dash{
-  flex:2;padding:15px 18px;border-radius:999px;border:0;
-  background:linear-gradient(135deg,var(--orange-dk),var(--orange));
-  color:#fff;font-weight:900;font-size:12px;
-  letter-spacing:.06em;text-transform:uppercase;
-  text-decoration:none;text-align:center;display:block;
-  box-shadow:0 6px 22px rgba(255,140,0,.36);
-  transition:box-shadow .18s,filter .18s;
-}
-.tx-btn-dash:hover{box-shadow:0 10px 28px rgba(255,140,0,.52);filter:brightness(1.05);}
-
-/* Dark mode */
-html[data-theme="dark"] .tx-body{background:var(--navy-dk) !important;}
-html[data-theme="dark"] .tx-ledger{border-color:rgba(255,255,255,.10) !important;}
-html[data-theme="dark"] .tx-row{border-bottom-color:rgba(255,255,255,.08) !important;}
-html[data-theme="dark"] .tx-row:hover{background:rgba(255,255,255,.05) !important;}
-html[data-theme="dark"] .tx-row-type{color:#fff !important;}
-html[data-theme="dark"] .tx-row-ico{background:rgba(255,255,255,.08) !important;border-color:rgba(255,255,255,.12) !important;}
-html[data-theme="dark"] .tx-empty{border-color:rgba(255,255,255,.12) !important;}
-html[data-theme="dark"] .tx-empty-title{color:#ccd6f6 !important;}
-html[data-theme="dark"] .tx-btn-back{background:rgba(255,255,255,.06) !important;border-color:rgba(255,255,255,.12) !important;color:#ccd6f6 !important;}
-
-@media(max-width:420px){
-  .tx-acc-amount{font-size:32px;}
-  .tx-row{padding:12px 14px 12px 18px;}
-  .tx-row-amt{font-size:13.5px;}
+@media (prefers-reduced-motion: reduce){
+  .tx-tab-ind,.tx-amt > b{transition:none;}
+  .tx-list.is-swap .tx-row{animation:none;}
 }
 </style>
 
-<div class="tx-outer">
-
-  <!-- ══ HERO ══ -->
-  <div class="tx-hero">
-    <div class="tx-badge">
-      <div class="tx-badge-dot">OFL</div>
-      <span class="tx-badge-txt">Overseas FilipinoLoan</span>
-    </div>
-    <a class="tx-back" href="{% url 'dashboard' %}">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      Back
-    </a>
-
-    <div class="tx-hero-inner">
-      <div class="tx-hero-tag">
-        <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="15" x2="13" y2="15"/></svg>
-        Payment Activity
+<!-- Icons: Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0) Copyright 2023 Fonticons, Inc. -->
+<div class="tx">
+  <div class="tx-app">
+    <header class="tx-top">
+      <div class="tx-glow tx-glow-a"></div>
+      <div class="tx-glow tx-glow-b"></div>
+      <div class="tx-bar">
+        <a class="tx-back tx-glass-dark" href="{% url 'dashboard' %}" aria-label="Back to dashboard"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></a>
+        <div class="tx-badge tx-glass-dark"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M14 2.2C22.5-1.7 32.5-.3 39.6 5.8L80 40.4 120.4 5.8c9-7.7 22.3-7.7 31.2 0L192 40.4 232.4 5.8c9-7.7 22.3-7.7 31.2 0L304 40.4 344.4 5.8c7.1-6.1 17.1-7.5 25.6-3.6s14 12.4 14 21.8V488c0 9.4-5.5 17.9-14 21.8s-18.5 2.5-25.6-3.6L304 471.6l-40.4 34.6c-9 7.7-22.3 7.7-31.2 0L192 471.6l-40.4 34.6c-9 7.7-22.3 7.7-31.2 0L80 471.6 39.6 506.2c-7.1 6.1-17.1 7.5-25.6 3.6S0 497.4 0 488V24C0 14.6 5.5 6.1 14 2.2zM96 144c-8.8 0-16 7.2-16 16s7.2 16 16 16H288c8.8 0 16-7.2 16-16s-7.2-16-16-16H96zM80 352c0 8.8 7.2 16 16 16H288c8.8 0 16-7.2 16-16s-7.2-16-16-16H96c-8.8 0-16 7.2-16 16zM96 240c-8.8 0-16 7.2-16 16s7.2 16 16 16H288c8.8 0 16-7.2 16-16s-7.2-16-16-16H96z"/></svg>Payment Activity</div>
       </div>
-
-      <!-- Balance card -->
-      <div class="tx-acc-card">
-        <div class="tx-acc-label">Current Balance</div>
-        <div class="tx-acc-balance">
-          <span class="tx-acc-currency">₱</span>
-          <span class="tx-acc-amount">{{ request.user.balance|floatformat:2|default:"0.00" }}</span>
-        </div>
-        <div class="tx-acc-stats">
-          <div class="tx-acc-stat paid">
-            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-            <span id="hPaid">0</span>&nbsp;Paid
-          </div>
-          <div class="tx-acc-stat rej">
-            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-            <span id="hRej">0</span>&nbsp;Rejected
-          </div>
-        </div>
+      <div class="tx-hero">
+        <p class="tx-eyebrow">History</p>
+        <h1>Transactions</h1>
+        <p>Your finished withdrawals</p>
       </div>
-    </div>
-  </div>
+    </header>
 
-  <!-- ══ BODY ══ -->
-  <div class="tx-body">
-
-    <div class="tx-sec-hd">
-      <div class="tx-sec-line"></div>
-      <div class="tx-sec-txt">Transaction History</div>
-      <div class="tx-sec-line"></div>
-    </div>
-
-    {% if withdrawals %}
-      <div class="tx-ledger">
-        {% for w in withdrawals %}
-          {% if w.status == "paid" %}
-            <div class="tx-row paid" data-s="paid">
-              <div class="tx-row-ico">
-                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-              </div>
-              <div class="tx-row-mid">
-                <div class="tx-row-type">Withdrawal</div>
-                <div class="tx-row-date">{{ w.created_at|date:"M d, Y · g:i A" }}</div>
-              </div>
-              <div class="tx-row-end">
-                <div class="tx-row-amt">₱ {{ w.amount }}</div>
-                <div class="tx-pill">
-                  <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-                  Paid
-                </div>
-              </div>
+    <main class="tx-main">
+      <!-- ── Summary ── -->
+      <section class="tx-card" aria-label="Summary">
+        <div class="tx-sum-top">
+          <div>
+            <span class="tx-label">Current Balance</span>
+            <div class="tx-amt" id="txAmt">
+              <b class="tx-amt-mask" aria-hidden="true">₱ ••••••</b>
+              <b class="tx-amt-real">₱{{ request.user.balance|default:0|floatformat:2|intcomma }}</b>
             </div>
-          {% else %}
-            <div class="tx-row rej" data-s="rej">
-              <div class="tx-row-ico">
-                <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-              </div>
-              <div class="tx-row-mid">
-                <div class="tx-row-type">Withdrawal</div>
-                <div class="tx-row-date">{{ w.created_at|date:"M d, Y · g:i A" }}</div>
-              </div>
-              <div class="tx-row-end">
-                <div class="tx-row-amt">₱ {{ w.amount }}</div>
-                <div class="tx-pill">
-                  <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                  Rejected
-                </div>
-              </div>
-            </div>
-          {% endif %}
-        {% endfor %}
-      </div>
-
-    {% else %}
-      <div class="tx-empty">
-        <div class="tx-empty-ring">
-          <svg viewBox="0 0 24 24">
-            <rect x="3" y="5" width="18" height="14" rx="2"/>
-            <line x1="3" y1="10" x2="21" y2="10"/>
-            <line x1="8" y1="15" x2="13" y2="15"/>
-          </svg>
+          </div>
+          <button type="button" class="tx-eye" id="txEye" aria-label="Show balance" aria-pressed="false" aria-controls="txAmt"><svg viewBox="0 0 640 512" class="i-hidden" aria-hidden="true"><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zm151 118.3C226 97.7 269.5 80 320 80c65.2 0 118.8 29.6 159.9 67.7C518.4 183.5 545 226 558.6 256c-12.6 28-36.6 66.8-70.9 100.9l-53.8-42.2c9.1-17.6 14.2-37.5 14.2-58.7c0-70.7-57.3-128-128-128c-32.2 0-61.7 11.9-84.2 31.5l-46.1-36.1zM394.9 284.2l-81.5-63.9c4.2-8.5 6.6-18.2 6.6-28.3c0-5.5-.7-10.9-2-16c.7 0 1.3 0 2 0c44.2 0 80 35.8 80 80c0 9.9-1.8 19.4-5.1 28.2zm9.4 130.3C378.8 425.4 350.7 432 320 432c-65.2 0-118.8-29.6-159.9-67.7C121.6 328.5 95 286 81.4 256c8.3-18.4 21.5-41.5 39.4-64.8L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5l-41.9-33zM192 256c0 70.7 57.3 128 128 128c13.3 0 26.1-2 38.2-5.8L302 334c-23.5-5.4-43.1-21.2-53.7-42.3l-56.1-44.2c-.2 2.8-.3 5.6-.3 8.5z"/></svg><svg viewBox="0 0 576 512" class="i-shown" aria-hidden="true"><path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"/></svg></button>
         </div>
-        <div class="tx-empty-title">No transactions yet</div>
-        <div class="tx-empty-sub">Your payment history will appear here once you make a withdrawal.</div>
+        <div class="tx-stats">
+          <div class="tx-stat is-ok"><span><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></span><div><b id="hPaid">0</b><small id="hPaidSum">Paid</small></div></div>
+          <div class="tx-stat is-bad"><span><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></span><div><b id="hRej">0</b><small>Rejected</small></div></div>
+        </div>
+      </section>
+
+      <!-- ── History ── -->
+      <section class="tx-card">
+        {% if withdrawals %}
+        <div class="tx-head"><h2>Transaction History</h2><small>Last {{ withdrawals|length }}</small></div>
+        <div class="tx-tabs" id="txTabs" role="tablist" aria-label="Show">
+          <span class="tx-tab-ind" aria-hidden="true"></span>
+          <button type="button" class="tx-tab" role="tab" aria-selected="true" data-f="all">All</button>
+          <button type="button" class="tx-tab" role="tab" aria-selected="false" data-f="paid">Paid</button>
+          <button type="button" class="tx-tab" role="tab" aria-selected="false" data-f="rej">Rejected</button>
+        </div>
+        <ul class="tx-list" id="txList">
+          {% for w in withdrawals %}
+          <li class="tx-row {% if w.status == 'paid' %}is-ok{% else %}is-bad{% endif %}" data-s="{% if w.status == 'paid' %}paid{% else %}rej{% endif %}" data-amt="{{ w.amount }}">
+            <span class="tx-row-ico">{% if w.status == 'paid' %}<svg viewBox="0 0 384 512" aria-hidden="true"><path d="M169.4 470.6c12.5 12.5 32.8 12.5 45.3 0l160-160c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 370.8 224 64c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 306.7L54.6 265.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l160 160z"/></svg>{% else %}<svg viewBox="0 0 384 512" aria-hidden="true"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>{% endif %}</span>
+            <div class="tx-row-txt"><b>Withdrawal</b><small>{{ w.created_at|date:"M j, Y · g:i A" }}</small></div>
+            <div class="tx-row-end"><b>₱{{ w.amount|floatformat:2|intcomma }}</b><span class="tx-pill">{% if w.status == 'paid' %}Paid{% else %}Rejected{% endif %}</span></div>
+          </li>
+          {% endfor %}
+        </ul>
+        <p class="tx-none" id="txNone">Nothing here yet.</p>
+        {% else %}
+        <div class="tx-empty">
+          <span><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M14 2.2C22.5-1.7 32.5-.3 39.6 5.8L80 40.4 120.4 5.8c9-7.7 22.3-7.7 31.2 0L192 40.4 232.4 5.8c9-7.7 22.3-7.7 31.2 0L304 40.4 344.4 5.8c7.1-6.1 17.1-7.5 25.6-3.6s14 12.4 14 21.8V488c0 9.4-5.5 17.9-14 21.8s-18.5 2.5-25.6-3.6L304 471.6l-40.4 34.6c-9 7.7-22.3 7.7-31.2 0L192 471.6l-40.4 34.6c-9 7.7-22.3 7.7-31.2 0L80 471.6 39.6 506.2c-7.1 6.1-17.1 7.5-25.6 3.6S0 497.4 0 488V24C0 14.6 5.5 6.1 14 2.2zM96 144c-8.8 0-16 7.2-16 16s7.2 16 16 16H288c8.8 0 16-7.2 16-16s-7.2-16-16-16H96zM80 352c0 8.8 7.2 16 16 16H288c8.8 0 16-7.2 16-16s-7.2-16-16-16H96c-8.8 0-16 7.2-16 16zM96 240c-8.8 0-16 7.2-16 16s7.2 16 16 16H288c8.8 0 16-7.2 16-16s-7.2-16-16-16H96z"/></svg></span>
+          <h2>No transactions yet</h2>
+          <p>Your payment history will appear here once a withdrawal is paid or closed.</p>
+          <a class="tx-btn tx-btn-green" href="{% url 'wallet' %}"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V192c0-35.3-28.7-64-64-64H80c-8.8 0-16-7.2-16-16s7.2-16 16-16H448c17.7 0 32-14.3 32-32s-14.3-32-32-32H64zM416 272a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg>Go to Wallet</a>
+        </div>
+        {% endif %}
+      </section>
+
+      <div class="tx-acts">
+        <a class="tx-btn tx-btn-line tx-back-link" href="{% url 'profile' %}"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg>Profile</a>
+        <a class="tx-btn tx-btn-green" href="{% url 'dashboard' %}"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg>Dashboard</a>
       </div>
-    {% endif %}
 
-    <div class="tx-actions">
-      <a class="tx-btn-back" href="/profile/">Profile</a>
-      <a class="tx-btn-dash" href="{% url 'dashboard' %}">Dashboard</a>
-    </div>
-
+      <footer class="tx-foot">
+        <p><i></i> APEX <span>•</span> <b>v2.2.1</b></p>
+        <p>© 2026 All rights reserved</p>
+      </footer>
+    </main>
   </div>
 </div>
 
 <script>
 (function(){
-  var rows = document.querySelectorAll('.tx-row');
-  var paid = 0, rej = 0;
-  rows.forEach(function(r){
-    if(r.dataset.s === 'paid') paid++; else rej++;
-  });
-  var hP = document.getElementById('hPaid');
-  var hR = document.getElementById('hRej');
-  if(hP) hP.textContent = paid;
-  if(hR) hR.textContent = rej;
+'use strict';
+function $(id){ return document.getElementById(id); }
+function peso(n){ var p=(Math.round(n*100)/100).toFixed(2).split('.'); return '₱'+p[0].replace(/\B(?=(\d{3})+(?!\d))/g,',')+'.'+p[1]; }
+
+var amt=$('txAmt'), eye=$('txEye');
+eye.addEventListener('click',function(){
+  var show=!amt.classList.contains('is-shown');
+  amt.classList.toggle('is-shown',show); eye.classList.toggle('on',show);
+  eye.setAttribute('aria-pressed',String(show)); eye.setAttribute('aria-label',show?'Hide balance':'Show balance');
+});
+
+var rows=[].slice.call(document.querySelectorAll('.tx-row')), paid=0, rej=0, sum=0;
+rows.forEach(function(r){ if(r.getAttribute('data-s')==='paid'){ paid++; sum+=parseFloat(r.getAttribute('data-amt'))||0; } else rej++; });
+$('hPaid').textContent=paid; $('hRej').textContent=rej;
+if(paid) $('hPaidSum').textContent='Paid · '+peso(sum);
+
+var tabs=$('txTabs');
+if(!tabs) return;
+var btns=[].slice.call(tabs.querySelectorAll('.tx-tab')), list=$('txList'), none=$('txNone');
+var label={all:'All',paid:'Paid',rej:'Rejected'}, count={all:rows.length,paid:paid,rej:rej};
+btns.forEach(function(b){ b.innerHTML=label[b.getAttribute('data-f')]+' <i>'+count[b.getAttribute('data-f')]+'</i>'; });
+function pick(i,focus){
+  var f=btns[i].getAttribute('data-f'), shown=0;
+  btns.forEach(function(b,k){ b.setAttribute('aria-selected',String(k===i)); b.tabIndex=k===i?0:-1; });
+  tabs.style.setProperty('--i',i);
+  rows.forEach(function(r){ var on=(f==='all'||r.getAttribute('data-s')===f); r.hidden=!on; if(on) shown++; });
+  none.classList.toggle('on',!shown);
+  list.classList.remove('is-swap'); void list.offsetWidth; list.classList.add('is-swap');
+  if(focus) btns[i].focus();
+}
+btns.forEach(function(b,i){ b.addEventListener('click',function(){ pick(i); }); });
+tabs.addEventListener('keydown',function(e){
+  var i=btns.indexOf(document.activeElement); if(i<0) return;
+  if(e.key==='ArrowRight'){ e.preventDefault(); pick((i+1)%3,true); }
+  else if(e.key==='ArrowLeft'){ e.preventDefault(); pick((i+2)%3,true); }
+});
 })();
 </script>
 {% endblock %}

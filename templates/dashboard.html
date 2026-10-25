@@ -1,1437 +1,1012 @@
-﻿{% extends "base.html" %}
-{% load static %}
-{% block title %}Dashboard — OFL{% endblock %}
+{% extends "base.html" %}
+{% load static humanize %}
+{% block title %}Dashboard — APEX{% endblock %}
+{% block nav %}{% endblock %}
 
 {% block extra_css %}
 {{ block.super }}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
 <style>
 html body,html body *,html body button,html body input,
-html body select,html body textarea,html body a,html body th,html body td{
-  font-family:'Noto Sans','Hind','Lato',system-ui,sans-serif!important;
+html body select,html body textarea,html body a{
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif!important;
 }
 </style>
 {% endblock %}
 
 {% block content %}
 <style>
-/* ═══════════════════════════════════════════════════
-   OFL Dashboard — White + Navy + Orange  (wallet style)
-   ═══════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════
+   APEX DASHBOARD — Deep Forest · Floating Nav
+   Same look in light and dark theme
+════════════════════════════════════════════ */
 :root{
-  --navy:#0A2463;
-  --navy-dk:#061540;
-  --navy-lt:#1a3a8a;
-  --orange:#FF8C00;
-  --orange-dk:#D97200;
-  --orange-lt:#FFA733;
-  --bg:#f0f3f9;
-  --card:#ffffff;
-  --ink:#0d1b3e;
-  --ink2:#5a6680;
-  --ink3:#9aa3b8;
-  --line:#e6eaf4;
+  --db-dark:#0B1C14;--db-primary:#133224;--db-sage:#E8F3ED;--db-accent:#F97316;--db-surface:#FAFAFA;
+  --db-ink:#111827;--db-ink2:#374151;--db-mut:#9ca3af;--db-mut2:#6b7280;--db-line:#f3f4f6;--db-line2:#e5e7eb;
+  --db-glass:0 8px 32px 0 rgba(0,0,0,.05);--db-float:0 20px 40px -10px rgba(0,0,0,.1);
+  --db-ease:cubic-bezier(.22,1,.36,1);
+  --db-nav-bottom:calc(24px + env(safe-area-inset-bottom,0px));
+}
+#pageRoot.wrap{max-width:100%!important;width:100%!important;padding:0!important;display:block!important;}
+html body,html[data-theme] body{
+  padding-bottom:0!important;overflow-x:hidden!important;
+  background:#e5e7eb!important;color:#1f2937!important;
+  -webkit-font-smoothing:antialiased;
+}
+.db a,.db button,.db-navwrap a,.db-sheet button,.db-drawer a,.db-drawer button{-webkit-tap-highlight-color:transparent;}
+.db svg,.db-navwrap svg,.db-sheet svg,.db-drawer svg,.db-welcome svg{display:block;width:auto;height:1em;fill:currentColor;flex-shrink:0;}
+
+/* ── App shell: full screen on phones, rounded card on desktop ──
+   No overflow:hidden here: guides and rings must never be clipped. */
+.db{min-height:100vh;min-height:100dvh;display:flex;justify-content:center;}
+.db-app{
+  position:relative;width:100%;max-width:420px;min-height:100vh;min-height:100dvh;
+  background:var(--db-surface);
+  padding-bottom:calc(132px + env(safe-area-inset-bottom,0px));   /* room for the floating nav */
 }
 
-html,body{width:100%;overflow-x:hidden;}
-html:not([data-theme="dark"]) body{background:var(--bg)!important;}
+/* ── Top section ── */
+.db-top{
+  position:relative;overflow:hidden;padding:48px 24px 96px;border-radius:0 0 2.5rem 2.5rem;
+  background:linear-gradient(to bottom,var(--db-dark),var(--db-primary));
+  box-shadow:inset 0 2px 4px rgba(0,0,0,.05);
+}
+.db-glow{position:absolute;border-radius:50%;pointer-events:none;}
+.db-glow-a{top:0;right:0;width:256px;height:256px;background:rgba(255,255,255,.05);filter:blur(64px);transform:translate(33%,-33%);}
+.db-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(249,115,22,.1);filter:blur(40px);transform:translate(-25%,25%);}
+.db-bar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:32px;}
+.db-hello{min-width:0;}
+.db-hello p{margin:0 0 2px;font-size:12px;line-height:16px;font-weight:500;letter-spacing:.025em;color:rgba(255,255,255,.6);}
+.db-hello h1{margin:0;font-size:20px;line-height:28px;font-weight:700;letter-spacing:-.025em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.db-actions{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.db-glass-dark{background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);}
+.db-iconbtn{
+  position:relative;width:44px;height:44px;border-radius:50%;padding:0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:#fff!important;font-size:18px;text-decoration:none!important;
+  box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);transition:background-color .15s,transform .15s;
+}
+.db-iconbtn:hover{background-color:rgba(255,255,255,.1);}
+.db-iconbtn:active{transform:scale(.94);}
+.db-bell-dot{position:absolute;top:11px;right:11px;width:10px;height:10px;border-radius:50%;background:var(--db-accent);border:2px solid var(--db-primary);}
 
-/* ══ PAGE SHELL ══ */
-.dp{min-height:100vh;background:var(--bg);padding-bottom:100px;}
+.db-bal{position:relative;z-index:1;margin-bottom:24px;}
+.db-bal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.db-bal-head span:first-child{font-size:14px;line-height:20px;font-weight:500;color:rgba(255,255,255,.7);}
+.db-pill{padding:4px 12px;border-radius:999px;font-size:10px;line-height:15px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#fff;}
+.db-bal-row{display:flex;align-items:center;gap:16px;min-height:44px;}
+/* hidden and real amount share one grid cell, so toggling never shifts the layout */
+.db-amt{display:grid;min-width:0;}
+.db-amt > span{
+  grid-area:1/1;margin:0;font-size:clamp(28px,9.2vw,36px);line-height:40px;font-weight:800;color:#fff;white-space:nowrap;
+  text-shadow:0 4px 3px rgba(0,0,0,.07),0 2px 2px rgba(0,0,0,.06);transition:opacity .2s ease,transform .2s ease;
+}
+.db-amt-mask{letter-spacing:.1em;}
+.db-amt-real{letter-spacing:-.01em;opacity:0;transform:translateY(4px);}
+.db-amt.is-shown .db-amt-mask{opacity:0;transform:translateY(-4px);}
+.db-amt.is-shown .db-amt-real{opacity:1;transform:none;}
+.db-eye{padding:8px;border:0;background:none;cursor:pointer;color:rgba(255,255,255,.5);font-size:20px;transition:color .15s;}
+.db-eye:hover{color:#fff;}
+.db-eye .i-shown,.db-eye.on .i-hidden{display:none;}
+.db-eye.on .i-shown{display:block;}
 
-/* ══ HEADER ══ */
-.d-hdr{
-  position:relative;
-  background:linear-gradient(130deg,var(--navy-dk) 0%,var(--navy) 55%,#0d2b75 100%);
-  padding:0 20px 78px;overflow:hidden;
+/* next payment ring: counts down to the next due date (repayments are not recorded in the app) */
+.db-pay{
+  position:relative;z-index:1;display:flex;align-items:center;gap:16px;margin-top:4px;padding:14px 16px 14px 14px;border-radius:22px;
+  color:#fff!important;text-decoration:none!important;transition:background-color .15s,transform .15s;
 }
-/* Main orange blob — top right */
-.d-hdr::after{
-  content:'';position:absolute;
-  top:-55px;right:-55px;
-  width:210px;height:210px;border-radius:50%;
-  background:radial-gradient(circle at 35% 35%,var(--orange-lt),var(--orange) 55%,var(--orange-dk));
-  opacity:1;
-}
-/* Second smaller glow behind */
-.d-hdr::before{
-  content:'';position:absolute;
-  top:30px;right:85px;
-  width:90px;height:90px;border-radius:50%;
-  background:rgba(255,167,51,.4);
-  filter:blur(8px);
-}
-/* Accent diagonal shimmer line */
-.d-hdr-shine{
-  position:absolute;bottom:72px;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.18) 40%,rgba(255,255,255,.08) 70%,transparent 100%);
-  z-index:1;
-}
-.d-hdr-inner{
-  position:relative;z-index:2;
-  max-width:520px;margin:0 auto;
-  display:flex;align-items:center;justify-content:space-between;
-  padding-top:max(22px,env(safe-area-inset-top));
-}
-.d-hdr-sub{font-size:11.5px;font-weight:700;color:rgba(255,255,255,.62);letter-spacing:.05em;}
-.d-hdr-name{font-size:22px;font-weight:900;color:#fff;margin-top:3px;letter-spacing:-.01em;}
-.d-hdr-right{display:flex;align-items:center;gap:10px;}
+.db-pay:hover{background-color:rgba(255,255,255,.08);}
+.db-pay:active{transform:scale(.985);}
+.db-ring{position:relative;width:84px;height:84px;flex-shrink:0;}
+.db-ring svg{width:84px;height:84px;}
+.db-ring-bg{fill:none;stroke:rgba(255,255,255,.12);stroke-width:8;}
+.db-ring-fg{fill:none;stroke:var(--db-accent);stroke-width:8;stroke-linecap:round;transform:rotate(-90deg);transform-origin:42px 42px;}
+.db-ring-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1;}
+.db-ring-in b{font-size:22px;font-weight:800;color:#fff;}
+.db-ring-in small{margin-top:4px;font-size:9.5px;font-weight:700;letter-spacing:.02em;color:rgba(232,243,237,.65);}
+.db-ring-in svg{width:auto;height:22px;color:#FDBA74;}
+.db-pay-t{flex:1;min-width:0;}
+.db-pay-t span{display:block;font-size:11px;line-height:15px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#FDBA74;}
+.db-pay-t b{display:block;margin-top:3px;font-size:22px;line-height:28px;font-weight:800;letter-spacing:-.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.db-pay-t b.is-text{font-size:16px;line-height:22px;white-space:normal;}
+.db-pay-t small{display:block;margin-top:2px;font-size:12px;line-height:17px;font-weight:500;color:rgba(232,243,237,.72);}
+.db-pay-go{flex-shrink:0;font-size:12px;color:rgba(255,255,255,.45);}
 
-/* Hamburger menu */
-.d-menu{
-  width:40px;height:40px;border-radius:12px;
-  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
-  cursor:pointer;transition:background .2s;
+/* ── Loan account card (solid white over the dark header) ── */
+.db-acct{position:relative;z-index:2;margin-top:-40px;padding:0 20px;}
+.db-acct-card{
+  position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:20px;
+  border-radius:2rem;background:#fff;border:1px solid #fff;box-shadow:var(--db-float);
+  text-decoration:none!important;color:inherit!important;transition:transform .3s var(--db-ease);
 }
-.d-menu:hover{background:rgba(255,255,255,.2);}
-.d-menu span{display:block;width:18px;height:2px;border-radius:2px;background:#fff;}
-.d-menu span:nth-child(2){width:13px;align-self:flex-start;margin-left:11px;}
+@media (hover:hover){ .db-acct-card:hover{transform:translateY(-4px);} }
+.db-acct-who{display:flex;align-items:center;gap:16px;min-width:0;flex:1;}
+.db-acct-ico{
+  width:48px;height:48px;border-radius:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(to bottom right,var(--db-sage),#fff);border:1px solid #fff;color:var(--db-primary);font-size:20px;
+  box-shadow:0 1px 2px rgba(0,0,0,.05);
+}
+.db-acct-who h3{margin:0;font-size:14px;line-height:20px;font-weight:700;color:var(--db-ink);}
+.db-acct-who p{margin:2px 0 0;font-size:11px;line-height:16px;font-weight:500;color:var(--db-mut2);}
+.db-status{
+  --st-bg:#E6F4EA;--st-line:#CDE9D6;--st-ink:#15803D;--st-dot:#22C55E;
+  position:relative;flex-shrink:0;max-width:52%;display:flex;align-items:center;gap:8px;padding:6px 12px 6px 28px;
+  border-radius:999px;background:var(--st-bg);border:1px solid var(--st-line);box-shadow:0 1px 2px rgba(0,0,0,.05);
+  font-size:10px;line-height:15px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--st-ink);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.db-status.status-warn{--st-bg:#FEF3C7;--st-line:#FDE68A;--st-ink:#B45309;--st-dot:#F59E0B;}
+.db-status.status-danger{--st-bg:#FEE2E2;--st-line:#FECACA;--st-ink:#B91C1C;--st-dot:#EF4444;}
+.db-status::before,.db-status::after{content:'';position:absolute;left:12px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--st-dot);}
+.db-status::after{animation:dbPing 1s cubic-bezier(0,0,.2,1) infinite;}
+@keyframes dbPing{75%,100%{transform:scale(2);opacity:0;}}
+.db-acct-card.is-lit{box-shadow:var(--db-float),0 0 0 3px rgba(249,115,22,.55);}
 
-.d-bell{
-  position:relative;width:40px;height:40px;border-radius:50%;
-  background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
-  display:flex;align-items:center;justify-content:center;
-  text-decoration:none;color:#fff;transition:background .2s;
-}
-.d-bell:hover{background:rgba(255,255,255,.22);}
-.d-bell svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.d-bell-badge{
-  position:absolute;top:7px;right:7px;
-  width:8px;height:8px;border-radius:50%;
-  background:var(--orange);border:1.5px solid var(--navy);display:none;
-}
-.d-bell-badge.on{display:block;}
+/* ── Sections ── */
+.db-main{padding:0 20px;margin-top:32px;display:flex;flex-direction:column;gap:32px;}
+.db-sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.db-sec-head h3{margin:0;font-size:14px;line-height:20px;font-weight:700;color:var(--db-ink);}
+.db-sec-head a{margin:-10px -8px;padding:10px 8px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--db-primary)!important;text-decoration:none!important;transition:color .15s;}
+.db-sec-head a:hover{color:var(--db-accent)!important;}
+.db-panel-card{background:#fff;border:1px solid var(--db-line);border-radius:2rem;box-shadow:var(--db-glass);}
 
-/* Profile photo in nav */
-.bnav-prof-img{
-  width:44px;height:44px;border-radius:50%;
-  border:2.5px solid var(--orange);
-  background-size:cover;background-position:center top;background-repeat:no-repeat;
-  background-color:rgba(10,36,99,.12);
-  box-shadow:0 0 0 3px rgba(255,140,0,.18);
-  transition:box-shadow .2s;
+/* activity: filter chips + one timeline of real events */
+.db-act{padding:14px 12px 6px;}
+.db-filters{display:flex;gap:6px;padding:0 4px 4px;}
+.db-filter{
+  height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--db-line2);background:#fff;cursor:pointer;
+  font-size:12px;font-weight:700;color:var(--db-ink2);transition:background-color .15s,border-color .15s,color .15s,transform .15s;
 }
-.bnav-item.active .bnav-prof-img{box-shadow:0 0 0 3px rgba(255,140,0,.4);}
-.bnav-item:not(.active) .bnav-prof-img{border-color:rgba(10,36,99,.35);box-shadow:0 0 0 2px rgba(10,36,99,.1);}
+.db-filter:active{transform:scale(.95);}
+.db-filter[aria-pressed="true"]{color:#fff;background:#1B4332;border-color:#1B4332;}
+.db-filter:focus-visible{outline:2px solid #1B4332;outline-offset:2px;}
+.db-tl{list-style:none;margin:0;padding:0;}
+.db-ev{position:relative;}
+.db-ev[hidden]{display:none;}
+.db-ev.is-in{animation:dbFadeUp .28s var(--db-ease);}
+/* the line joins the icons of the events that are showing */
+.db-ev.has-next::before{content:'';position:absolute;left:33px;top:58px;bottom:-14px;width:2px;border-radius:2px;background:#eef0f2;}
+@keyframes dbFadeUp{from{opacity:0;transform:translateY(6px);}}
+.db-act .db-empty[hidden]{display:none;}
+.db-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 0;text-align:center;}
+.db-empty-ico{width:64px;height:64px;margin-bottom:12px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#f9fafb;color:#d1d5db;font-size:24px;}
+.db-empty p{margin:0;font-size:12px;line-height:16px;font-weight:600;color:var(--db-mut);}
+.db-row{display:flex;align-items:center;gap:12px;padding:14px 12px;}
+.db-row-ico{width:44px;height:44px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;background:var(--db-sage);color:var(--db-primary);}
+.db-row-ico.is-warn{background:#fff7ed;color:var(--db-accent);}
+.db-row-ico.is-muted{background:#f3f4f6;color:var(--db-mut2);}
+.db-row-ico{position:relative;z-index:1;}
+.db-row-text{flex:1;min-width:0;}
+.db-row-text b{display:block;font-size:13px;line-height:18px;font-weight:700;color:var(--db-ink);}
+.db-row-text span{display:block;font-size:11px;line-height:16px;font-weight:500;color:var(--db-mut2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.db-row-end{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
+.db-row-amt{font-size:14px;line-height:20px;font-weight:800;color:var(--db-ink);white-space:nowrap;}
+.db-chip{padding:2px 8px;border-radius:999px;font-size:9.5px;line-height:14px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:#f3f4f6;color:var(--db-mut2);}
+.db-chip.is-ok{background:#E6F4EA;color:#15803D;}
+.db-chip.is-warn{background:#fff7ed;color:#c2410c;}
+.db-chip.is-bad{background:#FEE2E2;color:#B91C1C;}
 
-/* ══ SCROLL BODY ══ */
-.dw{
-  max-width:520px;margin:0 auto;
-  padding:0 16px;
-  margin-top:-54px;/* pull up over header */
-  position:relative;z-index:2;
+/* loan categories: swipe row of cards, each with a worked example that opens Quick Loan pre-filled */
+.db-cats{
+  display:flex;gap:12px;margin:0 -20px;padding:4px 20px 14px;overflow-x:auto;overscroll-behavior-x:contain;
+  scroll-snap-type:x mandatory;scroll-padding:0 20px;scrollbar-width:none;-webkit-overflow-scrolling:touch;
 }
+.db-cats::-webkit-scrollbar{display:none;}
+.db-cat{
+  --c1:#1B4332;--c2:#2d6a4f;--tint:#E8F3ED;
+  position:relative;flex:0 0 78%;max-width:300px;scroll-snap-align:start;overflow:hidden;
+  display:flex;flex-direction:column;padding:18px;border-radius:1.75rem;background:#fff;border:1px solid var(--db-line);box-shadow:var(--db-glass);
+  text-decoration:none!important;color:inherit!important;transition:transform .15s,box-shadow .2s;
+}
+.db-cat.k-ofw{--c1:#0f4c5c;--c2:#1b7a8c;--tint:#e6f4f6;}
+.db-cat.k-salary{--c1:#9a3412;--c2:#F97316;--tint:#fff1e6;}
+.db-cat.k-business{--c1:#3b2f63;--c2:#6b5ca5;--tint:#efecf8;}
+@media (hover:hover){ .db-cat:hover{box-shadow:var(--db-float);} }
+.db-cat:active{transform:scale(.98);}
+.db-cat::before{content:'';position:absolute;top:-40px;right:-40px;width:130px;height:130px;border-radius:50%;background:var(--tint);}
+.db-cat-top{position:relative;display:flex;align-items:center;gap:12px;}
+.db-cat-ico{width:44px;height:44px;flex-shrink:0;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:17px;color:#fff;background:linear-gradient(135deg,var(--c2),var(--c1));box-shadow:0 8px 16px -8px var(--c1);}
+.db-cat h4{margin:0;font-size:16px;line-height:21px;font-weight:800;color:var(--db-ink);}
+.db-cat-use{display:block;font-size:11.5px;line-height:16px;font-weight:500;color:var(--db-mut2);}
+.db-cat-ex{position:relative;margin-top:16px;padding:12px 14px;border-radius:16px;background:#f9fafb;border:1px solid var(--db-line);}
+.db-cat-ex small{display:block;font-size:10.5px;line-height:15px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--db-mut2);}
+.db-cat-ex b{display:block;margin-top:2px;font-size:20px;line-height:26px;font-weight:800;color:var(--c1);white-space:nowrap;}
+.db-cat-ex b span{font-size:11px;font-weight:700;color:var(--db-mut2);}
+.db-cat-ex em{display:block;font-style:normal;font-size:11.5px;line-height:16px;font-weight:600;color:var(--db-ink2);}
+.db-cat-foot{position:relative;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:14px;}
+.db-cat-foot span{font-size:11px;line-height:15px;font-weight:700;color:var(--db-mut2);}
+.db-cat-go{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;font-size:12px;font-weight:800;color:#fff!important;background:var(--c1);}
+.db-cat-go svg{font-size:10px;}
 
-/* ══ BALANCE CARD ══ */
-.bal-card{
-  background:var(--card);border-radius:24px;
-  box-shadow:0 10px 36px rgba(10,36,99,.16);
-  padding:22px 22px 18px;margin-bottom:14px;
-  animation:balCardIn .55s cubic-bezier(.22,1,.36,1) .05s both;
+/* currency converter */
+.db-fx{position:relative;overflow:hidden;padding:24px;}
+.db-fx-blob{position:absolute;right:-40px;top:-40px;width:128px;height:128px;border-radius:50%;background:var(--db-sage);opacity:.5;filter:blur(40px);pointer-events:none;}
+.db-pair{position:relative;display:flex;align-items:center;margin-bottom:16px;padding:8px;border-radius:16px;background:var(--db-surface);border:1px solid var(--db-line);}
+.db-cur{flex:1;min-width:0;display:flex;flex-direction:column;padding:12px;border-radius:12px;}
+.db-cur-from{align-items:flex-start;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.05);}
+.db-cur-to{align-items:flex-end;border:0;background:transparent;cursor:pointer;text-align:right;transition:background-color .15s;}
+.db-cur-to:hover{background:rgba(255,255,255,.7);}
+.db-cur small{margin-bottom:4px;font-size:9px;line-height:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--db-mut);}
+.db-cur-row{display:flex;align-items:center;gap:8px;}
+.db-flag{font-size:20px;line-height:28px;}
+.db-cur-row b{font-size:14px;line-height:20px;font-weight:800;color:var(--db-ink);}
+.db-cur-to .db-cur-row svg{font-size:10px;color:var(--db-mut);}
+.db-swap{
+  position:absolute;left:50%;top:50%;z-index:1;width:40px;height:40px;margin:-20px 0 0 -20px;padding:0;border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;background:var(--db-primary);
+  border:4px solid var(--db-surface);box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);
+  transform:rotate(var(--rot,0deg));transition:transform .5s var(--db-ease);
 }
-.bal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-.bal-lbl{font-size:13px;font-weight:700;color:var(--ink2);}
-.bal-pill{
-  display:flex;align-items:center;gap:5px;
-  background:var(--orange);color:#fff;
-  font-size:11px;font-weight:900;letter-spacing:.08em;
-  padding:4px 11px;border-radius:999px;
+.db-fx-res{position:relative;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:6px;padding:0 4px;}
+.db-fx-res small{display:block;margin-bottom:4px;font-size:10px;line-height:15px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--db-mut);}
+.db-fx-amt{display:flex;align-items:baseline;gap:6px;min-width:0;}
+.db-fx-amt span,.db-fx-out{font-size:24px;line-height:32px;font-weight:800;color:var(--db-ink);}
+#dbFxAmt{
+  width:100%;min-width:0;margin:0;padding:0;border:0!important;background:transparent!important;box-shadow:none!important;outline:none;
+  font-size:24px;line-height:32px;font-weight:800;color:var(--db-ink)!important;-webkit-appearance:none;appearance:none;
 }
-.bal-amt-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
-.bal-amt{font-size:34px;font-weight:900;color:var(--ink);letter-spacing:-.02em;line-height:1;}
-.bal-amt.hidden-amt{font-size:28px;color:var(--ink2);letter-spacing:.04em;}
-.bal-eye{
-  background:none;border:none;padding:4px;cursor:pointer;
-  color:var(--ink3);transition:color .2s;flex-shrink:0;
+#dbFxAmt:focus{color:var(--db-primary)!important;}
+.db-fx-res > div:last-child{text-align:right;min-width:0;}
+.db-fx-out{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.db-fx-out.is-empty{color:#d1d5db;}
+.db-fx-note{position:relative;min-height:16px;margin:0 0 20px;padding:0 4px;font-size:11px;line-height:16px;font-weight:500;color:var(--db-mut);text-align:right;}
+.db-fx-note.is-error{color:#c2410c;}
+.db-btn{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;border:0;border-radius:12px;cursor:pointer;
+  font-size:14px;line-height:20px;font-weight:700;color:#fff;background:var(--db-primary);
+  box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -2px rgba(0,0,0,.1);transition:background-color .15s,transform .15s;
 }
-.bal-eye:hover{color:var(--orange);}
-.bal-eye svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.db-btn:hover{background:var(--db-dark);}
+.db-btn:active{transform:scale(.98);}
+.db-btn:disabled{cursor:wait;opacity:.85;}
+.db-btn svg{font-size:12px;}
+.db-btn.is-busy svg{animation:dbSpin .8s linear infinite;}
+@keyframes dbSpin{to{transform:rotate(360deg);}}
 
-/* Sparkline */
-.bal-chart{width:100%;height:54px;display:block;margin-bottom:14px;}
-.bal-spark-line{stroke-dasharray:600;stroke-dashoffset:600;animation:sparkDraw 1.4s ease-out .5s forwards;}
+/* footer */
+.db-foot{text-align:center;font-size:12px;line-height:16px;font-weight:500;color:var(--db-mut);}
+.db-foot p{margin:0;}
+.db-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
+.db-foot-dot{width:6px;height:6px;border-radius:50%;background:var(--db-primary);}
+.db-foot b{font-weight:700;color:var(--db-accent);}
+.db-foot a{color:var(--db-primary)!important;font-weight:700;text-decoration:none!important;}
 
-.bal-date-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding-top:12px;border-top:1px solid var(--line);
+/* ── Floating pill navigation ── */
+.db-navwrap{
+  position:fixed;left:0;right:0;bottom:var(--db-nav-bottom);z-index:50;
+  display:flex;justify-content:center;padding:0 24px;pointer-events:none;
 }
-.bal-date-pill{
-  display:inline-flex;align-items:center;gap:5px;
-  background:#f0f3f9;border-radius:999px;
-  padding:5px 12px;
-  font-size:11.5px;font-weight:700;color:var(--ink2);
-  animation:datePillIn .4s ease-out .65s both;
+.db-navbox{position:relative;width:100%;max-width:372px;}
+.db-nav{
+  pointer-events:auto;height:72px;padding:0 24px;border-radius:999px;display:flex;align-items:center;justify-content:space-between;
+  background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.8);
+  box-shadow:var(--db-float),0 0 0 1px rgba(17,24,39,.04);
 }
-.bal-date-pill svg{width:11px;height:11px;fill:none;stroke:var(--navy);stroke-width:2;stroke-linecap:round;}
+.db-nav a{text-decoration:none!important;}
+.db-tabbtn{width:48px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:20px;color:var(--db-mut)!important;transition:color .15s,transform .15s;}
+.db-tabbtn:hover{color:var(--db-primary)!important;}
+.db-tabbtn:active{transform:scale(.92);}
+.db-tabbtn.is-active{color:var(--db-primary)!important;}
+.db-tabbtn i{width:4px;height:4px;margin-top:4px;border-radius:50%;background:transparent;}
+.db-tabbtn.is-active i{background:var(--db-primary);}
+.db-avatar{width:22px;height:22px;border-radius:50%;background:center/cover no-repeat;box-shadow:0 0 0 2px #fff,0 0 0 3.5px currentColor;}
+.db-apply-wrap{position:relative;top:-28px;}
+.db-apply{
+  position:relative;width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;
+  color:#fff!important;background:linear-gradient(to top right,var(--db-accent),#ff9843);border:4px solid rgba(255,255,255,.8);
+  box-shadow:0 0 20px rgba(249,115,22,.4);transition:transform .15s;
+}
+@media (hover:hover){ .db-apply:hover{transform:scale(1.05);} }
+.db-apply:active{transform:scale(.95);}
+.db-apply::after{
+  content:'';position:absolute;inset:-9px;border-radius:50%;border:2px solid var(--db-accent);
+  box-shadow:0 0 18px rgba(249,115,22,.5);opacity:0;pointer-events:none;
+}
+.db-apply.is-lit::after{animation:dbLit 1.8s ease-in-out infinite;}
+@keyframes dbLit{0%,100%{opacity:0;}50%{opacity:1;}}
 
-/* ══ STAT ROW ══ */
-.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
-.stat-card{
-  background:var(--card);border-radius:18px;
-  box-shadow:0 4px 18px rgba(10,36,99,.10);
-  padding:16px;
+/* ── Currency picker sheet ── */
+.db-sheet{
+  position:fixed;inset:0;z-index:9990;display:flex;align-items:flex-end;justify-content:center;
+  background:rgba(11,28,20,.5);
+  opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s linear .25s;
 }
-.stat-lbl{font-size:11px;font-weight:700;color:var(--ink3);margin-bottom:6px;}
-.stat-val{
-  display:flex;align-items:center;gap:7px;
-  font-size:19px;font-weight:900;color:var(--ink);
+.db-sheet.is-open{opacity:1;visibility:visible;transition:opacity .25s;}
+.db-sheet,.db-sheet-head{touch-action:none;}   /* the page behind never scrolls; only the list does */
+.db-sheet-panel{
+  width:100%;max-width:420px;max-height:72vh;display:flex;flex-direction:column;
+  padding:10px 20px calc(20px + env(safe-area-inset-bottom,0px));border-radius:28px 28px 0 0;background:#fff;
+  transform:translateY(100%);transition:transform .32s var(--db-ease);
 }
-.stat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
-.stat-dot.orange{background:var(--orange);}
-.stat-dot.navy{background:var(--navy);}
+.db-sheet.is-open .db-sheet-panel{transform:none;}
+.db-sheet-handle{width:36px;height:4px;margin:0 auto 14px;border-radius:2px;background:var(--db-line2);}
+.db-sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.db-sheet-head h3{margin:0;font-size:16px;line-height:24px;font-weight:700;color:var(--db-ink);}
+.db-x{width:36px;height:36px;padding:0;border:0;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--db-mut2);background:#f3f4f6;transition:background-color .15s;}
+.db-x:hover{background:var(--db-line2);}
+.db-sheet-list{overflow-y:auto;overscroll-behavior:contain;touch-action:pan-y;margin:0 -8px;padding:0 8px;}
+.db-opt{
+  width:100%;display:flex;align-items:center;gap:12px;padding:12px;margin:2px 0;border:0;border-radius:14px;cursor:pointer;
+  background:none;text-align:left;transition:background-color .15s;
+}
+.db-opt:hover{background:#f9fafb;}
+.db-opt.is-active{background:var(--db-sage);}
+.db-opt .db-flag{font-size:22px;}
+.db-opt-name{flex:1;min-width:0;font-size:14px;line-height:20px;font-weight:600;color:var(--db-ink2);}
+.db-opt b{font-size:12px;line-height:16px;font-weight:800;letter-spacing:.04em;color:var(--db-mut2);}
+.db-opt.is-active b{color:var(--db-primary);}
+.db-opt svg{font-size:12px;color:var(--db-primary);}
 
-/* ══ SECTION LABEL ══ */
-.d-sec{display:flex;align-items:center;gap:10px;margin:20px 0 12px;}
-.d-sec-lbl{
-  font-size:10px;font-weight:900;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--navy);white-space:nowrap;
+/* ── Menu drawer ── */
+.db-drawer{
+  position:fixed;inset:0;z-index:9995;display:flex;justify-content:center;
+  opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s linear .3s;
 }
-.d-sec::after{content:'';flex:1;height:1.5px;background:linear-gradient(90deg,rgba(10,36,99,.2),transparent);}
+.db-drawer.is-open{opacity:1;visibility:visible;transition:opacity .3s;}
+.db-drawer-bd{position:absolute;inset:0;background:rgba(11,28,20,.5);touch-action:none;}
+.db-drawer-frame{position:relative;width:100%;max-width:420px;height:100%;overflow:hidden;pointer-events:none;}
+.db-drawer-panel{
+  position:absolute;top:0;right:0;bottom:0;width:min(300px,84%);display:flex;flex-direction:column;
+  padding:calc(24px + env(safe-area-inset-top,0px)) 0 calc(20px + env(safe-area-inset-bottom,0px));
+  border-radius:28px 0 0 28px;background:#fff;box-shadow:-20px 0 40px -10px rgba(0,0,0,.2);
+  overflow-y:auto;overscroll-behavior:contain;pointer-events:auto;
+  transform:translateX(100%);transition:transform .35s var(--db-ease);
+}
+.db-drawer.is-open .db-drawer-panel{transform:none;}
+.db-drawer-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:0 20px 20px;border-bottom:1px solid var(--db-line);}
+.db-drawer-head small{display:block;margin-bottom:2px;font-size:10px;line-height:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--db-mut);}
+.db-drawer-head b{display:block;font-size:15px;line-height:22px;font-weight:700;color:var(--db-ink);word-break:break-word;}
+.db-drawer nav{flex:1;padding:12px;}
+.db-drawer nav a,.db-drawer nav button{
+  width:100%;display:flex;align-items:center;gap:12px;padding:10px;margin:2px 0;border:0;border-radius:14px;cursor:pointer;background:none;
+  font-size:14px;line-height:20px;font-weight:600;text-align:left;color:var(--db-ink2)!important;text-decoration:none!important;transition:background-color .15s;
+}
+.db-drawer nav a:hover,.db-drawer nav button:hover{background:#f9fafb;}
+.db-drawer nav span{width:36px;height:36px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;background:var(--db-sage);color:var(--db-primary);}
+.db-out{
+  display:flex;align-items:center;justify-content:center;gap:10px;margin:8px 20px 0;padding:14px;border-radius:14px;
+  font-size:14px;line-height:20px;font-weight:700;color:#b91c1c!important;text-decoration:none!important;
+  background:#fef2f2;border:1px solid #fecaca;transition:background-color .15s;
+}
+.db-out:hover{background:#fee2e2;}
 
-/* ══ BOTTOM NAV BAR ══ */
-.bnav{
-  position:fixed;bottom:0;left:0;right:0;z-index:9999;
-  background:#fff;
-  border-radius:24px 24px 0 0;
-  box-shadow:0 -4px 28px rgba(10,36,99,.14);
-  display:flex;align-items:flex-end;justify-content:space-around;
-  padding:0 12px 14px;height:72px;
+/* ── Welcome card + glass guide (same family as the register guide) ── */
+.db-welcome{
+  position:fixed;inset:0;z-index:9980;display:flex;align-items:center;justify-content:center;padding:24px;
+  background:rgba(11,28,20,.62);
+  opacity:0;visibility:hidden;transition:opacity .35s,visibility 0s linear .35s;
 }
-.bnav-item{
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-  text-decoration:none;flex:1;padding-top:8px;
+.db-welcome.is-open{opacity:1;visibility:visible;transition:opacity .35s;}
+.db-welcome .db-gbody:focus{outline:none;}
+.db-welcome .db-gbody{width:100%;max-width:340px;padding:24px 20px 20px;text-align:center;transform:translateY(16px) scale(.97);transition:transform .45s var(--db-ease);}
+.db-welcome.is-open .db-gbody{transform:none;}
+.db-welcome .db-ghead{justify-content:center;}
+.db-welcome-ico{
+  width:60px;height:60px;margin:0 auto 14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;
+  background:linear-gradient(to bottom right,#F97316,#d95d0b);border:1px solid rgba(255,255,255,.25);box-shadow:0 8px 24px rgba(249,115,22,.4);
 }
-.bnav-ico{
-  width:44px;height:44px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(255,140,0,.1);
-  transition:background .2s;
-}
-.bnav-ico svg{width:20px;height:20px;fill:none;stroke:var(--navy);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s;}
-.bnav-item.active .bnav-ico{background:var(--orange);}
-.bnav-item.active .bnav-ico svg{stroke:#fff;}
-.bnav-item:hover .bnav-ico{background:rgba(255,140,0,.2);}
-.bnav-lbl{font-size:9px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--ink3);}
-.bnav-item.active .bnav-lbl{color:var(--orange);}
+.db-welcome h2{margin:0 0 8px;font-size:19px;line-height:26px;font-weight:800;color:#fff;}
+.db-welcome .db-gtext{text-align:center;}
 
-/* Center raised Apply button */
-.bnav-center{
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-  flex:1;position:relative;top:-20px;text-decoration:none;
+.db-guide{position:absolute;top:0;left:16px;right:16px;z-index:40;transition:transform .45s var(--db-ease);pointer-events:none;}
+.db-navbox > .db-guide{left:-8px;right:-8px;top:auto;bottom:calc(100% + 46px);}
+.db-guide.is-on{pointer-events:auto;}
+.db-gfloat{position:relative;animation:dbFloat 3.5s ease-in-out infinite;}
+@keyframes dbFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+.db-gbody{
+  position:relative;overflow:hidden;padding:16px;border-radius:16px;
+  background:rgba(17,42,31,.85);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,.2);box-shadow:0 15px 35px rgba(0,0,0,.25);
 }
-.bnav-apply-btn{
-  width:64px;height:64px;border-radius:50%;
-  background:linear-gradient(145deg,var(--orange-lt),var(--orange),var(--orange-dk));
-  box-shadow:0 8px 26px rgba(255,140,0,.5),0 0 0 5px rgba(255,140,0,.15);
-  display:flex;align-items:center;justify-content:center;
-  transition:transform .18s,box-shadow .18s;
+.db-guide .db-gbody,.db-guide .db-garrow{opacity:0;transition:opacity .3s ease;}
+.db-guide.is-on .db-gbody,.db-guide.is-on .db-garrow{opacity:1;}
+.db-garrow{
+  position:absolute;left:var(--ax,50%);width:14px;height:14px;margin-left:-7px;top:-6px;
+  background:rgba(17,42,31,.85);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+  border:1px solid rgba(255,255,255,.2);border-right:0;border-bottom:0;clip-path:polygon(0 0,100% 0,0 100%);transform:rotate(45deg);
 }
-.bnav-center:hover .bnav-apply-btn{transform:translateY(-4px);box-shadow:0 14px 32px rgba(255,140,0,.6),0 0 0 6px rgba(255,140,0,.18);}
-.bnav-apply-btn svg{width:28px;height:28px;fill:none;stroke:#fff;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;}
-.bnav-apply-lbl{font-size:9px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:var(--orange);margin-top:-2px;}
-
-/* ══ WHITE CARDS (generic) ══ */
-.d-card{
-  background:var(--card);border-radius:22px;
-  box-shadow:0 6px 24px rgba(10,36,99,.10);
-  margin-bottom:14px;overflow:hidden;
+.db-guide.is-above .db-garrow{top:auto;bottom:-6px;transform:rotate(225deg);}
+.db-gglow{position:absolute;top:-24px;right:-24px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.1);filter:blur(40px);pointer-events:none;}
+.db-ghead{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.1);}
+.db-gwho{display:flex;align-items:center;gap:10px;}
+.db-gava{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;
+  background:linear-gradient(to bottom right,#F97316,#d95d0b);border:1px solid rgba(255,255,255,.2);
 }
-.d-card-head{
-  padding:16px 18px 14px;border-bottom:1px solid var(--line);
-  display:flex;align-items:center;gap:12px;
-}
-.d-card-ico{
-  width:42px;height:42px;border-radius:13px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,var(--orange),var(--orange-dk));
-  box-shadow:0 4px 12px rgba(255,140,0,.28);
-}
-.d-card-ico svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
-.d-card-head-text h3{margin:0;font-size:15px;font-weight:900;color:var(--ink);}
-.d-card-head-text p{margin:0;font-size:11px;color:var(--ink3);margin-top:2px;}
-.d-card-body{padding:16px 18px;}
-
-/* ══ LOAN STATUS CARD ══ */
-.lc-status-pill{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:5px 12px;border-radius:999px;
-  font-size:10.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;
-}
-.lc-status-pill.active{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#16a34a;}
-.lc-status-pill.pending{background:rgba(255,140,0,.1);border:1px solid rgba(255,140,0,.3);color:var(--orange-dk);}
-.lc-status-pill.inactive{background:rgba(220,38,38,.10);border:1px solid rgba(220,38,38,.28);color:#b91c1c;}
-.lc-status-dot{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 5px currentColor;}
-
-.lc-info-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;}
-.lc-chip{
-  padding:10px 12px;border-radius:14px;
-  background:#f7f9fc;border:1px solid var(--line);
-}
-.lc-chip-lbl{font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:3px;}
-.lc-chip-val{font-size:13px;font-weight:900;color:var(--ink);}
-.lc-chip-val.hi{color:var(--orange);}
-
-/* Staff avatar inside card */
-.lc-staff-row{
-  display:flex;align-items:center;gap:12px;
-  padding:12px 14px;border-radius:14px;
-  background:#f7f9fc;border:1px solid var(--line);
-  margin-bottom:14px;
-}
-.lc-staff-img{
-  width:46px;height:46px;border-radius:50%;
-  border:2.5px solid rgba(255,140,0,.6);
-  background-size:cover;background-position:center top;
-  background-color:#e8ecf4;flex-shrink:0;
-}
-.lc-staff-name{font-size:13px;font-weight:800;color:var(--ink);}
-.lc-staff-role{font-size:11px;color:var(--ink3);margin-top:1px;}
-
-/* ══ CATEGORY GRID ══ */
-.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;}
-.cat-card{
-  border-radius:20px;padding:18px 16px 16px;
-  position:relative;overflow:hidden;
-  transition:transform .18s cubic-bezier(.34,1.56,.64,1),box-shadow .22s;
-}
-.cat-card:hover{transform:translateY(-4px);}
-.cat-card::before{
-  content:'';position:absolute;top:-30px;right:-30px;
-  width:90px;height:90px;border-radius:50%;
-  background:rgba(255,255,255,.10);pointer-events:none;
-}
-.cat-card::after{
-  content:'';position:absolute;bottom:-18px;left:-18px;
-  width:55px;height:55px;border-radius:50%;
-  background:rgba(255,255,255,.06);pointer-events:none;
-}
-.cat-personal{
-  background:linear-gradient(145deg,var(--orange-dk),var(--orange),var(--orange-lt));
-  box-shadow:0 8px 24px rgba(255,140,0,.38);
-}
-.cat-ofw{
-  background:linear-gradient(145deg,var(--navy-dk),var(--navy),var(--navy-lt));
-  box-shadow:0 8px 24px rgba(10,36,99,.38);
-}
-.cat-salary{
-  background:linear-gradient(145deg,#047857,#059669,#10b981);
-  box-shadow:0 8px 22px rgba(5,150,105,.30);
-}
-.cat-business{
-  background:linear-gradient(145deg,#5b21b6,#7c3aed,#9c5df6);
-  box-shadow:0 8px 22px rgba(124,58,237,.30);
-}
-.cat-ico-wrap{
-  width:52px;height:52px;border-radius:15px;
-  background:rgba(255,255,255,.18);
-  border:1px solid rgba(255,255,255,.22);
-  display:flex;align-items:center;justify-content:center;
-  margin-bottom:14px;
-}
-.cat-ico-wrap svg{
-  width:26px;height:26px;
-  fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;
-}
-.cat-name{font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.68);margin-bottom:4px;}
-.cat-amount{font-size:22px;font-weight:900;color:#fff;letter-spacing:-.02em;line-height:1.15;}
-.cat-remain{font-size:10.5px;font-weight:700;color:rgba(255,255,255,.70);margin-top:6px;}
-.cat-remain:last-child{font-size:10px;font-weight:600;color:rgba(255,255,255,.48);margin-top:2px;}
-
-/* ══ ACTIVITY ══ */
-.act-tabs{display:flex;border-bottom:1px solid var(--line);}
-.act-tab{
-  flex:1;padding:13px 8px;text-align:center;
-  font-size:11.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--ink3);cursor:pointer;border:none;background:none;
-  border-bottom:2.5px solid transparent;margin-bottom:-1px;
-  transition:color .2s,border-color .2s;
-}
-.act-tab.on{color:var(--navy);border-bottom-color:var(--orange);}
-.act-body{padding:4px 0;}
-.act-item{
-  display:flex;align-items:center;gap:12px;
-  padding:12px 18px;border-bottom:1px solid var(--line);
-}
-.act-item:last-child{border-bottom:none;}
-.act-icon{
-  width:42px;height:42px;border-radius:13px;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
-  background:rgba(255,140,0,.1);
-}
-.act-icon svg{width:19px;height:19px;fill:none;stroke:var(--orange);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-.act-text{flex:1;min-width:0;}
-.act-title{font-size:13.5px;font-weight:700;color:var(--ink);}
-.act-sub{font-size:11px;color:var(--ink3);margin-top:1px;}
-.act-amt{font-size:14px;font-weight:900;color:var(--orange-dk);white-space:nowrap;}
-.act-empty{
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  padding:28px;font-size:12px;color:var(--ink3);
-}
-.act-empty svg{opacity:.25;width:34px;height:34px;fill:none;stroke:var(--ink3);stroke-width:1.5;}
-
-/* ══ LOAN PRODUCT ══ */
-.lp-feat{display:flex;flex-direction:column;gap:9px;}
-.lp-feat-row{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:10px 14px;border-radius:12px;
-  background:#f7f9fc;border:1px solid var(--line);
-}
-.lp-feat-lbl{font-size:12px;font-weight:700;color:var(--ink2);}
-.lp-feat-val{font-size:13px;font-weight:900;color:var(--ink);}
-.lp-feat-val.hi{color:var(--orange);}
-
-.lp-apply{
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  width:100%;height:50px;border-radius:999px;border:none;
-  background:linear-gradient(135deg,var(--orange),var(--orange-dk));
-  color:#fff;font-size:13.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;
-  cursor:pointer;margin-top:14px;text-decoration:none;
-  box-shadow:0 8px 24px rgba(255,140,0,.35);
-  transition:transform .18s,box-shadow .18s;
-  position:relative;overflow:hidden;
-}
-.lp-apply::before{
-  content:'';position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.18) 50%,transparent 65%);
-  animation:shimmer 4.5s ease-in-out 2s infinite;
-}
-@keyframes shimmer{0%{transform:translateX(-110%)}100%{transform:translateX(110%)}}
-@keyframes balCardIn{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}
-@keyframes sparkDraw{from{stroke-dashoffset:600}to{stroke-dashoffset:0}}
-@keyframes datePillIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
-.lp-apply:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(255,140,0,.48);}
-.lp-apply svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
-
-/* ══ FX CONVERTER — Professional Redesign ══ */
-.fx-pair-row{
-  display:grid;grid-template-columns:1fr 36px 1fr;
-  align-items:center;gap:8px;margin-bottom:16px;
-}
-.fx-currency-box{
-  border-radius:16px;padding:12px 14px;
-  background:#f7f9fc;border:1.5px solid var(--line);
-  display:flex;flex-direction:column;gap:6px;
-  transition:border-color .2s;
-}
-.fx-currency-box:focus-within{border-color:var(--orange);}
-.fx-currency-tag{
-  font-size:9px;font-weight:900;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--ink3);
-}
-.fx-currency-flag-row{display:flex;align-items:center;gap:8px;}
-.fx-currency-flag{
-  width:28px;height:20px;border-radius:5px;
-  object-fit:cover;border:1px solid rgba(0,0,0,.08);
-  flex-shrink:0;
-}
-.fx-currency-code{
-  font-size:17px;font-weight:900;color:var(--ink);letter-spacing:-.01em;line-height:1;
-}
-.fx-currency-name{font-size:10.5px;font-weight:600;color:var(--ink2);}
-
-/* Swap button (replaces static arrow) */
-.fx-swap-btn{
-  display:flex;align-items:center;justify-content:center;
-  width:36px;height:36px;border-radius:50%;flex-shrink:0;align-self:center;
-  background:linear-gradient(135deg,var(--orange),var(--orange-dk));
-  box-shadow:0 4px 12px rgba(255,140,0,.35);
-  border:none;cursor:pointer;
-  transition:transform .28s cubic-bezier(.34,1.56,.64,1),box-shadow .2s;
-}
-.fx-swap-btn:hover{box-shadow:0 6px 18px rgba(255,140,0,.50);}
-.fx-swap-btn.spinning{transform:rotate(180deg);}
-.fx-swap-btn svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
-.fx-flag-emoji{font-size:26px;line-height:1;flex-shrink:0;}
-.fx-to-clickable{cursor:pointer;}
-.fx-to-clickable:hover{border-color:var(--orange) !important;background:#fff;}
-
-/* ── Currency picker modal ── */
-.fx-picker-overlay{
-  position:fixed;inset:0;z-index:99999;
-  background:rgba(10,36,99,.55);
-  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  display:flex;align-items:flex-end;
-  opacity:0;pointer-events:none;
-  transition:opacity .22s;
-}
-.fx-picker-overlay.open{opacity:1;pointer-events:all;}
-.fx-picker-sheet{
-  width:100%;max-width:520px;margin:0 auto;
-  background:#fff;border-radius:28px 28px 0 0;
-  overflow:hidden;
-  transform:translateY(100%);
-  transition:transform .32s cubic-bezier(.22,1,.36,1);
-  max-height:72vh;display:flex;flex-direction:column;
-}
-.fx-picker-overlay.open .fx-picker-sheet{transform:none;}
-.fx-picker-header{
-  padding:16px 20px 14px;border-bottom:1px solid var(--line);
-  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
-}
-.fx-picker-title{font-size:15px;font-weight:900;color:var(--ink);}
-.fx-picker-close{
-  width:32px;height:32px;border-radius:50%;
-  border:none;background:var(--bg);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  color:var(--ink2);font-size:15px;font-weight:700;
-  transition:background .18s;
-}
-.fx-picker-close:hover{background:var(--line);}
-.fx-picker-list{overflow-y:auto;flex:1;padding:8px 0 20px;}
-.fx-picker-item{
-  display:flex;align-items:center;gap:14px;
-  padding:13px 20px;cursor:pointer;transition:background .14s;
-}
-.fx-picker-item:hover{background:var(--bg);}
-.fx-picker-item.selected{background:rgba(255,140,0,.06);}
-.fx-picker-flag{font-size:28px;line-height:1;flex-shrink:0;width:36px;text-align:center;}
-.fx-picker-info{flex:1;min-width:0;}
-.fx-picker-code{font-size:14px;font-weight:900;color:var(--ink);}
-.fx-picker-country{font-size:11.5px;color:var(--ink3);margin-top:1px;}
-.fx-picker-check{
-  width:22px;height:22px;border-radius:50%;
-  background:var(--orange);display:none;
-  align-items:center;justify-content:center;flex-shrink:0;
-}
-.fx-picker-item.selected .fx-picker-check{display:flex;}
-.fx-picker-check svg{width:11px;height:11px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;}
-
-/* Amount input */
-.fx-amount-wrap{
-  border-radius:16px;background:#f7f9fc;
-  border:1.5px solid var(--line);padding:12px 16px;
-  margin-bottom:16px;transition:border-color .2s;
-}
-.fx-amount-wrap:focus-within{border-color:var(--orange);background:#fff;}
-.fx-amount-tag{
-  font-size:9px;font-weight:900;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--ink3);margin-bottom:6px;
-}
-.fx-amount-row{display:flex;align-items:center;gap:6px;}
-.fx-amount-sym{font-size:22px;font-weight:900;color:var(--ink2);}
-.fx-amount-inp{
-  flex:1;border:none;outline:none;background:transparent;
-  font-size:28px;font-weight:900;color:var(--ink);
-  letter-spacing:-.02em;width:100%;min-width:0;
-  font-family:'Noto Sans','Hind','Lato',system-ui,sans-serif;
+.db-gstep{font-size:10px;line-height:15px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;}
+.db-gdots{display:flex;gap:6px;}
+.db-gdots i{width:6px;height:6px;border-radius:999px;background:rgba(255,255,255,.3);transition:width .3s,background-color .3s;}
+.db-gdots i.done{background:rgba(249,115,22,.75);}
+.db-gdots i.on{width:14px;background:var(--db-accent);box-shadow:0 0 8px rgba(249,115,22,.6);}
+.db-gtext{position:relative;margin:0 0 16px;font-size:13px;line-height:1.625;color:rgba(255,255,255,.9);transition:opacity .15s;}
+.db-gtext b{font-weight:700;color:#fff;}
+.db-gacts{position:relative;display:flex;align-items:center;gap:12px;}
+.db-gskip,.db-gnext{flex:1;padding:9px 8px;border-radius:12px;cursor:pointer;font-size:12px;line-height:16px;transition:background-color .15s,color .15s,transform .15s;}
+.db-gskip{border:1px solid rgba(255,255,255,.3);background:transparent;color:rgba(255,255,255,.8);font-weight:600;}
+.db-gskip:hover{background:rgba(255,255,255,.1);color:#fff;}
+.db-gnext{display:flex;align-items:center;justify-content:center;gap:6px;border:0;background:#fff;color:var(--db-primary);font-weight:700;box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);}
+.db-gnext:hover{background:#f3f4f6;}
+.db-gskip:active,.db-gnext:active{transform:scale(.98);}
+.db-gnext svg{font-size:10px;}
+.db-bal.is-lit::after{
+  content:'';position:absolute;inset:-10px -12px;border-radius:20px;border:2px solid rgba(249,115,22,.75);
+  box-shadow:0 0 18px rgba(249,115,22,.35);pointer-events:none;
 }
 
-/* Result display */
-.fx-result-card{
-  border-radius:16px;
-  background:linear-gradient(135deg,rgba(10,36,99,.06) 0%,rgba(255,140,0,.06) 100%);
-  border:1.5px solid rgba(255,140,0,.22);
-  padding:16px 18px;margin-bottom:16px;
+/* desktop: centred rounded app */
+@media (min-width:640px){
+  .db{padding:32px 0;}
+  .db-app{min-height:0;border-radius:2.5rem;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);}
+  .db-top{border-radius:2.5rem;}
+  .db-navwrap{bottom:calc(16px + env(safe-area-inset-bottom,0px));}
 }
-.fx-result-tag{
-  font-size:9px;font-weight:900;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--ink3);margin-bottom:8px;
+@media (max-width:359px){
+  .db-top{padding-left:20px;padding-right:20px;}
+  .db-main,.db-acct{padding-left:16px;padding-right:16px;}
+  .db-cats{margin:0 -16px;padding-left:16px;padding-right:16px;scroll-padding:0 16px;}
+  .db-cat{flex-basis:84%;padding:16px;}
+  .db-nav{padding:0 16px;}
+  .db-pay{gap:12px;padding:12px;}
+  .db-ring,.db-ring svg{width:72px;height:72px;}
+  .db-ring-in b{font-size:19px;}
+  .db-pay-t b{font-size:18px;line-height:24px;}
+  .db-pay-t b.is-text{font-size:15px;}
+  .db-pay-go{display:none;}
 }
-.fx-result-main{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;}
-.fx-result-amount{
-  font-size:32px;font-weight:900;color:var(--navy);letter-spacing:-.02em;line-height:1;
-}
-.fx-result-amount span{font-size:14px;font-weight:700;color:var(--ink3);letter-spacing:.02em;margin-right:4px;}
-.fx-result-meta{text-align:right;flex-shrink:0;}
-.fx-result-flag{width:26px;height:18px;border-radius:4px;object-fit:cover;border:1px solid rgba(0,0,0,.08);display:block;margin-left:auto;margin-bottom:4px;}
-.fx-result-rate{font-size:11px;font-weight:700;color:var(--ink2);}
-.fx-result-updated{font-size:10px;color:var(--ink3);margin-top:2px;}
-
-/* Refresh button */
-.fx-refresh-btn{
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  width:100%;height:50px;border-radius:14px;border:none;
-  background:linear-gradient(135deg,var(--navy),var(--navy-lt));
-  color:#fff;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
-  cursor:pointer;box-shadow:0 6px 20px rgba(10,36,99,.22);
-  transition:transform .18s,box-shadow .18s;
-}
-.fx-refresh-btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(10,36,99,.32);}
-.fx-refresh-btn svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
-
-/* ══ FOOTER ══ */
-.d-foot{
-  background:var(--card);border-radius:20px;
-  box-shadow:0 4px 16px rgba(10,36,99,.08);
-  padding:20px;text-align:center;margin-top:8px;
-}
-.d-foot-title{font-size:10.5px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px;}
-.d-foot-links{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;}
-.d-foot-link{font-size:12.5px;font-weight:700;color:var(--ink2);text-decoration:none;transition:color .2s;}
-.d-foot-link:hover{color:var(--orange);}
-.d-foot-sep{color:var(--line);}
-
-@media(max-width:400px){
-  .bal-amt{font-size:27px;}
-  .lc-info-row{grid-template-columns:1fr 1fr;}
-  .bnav-apply-btn{width:56px;height:56px;}
-  .bnav-apply-btn svg{width:24px;height:24px;}
+@media (prefers-reduced-motion: reduce){
+  .db-status::after,.db-gfloat,.db-apply.is-lit::after{animation:none;}
+  .db-guide,.db-swap,.db-pay,.db-filter{transition:none;}
+  .db-ev.is-in{animation:none;}
 }
 </style>
 
-<div class="dp">
+<!-- Icons: Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0) Copyright 2023 Fonticons, Inc. -->
+<div class="db">
+  <div class="db-app" id="dbApp">
 
-  <!-- ══ HEADER ══ -->
-  <div class="d-hdr">
-    <div class="d-hdr-shine"></div>
-    <div class="d-hdr-inner">
-      <div>
-        <div class="d-hdr-sub">Welcome back</div>
-        <div class="d-hdr-name">
-          {% if last_loan and last_loan.full_name %}
-            {{ last_loan.full_name|truncatechars:20 }}
-          {% else %}
-            OFL Client
-          {% endif %}
+    <!-- ── Top section ── -->
+    <header class="db-top">
+      <div class="db-glow db-glow-a"></div>
+      <div class="db-glow db-glow-b"></div>
+
+      <div class="db-bar">
+        <div class="db-hello">
+          <p>Welcome back,</p>
+          <h1>{% if last_loan and last_loan.full_name %}{{ last_loan.full_name|truncatechars:24 }}{% else %}APEX Client{% endif %}</h1>
+        </div>
+        <div class="db-actions">
+          <a href="{% url 'notifications' %}" class="db-iconbtn db-glass-dark" aria-label="Notifications{% if notif_count %} ({{ notif_count }} unread){% endif %}">
+            <svg viewBox="0 0 448 512" aria-hidden="true"><path d="M224 0c-17.7 0-32 14.3-32 32V49.9C119.5 61.4 64 124.2 64 200v33.4c0 45.4-15.5 89.5-43.8 124.9L5.3 377c-5.8 7.2-6.9 17.1-2.9 25.4S14.8 416 24 416H424c9.2 0 17.6-5.3 21.6-13.6s2.9-18.2-2.9-25.4l-14.9-18.6C399.5 322.9 384 278.8 384 233.4V200c0-75.8-55.5-138.6-128-150.1V32c0-17.7-14.3-32-32-32zm0 96h8c57.4 0 104 46.6 104 104v33.4c0 47.9 13.9 94.6 39.7 134.6H72.3C98.1 328 112 281.3 112 233.4V200c0-57.4 46.6-104 104-104h8zm64 352H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7s18.7-28.3 18.7-45.3z"/></svg>
+            {% if notif_count %}<span class="db-bell-dot"></span>{% endif %}
+          </a>
+          <button type="button" class="db-iconbtn db-glass-dark" id="dbMenuBtn" aria-label="Open menu" aria-haspopup="dialog" aria-controls="dbDrawer"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></button>
         </div>
       </div>
-      <div class="d-hdr-right">
-        <a href="{% url 'notifications' %}" class="d-bell" aria-label="Notifications" onclick="OFL_SFX.notif()">
-          <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-          <span class="d-bell-badge {% if notif_count and notif_count > 0 %}on{% endif %}"></span>
-        </a>
-        <div class="d-menu" onclick="toggleMenu()" aria-label="Menu">
-          <span></span><span></span><span></span>
+
+      <div class="db-bal" id="dbBal">
+        <div class="db-bal-head">
+          <span>Total Balance</span>
+          <span class="db-pill db-glass-dark">PHP</span>
+        </div>
+        <div class="db-bal-row">
+          <div class="db-amt" id="dbAmt">
+            <span class="db-amt-mask" aria-hidden="true">₱ ••••••</span>
+            <span class="db-amt-real">₱ {{ request.user.balance|default:0|floatformat:2|intcomma }}</span>
+          </div>
+          <button type="button" class="db-eye" id="dbEye" aria-label="Show balance" aria-pressed="false" aria-controls="dbAmt"><svg viewBox="0 0 640 512" class="i-hidden" aria-hidden="true"><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zm151 118.3C226 97.7 269.5 80 320 80c65.2 0 118.8 29.6 159.9 67.7C518.4 183.5 545 226 558.6 256c-12.6 28-36.6 66.8-70.9 100.9l-53.8-42.2c9.1-17.6 14.2-37.5 14.2-58.7c0-70.7-57.3-128-128-128c-32.2 0-61.7 11.9-84.2 31.5l-46.1-36.1zM394.9 284.2l-81.5-63.9c4.2-8.5 6.6-18.2 6.6-28.3c0-5.5-.7-10.9-2-16c.7 0 1.3 0 2 0c44.2 0 80 35.8 80 80c0 9.9-1.8 19.4-5.1 28.2zm9.4 130.3C378.8 425.4 350.7 432 320 432c-65.2 0-118.8-29.6-159.9-67.7C121.6 328.5 95 286 81.4 256c8.3-18.4 21.5-41.5 39.4-64.8L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5l-41.9-33zM192 256c0 70.7 57.3 128 128 128c13.3 0 26.1-2 38.2-5.8L302 334c-23.5-5.4-43.1-21.2-53.7-42.3l-56.1-44.2c-.2 2.8-.3 5.6-.3 8.5z"/></svg><svg viewBox="0 0 576 512" class="i-shown" aria-hidden="true"><path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"/></svg></button>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- ══ SCROLL BODY ══ -->
-  <div class="dw">
+{% if pay.state == "active" %}
+      <a class="db-pay db-glass-dark" id="dbPay" href="{% url 'payment_schedule' %}" aria-label="Next payment ₱{{ pay.monthly|default:0|floatformat:2|intcomma }}, due {{ pay.due|date:'M j, Y' }}. Open payment schedule">
+        <span class="db-ring" aria-hidden="true"><svg viewBox="0 0 84 84"><circle class="db-ring-bg" cx="42" cy="42" r="35"/><circle class="db-ring-fg" cx="42" cy="42" r="35" stroke-dasharray="{{ pay.dash|stringformat:'s' }} 220"/></svg>
+          <span class="db-ring-in">{% if pay.days_left == 0 %}<b>Today</b>{% else %}<b>{{ pay.days_left }}</b><small>day{{ pay.days_left|pluralize }} left</small>{% endif %}</span></span>
+        <span class="db-pay-t"><span>Next payment</span><b>₱{{ pay.monthly|default:0|floatformat:2|intcomma }}</b><small>Due {{ pay.due|date:"M j, Y" }} · {{ pay.n }} of {{ pay.terms }}</small></span>
+        <span class="db-pay-go"><svg viewBox="0 0 320 512" aria-hidden="true"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></span>
+      </a>
+      {% elif pay.state == "done" %}
+      <a class="db-pay db-glass-dark" id="dbPay" href="{% url 'payment_schedule' %}">
+        <span class="db-ring" aria-hidden="true"><svg viewBox="0 0 84 84"><circle class="db-ring-bg" cx="42" cy="42" r="35"/><circle class="db-ring-fg" cx="42" cy="42" r="35" stroke-dasharray="220 220"/></svg><span class="db-ring-in"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></span></span>
+        <span class="db-pay-t"><span>Payment schedule</span><b class="is-text">All due dates have passed</b><small>{% if pay.last_due %}Last due date: {{ pay.last_due|date:"M j, Y" }}{% endif %}</small></span>
+        <span class="db-pay-go"><svg viewBox="0 0 320 512" aria-hidden="true"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></span>
+      </a>
+      {% elif pay.state == "waiting" %}
+      <a class="db-pay db-glass-dark" id="dbPay" href="{% url 'quick_loan' %}">
+        <span class="db-ring" aria-hidden="true"><svg viewBox="0 0 84 84"><circle class="db-ring-bg" cx="42" cy="42" r="35"/><circle class="db-ring-fg" cx="42" cy="42" r="35" stroke-dasharray="55 220"/></svg><span class="db-ring-in"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/></svg></span></span>
+        <span class="db-pay-t"><span>Waiting for approval</span><b class="is-text">Your due dates appear here once approved</b><small>Tap to see your application</small></span>
+        <span class="db-pay-go"><svg viewBox="0 0 320 512" aria-hidden="true"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></span>
+      </a>
+      {% else %}
+      <a class="db-pay db-glass-dark" id="dbPay" href="{% url 'quick_loan' %}">
+        <span class="db-ring" aria-hidden="true"><svg viewBox="0 0 84 84"><circle class="db-ring-bg" cx="42" cy="42" r="35"/></svg><span class="db-ring-in"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M312 24V34.5c6.4 1.2 12.6 2.7 18.2 4.2c12.8 3.4 20.4 16.6 17 29.4s-16.6 20.4-29.4 17c-10.9-2.9-21.1-4.9-30.2-5c-7.3-.1-14.7 1.7-19.4 4.4c-2.1 1.3-3.1 2.4-3.5 3c-.3 .5-.7 1.2-.7 2.8c0 .3 0 .5 0 .6c.2 .2 .9 1.2 3.3 2.6c5.8 3.5 14.4 6.2 27.4 10.1l.9 .3 0 0c11.1 3.3 25.9 7.8 37.9 15.3c13.7 8.6 26.1 22.9 26.4 44.9c.3 22.5-11.4 38.9-26.7 48.5c-6.7 4.1-13.9 7-21.3 8.8V232c0 13.3-10.7 24-24 24s-24-10.7-24-24V220.6c-9.5-2.3-18.2-5.3-25.6-7.8c-2.1-.7-4.1-1.4-6-2c-12.6-4.2-19.4-17.8-15.2-30.4s17.8-19.4 30.4-15.2c2.6 .9 5 1.7 7.3 2.5c13.6 4.6 23.4 7.9 33.9 8.3c8 .3 15.1-1.6 19.2-4.1c1.9-1.2 2.8-2.2 3.2-2.9c.4-.6 .9-1.8 .8-4.1l0-.2c0-1 0-2.1-4-4.6c-5.7-3.6-14.3-6.4-27.1-10.3l-1.9-.6c-10.8-3.2-25-7.5-36.4-14.4c-13.5-8.1-26.5-22-26.6-44.1c-.1-22.9 12.9-38.6 27.7-47.4c6.4-3.8 13.3-6.4 20.2-8.2V24c0-13.3 10.7-24 24-24s24 10.7 24 24zM568.2 336.3c13.1 17.8 9.3 42.8-8.5 55.9L433.1 485.5c-23.4 17.2-51.6 26.5-80.7 26.5H192 32c-17.7 0-32-14.3-32-32V416c0-17.7 14.3-32 32-32H68.8l44.9-36c22.7-18.2 50.9-28 80-28H272h16 64c17.7 0 32 14.3 32 32s-14.3 32-32 32H288 272c-8.8 0-16 7.2-16 16s7.2 16 16 16H392.6l119.7-88.2c17.8-13.1 42.8-9.3 55.9 8.5zM193.6 384l0 0-.9 0c.3 0 .6 0 .9 0z"/></svg></span></span>
+        <span class="db-pay-t"><span>No loan yet</span><b class="is-text">Apply in minutes</b><small>{{ loan_rate_pct }}% a month · 6 to 36 months</small></span>
+        <span class="db-pay-go"><svg viewBox="0 0 320 512" aria-hidden="true"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></span>
+      </a>
+      {% endif %}
+    </header>
 
-    <!-- ── BALANCE CARD ── -->
-    <div class="bal-card">
-      <div class="bal-top">
-        <span class="bal-lbl">Balance</span>
-        <span class="bal-pill">
-          <svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="10"/></svg>
-          PHP
-        </span>
-      </div>
-
-      <div class="bal-amt-row">
-        <div class="bal-amt hidden-amt" id="balHidden">&#8369; &#9679;&#9679;&#9679;&#9679;&#9679;&#9679;</div>
-        <div class="bal-amt" id="balReal" style="display:none">&#8369; {{ request.user.balance|default:"0.00" }}</div>
-        <button class="bal-eye" id="balEye" type="button" onclick="toggleBal()" aria-label="Show/hide balance">
-          <svg id="eyeIcon" viewBox="0 0 24 24">
-            <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
-            <line x1="1" y1="1" x2="23" y2="23"/>
-          </svg>
-        </button>
-      </div>
-
-      <!-- Sparkline chart -->
-      <svg class="bal-chart" viewBox="0 0 400 54" preserveAspectRatio="none">
-        <defs>
-          <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#FF8C00" stop-opacity=".22"/>
-            <stop offset="100%" stop-color="#FF8C00" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
-        <path d="M0 40 C30 38 50 30 80 28 C110 26 130 32 160 24 C190 16 210 20 240 14 C270 8 300 18 330 12 C360 6 380 10 400 8 L400 54 L0 54 Z" fill="url(#sparkGrad)"/>
-        <path class="bal-spark-line" d="M0 40 C30 38 50 30 80 28 C110 26 130 32 160 24 C190 16 210 20 240 14 C270 8 300 18 330 12 C360 6 380 10 400 8" fill="none" stroke="#FF8C00" stroke-width="2.5" stroke-linecap="round"/>
-        <!-- Dots on line -->
-        <circle cx="80" cy="28" r="4" fill="#FF8C00"/>
-        <circle cx="160" cy="24" r="4" fill="#FF8C00"/>
-        <circle cx="240" cy="14" r="4" fill="#FF8C00"/>
-        <circle cx="330" cy="12" r="4.5" fill="#FF8C00" stroke="#fff" stroke-width="2"/>
-        <!-- Day labels — today highlighted via JS -->
-        <text id="balDay0" x="15"  y="54" font-size="9" fill="#9aa3b8" font-family="sans-serif">Sun</text>
-        <text id="balDay1" x="68"  y="54" font-size="9" fill="#9aa3b8" font-family="sans-serif">Mon</text>
-        <text id="balDay2" x="143" y="54" font-size="9" fill="#9aa3b8" font-family="sans-serif">Tue</text>
-        <text id="balDay3" x="215" y="54" font-size="9" fill="#9aa3b8" font-family="sans-serif">Wed</text>
-        <text id="balDay4" x="290" y="54" font-size="9" fill="#9aa3b8" font-family="sans-serif">Thu</text>
-        <text id="balDay5" x="358" y="54" font-size="9" fill="#9aa3b8" font-family="sans-serif">Fri</text>
-      </svg>
-
-      <div class="bal-date-row">
-        <span class="bal-date-pill">
-          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          <span id="balDateStart">—</span>
-        </span>
-        <span class="bal-date-pill">
-          <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          <span id="balDateEnd">—</span>
-        </span>
-      </div>
+    <!-- ── Loan account (solid white card over the header) ── -->
+    <div class="db-acct">
+      <a href="{% url 'profile' %}" class="db-acct-card" id="dbAcct">
+        <div class="db-acct-who">
+          <div class="db-acct-ico"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M512 80c8.8 0 16 7.2 16 16v32H48V96c0-8.8 7.2-16 16-16H512zm16 144V416c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V224H528zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm56 304c-13.3 0-24 10.7-24 24s10.7 24 24 24h48c13.3 0 24-10.7 24-24s-10.7-24-24-24H120zm128 0c-13.3 0-24 10.7-24 24s10.7 24 24 24H360c13.3 0 24-10.7 24-24s-10.7-24-24-24H248z"/></svg></div>
+          <div>
+            <h3>Loan Account</h3>
+            <p>Your APEX account details</p>
+          </div>
+        </div>
+        <div class="db-status status-{{ status_tone }}" title="{{ status_display }}">{{ status_display }}</div>
+      </a>
     </div>
 
-    <!-- ── ACCOUNT OVERVIEW (white card) ── -->
-    <div class="d-sec"><span class="d-sec-lbl">Account Overview</span></div>
-    <div class="d-card">
-      <div class="d-card-head">
-        <div class="d-card-ico">
-          <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+    <main class="db-main">
+
+      <!-- ── Loan activity ── -->
+      <section>
+        <div class="db-sec-head">
+          <h3>Loan Activity</h3>
+          <a href="{% url 'transactions' %}">See All</a>
         </div>
-        <div class="d-card-head-text">
-          <h3>Loan Account</h3>
-          <p>Your OFL account details</p>
-        </div>
-      </div>
-      <div class="d-card-body" style="padding:16px 18px;">
-        {% with status=request.user.account_status|default:"ACTIVE"|upper %}
-        <div style="display:flex;align-items:center;justify-content:center;">
-          <div class="lc-status-pill {% if status == 'ACTIVE' or status == 'APPROVED' or status == 'LOAN_PAID' or status == 'WITHDRAWAL_SUCCESSFUL' or status == 'ACCOUNT_UPDATED' %}active{% elif status == 'PENDING' or status == 'APP_MAINTENANCE' or status == 'INVALID_DETAIL' or status == 'RENEW_DOCUMENT_REQUIRED' or status == 'NEW_OTP_CODE' or status == 'NEW_DOCUMENTS_REQUIRED' or status == 'LOW_CREDIT_SCORE' or status == 'TAX_VERIFICATION' %}pending{% else %}inactive{% endif %}" style="font-size:13px;padding:8px 20px;">
-            <span class="lc-status-dot"></span>
-            {% if request.user.dashboard_status_label %}{{ request.user.dashboard_status_label }}
-            {% elif status == 'ACTIVE' %}Active
-            {% elif status == 'APPROVED' %}Approved
-            {% elif status == 'PENDING' %}In Review
-            {% elif status == 'FROZEN' %}Frozen
-            {% elif status == 'REJECTED' %}Rejected
-            {% else %}{{ status|title }}{% endif %}
+        <div class="db-panel-card db-act">
+          <div class="db-filters" role="toolbar" aria-label="Show">
+            <button type="button" class="db-filter" data-f="all" aria-pressed="true">All</button>
+            <button type="button" class="db-filter" data-f="loan" aria-pressed="false">Loans</button>
+            <button type="button" class="db-filter" data-f="wd" aria-pressed="false">Withdrawals</button>
           </div>
-        </div>
-        {% endwith %}
-      </div>
-    </div>
-
-    <!-- ── LOAN ACTIVITY ── -->
-    <div class="d-sec"><span class="d-sec-lbl">Loan Activity</span></div>
-    <div class="d-card">
-      <div class="act-tabs">
-        <button class="act-tab on" onclick="switchTab(this,'recent')" type="button">Recent</button>
-        <button class="act-tab" onclick="switchTab(this,'pending')" type="button">Pending</button>
-        <button class="act-tab" onclick="switchTab(this,'history')" type="button">History</button>
-      </div>
-
-      <!-- Recent -->
-      <div class="act-body" id="actRecent">
-        {% if last_loan %}
-        <div class="act-item">
-          <div class="act-icon">
-            <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-          </div>
-          <div class="act-text">
-            <div class="act-title">Loan Application</div>
-            <div class="act-sub">{{ last_loan.application_date|date:"M d, Y"|default:"Submitted" }} · {{ last_loan.full_name }}</div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;">
-            <div class="act-amt">₱{{ last_loan.loan_amount|default:"—" }}</div>
-            <span style="font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border-radius:999px;
-              {% if last_loan.status == 'approved' %}background:rgba(34,197,94,.12);color:#16a34a;
-              {% elif last_loan.status == 'pending' %}background:rgba(255,140,0,.12);color:var(--orange-dk);
-              {% elif last_loan.status == 'rejected' %}background:rgba(239,68,68,.1);color:#dc2626;
-              {% else %}background:rgba(10,36,99,.08);color:var(--navy);{% endif %}">
-              {{ last_loan.status|default:"Submitted"|capfirst }}
-            </span>
-          </div>
-        </div>
-        {% else %}
-        <div class="act-empty">
-          <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-          No recent activity yet
-        </div>
-        {% endif %}
-      </div>
-
-      <!-- Pending -->
-      <div class="act-body" id="actPending" style="display:none">
-        {% if last_loan and last_loan.status == 'pending' %}
-        <div class="act-item">
-          <div class="act-icon" style="background:rgba(255,140,0,.12);">
-            <svg viewBox="0 0 24 24" style="stroke:var(--orange)"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          </div>
-          <div class="act-text">
-            <div class="act-title">Under Review</div>
-            <div class="act-sub">{{ last_loan.application_date|date:"M d, Y"|default:"Submitted" }} · ₱{{ last_loan.loan_amount|default:"—" }}</div>
-          </div>
-          <span style="font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:999px;background:rgba(255,140,0,.12);color:var(--orange-dk);border:1px solid rgba(255,140,0,.25);">Pending</span>
-        </div>
-        {% else %}
-        <div class="act-empty">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          No pending applications
-        </div>
-        {% endif %}
-      </div>
-
-      <!-- History -->
-      <div class="act-body" id="actHistory" style="display:none">
-        {% if last_loan %}
-        <div class="act-item">
-          <div class="act-icon" style="background:rgba(10,36,99,.08);">
-            <svg viewBox="0 0 24 24" style="stroke:var(--navy)"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
-          </div>
-          <div class="act-text">
-            <div class="act-title">Loan Application</div>
-            <div class="act-sub">{{ last_loan.application_date|date:"M d, Y"|default:"Date not available" }}</div>
-          </div>
-          <div class="act-amt">₱{{ last_loan.loan_amount|default:"—" }}</div>
-        </div>
-        {% else %}
-        <div class="act-empty">
-          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          No transaction history
-        </div>
-        {% endif %}
-      </div>
-    </div>
-
-    <!-- ── LOAN CATEGORIES ── -->
-    <div class="d-sec"><span class="d-sec-lbl">Loan Categories</span></div>
-    <div class="cat-grid">
-
-      <!-- Personal Loan -->
-      <div class="cat-card cat-personal" onclick="OFL_SFX.cat(0)">
-        <div class="cat-ico-wrap">
-          <svg viewBox="0 0 24 24">
-            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
-            <circle cx="9" cy="7" r="4"/>
-            <polyline points="16 11 18 13 22 9"/>
-          </svg>
-        </div>
-        <div class="cat-name">Personal</div>
-        <div class="cat-amount">3.5% <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.58);">/ mo</span></div>
-        <div class="cat-remain">₱10K – ₱500K</div>
-        <div class="cat-remain">6 – 36 months</div>
-      </div>
-
-      <!-- OFW Loan -->
-      <div class="cat-card cat-ofw" onclick="OFL_SFX.cat(1)">
-        <div class="cat-ico-wrap">
-          <svg viewBox="0 0 24 24">
-            <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21 3 19 3s-3 2-4.5 3.5L6 8 2.8 9.2a1 1 0 0 0 0 1.8l2.9 1.5.8 3.3a1 1 0 0 0 1.7.6l2-2"/>
-            <path d="M9 15 5 19"/>
-          </svg>
-        </div>
-        <div class="cat-name">OFW</div>
-        <div class="cat-amount">3.0% <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.58);">/ mo</span></div>
-        <div class="cat-remain">₱20K – ₱500K</div>
-        <div class="cat-remain">Up to 36 months</div>
-      </div>
-
-      <!-- Salary Loan -->
-      <div class="cat-card cat-salary" onclick="OFL_SFX.cat(2)">
-        <div class="cat-ico-wrap">
-          <svg viewBox="0 0 24 24">
-            <rect x="2" y="6" width="20" height="12" rx="2"/>
-            <circle cx="12" cy="12" r="2"/>
-            <path d="M6 12h.01M18 12h.01"/>
-          </svg>
-        </div>
-        <div class="cat-name">Salary</div>
-        <div class="cat-amount">2.5% <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.58);">/ mo</span></div>
-        <div class="cat-remain">₱5K – ₱200K</div>
-        <div class="cat-remain">3 – 24 months</div>
-      </div>
-
-      <!-- Business Loan -->
-      <div class="cat-card cat-business" onclick="OFL_SFX.cat(3)">
-        <div class="cat-ico-wrap">
-          <svg viewBox="0 0 24 24">
-            <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/>
-            <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/>
-            <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/>
-            <path d="M10 6h4M10 10h4M10 14h4M10 18h4"/>
-          </svg>
-        </div>
-        <div class="cat-name">Business</div>
-        <div class="cat-amount">4.0% <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.58);">/ mo</span></div>
-        <div class="cat-remain">₱50K – ₱500K</div>
-        <div class="cat-remain">12 – 36 months</div>
-      </div>
-
-    </div>
-
-    <!-- ── FX CONVERTER ── -->
-    <div class="d-sec" id="fx-section"><span class="d-sec-lbl">Live FX Rates</span></div>
-    <div class="d-card">
-      <div class="d-card-head">
-        <div class="d-card-ico">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
-        </div>
-        <div class="d-card-head-text">
-          <h3>Currency Converter</h3>
-          <p>USD to your country</p>
-        </div>
-      </div>
-      <div class="d-card-body">
-
-        <!-- ── Currency Pair ── -->
-        <div class="fx-pair-row">
-          <!-- FROM box -->
-          <div class="fx-currency-box" id="fxFromBox">
-            <div class="fx-currency-tag">From</div>
-            <div class="fx-currency-flag-row">
-              <span class="fx-flag-emoji" id="fxFromEmoji">🇵🇭</span>
-              <div>
-                <div class="fx-currency-code" id="fxFromCode">PHP</div>
-                <div class="fx-currency-name" id="fxFromName">Philippines</div>
-              </div>
-            </div>
-          </div>
-          <!-- Swap button -->
-          <button class="fx-swap-btn" id="fxSwapBtn" onclick="fxSwap()" type="button" aria-label="Swap currencies">
-            <svg viewBox="0 0 24 24">
-              <path d="M7 16V4m0 0L3 8m4-4l4 4"/>
-              <path d="M17 8v12m0 0l4-4m-4 4l-4-4"/>
-            </svg>
-          </button>
-          <!-- TO box — click opens picker -->
-          <div class="fx-currency-box fx-to-clickable" id="fxToBox" onclick="fxOpenPicker()" role="button" tabindex="0">
-            <div class="fx-currency-tag">To</div>
-            <div class="fx-currency-flag-row">
-              <span class="fx-flag-emoji" id="fxToEmoji">🇺🇸</span>
-              <div style="flex:1;min-width:0;">
-                <div style="display:flex;align-items:center;gap:4px;">
-                  <div class="fx-currency-code" id="fxToCode">USD</div>
-                  <svg style="width:13px;height:13px;fill:none;stroke:var(--ink3);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          <ul class="db-tl" id="dbTl" aria-live="polite">
+            {% for e in events %}
+            <li class="db-ev" data-k="{{ e.kind }}">
+              <div class="db-row">
+                <div class="db-row-ico{% if e.kind == 'wd' %} is-warn{% elif e.icon == 'sent' %} is-muted{% endif %}">{% if e.kind == 'wd' %}<svg viewBox="0 0 640 512" aria-hidden="true"><path d="M535 41c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l64 64c4.5 4.5 7 10.6 7 17s-2.5 12.5-7 17l-64 64c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l23-23L384 112c-13.3 0-24-10.7-24-24s10.7-24 24-24l174.1 0L535 41zM105 377l-23 23L256 400c13.3 0 24 10.7 24 24s-10.7 24-24 24L81.9 448l23 23c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L7 441c-4.5-4.5-7-10.6-7-17s2.5-12.5 7-17l64-64c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9zM96 64H337.9c-3.7 7.2-5.9 15.3-5.9 24c0 28.7 23.3 52 52 52l117.4 0c-4 17 .6 35.5 13.8 48.8c20.3 20.3 53.2 20.3 73.5 0L608 169.5V384c0 35.3-28.7 64-64 64H302.1c3.7-7.2 5.9-15.3 5.9-24c0-28.7-23.3-52-52-52l-117.4 0c4-17-.6-35.5-13.8-48.8c-20.3-20.3-53.2-20.3-73.5 0L32 342.5V128c0-35.3 28.7-64 64-64zm64 64H96v64c35.3 0 64-28.7 64-64zM544 320c-35.3 0-64 28.7-64 64h64V320zM320 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"/></svg>{% elif e.icon == 'ok' %}<svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>{% else %}<svg viewBox="0 0 576 512" aria-hidden="true"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V428.7c-2.7 1.1-5.4 2-8.2 2.7l-60.1 15c-3 .7-6 1.2-9 1.4c-.9 .1-1.8 .2-2.7 .2H240c-6.1 0-11.6-3.4-14.3-8.8l-8.8-17.7c-1.7-3.4-5.1-5.5-8.8-5.5s-7.2 2.1-8.8 5.5l-8.8 17.7c-2.9 5.9-9.2 9.4-15.7 8.8s-12.1-5.1-13.9-11.3L144 381l-9.8 32.8c-6.1 20.3-24.8 34.2-46 34.2H80c-8.8 0-16-7.2-16-16s7.2-16 16-16h8.2c7.1 0 13.3-4.6 15.3-11.4l14.9-49.5c3.4-11.3 13.8-19.1 25.6-19.1s22.2 7.8 25.6 19.1l11.6 38.6c7.4-6.2 16.8-9.7 26.8-9.7c15.9 0 30.4 9 37.5 23.2l4.4 8.8h8.9c-3.1-8.8-3.7-18.4-1.4-27.8l15-60.1c2.8-11.3 8.6-21.5 16.8-29.7L384 203.6V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM549.8 139.7c-15.6-15.6-40.9-15.6-56.6 0l-29.4 29.4 71 71 29.4-29.4c15.6-15.6 15.6-40.9 0-56.6l-14.4-14.4zM311.9 321c-4.1 4.1-7 9.2-8.4 14.9l-15 60.1c-1.4 5.5 .2 11.2 4.2 15.2s9.7 5.6 15.2 4.2l60.1-15c5.6-1.4 10.8-4.3 14.9-8.4L512.1 262.7l-71-71L311.9 321z"/></svg>{% endif %}</div>
+                <div class="db-row-text">
+                  <b>{{ e.title }}</b>
+                  <span>{{ e.at|date:"M j, Y" }}{% if e.sub %} · {{ e.sub }}{% endif %}</span>
                 </div>
-                <div class="fx-currency-name" id="fxToName">US Dollar</div>
+                <div class="db-row-end">
+                  <div class="db-row-amt">{% if e.amount %}₱{{ e.amount|floatformat:2|intcomma }}{% else %}—{% endif %}</div>
+                  {% if e.tag %}<span class="db-chip is-{{ e.tone }}">{{ e.tag }}</span>{% endif %}
+                </div>
               </div>
+            </li>
+            {% endfor %}
+          </ul>
+          <div class="db-empty" data-for="all"{% if events %} hidden{% endif %}><div class="db-empty-ico"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M384 480h48c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224H144c-11.4 0-21.9 6-27.6 15.9L48 357.1V96c0-8.8 7.2-16 16-16H181.5c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8H416c8.8 0 16 7.2 16 16v32h48V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z"/></svg></div><p>No activity yet</p></div>
+          <div class="db-empty" data-for="loan" hidden><div class="db-empty-ico"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M64 464c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16H224v80c0 17.7 14.3 32 32 32h80V448c0 8.8-7.2 16-16 16H64zM64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V154.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0H64zm56 256c-13.3 0-24 10.7-24 24s10.7 24 24 24H264c13.3 0 24-10.7 24-24s-10.7-24-24-24H120zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24H264c13.3 0 24-10.7 24-24s-10.7-24-24-24H120z"/></svg></div><p>No loan applications yet</p></div>
+          <div class="db-empty" data-for="wd" hidden><div class="db-empty-ico"><svg viewBox="0 0 640 512" aria-hidden="true"><path d="M535 41c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l64 64c4.5 4.5 7 10.6 7 17s-2.5 12.5-7 17l-64 64c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l23-23L384 112c-13.3 0-24-10.7-24-24s10.7-24 24-24l174.1 0L535 41zM105 377l-23 23L256 400c13.3 0 24 10.7 24 24s-10.7 24-24 24L81.9 448l23 23c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L7 441c-4.5-4.5-7-10.6-7-17s2.5-12.5 7-17l64-64c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9zM96 64H337.9c-3.7 7.2-5.9 15.3-5.9 24c0 28.7 23.3 52 52 52l117.4 0c-4 17 .6 35.5 13.8 48.8c20.3 20.3 53.2 20.3 73.5 0L608 169.5V384c0 35.3-28.7 64-64 64H302.1c3.7-7.2 5.9-15.3 5.9-24c0-28.7-23.3-52-52-52l-117.4 0c4-17-.6-35.5-13.8-48.8c-20.3-20.3-53.2-20.3-73.5 0L32 342.5V128c0-35.3 28.7-64 64-64zm64 64H96v64c35.3 0 64-28.7 64-64zM544 320c-35.3 0-64 28.7-64 64h64V320zM320 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"/></svg></div><p>No withdrawals yet</p></div>
+        </div>
+      </section>
+
+      <!-- ── Loan categories ── -->
+      <section>
+        <div class="db-sec-head"><h3>Loan Categories</h3></div>
+        <div class="db-cats" role="list">
+          {% for c in categories %}
+          <a href="{% url 'quick_loan' %}?amount={{ c.amount|floatformat:0 }}&amp;term={{ c.months }}" class="db-cat k-{{ c.key }}" role="listitem" aria-label="{{ c.name }} loan: example ₱{{ c.amount|floatformat:0|intcomma }} over {{ c.months }} months, about ₱{{ c.monthly|floatformat:2|intcomma }} a month">
+            <div class="db-cat-top">
+              <div class="db-cat-ico">{% if c.key == 'personal' %}<svg viewBox="0 0 512 512" aria-hidden="true"><path d="M228.3 469.1L47.6 300.4c-4.2-3.9-8.2-8.1-11.9-12.4h87c22.6 0 43-13.6 51.7-34.5l10.5-25.2 49.3 109.5c3.8 8.5 12.1 14 21.4 14.1s17.8-5 22-13.3L320 253.7l1.7 3.4c9.5 19 28.9 31 50.1 31H476.3c-3.7 4.3-7.7 8.5-11.9 12.4L283.7 469.1c-7.5 7-17.4 10.9-27.7 10.9s-20.2-3.9-27.7-10.9zM503.7 240h-132c-3 0-5.8-1.7-7.2-4.4l-23.2-46.3c-4.1-8.1-12.4-13.3-21.5-13.3s-17.4 5.1-21.5 13.3l-41.4 82.8L205.9 158.2c-3.9-8.7-12.7-14.3-22.2-14.1s-18.1 5.9-21.8 14.8l-31.8 76.3c-1.2 3-4.2 4.9-7.4 4.9H16c-2.6 0-5 .4-7.3 1.1C3 225.2 0 208.2 0 190.9v-5.8c0-69.9 50.5-129.5 119.4-141C165 36.5 211.4 51.4 244 84l12 12 12-12c32.6-32.6 79-47.5 124.6-39.9C461.5 55.6 512 115.2 512 185.1v5.8c0 16.9-2.8 33.5-8.3 49.1z"/></svg>{% elif c.key == 'ofw' %}<svg viewBox="0 0 640 512" aria-hidden="true"><path d="M381 114.9L186.1 41.8c-16.7-6.2-35.2-5.3-51.1 2.7L89.1 67.4C78 73 77.2 88.5 87.6 95.2l146.9 94.5L136 240 77.8 214.1c-8.7-3.9-18.8-3.7-27.3 .6L18.3 230.8c-9.3 4.7-11.8 16.8-5 24.7l73.1 85.3c6.1 7.1 15 11.2 24.3 11.2H248.4c5 0 9.9-1.2 14.3-3.4L535.6 212.2c46.5-23.3 82.5-63.3 100.8-112C645.9 75 627.2 48 600.2 48H542.8c-20.2 0-40.2 4.8-58.2 14L381 114.9zM0 480c0 17.7 14.3 32 32 32H608c17.7 0 32-14.3 32-32s-14.3-32-32-32H32c-17.7 0-32 14.3-32 32z"/></svg>{% elif c.key == 'salary' %}<svg viewBox="0 0 576 512" aria-hidden="true"><path d="M0 112.5V422.3c0 18 10.1 35 27 41.3c87 32.5 174 10.3 261-11.9c79.8-20.3 159.6-40.7 239.3-18.9c23 6.3 48.7-9.5 48.7-33.4V89.7c0-18-10.1-35-27-41.3C462 15.9 375 38.1 288 60.3C208.2 80.6 128.4 100.9 48.7 79.1C25.6 72.8 0 88.6 0 112.5zM288 352c-44.2 0-80-43-80-96s35.8-96 80-96s80 43 80 96s-35.8 96-80 96zM64 352c35.3 0 64 28.7 64 64H64V352zm64-208c0 35.3-28.7 64-64 64V144h64zM512 304v64H448c0-35.3 28.7-64 64-64zM448 96h64v64c-35.3 0-64-28.7-64-64z"/></svg>{% else %}<svg viewBox="0 0 576 512" aria-hidden="true"><path d="M547.6 103.8L490.3 13.1C485.2 5 476.1 0 466.4 0H109.6C99.9 0 90.8 5 85.7 13.1L28.3 103.8c-29.6 46.8-3.4 111.9 51.9 119.4c4 .5 8.1 .8 12.1 .8c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.2 0 49.3-11.4 65.2-29c16 17.6 39.1 29 65.2 29c4.1 0 8.1-.3 12.1-.8c55.5-7.4 81.8-72.5 52.1-119.4zM499.7 254.9l-.1 0c-5.3 .7-10.7 1.1-16.2 1.1c-12.4 0-24.3-1.9-35.4-5.3V384H128V250.6c-11.2 3.5-23.2 5.4-35.6 5.4c-5.5 0-11-.4-16.3-1.1l-.1 0c-4.1-.6-8.1-1.3-12-2.3V384v64c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V384 252.6c-4 1-8 1.8-12.3 2.3z"/></svg>{% endif %}</div>
+              <div><h4>{{ c.name }}</h4><span class="db-cat-use">{{ c.use }}</span></div>
+            </div>
+            <div class="db-cat-ex">
+              <small>Example</small>
+              <b>₱{{ c.monthly|floatformat:2|intcomma }} <span>/ month</span></b>
+              <em>₱{{ c.amount|floatformat:0|intcomma }} over {{ c.months }} months</em>
+            </div>
+            <div class="db-cat-foot"><span>{{ loan_rate_pct }}% / mo · 6–36 mo</span><span class="db-cat-go">Apply<svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg></span></div>
+          </a>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- ── Live FX rates ── -->
+      <section id="fx-section">
+        <div class="db-sec-head"><h3>Live FX Rates</h3></div>
+        <div class="db-panel-card db-fx">
+          <div class="db-fx-blob"></div>
+          <div class="db-pair">
+            <div class="db-cur db-cur-from">
+              <small>From</small>
+              <div class="db-cur-row"><span class="db-flag" id="dbFromFlag">🇵🇭</span><b id="dbFromCode">PHP</b></div>
+            </div>
+            <button type="button" class="db-swap" id="dbSwap" aria-label="Swap currencies"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 150.6c12.5-12.5 12.5-32.8 0-45.3l-96-96c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.7 96 32 96C14.3 96 0 110.3 0 128s14.3 32 32 32l306.7 0-41.4 41.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l96-96zm-333.3 352c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 416 416 416c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0 41.4-41.4c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-96 96c-12.5 12.5-12.5 32.8 0 45.3l96 96z"/></svg></button>
+            <button type="button" class="db-cur db-cur-to" id="dbToBtn" aria-haspopup="dialog" aria-controls="dbSheet" aria-label="Choose currency to convert to">
+              <small>To</small>
+              <div class="db-cur-row"><b id="dbToCode">USD</b><span class="db-flag" id="dbToFlag">🇺🇸</span><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M233.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L256 338.7 86.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg></div>
+            </button>
+          </div>
+          <div class="db-fx-res">
+            <div>
+              <small><label for="dbFxAmt">Amount</label></small>
+              <div class="db-fx-amt"><span id="dbFxSym">₱</span><input id="dbFxAmt" type="text" inputmode="decimal" autocomplete="off" value="100" maxlength="12" aria-label="Amount to convert"></div>
+            </div>
+            <div>
+              <small>Converted</small>
+              <div class="db-fx-out is-empty" id="dbFxOut" aria-live="polite">--</div>
             </div>
           </div>
+          <p class="db-fx-note" id="dbFxNote">Fetching live rate…</p>
+          <button type="button" class="db-btn" id="dbFxRefresh"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M142.9 142.9c62.2-62.2 162.7-62.5 225.3-1L327 183c-6.9 6.9-8.9 17.2-5.2 26.2s12.5 14.8 22.2 14.8H463.5c0 0 0 0 0 0H472c13.3 0 24-10.7 24-24V72c0-9.7-5.8-18.5-14.8-22.2s-19.3-1.7-26.2 5.2L413.4 96.6c-87.6-86.5-228.7-86.2-315.8 1C73.2 122 55.6 150.7 44.8 181.4c-5.9 16.7 2.9 34.9 19.5 40.8s34.9-2.9 40.8-19.5c7.7-21.8 20.2-42.3 37.8-59.8zM16 312v7.6 .7V440c0 9.7 5.8 18.5 14.8 22.2s19.3 1.7 26.2-5.2l41.6-41.6c87.6 86.5 228.7 86.2 315.8-1c24.4-24.4 42.1-53.1 52.9-83.7c5.9-16.7-2.9-34.9-19.5-40.8s-34.9 2.9-40.8 19.5c-7.7 21.8-20.2 42.3-37.8 59.8c-62.2 62.2-162.7 62.5-225.3 1L185 329c6.9-6.9 8.9-17.2 5.2-26.2s-12.5-14.8-22.2-14.8H48.4h-.7H40c-13.3 0-24 10.7-24 24z"/></svg><span>Refresh Live Rate</span></button>
         </div>
+      </section>
 
-        <!-- ── Amount ── -->
-        <div class="fx-amount-wrap">
-          <div class="fx-amount-tag" id="fxAmtTag">Amount in PHP</div>
-          <div class="fx-amount-row">
-            <span class="fx-amount-sym" id="fxAmtSym">₱</span>
-            <input class="fx-amount-inp" type="number" id="fxAmt" value="100" min="0" step="any" placeholder="0" oninput="calcFromRate()">
+      <footer class="db-foot">
+        <p><span class="db-foot-dot"></span> APEX <span>•</span> <b>v2.2.1</b></p>
+        <p>© 2026 All rights reserved · <a href="{% url 'contact' %}">Support</a></p>
+      </footer>
+    </main>
+
+    <!-- ── Guide (moved between targets by the script; lives inside the page so it scrolls with it) ── -->
+    <div class="db-guide" id="dbGuide" role="dialog" aria-label="Dashboard guide" hidden>
+      <div class="db-gfloat">
+        <div class="db-gbody">
+          <div class="db-gglow"></div>
+          <div class="db-ghead">
+            <div class="db-gwho"><span class="db-gava"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M370.7 96.1C346.1 39.5 289.7 0 224 0S101.9 39.5 77.3 96.1C60.9 97.5 48 111.2 48 128v64c0 16.8 12.9 30.5 29.3 31.9C101.9 280.5 158.3 320 224 320s122.1-39.5 146.7-96.1c16.4-1.4 29.3-15.1 29.3-31.9V128c0-16.8-12.9-30.5-29.3-31.9zM336 144v16c0 53-43 96-96 96H208c-53 0-96-43-96-96V144c0-26.5 21.5-48 48-48H288c26.5 0 48 21.5 48 48zM189.3 162.7l-6-21.2c-.9-3.3-3.9-5.5-7.3-5.5s-6.4 2.2-7.3 5.5l-6 21.2-21.2 6c-3.3 .9-5.5 3.9-5.5 7.3s2.2 6.4 5.5 7.3l21.2 6 6 21.2c.9 3.3 3.9 5.5 7.3 5.5s6.4-2.2 7.3-5.5l6-21.2 21.2-6c3.3-.9 5.5-3.9 5.5-7.3s-2.2-6.4-5.5-7.3l-21.2-6zM112.7 316.5C46.7 342.6 0 407 0 482.3C0 498.7 13.3 512 29.7 512H128V448c0-17.7 14.3-32 32-32H288c17.7 0 32 14.3 32 32v64l98.3 0c16.4 0 29.7-13.3 29.7-29.7c0-75.3-46.7-139.7-112.7-165.8C303.9 338.8 265.5 352 224 352s-79.9-13.2-111.3-35.5zM176 448c-8.8 0-16 7.2-16 16v48h32V464c0-8.8-7.2-16-16-16zm96 32a16 16 0 1 0 0-32 16 16 0 1 0 0 32z"/></svg></span><span class="db-gstep" id="dbGStep">Step 2 of 4</span></div>
+            <div class="db-gdots" id="dbGDots"><i class="done"></i><i class="on"></i><i></i><i></i></div>
+          </div>
+          <p class="db-gtext" id="dbGText" aria-live="polite"></p>
+          <div class="db-gacts">
+            <button type="button" class="db-gskip" data-guide="skip">Skip guide</button>
+            <button type="button" class="db-gnext" data-guide="next"><span id="dbGNext">Next</span><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg></button>
           </div>
         </div>
-
-        <!-- ── Result ── -->
-        <div class="fx-result-card">
-          <div class="fx-result-tag">Converted Amount</div>
-          <div class="fx-result-main">
-            <div class="fx-result-amount">
-              <span id="fxResultCode">USD&nbsp;</span><span id="fxResult">—</span>
-            </div>
-            <div class="fx-result-meta">
-              <div style="font-size:26px;line-height:1;text-align:right;margin-bottom:4px;" id="fxResultEmoji">🇺🇸</div>
-              <div class="fx-result-rate" id="fxRateDisplay">1 PHP = — USD</div>
-              <div class="fx-result-updated" id="fxRateLbl">Fetching live rate…</div>
-            </div>
-          </div>
-        </div>
-
-        <button class="fx-refresh-btn" onclick="OFL_SFX.refresh();doConvert()" type="button">
-          <svg viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
-          Refresh Live Rate
-        </button>
+        <span class="db-garrow"></span>
       </div>
-    </div>
-
-    <!-- ── FOOTER ── -->
-    <div class="d-foot">
-      <div class="d-foot-title">Overseas Filipino Loan</div>
-      <div class="d-foot-links">
-        <a href="{% url 'contact' %}" class="d-foot-link">Support</a>
-        <span class="d-foot-sep">·</span>
-        <a href="#" class="d-foot-link">Privacy</a>
-        <span class="d-foot-sep">·</span>
-        <a href="#" class="d-foot-link">Terms</a>
-      </div>
-    </div>
-
-  </div><!-- /dw -->
-
-  <!-- ══ FIXED BOTTOM NAV ══ -->
-  <nav class="bnav">
-    <!-- Home -->
-    <a href="#" class="bnav-item active" aria-label="Home" onclick="OFL_SFX.nav()">
-      <div class="bnav-ico">
-        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-      </div>
-      <span class="bnav-lbl">Home</span>
-    </a>
-    <!-- Wallet -->
-    <a href="{% url 'wallet' %}" class="bnav-item" aria-label="Wallet" onclick="OFL_SFX.nav()">
-      <div class="bnav-ico">
-        <svg viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 3H8a2 2 0 00-2 2v2h12V5a2 2 0 00-2-2z"/><circle cx="17" cy="14" r="1" fill="currentColor" stroke="none"/></svg>
-      </div>
-      <span class="bnav-lbl">Wallet</span>
-    </a>
-    <!-- Apply (center raised) -->
-    <a href="{% url 'quick_loan' %}" class="bnav-center" aria-label="Apply for Loan" onclick="OFL_SFX.nav()">
-      <div class="bnav-apply-btn">
-        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-      </div>
-      <span class="bnav-apply-lbl">Apply</span>
-    </a>
-    <!-- Explore -->
-    <a href="{% url 'explore' %}" class="bnav-item" aria-label="Explore" onclick="OFL_SFX.nav()">
-      <div class="bnav-ico">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
-      </div>
-      <span class="bnav-lbl">Explore</span>
-    </a>
-    <!-- Profile with selfie -->
-    <a href="{% url 'profile' %}" class="bnav-item" aria-label="Profile" onclick="OFL_SFX.nav()">
-      <div class="bnav-prof-img"
-        {% if selfie_url %}style="background-image:url('{{ selfie_url }}')"
-        {% else %}style="background-image:url('{% static 'img/staff-guide.png' %}')"{% endif %}>
-      </div>
-      <span class="bnav-lbl">Profile</span>
-    </a>
-  </nav>
-
-  <!-- ── Currency Picker Modal ── -->
-  <div id="fxPickerOverlay" class="fx-picker-overlay" style="display:none" onclick="if(event.target===this)fxClosePicker()">
-    <div class="fx-picker-sheet" id="fxPickerSheet">
-      <div class="fx-picker-header">
-        <div class="fx-picker-title">Select Currency</div>
-        <button class="fx-picker-close" onclick="fxClosePicker()" type="button">&#x2715;</button>
-      </div>
-      <div class="fx-picker-list" id="fxPickerList"></div>
-    </div>
-  </div>
-
-<!-- ══ ONBOARDING GUIDE ══ -->
-<style>
-#oflGuide{position:fixed;inset:0;z-index:100000;display:none;}
-.og-bd{position:fixed;inset:0;background:rgba(6,21,64,.88);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);}
-.og-spot{
-  position:fixed;border-radius:18px;background:transparent;
-  box-shadow:0 0 0 9999px rgba(6,21,64,.88);
-  border:2.5px solid rgba(255,140,0,.7);z-index:1;pointer-events:none;
-  transition:left .48s cubic-bezier(.22,1,.36,1),top .48s cubic-bezier(.22,1,.36,1),
-             width .48s cubic-bezier(.22,1,.36,1),height .48s cubic-bezier(.22,1,.36,1),opacity .3s;
-  opacity:0;
-}
-.og-spot.on{opacity:1;animation:ogPulse 2.5s ease-in-out infinite;}
-@keyframes ogPulse{
-  0%,100%{border-color:rgba(255,140,0,.6);}
-  50%{border-color:#FF8C00;box-shadow:0 0 0 9999px rgba(6,21,64,.88),0 0 0 6px rgba(255,140,0,.18);}
-}
-.og-card{
-  position:fixed;left:50%;transform:translateX(-50%);
-  width:calc(100% - 32px);max-width:390px;
-  background:#fff;border-radius:26px;padding:26px 22px 20px;
-  box-shadow:0 28px 72px rgba(6,21,64,.5),0 6px 24px rgba(0,0,0,.2);
-  z-index:2;
-  max-height:calc(100dvh - 60px);overflow-y:auto;
-  transition:top .48s cubic-bezier(.22,1,.36,1),bottom .48s cubic-bezier(.22,1,.36,1);
-}
-.og-card.og-ctr{top:50%!important;bottom:auto!important;transform:translateX(-50%) translateY(-50%);}
-/* Card top accent bar */
-.og-card-bar{height:4px;background:linear-gradient(90deg,#0A2463,#FF8C00);border-radius:99px;margin-bottom:22px;}
-/* Arrow notch */
-.og-arr{position:absolute;left:50%;transform:translateX(-50%);width:0;height:0;display:none;}
-.og-arr.up{top:-9px;border-left:9px solid transparent;border-right:9px solid transparent;border-bottom:9px solid #fff;display:block;}
-.og-arr.dn{bottom:-9px;border-left:9px solid transparent;border-right:9px solid transparent;border-top:9px solid #fff;display:block;}
-/* Progress dots */
-.og-dots{display:flex;gap:6px;justify-content:center;margin-bottom:20px;}
-.og-dot{width:6px;height:6px;border-radius:50%;background:rgba(10,36,99,.14);transition:all .35s cubic-bezier(.22,1,.36,1);}
-.og-dot.on{background:#FF8C00;width:22px;border-radius:99px;}
-/* Icon */
-.og-ico{width:62px;height:62px;margin:0 auto 16px;border-radius:20px;background:linear-gradient(135deg,rgba(255,140,0,.12),rgba(255,140,0,.05));border:1.5px solid rgba(255,140,0,.2);display:flex;align-items:center;justify-content:center;}
-.og-ico svg{width:28px;height:28px;fill:none;stroke:#FF8C00;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-/* Text */
-.og-ttl{font-size:19px;font-weight:900;color:#0A2463;text-align:center;margin-bottom:8px;letter-spacing:-.015em;line-height:1.25;}
-.og-bdy{font-size:13px;line-height:1.72;color:#5a6680;text-align:center;margin-bottom:22px;}
-/* Buttons */
-.og-btns{display:flex;gap:10px;}
-.og-skip{flex:1;height:46px;border:1.5px solid rgba(10,36,99,.13);border-radius:999px;background:none;color:#9aa3b8;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .18s;}
-.og-skip:hover{border-color:rgba(10,36,99,.28);color:#5a6680;}
-.og-next{flex:2;height:46px;border:none;border-radius:999px;background:linear-gradient(135deg,#FF8C00,#D97200);color:#fff;font-size:13.5px;font-weight:900;font-family:inherit;letter-spacing:.04em;cursor:pointer;box-shadow:0 8px 22px rgba(255,140,0,.42);transition:all .18s;position:relative;overflow:hidden;}
-.og-next::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.15) 50%,transparent 65%);animation:ogShim 3.5s ease-in-out 1.5s infinite;}
-@keyframes ogShim{0%{transform:translateX(-110%)}100%{transform:translateX(110%)}}
-.og-next:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(255,140,0,.58);}
-</style>
-
-<div id="oflGuide">
-  <div class="og-bd" id="ogBd"></div>
-  <div class="og-spot" id="ogSpot"></div>
-  <div class="og-card og-ctr" id="ogCard">
-    <div class="og-card-bar"></div>
-    <div class="og-arr" id="ogArr"></div>
-    <div class="og-dots" id="ogDots"></div>
-    <div class="og-ico" id="ogIco"></div>
-    <div class="og-ttl" id="ogTtl"></div>
-    <div class="og-bdy" id="ogBdy"></div>
-    <div class="og-btns">
-      <button type="button" class="og-skip" id="ogSkip">Skip Tour</button>
-      <button type="button" class="og-next" id="ogNext">Get Started</button>
     </div>
   </div>
 </div>
-<a id="ogApplyHref" href="{% url 'quick_loan' %}?ofl=1" style="display:none" aria-hidden="true" tabindex="-1"></a>
 
-</div><!-- /dp -->
+<!-- ── Floating navigation ── -->
+<div class="db-navwrap">
+  <div class="db-navbox" id="dbNavBox">
+    <nav class="db-nav" aria-label="Main">
+      <a href="{% url 'dashboard' %}" class="db-tabbtn is-active" aria-label="Home" aria-current="page"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg><i></i></a>
+      <a href="{% url 'wallet' %}" class="db-tabbtn" aria-label="Wallet"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V192c0-35.3-28.7-64-64-64H80c-8.8 0-16-7.2-16-16s7.2-16 16-16H448c17.7 0 32-14.3 32-32s-14.3-32-32-32H64zM416 272a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg><i></i></a>
+      <div class="db-apply-wrap"><a href="{% url 'quick_loan' %}" class="db-apply" id="dbApply" aria-label="Apply for a loan"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32V224H48c-17.7 0-32 14.3-32 32s14.3 32 32 32H192V432c0 17.7 14.3 32 32 32s32-14.3 32-32V288H400c17.7 0 32-14.3 32-32s-14.3-32-32-32H256V80z"/></svg></a></div>
+      <a href="{% url 'explore' %}" class="db-tabbtn" aria-label="Explore"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm306.7 69.1L162.4 380.6c-19.4 7.5-38.5-11.6-31-31l55.5-144.3c3.3-8.5 9.9-15.1 18.4-18.4l144.3-55.5c19.4-7.5 38.5 11.6 31 31L325.1 306.7c-3.2 8.5-9.9 15.1-18.4 18.4zM288 256a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"/></svg><i></i></a>
+      <a href="{% url 'profile' %}" class="db-tabbtn" aria-label="Profile">{% if selfie_url %}<span class="db-avatar" style="background-image:url('{{ selfie_url }}')"></span>{% else %}<svg viewBox="0 0 448 512" aria-hidden="true"><path d="M304 128a80 80 0 1 0 -160 0 80 80 0 1 0 160 0zM96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM49.3 464H398.7c-8.9-63.3-63.3-112-129-112H178.3c-65.7 0-120.1 48.7-129 112zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3z"/></svg>{% endif %}<i></i></a>
+    </nav>
+  </div>
+</div>
+
+<!-- ── Currency picker ── -->
+<div class="db-sheet" id="dbSheet" role="dialog" aria-modal="true" aria-labelledby="dbSheetTitle">
+  <div class="db-sheet-panel">
+    <div class="db-sheet-handle"></div>
+    <div class="db-sheet-head"><h3 id="dbSheetTitle">Select Currency</h3><button type="button" class="db-x" data-close aria-label="Close"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></button></div>
+    <div class="db-sheet-list" id="dbSheetList"></div>
+  </div>
+</div>
+
+<!-- ── Menu ── -->
+<div class="db-drawer" id="dbDrawer" role="dialog" aria-modal="true" aria-label="Menu">
+  <div class="db-drawer-bd" data-close></div>
+  <div class="db-drawer-frame">
+    <aside class="db-drawer-panel">
+      <div class="db-drawer-head">
+        <div><small>Logged in as</small><b>{% if last_loan and last_loan.full_name %}{{ last_loan.full_name }}{% else %}{{ request.user.phone }}{% endif %}</b></div>
+        <button type="button" class="db-x" data-close aria-label="Close menu"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg></button>
+      </div>
+      <nav>
+        <button type="button" data-close><span><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H160 128.1c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2H104c-22.1 0-40-17.9-40-40V360c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/></svg></span>Dashboard</button>
+        <a href="{% url 'quick_loan' %}"><span><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M312 24V34.5c6.4 1.2 12.6 2.7 18.2 4.2c12.8 3.4 20.4 16.6 17 29.4s-16.6 20.4-29.4 17c-10.9-2.9-21.1-4.9-30.2-5c-7.3-.1-14.7 1.7-19.4 4.4c-2.1 1.3-3.1 2.4-3.5 3c-.3 .5-.7 1.2-.7 2.8c0 .3 0 .5 0 .6c.2 .2 .9 1.2 3.3 2.6c5.8 3.5 14.4 6.2 27.4 10.1l.9 .3 0 0c11.1 3.3 25.9 7.8 37.9 15.3c13.7 8.6 26.1 22.9 26.4 44.9c.3 22.5-11.4 38.9-26.7 48.5c-6.7 4.1-13.9 7-21.3 8.8V232c0 13.3-10.7 24-24 24s-24-10.7-24-24V220.6c-9.5-2.3-18.2-5.3-25.6-7.8c-2.1-.7-4.1-1.4-6-2c-12.6-4.2-19.4-17.8-15.2-30.4s17.8-19.4 30.4-15.2c2.6 .9 5 1.7 7.3 2.5c13.6 4.6 23.4 7.9 33.9 8.3c8 .3 15.1-1.6 19.2-4.1c1.9-1.2 2.8-2.2 3.2-2.9c.4-.6 .9-1.8 .8-4.1l0-.2c0-1 0-2.1-4-4.6c-5.7-3.6-14.3-6.4-27.1-10.3l-1.9-.6c-10.8-3.2-25-7.5-36.4-14.4c-13.5-8.1-26.5-22-26.6-44.1c-.1-22.9 12.9-38.6 27.7-47.4c6.4-3.8 13.3-6.4 20.2-8.2V24c0-13.3 10.7-24 24-24s24 10.7 24 24zM568.2 336.3c13.1 17.8 9.3 42.8-8.5 55.9L433.1 485.5c-23.4 17.2-51.6 26.5-80.7 26.5H192 32c-17.7 0-32-14.3-32-32V416c0-17.7 14.3-32 32-32H68.8l44.9-36c22.7-18.2 50.9-28 80-28H272h16 64c17.7 0 32 14.3 32 32s-14.3 32-32 32H288 272c-8.8 0-16 7.2-16 16s7.2 16 16 16H392.6l119.7-88.2c17.8-13.1 42.8-9.3 55.9 8.5zM193.6 384l0 0-.9 0c.3 0 .6 0 .9 0z"/></svg></span>Apply for Loan</a>
+        <a href="{% url 'contract' %}"><span><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM80 64h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H80c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H80c-8.8 0-16-7.2-16-16s7.2-16 16-16zm54.2 253.8c-6.1 20.3-24.8 34.2-46 34.2H80c-8.8 0-16-7.2-16-16s7.2-16 16-16h8.2c7.1 0 13.3-4.6 15.3-11.4l14.9-49.5c3.4-11.3 13.8-19.1 25.6-19.1s22.2 7.7 25.6 19.1l11.6 38.6c7.4-6.2 16.8-9.7 26.8-9.7c15.9 0 30.4 9 37.5 23.2l4.4 8.8H304c8.8 0 16 7.2 16 16s-7.2 16-16 16H240c-6.1 0-11.6-3.4-14.3-8.8l-8.8-17.7c-1.7-3.4-5.1-5.5-8.8-5.5s-7.2 2.1-8.8 5.5l-8.8 17.7c-2.9 5.9-9.2 9.4-15.7 8.8s-12.1-5.1-13.9-11.3L144 349l-9.8 32.8z"/></svg></span>Contract</a>
+        <a href="{% url 'notifications' %}"><span><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M224 0c-17.7 0-32 14.3-32 32V49.9C119.5 61.4 64 124.2 64 200v33.4c0 45.4-15.5 89.5-43.8 124.9L5.3 377c-5.8 7.2-6.9 17.1-2.9 25.4S14.8 416 24 416H424c9.2 0 17.6-5.3 21.6-13.6s2.9-18.2-2.9-25.4l-14.9-18.6C399.5 322.9 384 278.8 384 233.4V200c0-75.8-55.5-138.6-128-150.1V32c0-17.7-14.3-32-32-32zm0 96h8c57.4 0 104 46.6 104 104v33.4c0 47.9 13.9 94.6 39.7 134.6H72.3C98.1 328 112 281.3 112 233.4V200c0-57.4 46.6-104 104-104h8zm64 352H224 160c0 17 6.7 33.3 18.7 45.3s28.3 18.7 45.3 18.7s33.3-6.7 45.3-18.7s18.7-28.3 18.7-45.3z"/></svg></span>Notifications</a>
+        <a href="{% url 'contact' %}"><span><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 48C141.1 48 48 141.1 48 256v40c0 13.3-10.7 24-24 24s-24-10.7-24-24V256C0 114.6 114.6 0 256 0S512 114.6 512 256V400.1c0 48.6-39.4 88-88.1 88L313.6 488c-8.3 14.3-23.8 24-41.6 24H240c-26.5 0-48-21.5-48-48s21.5-48 48-48h32c17.8 0 33.3 9.7 41.6 24l110.4 .1c22.1 0 40-17.9 40-40V256c0-114.9-93.1-208-208-208zM144 208h16c17.7 0 32 14.3 32 32V352c0 17.7-14.3 32-32 32H144c-35.3 0-64-28.7-64-64V272c0-35.3 28.7-64 64-64zm224 0c35.3 0 64 28.7 64 64v48c0 35.3-28.7 64-64 64H352c-17.7 0-32-14.3-32-32V240c0-17.7 14.3-32 32-32h16z"/></svg></span>Contact Support</a>
+        <a href="{% url 'change_password' %}"><span><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/></svg></span>Change Password</a>
+      </nav>
+      <a href="{% url 'logout' %}" class="db-out" data-splash><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/></svg>Sign Out</a>
+    </aside>
+  </div>
+</div>
+
+<!-- ── First-visit welcome ── -->
+<div class="db-welcome" id="dbWelcome" role="dialog" aria-modal="true" aria-labelledby="dbWelcomeTitle">
+  <div class="db-gbody" tabindex="-1">
+    <div class="db-gglow"></div>
+    <div class="db-ghead">
+      <div class="db-gwho"><span class="db-gava"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M370.7 96.1C346.1 39.5 289.7 0 224 0S101.9 39.5 77.3 96.1C60.9 97.5 48 111.2 48 128v64c0 16.8 12.9 30.5 29.3 31.9C101.9 280.5 158.3 320 224 320s122.1-39.5 146.7-96.1c16.4-1.4 29.3-15.1 29.3-31.9V128c0-16.8-12.9-30.5-29.3-31.9zM336 144v16c0 53-43 96-96 96H208c-53 0-96-43-96-96V144c0-26.5 21.5-48 48-48H288c26.5 0 48 21.5 48 48zM189.3 162.7l-6-21.2c-.9-3.3-3.9-5.5-7.3-5.5s-6.4 2.2-7.3 5.5l-6 21.2-21.2 6c-3.3 .9-5.5 3.9-5.5 7.3s2.2 6.4 5.5 7.3l21.2 6 6 21.2c.9 3.3 3.9 5.5 7.3 5.5s6.4-2.2 7.3-5.5l6-21.2 21.2-6c3.3-.9 5.5-3.9 5.5-7.3s-2.2-6.4-5.5-7.3l-21.2-6zM112.7 316.5C46.7 342.6 0 407 0 482.3C0 498.7 13.3 512 29.7 512H128V448c0-17.7 14.3-32 32-32H288c17.7 0 32 14.3 32 32v64l98.3 0c16.4 0 29.7-13.3 29.7-29.7c0-75.3-46.7-139.7-112.7-165.8C303.9 338.8 265.5 352 224 352s-79.9-13.2-111.3-35.5zM176 448c-8.8 0-16 7.2-16 16v48h32V464c0-8.8-7.2-16-16-16zm96 32a16 16 0 1 0 0-32 16 16 0 1 0 0 32z"/></svg></span><span class="db-gstep">Step 1 of 4</span></div>
+      <div class="db-gdots"><i class="on"></i><i></i><i></i><i></i></div>
+    </div>
+    <div class="db-welcome-ico"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M312 24V34.5c6.4 1.2 12.6 2.7 18.2 4.2c12.8 3.4 20.4 16.6 17 29.4s-16.6 20.4-29.4 17c-10.9-2.9-21.1-4.9-30.2-5c-7.3-.1-14.7 1.7-19.4 4.4c-2.1 1.3-3.1 2.4-3.5 3c-.3 .5-.7 1.2-.7 2.8c0 .3 0 .5 0 .6c.2 .2 .9 1.2 3.3 2.6c5.8 3.5 14.4 6.2 27.4 10.1l.9 .3 0 0c11.1 3.3 25.9 7.8 37.9 15.3c13.7 8.6 26.1 22.9 26.4 44.9c.3 22.5-11.4 38.9-26.7 48.5c-6.7 4.1-13.9 7-21.3 8.8V232c0 13.3-10.7 24-24 24s-24-10.7-24-24V220.6c-9.5-2.3-18.2-5.3-25.6-7.8c-2.1-.7-4.1-1.4-6-2c-12.6-4.2-19.4-17.8-15.2-30.4s17.8-19.4 30.4-15.2c2.6 .9 5 1.7 7.3 2.5c13.6 4.6 23.4 7.9 33.9 8.3c8 .3 15.1-1.6 19.2-4.1c1.9-1.2 2.8-2.2 3.2-2.9c.4-.6 .9-1.8 .8-4.1l0-.2c0-1 0-2.1-4-4.6c-5.7-3.6-14.3-6.4-27.1-10.3l-1.9-.6c-10.8-3.2-25-7.5-36.4-14.4c-13.5-8.1-26.5-22-26.6-44.1c-.1-22.9 12.9-38.6 27.7-47.4c6.4-3.8 13.3-6.4 20.2-8.2V24c0-13.3 10.7-24 24-24s24 10.7 24 24zM568.2 336.3c13.1 17.8 9.3 42.8-8.5 55.9L433.1 485.5c-23.4 17.2-51.6 26.5-80.7 26.5H192 32c-17.7 0-32-14.3-32-32V416c0-17.7 14.3-32 32-32H68.8l44.9-36c22.7-18.2 50.9-28 80-28H272h16 64c17.7 0 32 14.3 32 32s-14.3 32-32 32H288 272c-8.8 0-16 7.2-16 16s7.2 16 16 16H392.6l119.7-88.2c17.8-13.1 42.8-9.3 55.9 8.5zM193.6 384l0 0-.9 0c.3 0 .6 0 .9 0z"/></svg></div>
+    <h2 id="dbWelcomeTitle">Welcome to APEX!</h2>
+    <p class="db-gtext">Your account is set up and ready. Let us show you how to apply for your first loan — it only takes a few minutes.</p>
+    <div class="db-gacts">
+      <button type="button" class="db-gskip" data-guide="skip">Skip tour</button>
+      <button type="button" class="db-gnext" data-guide="start"><span>Show Me Around</span><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 278.6c12.5-12.5 12.5-32.8 0-45.3l-160-160c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L338.8 224 32 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l306.7 0L233.4 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0l160-160z"/></svg></button>
+    </div>
+  </div>
+</div>
 
 <script>
 (function(){
 'use strict';
+function $(id){ return document.getElementById(id); }
+function store(key,val){ try{ if(val===undefined) return localStorage.getItem(key); localStorage.setItem(key,val); }catch(e){ return null; } }
 
-/* ── Sound system (Web Audio API — zero lag, no files needed) ── */
-var OFL_SFX = (function(){
-  var _ctx = null;
-  function ctx(){ return _ctx || (_ctx = new (window.AudioContext||window.webkitAudioContext||function(){})()); }
-  function tone(freq, dur, type, vol, delay){
+/* ── Small sounds (Web Audio, no files) ── */
+var SFX=(function(){
+  var ctx=null;
+  function tone(freq,dur,type,vol,delay){
     try{
-      var c = ctx(); if(!c.createOscillator) return;
-      if(c.state === 'suspended') c.resume();
-      var o = c.createOscillator(), g = c.createGain();
-      o.connect(g); g.connect(c.destination);
-      o.type = type || 'sine';
-      o.frequency.setValueAtTime(freq, c.currentTime + (delay||0));
-      g.gain.setValueAtTime(vol||0.12, c.currentTime + (delay||0));
-      g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + (delay||0) + dur);
-      o.start(c.currentTime + (delay||0));
-      o.stop(c.currentTime + (delay||0) + dur + 0.01);
+      var C=window.AudioContext||window.webkitAudioContext; if(!C) return;
+      ctx=ctx||new C();
+      if(ctx.state==='suspended') ctx.resume();
+      var t=ctx.currentTime+(delay||0), o=ctx.createOscillator(), g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination); o.type=type||'sine';
+      o.frequency.setValueAtTime(freq,t); g.gain.setValueAtTime(vol||.1,t); g.gain.exponentialRampToValueAtTime(.001,t+dur);
+      o.start(t); o.stop(t+dur+.01);
     }catch(e){}
   }
   return {
-    nav:    function(){ tone(540, 0.07, 'sine', 0.08); },
-    swap:   function(){ tone(380, 0.05, 'sine', 0.10); tone(620, 0.08, 'sine', 0.10, 0.06); },
-    bal:    function(){ tone(660, 0.06, 'triangle', 0.09); },
-    cat:    function(i){ var f=[440,520,600,680]; tone(f[i%4], 0.10, 'triangle', 0.11); },
-    refresh:function(){ tone(500, 0.05, 'sine', 0.08); tone(700, 0.07, 'sine', 0.08, 0.07); },
-    back:   function(){ tone(460, 0.08, 'sine', 0.08); },
-    notif:  function(){ tone(880, 0.08, 'sine', 0.12); tone(1100, 0.12, 'sine', 0.10, 0.09); }
+    bal:function(){ tone(660,.06,'triangle',.09); },
+    swap:function(){ tone(380,.05,'sine',.1); tone(620,.08,'sine',.1,.06); },
+    refresh:function(){ tone(500,.05,'sine',.08); tone(700,.07,'sine',.08,.07); }
   };
 })();
+window.OFL_SFX=SFX;
 
-/* ── Live dates on balance card ── */
-(function(){
-  var M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  var now=new Date();
-  var start=new Date(now.getFullYear(),now.getMonth(),1);
-  function fmt(d){return ('0'+d.getDate()).slice(-2)+' '+M[d.getMonth()]+' '+d.getFullYear();}
-  var s=document.getElementById('balDateStart');
-  var e=document.getElementById('balDateEnd');
-  if(s) s.textContent=fmt(start);
-  if(e) e.textContent=fmt(now);
-  /* ── Highlight today on sparkline ── */
-  var d = now.getDay(); if(d > 5) d = 5;
-  var lbl = document.getElementById('balDay'+d);
-  if(lbl){ lbl.setAttribute('fill','#0A2463'); lbl.setAttribute('font-weight','bold'); }
-})();
 
-/* ── Balance toggle ── */
-var _shown = false;
-window.toggleBal = function(){
-  OFL_SFX.bal();
-  var h = document.getElementById('balHidden');
-  var r = document.getElementById('balReal');
-  var ico = document.getElementById('eyeIcon');
-  _shown = !_shown;
-  if(_shown){
-    h.style.display = 'none';
-    r.style.display = '';
-    ico.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
-  } else {
-    h.style.display = '';
-    r.style.display = 'none';
-    ico.innerHTML = '<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>';
-  }
-};
+/* ── Balance show / hide ── */
+var amt=$('dbAmt'), eye=$('dbEye');
+eye.addEventListener('click',function(){
+  var show=!amt.classList.contains('is-shown');
+  amt.classList.toggle('is-shown',show);
+  eye.classList.toggle('on',show);
+  eye.setAttribute('aria-pressed',String(show));
+  eye.setAttribute('aria-label',show?'Hide balance':'Show balance');
+  SFX.bal();
+});
 
-/* ── Activity tabs ── */
-window.switchTab = function(btn, tab){
-  document.querySelectorAll('.act-tab').forEach(function(t){ t.classList.remove('on'); });
-  btn.classList.add('on');
-  ['actRecent','actPending','actHistory'].forEach(function(id){
-    var el = document.getElementById(id);
-    if(el) el.style.display = 'none';
+/* ── Activity filters: All / Loans / Withdrawals ── */
+var tl=$('dbTl'), evs=[].slice.call(tl.children), filters=[].slice.call(document.querySelectorAll('.db-filter'));
+var empties=[].slice.call(document.querySelectorAll('.db-act .db-empty'));
+function showKind(k,animate){
+  var shown=evs.filter(function(li){ var on=(k==='all'||li.getAttribute('data-k')===k); li.hidden=!on; li.classList.remove('is-in','has-next'); return on; });
+  shown.forEach(function(li,i){
+    if(i<shown.length-1) li.classList.add('has-next');
+    if(animate){ void li.offsetWidth; li.classList.add('is-in'); }
   });
-  var map = {recent:'actRecent', pending:'actPending', history:'actHistory'};
-  var el = document.getElementById(map[tab]);
-  if(el) el.style.display = '';
-};
-
-/* ── FX Converter (bidirectional) ── */
-var _fxRates    = {};
-var _fxLoaded   = false;
-var _fxFromCurr = 'PHP';
-var _fxToCurr   = 'USD';
-
-var _fxList = [
-  {code:'PHP', name:'Philippines',  emoji:'🇵🇭'},
-  {code:'USD', name:'US Dollar',    emoji:'🇺🇸'},
-  {code:'SAR', name:'Saudi Arabia', emoji:'🇸🇦'},
-  {code:'MYR', name:'Malaysia',     emoji:'🇲🇾'},
-  {code:'INR', name:'India',        emoji:'🇮🇳'},
-  {code:'PKR', name:'Pakistan',     emoji:'🇵🇰'},
-  {code:'IDR', name:'Indonesia',    emoji:'🇮🇩'},
-  {code:'VND', name:'Vietnam',      emoji:'🇻🇳'},
-  {code:'OMR', name:'Oman',         emoji:'🇴🇲'},
-  {code:'KES', name:'Kenya',        emoji:'🇰🇪'},
-  {code:'AFN', name:'Afghanistan',  emoji:'🇦🇫'}
-];
-var _fxSymbols = {PHP:'₱',USD:'$',SAR:'﷼',MYR:'RM',INR:'₹',PKR:'₨',IDR:'Rp',VND:'₫',OMR:'﷼',KES:'KSh',AFN:'؋'};
-
-function _fxFind(code){ return _fxList.find(function(c){return c.code===code;})||{code:code,name:code,emoji:'🌐'}; }
-function _fxRateVal(code){ return code==='USD' ? 1 : (_fxRates[code]||null); }
-function _fxCross(){
-  var rf=_fxRateVal(_fxFromCurr), rt=_fxRateVal(_fxToCurr);
-  return (rf&&rt) ? rt/rf : null;
+  empties.forEach(function(e){ e.hidden=!(shown.length===0&&e.getAttribute('data-for')===k); });
+  filters.forEach(function(b){ b.setAttribute('aria-pressed',b.getAttribute('data-f')===k?'true':'false'); });
 }
+filters.forEach(function(b){ b.addEventListener('click',function(){ if(b.getAttribute('aria-pressed')!=='true') showKind(b.getAttribute('data-f'),true); }); });
+showKind('all',false);
 
-function _fxSyncUI(){
-  var fromObj = _fxFind(_fxFromCurr);
-  var toObj   = _fxFind(_fxToCurr);
-  var sym     = _fxSymbols[_fxFromCurr] || _fxFromCurr;
-  var eFromEmoji = document.getElementById('fxFromEmoji');
-  var eFromCode  = document.getElementById('fxFromCode');
-  var eFromName  = document.getElementById('fxFromName');
-  var eToEmoji   = document.getElementById('fxToEmoji');
-  var eToCode    = document.getElementById('fxToCode');
-  var eToName    = document.getElementById('fxToName');
-  var eAmtTag    = document.getElementById('fxAmtTag');
-  var eAmtSym    = document.getElementById('fxAmtSym');
-  var eResEmoji  = document.getElementById('fxResultEmoji');
-  var eResCode   = document.getElementById('fxResultCode');
-  if(eFromEmoji) eFromEmoji.textContent = fromObj.emoji;
-  if(eFromCode)  eFromCode.textContent  = fromObj.code;
-  if(eFromName)  eFromName.textContent  = fromObj.name;
-  if(eToEmoji)   eToEmoji.textContent   = toObj.emoji;
-  if(eToCode)    eToCode.textContent    = toObj.code;
-  if(eToName)    eToName.textContent    = toObj.name;
-  if(eAmtTag)    eAmtTag.textContent    = 'Amount in ' + fromObj.code;
-  if(eAmtSym)    eAmtSym.textContent    = sym;
-  if(eResEmoji)  eResEmoji.textContent  = toObj.emoji;
-  if(eResCode)   eResCode.textContent   = toObj.code + ' ';
-}
-
-function calcFromRate(){
-  var cross = _fxCross();
-  if(!cross) return;
-  var amt  = parseFloat(document.getElementById('fxAmt').value) || 0;
-  var rVal = document.getElementById('fxResult');
-  if(rVal) rVal.textContent = (amt * cross).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-}
-window.calcFromRate = calcFromRate;
-
-function doConvert(){
-  var amt      = parseFloat(document.getElementById('fxAmt').value) || 0;
-  var rLbl     = document.getElementById('fxRateLbl');
-  var rVal     = document.getElementById('fxResult');
-  var rateDisp = document.getElementById('fxRateDisplay');
-  _fxSyncUI();
-  if(_fxLoaded){
-    var cross = _fxCross();
-    if(cross){
-      if(rVal)     rVal.textContent     = (amt*cross).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-      if(rateDisp) rateDisp.textContent = '1 '+_fxFromCurr+' = '+cross.toFixed(4)+' '+_fxToCurr;
-      if(rLbl)     rLbl.textContent     = 'Rate cached';
-    } else {
-      if(rLbl) rLbl.textContent = 'Rate unavailable';
+/* ── Dialog helper: open/close with Escape, backdrop and focus return ── */
+var openDialog=null;
+function dialog(el,opener){
+  var api={
+    el:el,
+    open:function(){
+      if(openDialog&&openDialog!==api) openDialog.close(true);
+      el.classList.add('is-open'); openDialog=api;
+      var f=el.querySelector('[data-focus]')||el.querySelector('button,a'); if(f) setTimeout(function(){ f.focus({preventScroll:true}); },60);
+    },
+    close:function(quiet){
+      if(!el.classList.contains('is-open')) return;
+      el.classList.remove('is-open'); if(openDialog===api) openDialog=null;
+      if(!quiet&&opener) opener.focus({preventScroll:true});
     }
-    return;
+  };
+  el.addEventListener('click',function(e){ if(e.target.closest('[data-close]')) api.close(); });
+  return api;
+}
+document.addEventListener('keydown',function(e){
+  if(!openDialog) return;
+  if(e.key==='Escape') return openDialog.close();
+  if(e.key!=='Tab') return;
+  /* keep keyboard focus inside the open menu / sheet */
+  var items=[].slice.call(openDialog.el.querySelectorAll('button,a[href],input')).filter(function(x){ return x.offsetParent!==null; });
+  if(!items.length) return;
+  var first=items[0], last=items[items.length-1];
+  if(e.shiftKey&&document.activeElement===first){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey&&document.activeElement===last){ e.preventDefault(); first.focus(); }
+});
+/* coming back with the browser's back button: never show a stale open menu or sheet */
+window.addEventListener('pageshow',function(e){ if(e.persisted&&openDialog) openDialog.close(true); });
+
+var drawer=dialog($('dbDrawer'),$('dbMenuBtn'));
+
+/* Home while already on the dashboard: glide to the top instead of reloading */
+document.querySelector('.db-tabbtn[aria-current="page"]').addEventListener('click',function(e){
+  e.preventDefault(); window.scrollTo({top:0,behavior:'smooth'});
+});
+$('dbMenuBtn').addEventListener('click',drawer.open);
+
+/* ── Currency converter ── */
+var FX=[
+  {code:'PHP',name:'Philippine Peso',flag:'🇵🇭',sym:'₱'},
+  {code:'USD',name:'US Dollar',flag:'🇺🇸',sym:'$'},
+  {code:'SAR',name:'Saudi Riyal',flag:'🇸🇦',sym:'﷼'},
+  {code:'MYR',name:'Malaysian Ringgit',flag:'🇲🇾',sym:'RM'},
+  {code:'INR',name:'Indian Rupee',flag:'🇮🇳',sym:'₹'},
+  {code:'PKR',name:'Pakistani Rupee',flag:'🇵🇰',sym:'₨'},
+  {code:'IDR',name:'Indonesian Rupiah',flag:'🇮🇩',sym:'Rp'},
+  {code:'VND',name:'Vietnamese Dong',flag:'🇻🇳',sym:'₫'},
+  {code:'OMR',name:'Omani Rial',flag:'🇴🇲',sym:'﷼'},
+  {code:'KES',name:'Kenyan Shilling',flag:'🇰🇪',sym:'KSh'},
+  {code:'AFN',name:'Afghan Afghani',flag:'🇦🇫',sym:'؋'}
+];
+function cur(code){ for(var i=0;i<FX.length;i++){ if(FX[i].code===code) return FX[i]; } return {code:code,name:code,flag:'🌐',sym:code}; }
+var fx={from:'PHP',to:'USD',rates:null,updated:'',busy:false,rot:0};
+var fxAmt=$('dbFxAmt'), fxOut=$('dbFxOut'), fxNote=$('dbFxNote'), fxBtn=$('dbFxRefresh');
+
+function rateOf(code){ return code==='USD'?1:(fx.rates&&fx.rates[code])||null; }
+function fxRender(){
+  var f=cur(fx.from), t=cur(fx.to);
+  $('dbFromFlag').textContent=f.flag; $('dbFromCode').textContent=f.code;
+  $('dbToFlag').textContent=t.flag; $('dbToCode').textContent=t.code;
+  $('dbFxSym').textContent=f.sym;
+  var rf=rateOf(fx.from), rt=rateOf(fx.to), amount=parseFloat(fxAmt.value)||0;
+  if(rf&&rt){
+    var cross=rt/rf;
+    fxOut.textContent=t.sym+' '+(amount*cross).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+    fxOut.classList.remove('is-empty');
+    if(!fx.busy){
+      fxNote.classList.remove('is-error');
+      fxNote.textContent='1 '+f.code+' = '+cross.toFixed(4)+' '+t.code+(fx.updated?' · '+fx.updated:'');
+    }
+  } else {
+    fxOut.textContent='--'; fxOut.classList.add('is-empty');
   }
-  if(rLbl)     rLbl.textContent     = 'Fetching live rate...';
-  if(rVal)     rVal.textContent     = '--';
-  if(rateDisp) rateDisp.textContent = '1 '+_fxFromCurr+' = -- '+_fxToCurr;
-  fetch('/api/fx/', {headers:{'Accept':'application/json'}})
-    .then(function(r){return r.json();})
+}
+function fxLoad(){
+  if(fx.busy) return;
+  fx.busy=true; fxBtn.disabled=true; fxBtn.classList.add('is-busy');
+  fxNote.classList.remove('is-error'); fxNote.textContent='Fetching live rate…';
+  var ctrl=window.AbortController?new AbortController():null;
+  var timer=setTimeout(function(){ if(ctrl) ctrl.abort(); },9000);
+  fetch('/api/fx/',{headers:{'Accept':'application/json'},cache:'no-store',signal:ctrl?ctrl.signal:undefined})
+    .then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
     .then(function(d){
-      _fxRates  = d.rates || {};
-      _fxLoaded = true;
-      var cross = _fxCross();
-      if(!cross){ if(rLbl) rLbl.textContent='Rate unavailable'; return; }
-      if(rVal)     rVal.textContent     = (amt*cross).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
-      if(rateDisp) rateDisp.textContent = '1 '+_fxFromCurr+' = '+cross.toFixed(4)+' '+_fxToCurr;
-      if(rLbl)     rLbl.textContent     = d.updated ? 'Updated '+d.updated.split(',')[0] : 'Live rate';
+      if(d&&d.rates&&Object.keys(d.rates).length){
+        fx.rates=d.rates; fx.updated=d.updated?('Updated '+String(d.updated).split(',')[0]):'Live rate';
+      } else if(!fx.rates) throw new Error('empty');
     })
     .catch(function(){
-      if(rLbl) rLbl.textContent = 'Connection error - try again';
+      fxNote.classList.add('is-error');
+      fxNote.textContent=fx.rates?'Could not refresh — showing the last rate':'Rate unavailable right now. Tap refresh to try again.';
+    })
+    .then(function(){
+      clearTimeout(timer);
+      var failed=fxNote.classList.contains('is-error');
+      fx.busy=false; fxBtn.disabled=false; fxBtn.classList.remove('is-busy');
+      if(failed){ var keep=fxNote.textContent; fxRender(); fxNote.textContent=keep; fxNote.classList.add('is-error'); }
+      else fxRender();
     });
 }
-window.doConvert = doConvert;
+fxAmt.addEventListener('input',function(){
+  var v=fxAmt.value.replace(/[^0-9.]/g,''), dot=v.indexOf('.');
+  if(dot!==-1) v=v.slice(0,dot+1)+v.slice(dot+1).replace(/\./g,'');
+  if(v!==fxAmt.value) fxAmt.value=v;
+  fxRender();
+});
+$('dbSwap').addEventListener('click',function(){
+  var t=fx.from; fx.from=fx.to; fx.to=t;
+  fx.rot+=180; this.style.setProperty('--rot',fx.rot+'deg');
+  SFX.swap(); fxRender();
+});
+fxBtn.addEventListener('click',function(){ SFX.refresh(); fxLoad(); });
 
-window.fxSwap = function(){
-  OFL_SFX.swap();
-  var btn = document.getElementById('fxSwapBtn');
-  if(btn){ btn.classList.add('spinning'); setTimeout(function(){btn.classList.remove('spinning');},450); }
-  var tmp = _fxFromCurr;
-  _fxFromCurr = _fxToCurr;
-  _fxToCurr   = tmp;
-  _fxSyncUI();
-  doConvert();
-};
-
-window.fxOpenPicker = function(){
-  var overlay = document.getElementById('fxPickerOverlay');
-  var list    = document.getElementById('fxPickerList');
-  if(!overlay) return;
-  list.innerHTML = '';
-  _fxList.forEach(function(c){
-    if(c.code === _fxFromCurr) return;
-    var item = document.createElement('div');
-    item.className = 'fx-picker-item' + (c.code===_fxToCurr?' fx-picker-item--active':'');
-    item.innerHTML = '<span class="fx-picker-flag">'+c.emoji+'</span>'
-      +'<span class="fx-picker-name">'+c.name+'</span>'
-      +'<span class="fx-picker-code">'+c.code+'</span>'
-      +(c.code===_fxToCurr?'<span class="fx-picker-check">&#10003;</span>':'');
-    item.onclick = function(){ window.fxSelectCurr(c.code); };
-    list.appendChild(item);
+var sheet=dialog($('dbSheet'),$('dbToBtn')), sheetList=$('dbSheetList');
+$('dbToBtn').addEventListener('click',function(){
+  sheetList.textContent='';
+  FX.forEach(function(c){
+    if(c.code===fx.from) return;
+    var b=document.createElement('button'); b.type='button'; b.className='db-opt'+(c.code===fx.to?' is-active':'');
+    if(c.code===fx.to) b.setAttribute('data-focus','');
+    var fl=document.createElement('span'); fl.className='db-flag'; fl.textContent=c.flag;
+    var nm=document.createElement('span'); nm.className='db-opt-name'; nm.textContent=c.name;
+    var cd=document.createElement('b'); cd.textContent=c.code;
+    b.appendChild(fl); b.appendChild(nm); b.appendChild(cd);
+    if(c.code===fx.to) b.insertAdjacentHTML('beforeend',$('dbCheckIco').innerHTML);
+    b.addEventListener('click',function(){ fx.to=c.code; sheet.close(); fxRender(); });
+    sheetList.appendChild(b);
   });
-  overlay.style.display = 'flex';
-  requestAnimationFrame(function(){ overlay.classList.add('open'); });
-};
+  sheet.open();
+});
+fxRender();
+fxLoad();
 
-window.fxClosePicker = function(){
-  var overlay = document.getElementById('fxPickerOverlay');
-  if(!overlay) return;
-  overlay.classList.remove('open');
-  setTimeout(function(){ overlay.style.display='none'; }, 320);
-};
-
-window.fxSelectCurr = function(code){
-  _fxToCurr = code;
-  _fxSyncUI();
-  window.fxClosePicker();
-  doConvert();
-};
-
-/* Init */
-_fxSyncUI();
-doConvert();
-
-/* ── Lift nav to <body> so position:fixed works
-      despite overflow-x:hidden on base.html ── */
-(function liftNav(){
-  var nav = document.querySelector('.bnav');
-  if(nav) document.body.appendChild(nav);
-})();
-
-/* ── Hamburger menu toggle ── */
-window.toggleMenu = function(){
-  var existing = document.getElementById('oflMenuOverlay');
-  if(existing){ existing.remove(); return; }
-  var ov = document.createElement('div');
-  ov.id = 'oflMenuOverlay';
-  ov.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(6,21,64,.6);backdrop-filter:blur(6px);display:flex;justify-content:flex-end;';
-  ov.innerHTML = '<div style="width:240px;height:100%;background:#fff;box-shadow:-8px 0 40px rgba(0,0,0,.25);padding:32px 0 20px;display:flex;flex-direction:column;">'
-    + '<div style="padding:0 24px 24px;border-bottom:1px solid #e6eaf4;">'
-    + '<div style="font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#9aa3b8;margin-bottom:4px;">Logged in as</div>'
-    + '<div style="font-size:15px;font-weight:900;color:#0d1b3e;">{{ request.user.username|default:"Client" }}</div>'
-    + '</div>'
-    + '<nav style="flex:1;padding:16px 0;">'
-    + '<a href="#" style="display:flex;align-items:center;gap:12px;padding:13px 24px;text-decoration:none;color:#0d1b3e;font-weight:700;font-size:13.5px;" onclick="document.getElementById(\'oflMenuOverlay\').remove()">'
-    + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF8C00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Dashboard</a>'
-    + '<a href="{% url 'quick_loan' %}" style="display:flex;align-items:center;gap:12px;padding:13px 24px;text-decoration:none;color:#0d1b3e;font-weight:700;font-size:13.5px;">'
-    + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF8C00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Apply for Loan</a>'
-    + '<a href="{% url 'contract' %}" style="display:flex;align-items:center;gap:12px;padding:13px 24px;text-decoration:none;color:#0d1b3e;font-weight:700;font-size:13.5px;">'
-    + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF8C00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>Contract</a>'
-    + '<a href="{% url 'notifications' %}" style="display:flex;align-items:center;gap:12px;padding:13px 24px;text-decoration:none;color:#0d1b3e;font-weight:700;font-size:13.5px;">'
-    + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF8C00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Notifications</a>'
-    + '<a href="{% url 'contact' %}" style="display:flex;align-items:center;gap:12px;padding:13px 24px;text-decoration:none;color:#0d1b3e;font-weight:700;font-size:13.5px;">'
-    + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF8C00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Contact Support</a>'
-    + '<a href="{% url 'change_password' %}" style="display:flex;align-items:center;gap:12px;padding:13px 24px;text-decoration:none;color:#0d1b3e;font-weight:700;font-size:13.5px;">'
-    + '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FF8C00" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>Change Password</a>'
-    + '</nav>'
-    + '<a href="/logout/" style="display:flex;align-items:center;gap:10px;margin:0 16px;padding:12px 16px;border-radius:12px;background:rgba(255,140,0,.08);border:1px solid rgba(255,140,0,.2);text-decoration:none;color:#D97200;font-weight:800;font-size:13px;">'
-    + '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sign Out</a>'
-    + '</div>';
-  ov.addEventListener('click', function(e){ if(e.target===ov) ov.remove(); });
-  document.body.appendChild(ov);
-};
-
-})();
-
-/* ══ ONBOARDING GUIDE ══ */
+/* ── First-visit guide ── */
 (function(){
-  var _ofl=(new URLSearchParams(window.location.search).get('ofl')==='1');
-  if(!_ofl && localStorage.getItem('ofl_guide_v1')) return;
+  var forced=new URLSearchParams(location.search).get('ofl')==='1';
+  if(!forced&&store('ofl_guide_v1')) return;
+  if(forced&&history.replaceState){ try{ history.replaceState(history.state,'',location.pathname); }catch(e){} }
+
+  var app=$('dbApp'), navBox=$('dbNavBox'), guide=$('dbGuide'), welcome=$('dbWelcome');
+  var gStep=$('dbGStep'), gText=$('dbGText'), gNext=$('dbGNext'), dots=$('dbGDots').children;
   var STEPS=[
-    {target:null,pos:'ctr',
-     ico:'<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
-     ttl:'Welcome to OverseasFilipinoLoan!',
-     bdy:'Your account is set up and ready. Let us show you how to apply for your first loan — it only takes a few minutes.',
-     btn:'Show Me Around →'},
-    {target:'.bal-card',pos:'below',
-     ico:'<svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="3"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/></svg>',
-     ttl:'Your Account at a Glance',
-     bdy:'This card shows your current balance and loan status in real time. Tap the eye icon to reveal your balance anytime.',
-     btn:'Next →'},
-    {target:'.d-card',pos:'below',
-     ico:'<svg viewBox="0 0 24 24"><path d="M12 2L4 5.5v5.8C4 16.3 7.6 20.7 12 22c4.4-1.3 8-5.7 8-10.7V5.5z"/><polyline points="8.5 12 11 14.5 15.5 10"/></svg>',
-     ttl:'Account Verified & Active',
-     bdy:'Your account is BSP-verified and fully active. You are eligible to apply for a loan right now with no additional setup.',
-     btn:'Next →'},
-    {target:'.bnav-center',pos:'above',
-     ico:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
-     ttl:'Start Your Loan Application',
-     bdy:'Tap this button anytime to apply. Select your loan type, enter the amount, and get a decision within hours. It is that simple.',
-     btn:'Apply Now →',
-     isLast:true}
+    null,
+    { el:$('dbBal'), lit:$('dbBal'),
+      html:'<b>Your account at a glance.</b> This shows your balance and loan status in real time. Tap the eye icon to reveal your balance anytime.' },
+    { el:$('dbAcct'), lit:$('dbAcct'),
+      html:'<b>Your loan account.</b> Your account status is shown here. When it says Active, you can apply for a loan right away.' },
+    { el:$('dbApply'), lit:$('dbApply'), fixed:true, next:'Apply Now',
+      html:'<b>Start your loan application.</b> Tap this button anytime: choose your loan, enter the amount and get a decision within hours.' }
   ];
-  var cur=0;
-  var G=document.getElementById('oflGuide');
-  if(!G) return;
-  document.body.appendChild(G);
-  var E={
-    bd:document.getElementById('ogBd'),
-    sp:document.getElementById('ogSpot'),
-    card:document.getElementById('ogCard'),
-    arr:document.getElementById('ogArr'),
-    dotsWrap:document.getElementById('ogDots'),
-    ico:document.getElementById('ogIco'),
-    ttl:document.getElementById('ogTtl'),
-    bdy:document.getElementById('ogBdy'),
-    skip:document.getElementById('ogSkip'),
-    next:document.getElementById('ogNext')
-  };
-  E.dotsWrap.innerHTML=STEPS.map(function(_,i){
-    return '<div class="og-dot'+(i===0?' on':'')+'"></div>';
-  }).join('');
-  function setDots(i){
-    E.dotsWrap.querySelectorAll('.og-dot').forEach(function(d,idx){
-      d.classList.toggle('on',idx===i);
-    });
+  var cur=0, y=0, timer=0;
+
+  function finish(){ store('ofl_guide_v1','1'); }
+  function unlight(){ STEPS.forEach(function(s){ if(s&&s.lit) s.lit.classList.remove('is-lit'); }); }
+
+  /* in-page steps: y in px from the top of the app, so the guide scrolls with the content */
+  function place(){
+    var s=STEPS[cur]; if(!s||s.fixed) return;
+    var a=app.getBoundingClientRect(), r=s.el.getBoundingClientRect(), g=guide.getBoundingClientRect();
+    y=Math.round(r.bottom-a.top+16);
+    guide.style.transform='translate3d(0,'+y+'px,0)';
+    var ax=Math.round(r.left+r.width/2-(g.left));
+    guide.style.setProperty('--ax',Math.max(28,Math.min(g.width-28,ax))+'px');
+  }
+  function reveal(){
+    clearTimeout(timer);
+    timer=setTimeout(function(){
+      var s=STEPS[cur]; if(!s||s.fixed) return;
+      var r=s.el.getBoundingClientRect(), a=app.getBoundingClientRect();
+      var top=Math.min(r.top,a.top+y)-16, bot=a.top+y+guide.offsetHeight+16, vh=window.innerHeight, d=0;
+      var room=vh-150;   /* keep clear of the floating nav */
+      if(bot-top>room||top<0) d=top;
+      else if(bot>room) d=bot-room;
+      if(Math.abs(d)>4) window.scrollBy({top:d,behavior:'smooth'});
+    },60);
+  }
+  function render(){
+    var s=STEPS[cur];
+    gStep.textContent='Step '+(cur+1)+' of 4';
+    for(var k=0;k<dots.length;k++) dots[k].className=(k===cur)?'on':(k<cur?'done':'');
+    gText.innerHTML=s.html;
+    gNext.textContent=s.next||'Next';
+    guide.classList.toggle('is-above',!!s.fixed);
   }
   function show(i){
+    var prev=STEPS[cur]; cur=i;
     var s=STEPS[i];
-    setDots(i);
-    E.ico.innerHTML=s.ico;
-    E.ttl.textContent=s.ttl;
-    E.bdy.textContent=s.bdy;
-    E.next.textContent=s.btn;
-    E.skip.style.display=s.isLast?'none':'';
-    E.arr.className='og-arr';
-    if(!s.target){
-      E.bd.style.display='block';
-      E.sp.classList.remove('on');
-      E.card.className='og-card og-ctr';
-      E.card.style.top=''; E.card.style.bottom='';
+    unlight(); s.lit.classList.add('is-lit');
+    var moveHome=(!!s.fixed)!==(!!(prev&&prev.fixed))||guide.hidden;
+    if(moveHome){
+      /* switching between the page and the floating nav: fade out, move, fade in */
+      guide.classList.remove('is-on');
+      setTimeout(function(){
+        (s.fixed?navBox:app).appendChild(guide);
+        guide.hidden=false;
+        guide.style.transition='none';
+        if(s.fixed){ guide.style.transform=''; guide.style.removeProperty('--ax'); }
+        render(); place();
+        void guide.offsetWidth; guide.style.transition='';
+        guide.classList.add('is-on');
+        reveal();
+      },guide.hidden?0:220);
     } else {
-      var t=document.querySelector(s.target);
-      if(t){
-        var r=t.getBoundingClientRect(), p=10;
-        E.sp.style.left=(r.left-p)+'px';
-        E.sp.style.top=(r.top-p)+'px';
-        E.sp.style.width=(r.width+p*2)+'px';
-        E.sp.style.height=(r.height+p*2)+'px';
-        E.sp.classList.add('on');
-        E.bd.style.display='none';
-        // Always center the card so it is never cut off on any phone size
-        E.card.className='og-card og-ctr';
-        E.card.style.top='';E.card.style.bottom='';
-        E.arr.className='og-arr';
-      }
+      gText.style.opacity='0';
+      setTimeout(function(){ render(); place(); gText.style.opacity=''; reveal(); },120);
     }
-  }
-  function advance(){
-    if(STEPS[cur].isLast){
-      localStorage.setItem('ofl_onboard','ql');
-      end();
-      var a=document.getElementById('ogApplyHref');
-      if(a) a.click();
-      return;
-    }
-    cur++;
-    show(cur);
   }
   function end(){
-    localStorage.setItem('ofl_guide_v1','1');
-    G.style.transition='opacity .3s';
-    G.style.opacity='0';
-    setTimeout(function(){ G.style.display='none'; }, 310);
+    finish(); unlight();
+    welcome.classList.remove('is-open');
+    guide.classList.remove('is-on');
+    setTimeout(function(){ guide.hidden=true; },320);
   }
-  E.next.addEventListener('click', advance);
-  E.skip.addEventListener('click', end);
-  G.style.display='block';
-  G.style.opacity='0';
-  G.style.transition='opacity .4s';
-  setTimeout(function(){ G.style.opacity='1'; }, 60);
-  show(0);
+  welcome.addEventListener('click',function(e){
+    var b=e.target.closest('[data-guide]'); if(!b) return;
+    if(b.getAttribute('data-guide')==='start'){ welcome.classList.remove('is-open'); setTimeout(function(){ show(1); },200); }
+    else end();
+  });
+  guide.addEventListener('click',function(e){
+    var b=e.target.closest('[data-guide]'); if(!b) return;
+    if(b.getAttribute('data-guide')==='skip') return end();
+    if(cur<3) return show(cur+1);
+    finish(); store('ofl_onboard','ql'); unlight();
+    location.href=$('dbApply').getAttribute('href')+'?ofl=1';
+  });
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&(welcome.classList.contains('is-open')||guide.classList.contains('is-on'))) end(); });
+  if(window.ResizeObserver) new ResizeObserver(function(){ place(); }).observe(app);
+  window.addEventListener('resize',place);
+  /* wait for the page slide-in to finish before opening the welcome card */
+  setTimeout(function(){ welcome.classList.add('is-open'); welcome.querySelector('.db-gbody').focus({preventScroll:true}); },450);
+})();
+
 })();
 </script>
+<template id="dbCheckIco"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></template>
 {% endblock %}

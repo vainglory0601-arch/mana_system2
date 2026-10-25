@@ -19,6 +19,12 @@
 
   <style>
 
+/* Smooth cross-fade between pages (browsers without support just navigate normally) */
+@view-transition{ navigation: auto; }
+@media (prefers-reduced-motion: reduce){
+  ::view-transition-old(root), ::view-transition-new(root){ animation: none; }
+}
+
 /* ✅ Select text = White */
 select,
 select option{

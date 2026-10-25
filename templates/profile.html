@@ -1,568 +1,289 @@
 {% extends "base.html" %}
-{% load static %}
-{% block title %}Profile{% endblock %}
+{% load static humanize %}
+{% block title %}My Profile — APEX{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+html body,html body *,html body button,html body input,
+html body select,html body textarea,html body a{
+  font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif!important;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <style>
-  /* ===== OFL Profile ===== */
-  :root {
-    --navy:#0A2463; --navy-dk:#061540; --navy-lt:#1a3a8a;
-    --orange:#FF8C00; --orange-dk:#D97200; --orange-lt:#FFA733;
-    --bg:#f0f3f9; --card:#ffffff;
-    --ink:#0d1b3e; --ink2:#5a6680; --ink3:#9aa3b8; --line:#e6eaf4;
-    --red:#dc2626; --red-dk:#b91c1c;
-    --green:#16a34a;
-  }
+/* ════════════════════════════════════════════
+   APEX PROFILE — Deep Forest
+   Same look in light and dark theme
+════════════════════════════════════════════ */
+:root{
+  --pf-dark:#0B1C14;--pf-primary:#133224;--pf-green:#1B4332;--pf-green-dk:#122e22;--pf-sage:#E8F3ED;--pf-accent:#F97316;
+  --pf-ink:#111827;--pf-ink2:#374151;--pf-mut:#9ca3af;--pf-mut2:#6b7280;--pf-line:#f3f4f6;--pf-line2:#e5e7eb;
+  --pf-float:0 20px 40px -10px rgba(0,0,0,.1);--pf-ease:cubic-bezier(.22,1,.36,1);
+}
+#pageRoot.wrap{max-width:100%!important;width:100%!important;padding:0!important;display:block!important;}
+html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!important;overflow-x:clip!important;background:#e5e7eb!important;color:#1f2937!important;-webkit-font-smoothing:antialiased;}
+.pf a,.pf button,.pf label{-webkit-tap-highlight-color:transparent;}
+.pf svg,.pf-sheet svg{display:block;width:auto;height:1em;fill:currentColor;flex-shrink:0;}
 
-  body, body * { font-family:"Lato","Open Sans",system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif !important; }
-  html, body { width:100%; overflow-x:hidden; }
-  body { margin:0; min-height:100vh; background:var(--bg) !important; color:var(--ink) !important; }
-  .wrap { padding-top:0 !important; }
+.pf{min-height:100vh;min-height:100dvh;display:flex;justify-content:center;}
+.pf-app{position:relative;width:100%;max-width:420px;min-height:100vh;min-height:100dvh;background:#f9fafb;padding-bottom:calc(32px + env(safe-area-inset-bottom,0px));}
 
-  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
-  @keyframes pfSpin    { to{transform:rotate(360deg)} }
-  @keyframes pfSpinRev { to{transform:rotate(-360deg)} }
+/* ── Header with the photo ── */
+.pf-top{
+  position:relative;overflow:hidden;padding:24px 24px 96px;border-radius:0 0 2.5rem 2.5rem;text-align:center;
+  background:linear-gradient(to bottom,var(--pf-dark),var(--pf-primary));box-shadow:inset 0 2px 4px rgba(0,0,0,.05);
+}
+.pf-glow{position:absolute;border-radius:50%;pointer-events:none;}
+.pf-glow-a{top:0;right:0;width:256px;height:256px;background:rgba(255,255,255,.05);filter:blur(64px);transform:translate(33%,-33%);}
+.pf-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(249,115,22,.1);filter:blur(40px);transform:translate(-25%,25%);}
+.pf-bar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.pf-glass-dark{background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);}
+.pf-back{
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;
+  color:#fff!important;text-decoration:none!important;transition:background-color .15s,transform .15s;
+}
+.pf-back:hover{background-color:rgba(255,255,255,.1);}
+.pf-back:active{transform:scale(.94);}
+.pf-bar-title{font-size:13px;line-height:18px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#FDBA74;}
+.pf-bar span:last-child{width:44px;}
 
-  /* ── Page ── */
-  .pf-outer { width:100%; max-width:520px; margin:0 auto; }
+.pf-avatar{position:relative;z-index:1;width:104px;height:104px;margin:0 auto 14px;}
+.pf-ring{width:100%;height:100%;padding:4px;border-radius:50%;background:linear-gradient(135deg,#FDBA74,var(--pf-accent) 45%,rgba(255,255,255,.25));box-shadow:0 12px 30px -8px rgba(0,0,0,.45);}
+.pf-photo{position:relative;width:100%;height:100%;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:40px;color:rgba(255,255,255,.75);background:var(--pf-green);border:3px solid var(--pf-primary);}
+.pf-photo img{width:100%;height:100%;object-fit:cover;display:block;}
+.pf-busy{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(11,28,20,.55);opacity:0;visibility:hidden;transition:opacity .2s,visibility 0s linear .2s;}
+.pf-avatar.is-busy .pf-busy{opacity:1;visibility:visible;transition:opacity .2s;}
+.pf-spin{width:26px;height:26px;border-radius:50%;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;}
+.pf-avatar.is-busy .pf-spin{animation:pfSpin .7s linear infinite;}
+@keyframes pfSpin{to{transform:rotate(360deg);}}
+.pf-cam{
+  position:absolute;right:0;bottom:2px;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:#fff;background:var(--pf-accent);border:3px solid var(--pf-primary);box-shadow:0 6px 14px -4px rgba(249,115,22,.6);transition:transform .15s,background-color .15s;
+}
+.pf-cam:hover{background:#ea580c;}
+.pf-cam:active{transform:scale(.92);}
+.pf-cam:focus-within{box-shadow:0 0 0 3px rgba(253,186,116,.6);}
+.pf-file{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
+.pf-who{position:relative;z-index:1;}
+.pf-who h1{margin:0 0 4px;font-size:22px;line-height:28px;font-weight:800;letter-spacing:-.02em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pf-who p{margin:0 0 12px;font-size:13px;line-height:18px;font-weight:600;letter-spacing:.04em;color:rgba(232,243,237,.7);}
+.pf-status{
+  --st-bg:#E6F4EA;--st-line:#CDE9D6;--st-ink:#15803D;--st-dot:#22C55E;
+  position:relative;display:inline-flex;align-items:center;max-width:100%;padding:6px 12px 6px 28px;border-radius:999px;
+  background:var(--st-bg);border:1px solid var(--st-line);font-size:10.5px;line-height:15px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--st-ink);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.pf-status.status-warn{--st-bg:#FEF3C7;--st-line:#FDE68A;--st-ink:#B45309;--st-dot:#F59E0B;}
+.pf-status.status-danger{--st-bg:#FEE2E2;--st-line:#FECACA;--st-ink:#B91C1C;--st-dot:#EF4444;}
+.pf-status::before{content:'';position:absolute;left:12px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--st-dot);}
 
-  /* ══ HERO ══ */
-  .pf-hero {
-    position:relative;
-    height:210px;
-    overflow:visible;
-    background:
-      radial-gradient(ellipse 140% 90% at 10% 5%, rgba(255,167,51,.20) 0%, transparent 50%),
-      radial-gradient(ellipse 80% 70% at 90% 95%, rgba(26,58,138,.55) 0%, transparent 55%),
-      linear-gradient(148deg, var(--navy-dk) 0%, var(--navy) 55%, var(--navy-lt) 100%);
-    display:flex; flex-direction:column; align-items:center;
-    padding:54px 22px 0;
-    box-sizing:border-box;
-    text-align:center;
-  }
-  .pf-hero::after {
-    content:""; position:absolute; top:-55px; right:-45px;
-    width:210px; height:210px; border-radius:50%;
-    border:1px solid rgba(255,140,0,.18); pointer-events:none;
-  }
+/* ── Main ── */
+.pf-main{position:relative;z-index:2;margin-top:-64px;padding:0 20px;display:flex;flex-direction:column;gap:20px;}
+.pf-card{position:relative;padding:20px;border-radius:2rem;background:#fff;border:1px solid var(--pf-line);box-shadow:var(--pf-float);}
+.pf-stats{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;}
+.pf-stat span{display:block;margin-bottom:4px;font-size:10.5px;line-height:15px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--pf-mut2);}
+.pf-stat b{display:block;font-size:18px;line-height:24px;font-weight:800;color:var(--pf-ink);white-space:nowrap;}
+.pf-stat small{display:block;margin-top:2px;font-size:11.5px;line-height:16px;font-weight:600;color:var(--pf-mut2);}
+.pf-stat small.ok{color:#15803d;}
+.pf-stat.r{text-align:right;}
+.pf-div{width:1px;height:48px;background:var(--pf-line2);}
+.pf-amt{display:grid;}
+.pf-amt > b{grid-area:1/1;transition:opacity .2s,transform .2s;}
+.pf-amt-real{opacity:0;transform:translateY(3px);}
+.pf-amt.is-shown .pf-amt-mask{opacity:0;transform:translateY(-3px);}
+.pf-amt.is-shown .pf-amt-real{opacity:1;transform:none;}
+.pf-eye{display:inline-flex;align-items:center;gap:6px;margin-top:2px;padding:0;border:0;background:none;cursor:pointer;font-size:11.5px;line-height:16px;font-weight:700;color:var(--pf-green);}
+.pf-eye svg{font-size:13px;}
+.pf-eye .i-shown,.pf-eye.on .i-hidden{display:none;}
+.pf-eye.on .i-shown{display:block;}
 
-  .pf-badge {
-    position:absolute; top:16px; left:18px;
-    display:flex; align-items:center; gap:6px;
-    background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.18);
-    border-radius:999px; padding:4px 10px 4px 5px; z-index:3;
-  }
-  .pf-badge-dot {
-    width:22px; height:22px; border-radius:50%;
-    background:linear-gradient(135deg,var(--orange-lt),var(--orange));
-    display:flex; align-items:center; justify-content:center;
-    font-size:8px; font-weight:900; color:#fff; letter-spacing:-.3px;
-  }
-  .pf-badge-txt {
-    font-size:9.5px; font-weight:900; color:rgba(255,255,255,.82);
-    letter-spacing:.06em; text-transform:uppercase;
-  }
+.pf-alert{position:relative;padding:14px 16px 14px 40px;border-radius:18px;font-size:13px;line-height:19px;font-weight:600;border:1px solid;box-shadow:var(--pf-float);}
+.pf-alert::before{content:'';position:absolute;left:17px;top:20px;width:9px;height:9px;border-radius:50%;background:currentColor;}
+.pf-alert.is-danger{color:#991b1b;background:#fef2f2;border-color:#fecaca;}
+.pf-alert.is-warn{color:#9a3412;background:#fff7ed;border-color:#fed7aa;}
+.pf-alert.is-success{color:#166534;background:#f0fdf4;border-color:#bbf7d0;}
 
-  .pf-back {
-    position:absolute; top:14px; right:18px;
-    display:inline-flex; align-items:center; gap:5px;
-    height:34px; padding:0 13px; border-radius:999px;
-    background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22);
-    color:rgba(255,255,255,.88) !important; text-decoration:none;
-    font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
-    transition:background .18s; z-index:3;
-  }
-  .pf-back svg { width:13px; height:13px; fill:none; stroke:currentColor; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
-  .pf-back:hover { background:rgba(255,255,255,.22); }
+.pf-sec h2{margin:0 0 12px;padding-left:4px;font-size:12px;line-height:16px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--pf-mut2);}
+.pf-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.pf-tile{
+  position:relative;display:flex;flex-direction:column;gap:14px;min-height:112px;padding:16px;border-radius:1.5rem;
+  background:#fff;border:1px solid var(--pf-line);box-shadow:0 10px 24px -12px rgba(0,0,0,.12);
+  color:var(--pf-ink)!important;text-decoration:none!important;transition:transform .2s var(--pf-ease),box-shadow .2s;
+}
+@media (hover:hover){ .pf-tile:hover{transform:translateY(-3px);box-shadow:0 16px 28px -12px rgba(0,0,0,.18);} }
+.pf-tile:active{transform:scale(.97);}
+.pf-tile-ico{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--pf-green);background:var(--pf-sage);}
+.pf-tile.is-accent .pf-tile-ico{color:var(--pf-accent);background:#fff7ed;}
+.pf-tile-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;}
+.pf-tile-foot b{font-size:13.5px;line-height:18px;font-weight:700;}
+.pf-tile-foot svg{font-size:11px;color:var(--pf-mut);transition:transform .2s;}
+.pf-tile:hover .pf-tile-foot svg{transform:translateX(2px);}
 
-  .pf-hero-title { font-size:20px; font-weight:900; color:rgba(255,255,255,.95); letter-spacing:-.2px; margin-bottom:3px; position:relative; z-index:2; }
-  .pf-hero-sub   { font-size:11px; font-weight:700; color:rgba(255,255,255,.50); letter-spacing:.14em; text-transform:uppercase; position:relative; z-index:2; }
+.pf-list{border-radius:1.5rem;background:#fff;border:1px solid var(--pf-line);box-shadow:0 10px 24px -12px rgba(0,0,0,.12);overflow:hidden;}
+.pf-item{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;border:0;background:none;cursor:pointer;text-align:left;color:var(--pf-ink)!important;text-decoration:none!important;transition:background-color .15s;}
+.pf-item + .pf-item{border-top:1px solid var(--pf-line);}
+.pf-item:hover{background:#f9fafb;}
+.pf-item .pf-tile-ico{width:38px;height:38px;border-radius:12px;font-size:15px;}
+.pf-item div{flex:1;min-width:0;}
+.pf-item b{display:block;font-size:14px;line-height:20px;font-weight:700;}
+.pf-item small{display:block;font-size:12px;line-height:16px;font-weight:500;color:var(--pf-mut2);}
+.pf-item > svg{font-size:11px;color:var(--pf-mut);}
+.pf-item.is-out b{color:#b91c1c;}
+.pf-item.is-out .pf-tile-ico{color:#dc2626;background:#fef2f2;}
 
-  /* ── Avatar ── */
-  .pf-avatar-wrap {
-    position:absolute; bottom:-58px; left:50%;
-    transform:translateX(-50%); z-index:10;
-  }
-  .pf-avatar-zone { position:relative; display:inline-block; }
-  .pf-avatar-ring {
-    width:116px; height:116px; border-radius:50%; padding:3px;
-    background:conic-gradient(var(--orange-lt),var(--orange),var(--navy-lt),var(--navy),var(--orange-lt));
-    animation:pfSpin 10s linear infinite;
-    box-shadow:0 8px 30px rgba(10,36,99,.45), 0 0 0 3px rgba(255,255,255,.75);
-  }
-  .pf-avatar-inner {
-    width:100%; height:100%; border-radius:50%;
-    background:var(--navy-dk);
-    display:flex; align-items:center; justify-content:center;
-    overflow:hidden;
-    animation:pfSpinRev 10s linear infinite;
-  }
-  .pf-avatar-inner svg { width:46px; height:46px; fill:var(--orange-lt); }
-  .pf-avatar-inner img { width:100%; height:100%; object-fit:cover; }
+.pf-foot{padding-top:4px;text-align:center;font-size:12px;line-height:16px;font-weight:500;color:var(--pf-mut);}
+.pf-foot p{margin:0;}
+.pf-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
+.pf-foot i{width:6px;height:6px;border-radius:50%;background:var(--pf-primary);}
+.pf-foot b{font-weight:700;color:var(--pf-accent);}
 
-  /* Camera badge */
-  .pf-cam-btn {
-    position:absolute; bottom:5px; right:5px;
-    width:32px; height:32px; border-radius:50%;
-    background:linear-gradient(135deg,var(--orange-dk),var(--orange));
-    border:3px solid #fff;
-    display:flex; align-items:center; justify-content:center;
-    cursor:pointer; z-index:5;
-    box-shadow:0 3px 10px rgba(10,36,99,.28);
-    transition:transform .18s, box-shadow .18s;
-  }
-  .pf-cam-btn:hover { transform:scale(1.12); box-shadow:0 5px 14px rgba(255,140,0,.45); }
-  .pf-cam-btn svg { width:15px; height:15px; fill:#fff; }
+/* ── Sign out sheet (plain dim, no full-screen blur) ── */
+.pf-sheet{position:fixed;inset:0;z-index:10001;display:flex;align-items:flex-end;justify-content:center;background:rgba(11,28,20,.55);opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s linear .25s;}
+.pf-sheet.is-open{opacity:1;visibility:visible;transition:opacity .25s;}
+.pf-sheet-box{width:100%;max-width:420px;padding:10px 22px calc(24px + env(safe-area-inset-bottom,0px));border-radius:28px 28px 0 0;background:#fff;text-align:center;transform:translateY(100%);transition:transform .32s var(--pf-ease);}
+.pf-sheet.is-open .pf-sheet-box{transform:none;}
+.pf-handle{width:36px;height:4px;margin:0 auto 18px;border-radius:2px;background:var(--pf-line2);}
+.pf-sheet-ico{width:52px;height:52px;margin:0 auto 14px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#dc2626;background:#fef2f2;border:1px solid #fecaca;}
+.pf-sheet-box h3{margin:0 0 4px;font-size:18px;line-height:26px;font-weight:700;color:var(--pf-ink);}
+.pf-sheet-box p{margin:0 0 20px;font-size:13px;line-height:19px;color:var(--pf-mut2);}
+.pf-sheet-acts{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.pf-sheet-acts form{margin:0;}
+.pf-btn{width:100%;padding:15px;border-radius:999px;cursor:pointer;font-size:15px;line-height:22px;font-weight:700;transition:background-color .15s,transform .15s;}
+.pf-btn:active{transform:scale(.98);}
+.pf-btn-line{border:1px solid var(--pf-line2);background:#fff;color:var(--pf-ink2);}
+.pf-btn-line:hover{background:#f9fafb;}
+.pf-btn-red{border:0;background:#dc2626;color:#fff;box-shadow:0 10px 15px -3px rgba(220,38,38,.25);}
+.pf-btn-red:hover{background:#b91c1c;}
 
-  /* Upload progress overlay */
-  .pf-cam-uploading .pf-avatar-inner::after {
-    content:""; position:absolute; inset:0; border-radius:50%;
-    background:rgba(6,21,64,.55);
-  }
-
-  /* ══ BODY ══ */
-  .pf-body {
-    position:relative; z-index:5;
-    background:var(--card);
-    border-radius:28px 28px 0 0;
-    margin-top:0;
-    box-shadow:0 -4px 24px rgba(10,36,99,.12);
-    padding:74px 14px 52px;
-    box-sizing:border-box;
-  }
-
-  /* ── Identity ── */
-  .pf-id-card { text-align:center; margin-bottom:16px; animation:fadeUp .5s ease-out .05s both; }
-  .pf-phone {
-    font-size:22px; font-weight:900; color:var(--ink);
-    letter-spacing:-.3px; margin-bottom:4px;
-  }
-  .pf-acct-label {
-    font-size:11px; font-weight:800; color:var(--ink3);
-    letter-spacing:.16em; text-transform:uppercase; margin-bottom:12px;
-  }
-  .pf-sbadge {
-    display:inline-flex; align-items:center; gap:5px;
-    padding:6px 16px; border-radius:999px;
-    font-size:11px; font-weight:900; letter-spacing:.12em; text-transform:uppercase;
-  }
-  .pf-sbadge svg { width:12px; height:12px; fill:none; stroke:currentColor; stroke-width:2.8; stroke-linecap:round; stroke-linejoin:round; }
-  .pf-sbadge-active { background:rgba(22,163,74,.10); color:#15803d; border:1px solid rgba(22,163,74,.28); }
-  .pf-sbadge-warn   { background:rgba(255,140,0,.10); color:var(--orange-dk); border:1px solid rgba(255,140,0,.28); }
-  .pf-sbadge-danger { background:rgba(220,38,38,.10); color:var(--red-dk); border:1px solid rgba(220,38,38,.28); }
-
-  /* ── Stats card ── */
-  .pf-stats {
-    position:relative;
-    display:grid; grid-template-columns:1fr auto 1fr;
-    align-items:stretch;
-    background:var(--bg); border-radius:18px;
-    border:1px solid var(--line);
-    box-shadow:0 2px 12px rgba(10,36,99,.06);
-    padding:16px 18px; margin-bottom:16px;
-    overflow:hidden;
-    animation:fadeUp .5s ease-out .14s both;
-  }
-  .pf-stats::before {
-    content:""; position:absolute; top:0; left:0; right:0;
-    height:3px;
-    background:linear-gradient(90deg,var(--orange-dk),var(--orange),var(--orange-lt));
-    border-radius:18px 18px 0 0;
-  }
-  .pf-stat { display:flex; flex-direction:column; }
-  .pf-stat.right { align-items:flex-end; text-align:right; }
-  .pf-stat-lbl { font-size:10px; font-weight:800; color:var(--ink3); letter-spacing:.14em; text-transform:uppercase; margin-bottom:5px; }
-  .pf-stat-val { font-size:20px; font-weight:900; color:var(--navy); letter-spacing:-.2px; line-height:1.05; margin-bottom:4px; }
-  .pf-stat-val .peso { color:var(--orange); }
-  .pf-stat-sub { font-size:10px; font-weight:700; color:var(--ink3); text-transform:uppercase; letter-spacing:.06em; }
-  .pf-stat-sub.ok { color:var(--green); }
-  .pf-stat-div { width:1px; background:var(--line); margin:0 12px; }
-
-  html[data-theme="dark"] .pf-stat-val { color:#fff !important; }
-  html[data-theme="dark"] .pf-stat-val .peso { color:var(--orange-lt) !important; }
-  html[data-theme="dark"] .pf-stat-lbl,
-  html[data-theme="dark"] .pf-stat-sub { color:rgba(255,255,255,.60) !important; }
-  html[data-theme="dark"] .pf-stat-sub.ok { color:#4ade80 !important; }
-
-  /* ── Status alert ── */
-  .pf-alert {
-    width:100%; padding:11px 16px;
-    border-radius:12px; font-size:13px; font-weight:800; text-align:center;
-    box-sizing:border-box; margin-bottom:14px;
-    animation:fadeUp .4s ease-out .20s both;
-  }
-  .pf-alert-danger  { background:rgba(220,38,38,.08); color:var(--red-dk); border:1px solid rgba(220,38,38,.22); border-left:3px solid var(--red); }
-  .pf-alert-success { background:rgba(22,163,74,.08); color:#166534; border:1px solid rgba(22,163,74,.22); border-left:3px solid var(--green); }
-  .pf-alert-warn    { background:rgba(255,140,0,.08); color:var(--orange-dk); border:1px solid rgba(255,140,0,.22); border-left:3px solid var(--orange); }
-
-  /* ══ SECTION LABEL ══ */
-  .pf-sec-lbl {
-    font-size:10px; font-weight:900; color:var(--ink3);
-    letter-spacing:.22em; text-transform:uppercase;
-    margin:22px 2px 10px;
-  }
-
-  /* ══ ICON TILE GRID ══ */
-  .pf-tile-grid {
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:10px;
-  }
-
-  .pf-tile {
-    position:relative;
-    display:flex; flex-direction:column; justify-content:space-between;
-    gap:20px;
-    padding:16px;
-    background:var(--bg);
-    border-radius:20px;
-    border:1px solid var(--line);
-    text-decoration:none; color:var(--ink);
-    overflow:hidden;
-    min-height:104px;
-    transition:transform .18s, box-shadow .20s, border-color .18s;
-    animation:fadeUp .45s ease-out both;
-  }
-  .pf-tile::after {
-    content:""; position:absolute;
-    top:0; left:0; right:0; height:2px;
-    border-radius:20px 20px 0 0;
-    opacity:0; transition:opacity .18s;
-  }
-  .pf-tile:hover { transform:translateY(-3px); box-shadow:0 14px 34px rgba(10,36,99,.13); border-color:rgba(10,36,99,.14); }
-  .pf-tile:hover::after { opacity:1; }
-  .pf-tile:active { transform:scale(.97); }
-
-  /* per-tile accent bars */
-  .t-navy::after   { background:linear-gradient(90deg,#061540,#2a4fad); }
-  .t-orange::after { background:linear-gradient(90deg,var(--orange-dk),var(--orange-lt)); }
-  .t-teal::after   { background:linear-gradient(90deg,#0d4f6e,#0891b2); }
-  .t-green::after  { background:linear-gradient(90deg,#065f46,#059669); }
-  .t-indigo::after { background:linear-gradient(90deg,#312e81,#4f46e5); }
-  .t-amber::after  { background:linear-gradient(90deg,#92400e,#d97706); }
-
-  /* icon blob */
-  .pf-tile-ico {
-    width:48px; height:48px; border-radius:14px;
-    display:flex; align-items:center; justify-content:center; flex:0 0 auto;
-    box-shadow:0 4px 12px rgba(0,0,0,.15);
-  }
-  .t-navy   .pf-tile-ico { background:linear-gradient(135deg,#061540,#1a3a8a); }
-  .t-orange .pf-tile-ico { background:linear-gradient(135deg,var(--orange-dk),var(--orange-lt)); }
-  .t-teal   .pf-tile-ico { background:linear-gradient(135deg,#0d4f6e,#0891b2); }
-  .t-green  .pf-tile-ico { background:linear-gradient(135deg,#065f46,#059669); }
-  .t-indigo .pf-tile-ico { background:linear-gradient(135deg,#312e81,#4f46e5); }
-  .t-amber  .pf-tile-ico { background:linear-gradient(135deg,#92400e,#d97706); }
-
-  .pf-tile-ico svg { width:23px; height:23px; }
-
-  /* label + arrow row */
-  .pf-tile-foot {
-    display:flex; align-items:center; justify-content:space-between; gap:6px;
-  }
-  .pf-tile-name {
-    font-size:12px; font-weight:900; color:var(--ink);
-    letter-spacing:-.01em; line-height:1.2;
-  }
-  .pf-tile-go {
-    width:24px; height:24px; border-radius:50%;
-    background:var(--card); border:1px solid var(--line);
-    display:flex; align-items:center; justify-content:center; flex:0 0 auto;
-    transition:background .18s, border-color .18s;
-  }
-  .pf-tile-go svg { width:11px; height:11px; fill:none; stroke:var(--ink3); stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
-  .pf-tile:hover .pf-tile-go { background:var(--orange); border-color:var(--orange); }
-  .pf-tile:hover .pf-tile-go svg { stroke:#fff; }
-
-  /* stagger */
-  .pf-tile-grid .pf-tile:nth-child(1) { animation-delay:.24s; }
-  .pf-tile-grid .pf-tile:nth-child(2) { animation-delay:.28s; }
-  .pf-tile-grid .pf-tile:nth-child(3) { animation-delay:.32s; }
-  .pf-tile-grid .pf-tile:nth-child(4) { animation-delay:.36s; }
-
-  /* legal grid uses same .pf-tile */
-  .pf-legal-grid {
-    display:grid; grid-template-columns:1fr 1fr; gap:10px;
-  }
-  .pf-legal-grid .pf-tile:nth-child(1) { animation-delay:.40s; }
-  .pf-legal-grid .pf-tile:nth-child(2) { animation-delay:.44s; }
-
-  /* ══ SIGN OUT BUTTON ══ */
-  .pf-signout {
-    width:100%;
-    display:flex; align-items:center; gap:14px;
-    padding:15px 16px; border-radius:18px;
-    background:#fff;
-    border:1.5px solid rgba(220,38,38,.18);
-    cursor:pointer; font-family:inherit; text-align:left;
-    box-shadow:0 4px 16px rgba(220,38,38,.08);
-    transition:transform .18s, box-shadow .18s, border-color .18s, background .18s;
-    animation:fadeUp .45s ease-out .50s both;
-  }
-  .pf-signout:hover { transform:translateY(-2px); box-shadow:0 10px 28px rgba(220,38,38,.18); border-color:rgba(220,38,38,.42); background:#fff9f9; }
-  .pf-signout:active { transform:scale(.98); }
-  .pf-signout-ico-wrap {
-    width:46px; height:46px; border-radius:13px; flex-shrink:0;
-    background:linear-gradient(135deg,#dc2626 0%,#ef4444 100%);
-    display:flex; align-items:center; justify-content:center;
-    box-shadow:0 6px 16px rgba(220,38,38,.36);
-  }
-  .pf-signout-ico { width:22px; height:22px; stroke:#fff; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-  .pf-signout-text { flex:1; min-width:0; }
-  .pf-signout-lbl { display:block; font-size:15px; font-weight:800; color:#b91c1c; letter-spacing:.01em; }
-  .pf-signout-sub { display:block; font-size:11.5px; font-weight:500; color:rgba(185,28,28,.55); margin-top:2px; }
-  .pf-signout-chevron { flex-shrink:0; width:16px; height:16px; stroke:rgba(220,38,38,.35); fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
-
-  /* ══ LOGOUT MODAL ══ */
-  .pf-modal {
-    position:fixed; inset:0;
-    display:none; align-items:center; justify-content:center;
-    background:rgba(6,21,64,.52);
-    backdrop-filter:blur(7px); -webkit-backdrop-filter:blur(7px);
-    z-index:9999; padding:18px; box-sizing:border-box;
-  }
-  .pf-modal.show { display:flex; }
-  .pf-modal-box {
-    width:min(400px,92vw); background:#fff; border-radius:22px;
-    box-shadow:0 24px 60px rgba(6,21,64,.28);
-    overflow:hidden; padding:28px; text-align:center;
-    position:relative; animation:fadeUp .28s ease-out;
-  }
-  .pf-modal-box::before {
-    content:""; position:absolute; top:0; left:0; right:0; height:3px;
-    background:linear-gradient(90deg,var(--orange-dk),var(--orange),var(--orange-lt));
-    border-radius:22px 22px 0 0;
-  }
-  .pf-modal-icon {
-    width:54px; height:54px; border-radius:50%;
-    background:rgba(220,38,38,.10);
-    margin:0 auto 14px;
-    display:flex; align-items:center; justify-content:center;
-  }
-  .pf-modal-icon svg { width:26px; height:26px; fill:none; stroke:var(--red); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-  .pf-modal-title { font-size:20px; font-weight:900; color:var(--navy); letter-spacing:-.2px; margin-bottom:8px; }
-  .pf-modal-text  { font-size:13.5px; font-weight:600; color:var(--ink2); line-height:1.55; margin-bottom:22px; }
-  .pf-modal-actions { display:flex; gap:10px; justify-content:center; }
-  .pf-mc {
-    height:46px; padding:0 22px; border-radius:999px;
-    border:2px solid var(--line); background:var(--bg);
-    color:var(--ink) !important; font-weight:900; font-size:12.5px;
-    letter-spacing:.06em; text-transform:uppercase;
-    cursor:pointer; font-family:inherit; transition:all .18s;
-  }
-  .pf-mc:hover { border-color:var(--navy); background:var(--navy); color:#fff !important; }
-  .pf-ml {
-    height:46px; padding:0 22px; border-radius:999px; border:0;
-    background:linear-gradient(135deg,var(--red),var(--red-dk));
-    color:#fff !important; font-weight:900; font-size:12.5px;
-    letter-spacing:.06em; text-transform:uppercase;
-    cursor:pointer; font-family:inherit;
-    box-shadow:0 6px 18px rgba(220,38,38,.35);
-    transition:all .18s;
-  }
-  .pf-ml:hover { transform:translateY(-2px); box-shadow:0 10px 26px rgba(220,38,38,.50); filter:brightness(1.06); }
-  .pf-ml:active { transform:scale(.98); }
-
-  @media(max-width:480px){
-    .pf-hero { height:190px; }
-    .pf-hero-title { font-size:18px; }
-    .pf-phone { font-size:20px; }
-    .pf-stat-val { font-size:18px; }
-    .pf-tile-name { font-size:11.5px; }
-  }
+@media (min-width:640px){
+  .pf{padding:32px 0;}
+  .pf-app{min-height:0;border-radius:2.5rem;box-shadow:0 25px 50px -12px rgba(0,0,0,.25);}
+  .pf-top{border-radius:2.5rem;}
+}
+@media (max-width:359px){
+  .pf-top{padding-left:20px;padding-right:20px;}
+  .pf-main{padding:0 14px;}
+  .pf-card{padding:16px;}
+  .pf-stat b{font-size:16px;}
+  .pf-tile{padding:14px;}
+}
+@media (prefers-reduced-motion: reduce){
+  .pf-sheet,.pf-sheet-box,.pf-tile,.pf-amt > b{transition:none;}
+}
 </style>
 
-<div class="pf-outer">
+<!-- Icons: Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0) Copyright 2023 Fonticons, Inc. -->
+<div class="pf">
+  <div class="pf-app">
 
-  <!-- ══ HERO ══ -->
-  <div class="pf-hero">
-    <div class="pf-badge">
-      <div class="pf-badge-dot">OFL</div>
-      <span class="pf-badge-txt">Overseas FilipinoLoan</span>
-    </div>
+    <!-- ── Header ── -->
+    <header class="pf-top">
+      <div class="pf-glow pf-glow-a"></div>
+      <div class="pf-glow pf-glow-b"></div>
+      <div class="pf-bar">
+        <a class="pf-back pf-glass-dark" href="{% url 'dashboard' %}" aria-label="Back to dashboard"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></a>
+        <span class="pf-bar-title">My Profile</span>
+        <span></span>
+      </div>
 
-    <a class="pf-back" href="{% url 'dashboard' %}">
-      <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
-      Back
-    </a>
-
-    <div class="pf-hero-title">My Profile</div>
-    <div class="pf-hero-sub">Manage your account</div>
-
-    <div class="pf-avatar-wrap">
-      <form method="post" enctype="multipart/form-data" id="pfPhotoForm" action="{% url 'profile' %}" style="display:none;">
+      <form method="post" enctype="multipart/form-data" id="pfPhotoForm" action="{% url 'profile' %}" class="pf-avatar" aria-label="Profile photo">
         {% csrf_token %}
-        <input type="file" id="pfPhotoInput" name="profile_photo" accept="image/*">
-      </form>
-      <div class="pf-avatar-zone" id="pfAvatarZone">
-        <div class="pf-avatar-ring">
-          <div class="pf-avatar-inner" id="pfAvatarInner">
-            {% if selfie_url %}
-              <img src="{{ selfie_url }}" alt="Profile photo" id="pfAvatarImg">
-            {% else %}
-              <svg viewBox="0 0 24 24" id="pfAvatarSvg">
-                <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.42 0-8 2-8 4.5V21h16v-2.5C20 16 16.42 14 12 14z"/>
-              </svg>
-            {% endif %}
+        <div class="pf-ring">
+          <div class="pf-photo" id="pfPhoto">
+            {% if selfie_url %}<img src="{{ selfie_url }}" alt="Profile photo" id="pfAvatarImg">{% else %}<svg viewBox="0 0 448 512" aria-hidden="true"><path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304H178.3z"/></svg>{% endif %}
+            <div class="pf-busy" aria-hidden="true"><i class="pf-spin"></i></div>
           </div>
         </div>
-        <label for="pfPhotoInput" class="pf-cam-btn" title="Change photo">
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-            <circle cx="12" cy="13" r="4"/>
-          </svg>
+        <label class="pf-cam" title="Change photo" aria-label="Change photo"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M149.1 64.8L138.7 96H64C28.7 96 0 124.7 0 160V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V160c0-35.3-28.7-64-64-64H373.3L362.9 64.8C356.4 45.2 338.1 32 317.4 32H194.6c-20.7 0-39 13.2-45.5 32.8zM256 192a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"/></svg>
+          <input class="pf-file" type="file" id="pfPhotoInput" name="profile_photo" accept="image/*">
         </label>
+      </form>
+
+      <div class="pf-who">
+        <h1>{{ full_name|default:"APEX Client" }}</h1>
+        <p>{{ request.user.phone }}</p>
+        <span class="pf-status status-{{ status_tone }}" title="{{ status_display }}">{{ status_display }}</span>
       </div>
-    </div>
+    </header>
+
+    <main class="pf-main">
+
+      <!-- ── Balance + limit ── -->
+      <section class="pf-card pf-stats" aria-label="Account summary">
+        <div class="pf-stat">
+          <span>Balance</span>
+          <div class="pf-amt" id="pfAmt">
+            <b class="pf-amt-mask" aria-hidden="true">₱ ••••••</b>
+            <b class="pf-amt-real">₱{{ request.user.balance|default:0|floatformat:2|intcomma }}</b>
+          </div>
+          <button type="button" class="pf-eye" id="pfEye" aria-pressed="false" aria-controls="pfAmt"><svg viewBox="0 0 640 512" class="i-hidden" aria-hidden="true"><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zm151 118.3C226 97.7 269.5 80 320 80c65.2 0 118.8 29.6 159.9 67.7C518.4 183.5 545 226 558.6 256c-12.6 28-36.6 66.8-70.9 100.9l-53.8-42.2c9.1-17.6 14.2-37.5 14.2-58.7c0-70.7-57.3-128-128-128c-32.2 0-61.7 11.9-84.2 31.5l-46.1-36.1zM394.9 284.2l-81.5-63.9c4.2-8.5 6.6-18.2 6.6-28.3c0-5.5-.7-10.9-2-16c.7 0 1.3 0 2 0c44.2 0 80 35.8 80 80c0 9.9-1.8 19.4-5.1 28.2zm9.4 130.3C378.8 425.4 350.7 432 320 432c-65.2 0-118.8-29.6-159.9-67.7C121.6 328.5 95 286 81.4 256c8.3-18.4 21.5-41.5 39.4-64.8L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5l-41.9-33zM192 256c0 70.7 57.3 128 128 128c13.3 0 26.1-2 38.2-5.8L302 334c-23.5-5.4-43.1-21.2-53.7-42.3l-56.1-44.2c-.2 2.8-.3 5.6-.3 8.5z"/></svg><svg viewBox="0 0 576 512" class="i-shown" aria-hidden="true"><path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"/></svg><span id="pfEyeTxt">Show</span></button>
+        </div>
+        <i class="pf-div" aria-hidden="true"></i>
+        <div class="pf-stat r">
+          <span>Loan Limit</span>
+          <b>₱5,000,000</b>
+          <small>Max eligible</small>
+        </div>
+      </section>
+
+      {% if request.user.status_message %}
+      <div class="pf-alert" id="pfAlert" role="status" data-msg="{{ request.user.status_message }}">{{ request.user.status_message }}</div>
+      {% endif %}
+
+      <!-- ── Account ── -->
+      <section class="pf-sec">
+        <h2>Account</h2>
+        <div class="pf-grid">
+          <a class="pf-tile" href="{% url 'credit_score' %}"><span class="pf-tile-ico"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M160 80c0-26.5 21.5-48 48-48h32c26.5 0 48 21.5 48 48V432c0 26.5-21.5 48-48 48H208c-26.5 0-48-21.5-48-48V80zM0 272c0-26.5 21.5-48 48-48H80c26.5 0 48 21.5 48 48V432c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V272zM368 96h32c26.5 0 48 21.5 48 48V432c0 26.5-21.5 48-48 48H368c-26.5 0-48-21.5-48-48V144c0-26.5 21.5-48 48-48z"/></svg></span><span class="pf-tile-foot"><b>Credit Score</b><svg viewBox="0 0 320 512" aria-hidden="true"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></span></a>
+          <a class="pf-tile is-accent" href="{% url 'loan_apply' %}"><span class="pf-tile-ico"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M0 64C0 28.7 28.7 0 64 0H224V128c0 17.7 14.3 32 32 32H384V285.7l-86.8 86.8c-10.3 10.3-17.5 23.1-21 37.2l-18.7 74.9c-2.3 9.2-1.8 18.8 1.3 27.5H64c-35.3 0-64-28.7-64-64V64zm384 64H256V0L384 128zM549.8 235.7l14.4 14.4c15.6 15.6 15.6 40.9 0 56.6l-29.4 29.4-71-71 29.4-29.4c15.6-15.6 40.9-15.6 56.6 0zM311.9 417L441.1 287.8l71 71L382.9 487.9c-4.1 4.1-9.2 7-14.9 8.4l-60.1 15c-5.5 1.4-11.2-.2-15.2-4.2s-5.6-9.7-4.2-15.2l15-60.1c1.4-5.6 4.3-10.8 8.4-14.9z"/></svg></span><span class="pf-tile-foot"><b>Loan Application</b><svg viewBox="0 0 320 512" aria-hidden="true"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></span></a>
+          <a class="pf-tile" href="{% url 'transactions' %}"><span class="pf-tile-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M32 96l320 0V32c0-12.9 7.8-24.6 19.8-29.6s25.7-2.2 34.9 6.9l96 96c6 6 9.4 14.1 9.4 22.6s-3.4 16.6-9.4 22.6l-96 96c-9.2 9.2-22.9 11.9-34.9 6.9s-19.8-16.6-19.8-29.6V160L32 160c-17.7 0-32-14.3-32-32s14.3-32 32-32zM480 352c17.7 0 32 14.3 32 32s-14.3 32-32 32H160v64c0 12.9-7.8 24.6-19.8 29.6s-25.7 2.2-34.9-6.9l-96-96c-6-6-9.4-14.1-9.4-22.6s3.4-16.6 9.4-22.6l96-96c9.2-9.2 22.9-11.9 34.9-6.9s19.8 16.6 19.8 29.6l0 64H480z"/></svg></span><span class="pf-tile-foot"><b>Transactions</b><svg viewBox="0 0 320 512" aria-hidden="true"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></span></a>
+          <a class="pf-tile" href="{% url 'payment_method' %}"><span class="pf-tile-ico"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M64 32C28.7 32 0 60.7 0 96v32H576V96c0-35.3-28.7-64-64-64H64zM576 224H0V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V224zM112 352h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H112c-8.8 0-16-7.2-16-16s7.2-16 16-16zm112 16c0-8.8 7.2-16 16-16H368c8.8 0 16 7.2 16 16s-7.2 16-16 16H240c-8.8 0-16-7.2-16-16z"/></svg></span><span class="pf-tile-foot"><b>Payment Method</b><svg viewBox="0 0 320 512" aria-hidden="true"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></span></a>
+        </div>
+      </section>
+
+      <!-- ── Legal & schedule ── -->
+      <section class="pf-sec">
+        <h2>Legal &amp; Schedule</h2>
+        <div class="pf-grid">
+          <a class="pf-tile" href="{% url 'agreement' %}"><span class="pf-tile-ico"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM80 64h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H80c-8.8 0-16-7.2-16-16s7.2-16 16-16zm0 64h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H80c-8.8 0-16-7.2-16-16s7.2-16 16-16zm54.2 253.8c-6.1 20.3-24.8 34.2-46 34.2H80c-8.8 0-16-7.2-16-16s7.2-16 16-16h8.2c7.1 0 13.3-4.6 15.3-11.4l14.9-49.5c3.4-11.3 13.8-19.1 25.6-19.1s22.2 7.7 25.6 19.1l11.6 38.6c7.4-6.2 16.8-9.7 26.8-9.7c15.9 0 30.4 9 37.5 23.2l4.4 8.8H304c8.8 0 16 7.2 16 16s-7.2 16-16 16H240c-6.1 0-11.6-3.4-14.3-8.8l-8.8-17.7c-1.7-3.4-5.1-5.5-8.8-5.5s-7.2 2.1-8.8 5.5l-8.8 17.7c-2.9 5.9-9.2 9.4-15.7 8.8s-12.1-5.1-13.9-11.3L144 349l-9.8 32.8z"/></svg></span><span class="pf-tile-foot"><b>Agreement</b><svg viewBox="0 0 320 512" aria-hidden="true"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></span></a>
+          <a class="pf-tile" href="{% url 'payment_schedule' %}"><span class="pf-tile-ico"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z"/></svg></span><span class="pf-tile-foot"><b>Schedule</b><svg viewBox="0 0 320 512" aria-hidden="true"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></span></a>
+        </div>
+      </section>
+
+      <!-- ── Security & session ── -->
+      <section class="pf-sec">
+        <h2>Security &amp; Help</h2>
+        <div class="pf-list">
+          <a class="pf-item" href="{% url 'change_password' %}"><span class="pf-tile-ico"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z"/></svg></span><div><b>Change Password</b><small>Keep your account safe</small></div><svg viewBox="0 0 320 512" aria-hidden="true"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></a>
+          <a class="pf-item" href="{% url 'contact' %}"><span class="pf-tile-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 48C141.1 48 48 141.1 48 256v40c0 13.3-10.7 24-24 24s-24-10.7-24-24V256C0 114.6 114.6 0 256 0S512 114.6 512 256V400.1c0 48.6-39.4 88-88.1 88L313.6 488c-8.3 14.3-23.8 24-41.6 24H240c-26.5 0-48-21.5-48-48s21.5-48 48-48h32c17.8 0 33.3 9.7 41.6 24l110.4 .1c22.1 0 40-17.9 40-40V256c0-114.9-93.1-208-208-208zM144 208h16c17.7 0 32 14.3 32 32V352c0 17.7-14.3 32-32 32H144c-35.3 0-64-28.7-64-64V272c0-35.3 28.7-64 64-64zm224 0c35.3 0 64 28.7 64 64v48c0 35.3-28.7 64-64 64H352c-17.7 0-32-14.3-32-32V240c0-17.7 14.3-32 32-32h16z"/></svg></span><div><b>Contact Us</b><small>We're here to help</small></div><svg viewBox="0 0 320 512" aria-hidden="true"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></a>
+          <button type="button" class="pf-item is-out" id="pfLogoutBtn" aria-haspopup="dialog" aria-controls="pfModal"><span class="pf-tile-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/></svg></span><div><b>Sign Out</b><small>Securely end your session</small></div><svg viewBox="0 0 320 512" aria-hidden="true"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></button>
+        </div>
+      </section>
+
+      <footer class="pf-foot">
+        <p><i></i> APEX <span>•</span> <b>v2.2.1</b></p>
+        <p>© 2026 All rights reserved</p>
+      </footer>
+    </main>
   </div>
+</div>
 
-  <!-- ══ BODY ══ -->
-  <div class="pf-body">
-
-    <!-- Identity -->
-    <div class="pf-id-card">
-      <div class="pf-phone">{{ request.user.phone }}</div>
-      <div class="pf-acct-label">Account &middot; {{ request.user.phone }}</div>
-
-      {% with color_key=request.user.account_status|default:"ACTIVE"|upper display_text=request.user.dashboard_status_label|default:request.user.account_status|default:"ACTIVE" %}
-        <span class="pf-sbadge
-          {% if color_key == 'ACTIVE' or color_key == 'APPROVED' or color_key == 'LOAN_PAID' or color_key == 'WITHDRAWAL_SUCCESSFUL' or color_key == 'ACCOUNT_UPDATED' %}pf-sbadge-active
-          {% elif color_key == 'APP_MAINTENANCE' or color_key == 'INVALID_DETAIL' or color_key == 'RENEW_DOCUMENT_REQUIRED' %}pf-sbadge-warn
-          {% else %}pf-sbadge-danger{% endif %}">
-          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-          {{ display_text }}
-        </span>
-      {% endwith %}
-    </div>
-
-    <!-- Stats -->
-    <div class="pf-stats">
-      <div class="pf-stat">
-        <div class="pf-stat-lbl">Balance</div>
-        <div class="pf-stat-val"><span class="peso">&#8369;</span>&nbsp;{{ request.user.balance|default:"0.00" }}</div>
-        <div class="pf-stat-sub ok">Available</div>
-      </div>
-      <div class="pf-stat-div"></div>
-      <div class="pf-stat right">
-        <div class="pf-stat-lbl">Loan Limit</div>
-        <div class="pf-stat-val">&#8369;5,000,000</div>
-        <div class="pf-stat-sub">Max eligible</div>
-      </div>
-    </div>
-
-    <!-- Status alert -->
-    <div id="pfAlert" style="display:none;"
-         data-msg="{{ request.user.status_message|default:''|escapejs }}"
-         {% if request.user.status_message %}data-lock="1"{% endif %}></div>
-
-    <!-- ══ ACCOUNT TILES ══ -->
-    <div class="pf-sec-lbl">Account</div>
-    <div class="pf-tile-grid">
-
-      <a class="pf-tile t-navy" href="/credit-score/">
-        <div class="pf-tile-ico">
-          <svg viewBox="0 0 24 24"><path fill="#fff" d="M4 20V14a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v6H4zm6 0V10a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v10h-4zm6 0V6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v14h-4z"/></svg>
-        </div>
-        <div class="pf-tile-foot">
-          <span class="pf-tile-name">Credit Score</span>
-          <div class="pf-tile-go"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
-        </div>
-      </a>
-
-      <a class="pf-tile t-orange" href="/loan-apply/">
-        <div class="pf-tile-ico">
-          <svg viewBox="0 0 24 24"><path fill="#fff" d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm-5.5 11.5-4-4 1.4-1.4 2.6 2.6 5.6-5.6 1.4 1.4-7 7z"/></svg>
-        </div>
-        <div class="pf-tile-foot">
-          <span class="pf-tile-name">Loan Application</span>
-          <div class="pf-tile-go"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
-        </div>
-      </a>
-
-      <a class="pf-tile t-teal" href="/transactions/">
-        <div class="pf-tile-ico">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M7 16V4m0 0L3 8m4-4 4 4M17 8v12m0 0 4-4m-4 4-4-4"/>
-          </svg>
-        </div>
-        <div class="pf-tile-foot">
-          <span class="pf-tile-name">Transactions</span>
-          <div class="pf-tile-go"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
-        </div>
-      </a>
-
-      <a class="pf-tile t-green" href="{% url 'payment_method' %}">
-        <div class="pf-tile-ico">
-          <svg viewBox="0 0 24 24"><path fill="#fff" d="M22 8a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V8zm-2 3H4V8h16v3z"/></svg>
-        </div>
-        <div class="pf-tile-foot">
-          <span class="pf-tile-name">Payment Method</span>
-          <div class="pf-tile-go"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
-        </div>
-      </a>
-
-    </div>
-
-    <!-- ══ LEGAL TILES ══ -->
-    <div class="pf-sec-lbl">Legal &amp; Schedule</div>
-    <div class="pf-legal-grid">
-
-      <a class="pf-tile t-indigo" href="{% url 'agreement' %}">
-        <div class="pf-tile-ico">
-          <svg viewBox="0 0 24 24"><path fill="#fff" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm1 6V3.5L18.5 8H15zm-7 5h8v1.5H8V13zm0 3h5v1.5H8V16z"/></svg>
-        </div>
-        <div class="pf-tile-foot">
-          <span class="pf-tile-name">Agreement</span>
-          <div class="pf-tile-go"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
-        </div>
-      </a>
-
-      <a class="pf-tile t-amber" href="/payment-schedule/">
-        <div class="pf-tile-ico">
-          <svg viewBox="0 0 24 24"><path fill="#fff" d="M19 3h-1V1h-2v2H8V1H6v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 16H5V8h14v11zM7 10h2v2H7zm0 4h2v2H7zm4-4h2v2h-2zm0 4h2v2h-2zm4-4h2v2h-2z"/></svg>
-        </div>
-        <div class="pf-tile-foot">
-          <span class="pf-tile-name">Schedule</span>
-          <div class="pf-tile-go"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></div>
-        </div>
-      </a>
-
-    </div>
-
-    <!-- ══ SIGN OUT ══ -->
-    <div class="pf-sec-lbl">Session</div>
-    <button type="button" class="pf-signout" id="pfLogoutBtn">
-      <div class="pf-signout-ico-wrap">
-        <svg class="pf-signout-ico" viewBox="0 0 24 24">
-          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
-          <polyline points="16 17 21 12 16 7"/>
-          <line x1="21" y1="12" x2="9" y2="12"/>
-        </svg>
-      </div>
-      <div class="pf-signout-text">
-        <span class="pf-signout-lbl">Sign Out</span>
-        <span class="pf-signout-sub">Securely end your session</span>
-      </div>
-      <svg class="pf-signout-chevron" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
-    </button>
-
-  </div><!-- /.pf-body -->
-
-</div><!-- /.pf-outer -->
-
-<!-- ══ LOGOUT MODAL ══ -->
-<div id="pfModal" class="pf-modal" aria-hidden="true">
-  <div class="pf-modal-box" role="dialog" aria-modal="true" aria-label="Confirm Logout">
-    <div class="pf-modal-icon">
-      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
-    </div>
-    <div class="pf-modal-title">Sign Out</div>
-    <div class="pf-modal-text">Are you sure you want to securely exit your OFL account?</div>
-    <div class="pf-modal-actions">
-      <button type="button" class="pf-mc" id="pfModalCancel">Cancel</button>
-      <form method="post" action="/logout/" style="margin:0;">
+<!-- ── Sign out confirmation ── -->
+<div id="pfModal" class="pf-sheet" aria-hidden="true">
+  <div class="pf-sheet-box" role="dialog" aria-modal="true" aria-labelledby="pfModalTitle">
+    <div class="pf-handle"></div>
+    <div class="pf-sheet-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/></svg></div>
+    <h3 id="pfModalTitle">Sign Out</h3>
+    <p>Are you sure you want to securely exit your APEX account?</p>
+    <div class="pf-sheet-acts">
+      <button type="button" class="pf-btn pf-btn-line" id="pfModalCancel">Cancel</button>
+      <form method="post" action="{% url 'logout' %}" data-splash>
         {% csrf_token %}
-        <button type="submit" class="pf-ml">Sign Out</button>
+        <button type="submit" class="pf-btn pf-btn-red" id="pfModalOut">Sign Out</button>
       </form>
     </div>
   </div>
@@ -570,59 +291,49 @@
 
 <script>
 (function(){
-  /* ── Profile photo upload ── */
-  var photoInput = document.getElementById("pfPhotoInput");
-  var photoForm  = document.getElementById("pfPhotoForm");
-  var avatarInner = document.getElementById("pfAvatarInner");
-  var avatarZone  = document.getElementById("pfAvatarZone");
+'use strict';
+function $(id){ return document.getElementById(id); }
 
-  if(photoInput && photoForm){
-    photoInput.addEventListener("change", function(){
-      if(!this.files || !this.files[0]) return;
-      var file = this.files[0];
+/* ── Photo: preview at once, then upload (the server makes it small) ── */
+var input=$('pfPhotoInput'), form=$('pfPhotoForm'), photo=$('pfPhoto');
+input.addEventListener('change',function(){
+  var f=input.files&&input.files[0];
+  if(!f||!/^image\//.test(f.type)) return;
+  var url=URL.createObjectURL(f), img=photo.querySelector('img');
+  if(!img){ img=document.createElement('img'); img.alt='Profile photo'; photo.querySelector('svg')&&photo.querySelector('svg').remove(); photo.insertBefore(img,photo.firstChild); }
+  img.src=url;
+  form.classList.add('is-busy');
+  form.submit();
+});
+window.addEventListener('pageshow',function(e){ if(e.persisted) form.classList.remove('is-busy'); });
 
-      /* Live preview before upload */
-      var reader = new FileReader();
-      reader.onload = function(e){
-        if(avatarInner){
-          avatarInner.innerHTML = '<img src="' + e.target.result + '" alt="Profile" style="width:100%;height:100%;object-fit:cover;">';
-        }
-        if(avatarZone) avatarZone.classList.add("pf-cam-uploading");
-      };
-      reader.readAsDataURL(file);
+/* ── Balance show / hide ── */
+var amt=$('pfAmt'), eye=$('pfEye'), eyeTxt=$('pfEyeTxt');
+eye.addEventListener('click',function(){
+  var show=!amt.classList.contains('is-shown');
+  amt.classList.toggle('is-shown',show); eye.classList.toggle('on',show);
+  eye.setAttribute('aria-pressed',String(show)); eyeTxt.textContent=show?'Hide':'Show';
+});
 
-      /* Submit */
-      photoForm.submit();
-    });
-  }
-})();
+/* ── Message from our team ── */
+var al=$('pfAlert');
+if(al){
+  var m=(al.getAttribute('data-msg')||'').toLowerCase();
+  al.classList.add(/approved|success|active/.test(m)?'is-success':(/maintenance|invalid|warning/.test(m)?'is-warn':'is-danger'));
+}
 
-(function(){
-  var logoutBtn = document.getElementById("pfLogoutBtn");
-  var modal     = document.getElementById("pfModal");
-  var cancel    = document.getElementById("pfModalCancel");
-
-  function openModal(e){ if(e) e.preventDefault(); modal.classList.add("show"); modal.setAttribute("aria-hidden","false"); }
-  function closeModal(){ modal.classList.remove("show"); modal.setAttribute("aria-hidden","true"); }
-
-  if(logoutBtn) logoutBtn.addEventListener("click", openModal);
-  if(cancel)    cancel.addEventListener("click", closeModal);
-  if(modal)     modal.addEventListener("click", function(e){ if(e.target===modal) closeModal(); });
-  document.addEventListener("keydown", function(e){ if(e.key==="Escape") closeModal(); });
-
-  var alertEl = document.getElementById("pfAlert");
-  if(alertEl){
-    var msg = (alertEl.dataset.msg||"").trim();
-    if(msg){
-      alertEl.textContent = msg;
-      alertEl.style.display = "block";
-      alertEl.className = "pf-alert";
-      var m = msg.toLowerCase();
-      if(m.includes("approved")||m.includes("success")||m.includes("active"))   alertEl.classList.add("pf-alert-success");
-      else if(m.includes("maintenance")||m.includes("invalid")||m.includes("warning")) alertEl.classList.add("pf-alert-warn");
-      else alertEl.classList.add("pf-alert-danger");
-    }
-  }
+/* ── Sign out sheet ── */
+var modal=$('pfModal'), opener=$('pfLogoutBtn'), openedAt=0;
+function open(){ openedAt=performance.now(); modal.classList.add('is-open'); modal.setAttribute('aria-hidden','false'); setTimeout(function(){ $('pfModalCancel').focus({preventScroll:true}); },60); }
+function close(){
+  if(!modal.classList.contains('is-open')||performance.now()-openedAt<350) return;   /* the second tap of a double tap */
+  modal.classList.remove('is-open'); modal.setAttribute('aria-hidden','true'); opener.focus({preventScroll:true});
+}
+opener.addEventListener('click',open);
+$('pfModalCancel').addEventListener('click',close);
+modal.addEventListener('click',function(e){ if(e.target===modal) close(); });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') close(); });
+$('pfModalOut').closest('form').addEventListener('submit',function(e){ if(performance.now()-openedAt<350) e.preventDefault(); });
 })();
 </script>
 {% endblock %}

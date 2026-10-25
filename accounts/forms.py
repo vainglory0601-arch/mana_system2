@@ -159,6 +159,10 @@ class PaymentMethodForm(forms.ModelForm):
 
     def clean(self):
         cleaned = super().clean()
+        if self.errors:
+            # A field is already invalid (e.g. too long): it is missing from cleaned_data,
+            # so the checks below would wrongly say it was left empty.
+            return cleaned
 
         bank_name = (cleaned.get("bank_name") or "").strip()
         bank_account = (cleaned.get("bank_account") or "").strip()

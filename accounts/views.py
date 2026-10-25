@@ -35,12 +35,11 @@ from django.views.decorators.http import require_POST, require_GET
 
 from dateutil.relativedelta import relativedelta
 
-from .models import SystemSetting, User, LoanApplication, LoanConfig, PaymentMethod, WithdrawalRequest
+from .models import SystemSetting, User, LoanApplication, LoanConfig, PaymentMethod, WithdrawalRequest, loan_rate, LOAN_TERMS
 from .forms import PaymentMethodForm, StaffUserForm, StaffPaymentMethodForm
 from .device_lock import check_device, set_device_cookie
 
 # Constants
-INTEREST_RATE_MONTHLY = Decimal("0.005")  # 0.5%
 
 # ======================
 # HELPER FUNCTIONS
@@ -315,35 +314,141 @@ def logout_view(request):
 # ======================
 # CLIENT DASHBOARD VIEWS
 # ======================
+# Dashboard badge colour per account status (everything not listed is red)
+_STATUS_ACTIVE = {"ACTIVE", "ACCOUNT_UPDATED", "APPROVED", "LOAN_PAID", "WITHDRAWAL_SUCCESSFUL"}
+_STATUS_WARN = {
+    "PENDING", "APP_MAINTENANCE", "INVALID_DETAIL", "RENEW_DOCUMENT_REQUIRED", "RENEW_OTP_CODE",
+    "RENEW_DOCUMENT_AND_OTP", "LOW_CREDIT", "TAX_VERIFICATION",
+}
+_LOAN_TONE = {"APPROVED": "ok", "PENDING": "warn", "REVIEW": "warn", "REJECTED": "bad"}
+
+
+_RING_C = Decimal("219.91")   # circumference of the dashboard ring (r = 35)
+
+
+def _next_payment(user, last_loan):
+    """What the dashboard ring shows. Same due dates as the payment schedule page: the first is
+    15 days after approval, then one a month. The app does not record repayments, so the ring
+    counts down to the next due date; it never claims a payment was made."""
+    loan = (
+        LoanApplication.objects.filter(user=user, status="APPROVED")
+        .order_by("-approved_at", "-id").first()
+    )
+    if not loan:
+        waiting = bool(last_loan and (last_loan.status or "").upper() in ("PENDING", "REVIEW"))
+        return {"state": "waiting" if waiting else "none"}
+    terms = int(loan.term_months or 0)
+    start = loan.approved_at or loan.created_at or timezone.now()
+    first_due = timezone.localtime(start + timedelta(days=15)).date()
+    today = timezone.localdate()
+    dues = [first_due + relativedelta(months=i) for i in range(terms)]
+    nxt = next((i for i, d in enumerate(dues) if d >= today), None)
+    if nxt is None:
+        return {"state": "done", "last_due": dues[-1] if dues else None}
+    monthly = loan.monthly_repayment
+    if monthly is None and loan.amount and terms:
+        amount = Decimal(str(loan.amount))
+        rate = Decimal(str(loan.interest_rate_monthly)) if loan.interest_rate_monthly is not None else loan_rate()
+        monthly = (amount + amount * rate * terms) / terms
+    prev = dues[nxt - 1] if nxt else timezone.localtime(start).date()
+    span = max((dues[nxt] - prev).days, 1)
+    days_left = (dues[nxt] - today).days
+    frac = min(max(Decimal(span - days_left) / span, Decimal("0.03")), Decimal(1))
+    return {
+        "state": "active", "due": dues[nxt], "n": nxt + 1, "terms": terms, "monthly": monthly,
+        "days_left": days_left, "dash": (frac * _RING_C).quantize(Decimal("0.1")),
+    }
+
+
+# Dashboard loan categories: one product (same rate and limits), shown by purpose with a worked
+# example; the card opens Quick Loan with that amount and term filled in.
+_CATEGORIES = [
+    ("personal", "Personal", "Medical bills, school fees, home needs", 100000, 12),
+    ("ofw", "OFW", "Placement, travel and family back home", 200000, 24),
+    ("salary", "Salary", "Bridge the gap until payday", 80000, 6),
+    ("business", "Business", "Stock, equipment, a new store", 500000, 36),
+]
+
+
+def _loan_categories():
+    rate = loan_rate()
+    out = []
+    for key, name, use, amount, months in _CATEGORIES:
+        a = Decimal(amount)
+        out.append({"key": key, "name": name, "use": use, "amount": a, "months": months,
+                    "monthly": (a + a * rate * months) / months})
+    return out
+
+
+_WD_TONE = {"paid": "ok", "rejected": "bad", "withdrawal_fail": "bad"}
+
+
+def _loan_events(user, limit=8):
+    """Real events for the dashboard timeline, newest first: applications, approvals, withdrawals."""
+    events = []
+    for loan in (LoanApplication.objects.filter(user=user).exclude(status="DRAFT")
+                 .only("id", "status", "amount", "term_months", "created_at", "approved_at").order_by("-id")[:limit]):
+        st = (loan.status or "").upper()
+        events.append({
+            "kind": "loan", "icon": "sent", "title": "Loan application", "at": loan.created_at,
+            "sub": f"{loan.term_months} months" if loan.term_months else "", "amount": loan.amount,
+            "tag": loan.get_status_display(), "tone": _LOAN_TONE.get(st, ""),
+        })
+        if loan.approved_at and st in ("APPROVED", "PAID"):
+            events.append({
+                "kind": "loan", "icon": "ok", "title": "Loan approved", "at": loan.approved_at,
+                "sub": "Credited to your balance", "amount": loan.amount, "tag": "", "tone": "ok",
+            })
+    for w in WithdrawalRequest.objects.filter(user=user).order_by("-id")[:limit]:
+        tone = "warn" if w.status not in _WD_TONE else _WD_TONE[w.status]
+        events.append({
+            "kind": "wd", "icon": "wd", "title": "Withdrawal", "at": w.created_at,
+            "sub": "Refunded to your balance" if w.refunded else "", "amount": w.amount,
+            "tag": "Refunded" if w.refunded else w.get_status_display(), "tone": "ok" if w.refunded else tone,
+        })
+    events = [e for e in events if e["at"]]
+    events.sort(key=lambda e: e["at"], reverse=True)
+    return events[:limit]
+
+
+def _dashboard_status(user):
+    """(key, label, tone) for the account status badge."""
+    key = (getattr(user, "account_status", "") or "ACTIVE").strip().upper()
+    label = (getattr(user, "dashboard_status_label", "") or "").strip()
+    if not label:
+        label = "In Review" if key == "PENDING" else dict(User.ACCOUNT_STATUS_CHOICES).get(key, key.replace("_", " "))
+        if label.isupper():
+            label = label.title()
+    tone = "active" if key in _STATUS_ACTIVE else "warn" if key in _STATUS_WARN else "danger"
+    return key, label, tone
+
+
 @login_required(login_url="login")
 def dashboard_view(request):
-    """Optimized dashboard with caching"""
-    cache_key = f"dashboard_{request.user.id}"
-    cached_data = cache.get(cache_key)
-    
-    if cached_data:
-        return render(request, "dashboard.html", cached_data)
+    """Client dashboard. Not cached: the cache is per worker process (LocMem), so clearing it
+    only reached one worker and users saw loans and the bell dot flicker between reloads.
+    The two small queries below are cheap."""
+    user = request.user
 
-    # ✅ ត្រឹមត្រូវ - ដក select_related ចោលព្រោះមិនចាំបាច់ (filter by request.user រួច)
     last_loan = (
         LoanApplication.objects
-        .filter(user=request.user)
+        .filter(user=user)
         .exclude(status__in=["REJECTED", "DRAFT"])
-        .only('id', 'selfie_with_id', 'status', 'created_at', 'full_name')
+        .only('id', 'selfie_with_id', 'status', 'created_at', 'full_name', 'amount', 'term_months')
         .order_by("-id")
         .first()
     )
 
     selfie_url = None
-    if request.user.profile_photo:
+    if user.profile_photo:
         try:
-            selfie_url = request.user.profile_photo.url
+            selfie_url = user.profile_photo.url
         except Exception:
             selfie_url = None
     if not selfie_url:
         # Mirror profile view: find latest loan that actually has a selfie photo
         selfie_loan = (
-            request.user.loan_applications
+            user.loan_applications
             .filter(selfie_with_id__isnull=False)
             .exclude(selfie_with_id="")
             .order_by("-id")
@@ -355,38 +460,35 @@ def dashboard_view(request):
             except Exception:
                 selfie_url = None
 
-    notif_msg = (getattr(request.user, "notification_message", "") or "").strip()
-    success_msg_d = (getattr(request.user, "success_message", "") or "").strip()
-    notif_is_read = getattr(request.user, "notification_is_read", True)
-    success_is_read = getattr(request.user, "success_is_read", True)
     notif_count = 0
-    if notif_msg and not notif_is_read:
+    if (getattr(user, "notification_message", "") or "").strip() and not getattr(user, "notification_is_read", True):
         notif_count += 1
-    if success_msg_d and not success_is_read:
+    if (getattr(user, "success_message", "") or "").strip() and not getattr(user, "success_is_read", True):
         notif_count += 1
 
-    raw_status = (getattr(request.user, "account_status", "ACTIVE") or "ACTIVE").strip()
-    key = raw_status.upper()
-    label = (getattr(request.user, "dashboard_status_label", "") or "").strip()
-    if not label:
-        label = key
-    current_reference = SystemSetting.get_reference_number()
-    
+    key, label, tone = _dashboard_status(user)
+    raw_label = (getattr(user, "dashboard_status_label", "") or "").strip() or key
+    pay = _next_payment(user, last_loan)
+    events = _loan_events(user)
 
     context = {
         "selfie_url": selfie_url,
         "last_loan": last_loan,
         "notif_count": notif_count,
         "status_key": key,
-        "status_label": label,
+        "status_label": raw_label,
         "dash_status_key": key,
-        "dash_status_text": label,
-        "current_reference": current_reference,
+        "dash_status_text": raw_label,
+        "status_display": label,
+        "status_tone": tone,
+        "loan_tone": _LOAN_TONE.get(((last_loan.status if last_loan else "") or "").upper(), ""),
+        "current_reference": SystemSetting.get_reference_number(),
+        "pay": pay,
+        "events": events,
+        "categories": _loan_categories(),
+        "has_loan_events": any(e["kind"] == "loan" for e in events),
+        "has_wd_events": any(e["kind"] == "wd" for e in events),
     }
-    
-    # Cache 3 នាទី
-    cache.set(cache_key, context, 180)
-    
     return render(request, "dashboard.html", context)
 
 
@@ -428,12 +530,57 @@ def profile_view(request):
             except Exception:
                 photo_url = None
 
-    return render(request, "profile.html", {"selfie_url": photo_url})
+    status_key, status_label, status_tone = _dashboard_status(user)
+    full_name = (
+        LoanApplication.objects.filter(user=user).exclude(full_name="")
+        .order_by("-id").values_list("full_name", flat=True).first()
+    ) or ""
+    return render(request, "profile.html", {
+        "selfie_url": photo_url,
+        "full_name": full_name,
+        "status_display": status_label,
+        "status_tone": status_tone,
+    })
 
 
 @login_required(login_url="login")
 def credit_score_view(request):
-    return render(request, "credit_score.html")
+    user = request.user
+    score = user.credit_score if user.credit_score is not None else 100
+    score = max(0, min(int(score), 500))
+    # (upper bound, key, label, title, text) — same bands as the old page
+    tiers = [
+        (50, "critical", "Critical", "Critical Score",
+         "Your credit score is critically low. Immediate action is required to improve your financial standing."),
+        (100, "low", "Low", "Needs Improvement",
+         "Your credit score is at the starting point. Make on-time payments to start building your score."),
+        (250, "mid", "Building", "Building Credit",
+         "Good progress! Keep making regular payments to continue growing your credit score."),
+        (400, "good", "Good", "Good Standing",
+         "Your credit score is in good shape. You qualify for better loan terms and higher limits."),
+        (500, "top", "Excellent", "Excellent Credit",
+         "Outstanding! You have the highest credit rating and qualify for the best rates and maximum loan limits."),
+    ]
+    tier_index = next(i for i, t in enumerate(tiers) if score <= t[0])
+    lows = [0] + [t[0] + 1 for t in tiers[:-1]]
+    nxt = tiers[tier_index + 1] if tier_index + 1 < len(tiers) else None
+    loans = LoanApplication.objects.filter(user=user).exclude(status="DRAFT")
+    return render(request, "credit_score.html", {
+        "score": score,
+        "needle_deg": round(score / 500 * 180 - 90, 1),
+        "score_frac": round(score / 500, 4),
+        # each band of the gauge in score points (the arc has pathLength 500), 2 points of gap on each side
+        "tiers": [{"key": t[1], "label": t[2], "low": lows[i], "high": t[0], "on": i == tier_index, "past": i < tier_index,
+                   "dash": t[0] - (lows[i] - 1 if i else 0) - (2 if i else 0) - (2 if i < len(tiers) - 1 else 0),
+                   "dash_off": -((lows[i] - 1) + 2) if i else 0}
+                  for i, t in enumerate(tiers)],
+        "next_label": nxt[2] if nxt else "",
+        "points_to_next": (lows[tier_index + 1] - score) if nxt else 0,
+        "tier": {"key": tiers[tier_index][1], "label": tiers[tier_index][2], "title": tiers[tier_index][3], "text": tiers[tier_index][4]},
+        "loans_total": loans.count(),
+        "loans_approved": loans.filter(status="APPROVED").count(),
+        "withdrawals_paid": WithdrawalRequest.objects.filter(user=user, status="paid").count(),
+    })
 
 
 @login_required(login_url="login")
@@ -462,19 +609,39 @@ def payment_schedule_view(request):
         start = latest_loan.approved_at or latest_loan.created_at or timezone.now()
         first_due = start + timedelta(days=15)
 
+        today = timezone.localdate()
+        next_marked = False
         for i in range(int(latest_loan.term_months or 0)):
             due = first_due + relativedelta(months=i)
+            due_day = timezone.localtime(due).date() if timezone.is_aware(due) else due.date()
+            is_next = not next_marked and due_day >= today
+            next_marked = next_marked or is_next
             schedules.append({
                 "due_date": due.strftime("%d/%m/%Y"),
+                "due": due_day,
+                "is_next": is_next,
+                "is_past": due_day < today,
                 "loan_amount": latest_loan.amount,
                 "term_months": latest_loan.term_months,
                 "repayment": latest_loan.monthly_repayment,
                 "interest_rate": latest_loan.interest_rate_monthly,
             })
 
+    rate_pct = ""
+    total = None
+    if latest_loan:
+        rate = latest_loan.interest_rate_monthly
+        if rate is None:
+            rate = loan_rate()
+        rate_pct = format((Decimal(rate) * 100).normalize(), "f") + "%"
+        if latest_loan.monthly_repayment is not None and latest_loan.term_months:
+            total = latest_loan.monthly_repayment * int(latest_loan.term_months)
+
     return render(request, "payment_schedule.html", {
         "latest_loan": latest_loan,
         "schedules": schedules,
+        "rate_pct": rate_pct,
+        "total": total,
     })
 
 
@@ -495,31 +662,73 @@ def change_password_view(request):
             request.user.save()
             from django.contrib.auth import update_session_auth_hash
             update_session_auth_hash(request, request.user)
-            success = True
+            # Post/Redirect/Get: a refresh must not send the password again
+            request.session["pw_changed"] = True
+            return redirect("change_password")
+    else:
+        success = request.session.pop("pw_changed", False)
     return render(request, "change_password.html", {"error": error, "success": success})
 
 
 @login_required(login_url="login")
 def contact_view(request):
+    from django.core.validators import validate_email
+    from django.core.exceptions import ValidationError
     from .models import ContactMessage
-    sent = False
+    user = request.user
+    errors, values = {}, {}
     if request.method == "POST":
-        full_name = (request.POST.get("full_name") or "").strip()
-        email     = (request.POST.get("email")     or "").strip()
-        phone     = (request.POST.get("phone")     or "").strip()
-        subject   = (request.POST.get("subject")   or "").strip()
-        message   = (request.POST.get("message")   or "").strip()
-        if full_name and message:
-            ContactMessage.objects.create(
-                user=request.user,
-                full_name=full_name,
-                email=email,
-                phone=phone,
-                subject=subject,
-                message=message,
-            )
-            sent = True
-    return render(request, "contactus.html", {"sent": sent})
+        values = {k: (request.POST.get(k) or "").strip() for k in ("full_name", "email", "phone", "subject", "message")}
+        # browsers send textarea line breaks as CRLF; count and store them as one character, like the page does
+        values["message"] = values["message"].replace("\r\n", "\n").replace("\r", "\n")
+        if not values["full_name"]:
+            errors["full_name"] = "Please enter your full name."
+        elif len(values["full_name"]) > 120:
+            errors["full_name"] = "Name is too long (120 characters max)."
+        if not values["phone"]:
+            errors["phone"] = "Please enter your phone or WhatsApp number."
+        elif len(values["phone"]) > 40 or not _re.fullmatch(r"\+?[\d\s\-()]{7,}", values["phone"]) \
+                or not 7 <= len(_re.sub(r"\D", "", values["phone"])) <= 15:
+            errors["phone"] = "Please enter a valid phone number."
+        if not values["email"]:
+            errors["email"] = "Please enter your email so we can reply."
+        else:
+            try:
+                validate_email(values["email"])
+            except ValidationError:
+                errors["email"] = "Please enter a valid email address."
+            if len(values["email"]) > 254:
+                errors["email"] = "Please enter a valid email address."
+        if len(values["subject"]) > 200:
+            errors["subject"] = "Subject is too long (200 characters max)."
+        if not values["message"]:
+            errors["message"] = "Please write your message."
+        elif len(values["message"]) > 2000:
+            errors["message"] = "Message is too long (2000 characters max)."
+        if not errors:
+            # a double tap or a resend of the same message within 2 minutes is stored once
+            recent = ContactMessage.objects.filter(
+                user=user, subject=values["subject"], message=values["message"], created_at__gte=timezone.now() - timedelta(minutes=2)
+            ).exists()
+            if not recent:
+                ContactMessage.objects.create(user=user, **values)
+            # Post/Redirect/Get: a refresh must not send the message again
+            request.session["contact_sent"] = True
+            return redirect("contact")
+    sent = request.session.pop("contact_sent", False) if request.method == "GET" else False
+    if not values:
+        name = (
+            LoanApplication.objects.filter(user=user).exclude(full_name="")
+            .order_by("-id").values_list("full_name", flat=True).first()
+        ) or ""
+        last = ContactMessage.objects.filter(user=user).exclude(email="").order_by("-created_at").first()
+        values = {"full_name": name, "phone": getattr(user, "phone", "") or "",
+                  "email": last.email if last else "", "subject": "", "message": ""}
+    recent_msgs = list(ContactMessage.objects.filter(user=user).order_by("-created_at")[:3])
+    return render(request, "contactus.html", {
+        "sent": sent, "errors": errors, "v": values, "recent_msgs": recent_msgs,
+        "topics": ["Loan", "Withdrawal", "Payment", "Account", "Other"],
+    })
 
 
 @login_required(login_url="login")
@@ -530,9 +739,15 @@ def agreement(request):
 @login_required(login_url="login")
 def wallet_view(request):
     """User wallet view"""
-    last = WithdrawalRequest.objects.filter(user=request.user).order_by("-id").first()
-    items = WithdrawalRequest.objects.filter(user=request.user).order_by("-id")[:20]
-    return render(request, "wallet.html", {"last_withdrawal": last, "withdrawals": items})
+    items = list(WithdrawalRequest.objects.filter(user=request.user).order_by("-id")[:20])
+    # Card holder: the name from the client's latest application (the user model has no name field)
+    holder = (
+        LoanApplication.objects.filter(user=request.user).exclude(full_name="")
+        .order_by("-id").values_list("full_name", flat=True).first()
+    ) or ""
+    return render(request, "wallet.html", {
+        "last_withdrawal": items[0] if items else None, "withdrawals": items, "holder": holder,
+    })
 
 
 @login_required(login_url="login")
@@ -767,6 +982,7 @@ def account_status_api(request):
 # ─────────────────────────────────────────
 
 import re as _re
+import hashlib as _hashlib
 import html as _html
 import threading as _threading
 import urllib.request as _urlreq
@@ -886,6 +1102,11 @@ def _parse_feed(name, code, color, url, limit=9, finance_only=False):
                     m = _re.search(r'<img[^>]+src=["\']([^"\']+)', src)
                     if m:
                         img = m.group(1); break
+            # only real web links: a feed must never inject javascript:/data: URLs into the page
+            if not link.lower().startswith(('http://', 'https://')):
+                link = ''
+            if img and not img.lower().startswith(('http://', 'https://')):
+                img = None
             if title and link:
                 summary = desc[:240] + ('…' if len(desc) > 240 else '')
                 if finance_only and not _is_finance(title, summary):
@@ -895,7 +1116,8 @@ def _parse_feed(name, code, color, url, limit=9, finance_only=False):
                     'title': title, 'summary': summary,
                     'link': link, 'pub_ts': pub_ts,
                     'image': img or '',
-                    'id': str(abs(hash(link)) % (10 ** 12)),
+                    # stable across restarts and workers (hash() is randomised per process), so saved likes keep working
+                    'id': _hashlib.md5(link.encode('utf-8')).hexdigest()[:12],
                 })
     except Exception:
         pass
@@ -927,10 +1149,9 @@ def explore_view(request):
 @login_required(login_url="login")
 def explore_news_api(request):
     """Cached JSON feed from Philippine financial RSS sources."""
-    ck = 'ofl_explore_v8'
-    if request.GET.get('refresh') == '1':
-        cache.delete(ck)
-
+    ck = 'ofl_explore_v9'
+    # No client-side cache busting: a refresh costs ~40 outside requests. An empty result is never
+    # cached, so "Try again" re-fetches by itself when there was nothing to show.
     data = cache.get(ck)
     if data is None:
         # (name, code, color, url, limit, finance_only)
@@ -999,9 +1220,11 @@ def explore_news_api(request):
             t.join(timeout=12)
 
         combined.sort(key=lambda x: x['pub_ts'], reverse=True)
-        data = combined
-        if data:
-            cache.set(ck, data, 900)  # 15-min cache for fresher news
+        # several feeds carry the same site's stories (BW/BWB, Rappler/RPBL, MB/MBF): show each once
+        seen = set()
+        data = [a for a in combined if not (a['id'] in seen or seen.add(a['id']))]
+        # 15-min cache; when every feed failed, wait a minute before trying ~40 sites again
+        cache.set(ck, data, 900 if data else 60)
 
     return JsonResponse({'articles': data or [], 'ok': True})
 
@@ -1017,6 +1240,8 @@ def notifications_view(request):
 
     changed = []
     unread_count = 0
+    alert_new = bool(alert_msg and not request.user.notification_is_read)
+    success_new = bool(success_msg and not request.user.success_is_read)
 
     if alert_msg and not request.user.notification_is_read:
         unread_count += 1
@@ -1038,6 +1263,7 @@ def notifications_view(request):
             "title": "Congratulations",
             "msg": success_msg,
             "at": success_at,
+            "new": success_new,
         })
     if alert_msg:
         items.append({
@@ -1045,6 +1271,7 @@ def notifications_view(request):
             "title": "Important Notice",
             "msg": alert_msg,
             "at": alert_at,
+            "new": alert_new,
         })
 
     tz = timezone.get_current_timezone()
@@ -1087,9 +1314,8 @@ def loan_status_api(request):
 
 @login_required(login_url="login")
 def contract_view(request):
-    """Loan contract view - FIXED to show correct 0.5% calculation"""
-    from decimal import Decimal
-    
+    """Loan contract, at the loan's own monthly rate (0.5%; snapshots saved at the old 0.05%
+    fallback were corrected by migration 0053), else the current rate."""
     loan = (
         LoanApplication.objects
         .filter(user=request.user)
@@ -1097,32 +1323,44 @@ def contract_view(request):
         .order_by("-id")
         .first()
     )
-
-    # ✅ FIX: គណនាឡើងវិញដោយប្រើ 0.5% (0.005) ជំនួសឲ្យការយកពី Database ដែលខុស
-    monthly_display = "0.00"
+    rate = Decimal(str(loan.interest_rate_monthly)) if loan and loan.interest_rate_monthly is not None else loan_rate()
+    ctx = {"loan": loan, "phone": getattr(request.user, "phone", "") or "",
+           "interest_rate": format((rate * 100).normalize(), "f")}
     if loan:
-        try:
-            amt = Decimal(str(loan.amount or 0))
-            terms = int(loan.term_months or 0)
-            if amt > 0 and terms > 0:
-                rate = Decimal("0.005")  # ✅ 0.5% ត្រឹមត្រូវ
-                total = amt + (amt * rate * terms)
-                monthly_calc = total / terms
-                monthly_display = str(monthly_calc)
-            else:
-                monthly_display = str(loan.monthly_repayment or "0.00")
-        except:
-            monthly_display = str(loan.monthly_repayment or "0.00")
-
-    ctx = {
-        "full_name": getattr(loan, "full_name", "") or "",
-        "phone": getattr(request.user, "phone", "") or "",
-        "current_living": getattr(loan, "current_living", "") or "",
-        "amount": str(getattr(loan, "amount", "") or "0.00"),
-        "term_months": getattr(loan, "term_months", "") or "",
-        "interest_rate": "0.5",
-        "monthly_repayment": monthly_display,  # ✅ ប្រើតម្លៃដែលគណនាឡើងវិញត្រឹមត្រូវ
-    }
+        amount = Decimal(str(loan.amount or 0))
+        terms = int(loan.term_months or 0)
+        monthly = total = None
+        if amount > 0 and terms > 0:
+            total = amount + amount * rate * terms
+            monthly = total / terms
+        elif loan.monthly_repayment:
+            monthly = loan.monthly_repayment
+        status = loan.status
+        # same rule as the quick loan page: a pending loan older than 3 hours shows "In Review"
+        if status == "PENDING" and loan.created_at and timezone.now() - loan.created_at >= timedelta(hours=3):
+            status = "REVIEW"
+        signature_url = ""
+        if loan.signature_image:
+            try:
+                signature_url = loan.signature_image.url
+            except Exception:
+                signature_url = ""
+        issued = timezone.localtime(loan.created_at) if loan.created_at else timezone.localtime()
+        ctx.update({
+            "full_name": loan.full_name or "",
+            "current_living": loan.current_living or "",
+            "amount": amount,
+            "term_months": terms or "",
+            "monthly_repayment": monthly,
+            "total": total,
+            "status": status,
+            "status_label": {"DRAFT": "Draft", "PENDING": "Pending", "REVIEW": "In Review",
+                             "APPROVED": "Approved", "PAID": "Paid"}.get(status, status.title()),
+            "ref": f"APEX-{issued:%Y%m%d}-{loan.id:05d}",
+            "issued": issued,
+            "approved_at": timezone.localtime(loan.approved_at) if loan.approved_at else None,
+            "signature_url": signature_url,
+        })
     return render(request, "contract.html", ctx)
 
 
@@ -1192,6 +1430,9 @@ def loan_apply_view(request):
     except (InvalidOperation, ValueError):
         messages.error(request, "Invalid loan amount.")
         return render(request, "loan_apply.html", {"locked": False, "loan": None})
+    if not amount.is_finite() or amount <= 0:  # "NaN" / "Infinity" parse as Decimal but cannot be saved
+        messages.error(request, "Invalid loan amount.")
+        return render(request, "loan_apply.html", {"locked": False, "loan": None})
 
     try:
         term_months = int(term_raw)
@@ -1199,7 +1440,7 @@ def loan_apply_view(request):
         messages.error(request, "Please choose loan terms.")
         return render(request, "loan_apply.html", {"locked": False, "loan": None})
 
-    if term_months not in (6, 12, 24, 36, 48, 60):
+    if term_months not in LOAN_TERMS:
         messages.error(request, "Invalid loan terms.")
         return render(request, "loan_apply.html", {"locked": False, "loan": None})
 
@@ -1209,9 +1450,7 @@ def loan_apply_view(request):
         if amount < Decimal(str(cfg.min_amount)) or amount > Decimal(str(cfg.max_amount)):
             messages.error(request, f"Loan amount must be between {cfg.min_amount} and {cfg.max_amount}.")
             return render(request, "loan_apply.html", {"locked": False, "loan": None})
-        rate = Decimal(str(cfg.interest_rate_monthly))
-    else:
-        rate = Decimal("0.0005")
+    rate = loan_rate()
 
     total = amount + (amount * rate * Decimal(term_months))
     monthly = total / Decimal(term_months)
@@ -1267,15 +1506,35 @@ def loan_apply_view(request):
     return redirect(url)
 
 
+def _payment_method_page(request, form, locked, saved):
+    has_draft = LoanApplication.objects.filter(user=request.user, status="DRAFT").exists()
+    return render(request, "payment_method.html", {"form": form, "locked": locked, "saved": saved, "has_draft": has_draft})
+
+
 @login_required(login_url="login")
 def payment_method_view(request):
     """Payment method setup"""
     obj, _ = PaymentMethod.objects.get_or_create(user=request.user)
 
     if request.method == "POST" and obj.locked:
+        # A new application (after a rejected one) is sent with the saved, locked payment method
+        draft = (
+            LoanApplication.objects
+            .filter(user=request.user, status="DRAFT")
+            .order_by("-id")
+            .first()
+        )
+        has_details = bool(
+            (obj.bank_name and obj.bank_account) or (obj.wallet_name and obj.wallet_phone) or obj.paypal_email
+        )
+        if draft and has_details and request.POST.get("action") == "use_saved":
+            draft.status = "PENDING"
+            draft.save(update_fields=["status"])
+            messages.success(request, "Your loan is now submitted for review.")
+            return redirect(reverse("quick_loan") + "?done=1")
         messages.error(request, "Locked. Please contact staff to update.")
         form = PaymentMethodForm(instance=obj)
-        return render(request, "payment_method.html", {"form": form, "locked": True, "saved": True})
+        return _payment_method_page(request, form, True, True)
 
     if request.method == "POST":
         form = PaymentMethodForm(request.POST, instance=obj)
@@ -1295,16 +1554,18 @@ def payment_method_view(request):
             if draft:
                 draft.status = "PENDING"
                 draft.save(update_fields=["status"])
+                messages.success(request, "Saved successfully. Your loan is now submitted for review.")
+                return redirect(reverse("quick_loan") + "?done=1")
 
-            messages.success(request, "Saved successfully. Your loan is now submitted for review.")
+            # Saved from the profile, with no application waiting: stay here
+            messages.success(request, "Payment method saved.")
+            return redirect(reverse("payment_method"))
 
-            return redirect(reverse("quick_loan") + "?done=1")
-
-        return render(request, "payment_method.html", {"form": form, "locked": obj.locked, "saved": False})
+        return _payment_method_page(request, form, obj.locked, False)
 
     form = PaymentMethodForm(instance=obj)
     saved = bool(obj.wallet_name or obj.wallet_phone or obj.bank_name or obj.bank_account or obj.paypal_email)
-    return render(request, "payment_method.html", {"form": form, "locked": obj.locked, "saved": saved})
+    return _payment_method_page(request, form, obj.locked, saved)
 
 
 # ======================
@@ -1312,12 +1573,17 @@ def payment_method_view(request):
 # ======================
 @require_GET
 def fx_rates_api(request):
-    """Get FX rates"""
+    """FX rates (USD base). Cached: the upstream only updates once a day, and a slow or
+    failing upstream must not hold a server thread on every dashboard visit."""
+    cached = cache.get("fx_rates_usd")
+    if cached:
+        return JsonResponse(cached)
+
     url = "https://open.er-api.com/v6/latest/USD"
     wanted = ["PHP", "SAR", "MYR", "INR", "PKR", "IDR", "VND", "OMR", "KES", "AFN"]
 
     try:
-        with urllib.request.urlopen(url, timeout=10) as r:
+        with urllib.request.urlopen(url, timeout=4) as r:
             data = json.loads(r.read().decode("utf-8"))
 
         rates = data.get("conversion_rates") or data.get("rates") or {}
@@ -1330,13 +1596,17 @@ def fx_rates_api(request):
             except Exception:
                 filtered[c] = None
 
-        return JsonResponse({
+        payload = {
             "base": "USD",
             "updated": data.get("time_last_update_utc") or data.get("date") or "",
             "rates": filtered,
-        })
+        }
+        cache.set("fx_rates_usd", payload, 3600 if any(filtered.values()) else 60)
+        return JsonResponse(payload)
     except Exception:
-        return JsonResponse({"base": "USD", "updated": "", "rates": {}}, status=200)
+        payload = {"base": "USD", "updated": "", "rates": {}}
+        cache.set("fx_rates_usd", payload, 60)
+        return JsonResponse(payload, status=200)
 
 
 # ======================
@@ -2263,19 +2533,20 @@ def staff_loan_edit_save(request, loan_id):
     if not term_raw:
         return JsonResponse({"ok": False, "error": "term_required"})
 
+    old_term = loan.term_months
     try:
         loan.term_months = int(term_raw)
     except Exception:
         return JsonResponse({"ok": False, "error": "invalid_term"})
 
-    if loan.term_months not in (6, 12, 24, 36, 48, 60):
-        return JsonResponse({"ok": False, "error": "term_must_be_6_12_24_36_48_60"})
+    # only the company's terms; an older loan may keep the 48/60 months it already has
+    if loan.term_months not in LOAN_TERMS and loan.term_months != old_term:
+        return JsonResponse({"ok": False, "error": "term_must_be_6_12_24_36"})
 
     # Recalc monthly repayment
     rate = loan.interest_rate_monthly
     if rate is None:
-        cfg = LoanConfig.objects.first()
-        rate = Decimal(str(cfg.interest_rate_monthly)) if cfg else Decimal("0.0005")
+        rate = loan_rate()
         loan.interest_rate_monthly = rate
 
     total = loan.amount + (loan.amount * Decimal(str(rate)) * Decimal(loan.term_months))
@@ -2556,6 +2827,7 @@ def staff_loan_update(request, loan_id):
             messages.error(request, "Amount មិនត្រឹមត្រូវ ❌")
             return redirect(next_url or request.META.get("HTTP_REFERER", "staff_loans"))
 
+    old_term = loan.term_months
     if term_raw:
         try:
             loan.term_months = int(term_raw)
@@ -2563,15 +2835,15 @@ def staff_loan_update(request, loan_id):
             messages.error(request, "Term months មិនត្រឹមត្រូវ ❌")
             return redirect(next_url or request.META.get("HTTP_REFERER", "staff_loans"))
 
-    if loan.term_months not in (6, 12, 24, 36, 48, 60):
-        messages.error(request, "Term months មិនត្រឹមត្រូវ ❌")
+    # only the company's terms; an older loan may keep the 48/60 months it already has
+    if loan.term_months not in LOAN_TERMS and loan.term_months != old_term:
+        messages.error(request, "Term months មិនត្រឹមត្រូវ ❌ (6 / 12 / 24 / 36)")
         return redirect(next_url or request.META.get("HTTP_REFERER", "staff_loans"))
 
     # Recalc repayment
     rate = loan.interest_rate_monthly
     if rate is None:
-        cfg = LoanConfig.objects.first()
-        rate = Decimal(str(cfg.interest_rate_monthly)) if cfg else Decimal("0.0005")
+        rate = loan_rate()
         loan.interest_rate_monthly = rate
 
     total = loan.amount + (loan.amount * Decimal(str(rate)) * Decimal(loan.term_months))
