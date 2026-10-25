@@ -84,6 +84,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "accounts.context_processors.loan_rates",
+                "accounts.context_processors.staff_counts",
             ],
         },
     },
