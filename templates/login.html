@@ -296,7 +296,7 @@ html body,html[data-theme] body{
           <div class="lp-alert"><strong>Incorrect credentials.</strong> Check your phone number and password.</div>
         {% endif %}
 
-        <form method="post" autocomplete="off" id="lpForm" class="lp-form">
+        <form method="post" autocomplete="off" id="lpForm" class="lp-form" data-splash>
           {% csrf_token %}
 
           <div>

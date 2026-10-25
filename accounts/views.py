@@ -360,6 +360,26 @@ def _next_payment(user, last_loan):
     }
 
 
+# Dashboard loan categories: one product (same rate and limits), shown by purpose with a worked
+# example; the card opens Quick Loan with that amount and term filled in.
+_CATEGORIES = [
+    ("personal", "Personal", "Medical bills, school fees, home needs", 100000, 12),
+    ("ofw", "OFW", "Placement, travel and family back home", 200000, 24),
+    ("salary", "Salary", "Bridge the gap until payday", 80000, 6),
+    ("business", "Business", "Stock, equipment, a new store", 500000, 36),
+]
+
+
+def _loan_categories():
+    rate = loan_rate()
+    out = []
+    for key, name, use, amount, months in _CATEGORIES:
+        a = Decimal(amount)
+        out.append({"key": key, "name": name, "use": use, "amount": a, "months": months,
+                    "monthly": (a + a * rate * months) / months})
+    return out
+
+
 _WD_TONE = {"paid": "ok", "rejected": "bad", "withdrawal_fail": "bad"}
 
 
@@ -465,6 +485,7 @@ def dashboard_view(request):
         "current_reference": SystemSetting.get_reference_number(),
         "pay": pay,
         "events": events,
+        "categories": _loan_categories(),
         "has_loan_events": any(e["kind"] == "loan" for e in events),
         "has_wd_events": any(e["kind"] == "wd" for e in events),
     }

@@ -67,6 +67,10 @@ Brand: **APEX** (renamed from "OFL / Overseas FilipinoLoan"). Logo: `static/img/
 - Page-to-page transitions live in base.html (native cross-document View Transitions with a
   slide in / slide out; older browsers get a short fade). No JavaScript click interception and
   no artificial navigation delay.
+- Owner-requested logo splash (base.html, `.apx-splash`): links/forms with `data-splash` (home Apply
+  Now / Sign In / My account, login form, log out) set a flag; the NEXT page opens behind the APEX
+  logo, which fades out once it has loaded (min 0.8 s, max 2.5 s). The click is never delayed,
+  a POST response (form error) shows no splash, and the slide transition is skipped for it.
 - **Never leave a `transform` on `#pageRoot`** — it makes `position: fixed` children scroll
   away with the page.
 - Animate only `transform` and `opacity`. Never animate `box-shadow`, `width`, `left/top`,

@@ -43,6 +43,19 @@
     }
   })();
 
+  /* APEX logo splash: Apply Now / My account / Sign In / log in / log out mark the next page
+     (data-splash). The click is never delayed: the NEXT page opens behind the logo, which fades
+     away once it is ready. A form that comes back with an error (a POST response) shows no splash. */
+  (function(){
+    try {
+      var t = +sessionStorage.getItem("ofl-splash") || 0;
+      sessionStorage.removeItem("ofl-splash");
+      if (t && Date.now() - t < 8000 && "{{ request.method }}" !== "POST") {
+        document.documentElement.classList.add("apx-splashing");
+        window.addEventListener("pagereveal", function (e) { if (e.viewTransition) e.viewTransition.skipTransition(); });
+      }
+    } catch (e) {}
+  })();
   /* Page-change direction for the slide transition (CSS: PAGE TRANSITIONS).
      "forward" slides the new page in from the right; "back" (back button,
      history, "Back" links) slides the current page out to the right. */
@@ -79,6 +92,21 @@
   })();
 </script>
 <style>
+  /* APEX logo splash (see the script above): hidden unless html.apx-splashing */
+  .apx-splash{
+    position:fixed;inset:0;z-index:2147483000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+    background:linear-gradient(to bottom,#0B1C14,#133224);
+  }
+  html.apx-splashing .apx-splash{display:flex;}
+  html.apx-splashing-out .apx-splash{opacity:0;transition:opacity .35s ease;}
+  .apx-splash img{width:92px;height:92px;border-radius:24px;box-shadow:0 0 0 1px rgba(255,255,255,.14),0 18px 40px -12px rgba(0,0,0,.55);animation:apxPop .55s cubic-bezier(.22,1,.36,1) both;}
+  .apx-splash b{font:800 15px/1 'Plus Jakarta Sans',system-ui,sans-serif;letter-spacing:.32em;padding-left:.32em;color:#fff;animation:apxFade .5s .15s ease both;}
+  @keyframes apxPop{from{opacity:0;transform:scale(.72);}to{opacity:1;transform:none;}}
+  @keyframes apxFade{from{opacity:0;transform:translateY(6px);}to{opacity:.9;transform:none;}}
+  @media (prefers-reduced-motion:reduce){
+    .apx-splash img,.apx-splash b{animation:none;}
+    html.apx-splashing-out .apx-splash{transition:none;}
+  }
   /* Backup early-paint bg for html element so transition between
      pages does not flash white in dark mode. */
   html { background-color: #ffffff; }
@@ -788,6 +816,35 @@ html, body{
 </head>
 
 <body data-auth="{{ request.user.is_authenticated|yesno:'true,false' }}">
+<div class="apx-splash" aria-hidden="true"><img src="{% static 'img/apex-logo.svg' %}" alt="" width="92" height="92"><b>APEX</b></div>
+<script>
+(function(){
+  var root=document.documentElement;
+  /* mark the next page: links/buttons/forms with data-splash (the click itself is not touched) */
+  function mark(){ try{ sessionStorage.setItem("ofl-splash", String(Date.now())); }catch(e){} }
+  document.addEventListener("click",function(e){
+    if(e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey) return;
+    var a=e.target.closest&&e.target.closest("a[data-splash]");
+    if(a&&a.target!=="_blank") mark();
+  });
+  document.addEventListener("submit",function(e){
+    if(!e.defaultPrevented&&e.target.hasAttribute&&e.target.hasAttribute("data-splash")) mark();
+  });
+  if(!root.classList.contains("apx-splashing")) return;
+  var start=Date.now(), MIN=matchMedia("(prefers-reduced-motion: reduce)").matches?300:800, done=false;
+  function hide(){
+    if(done) return; done=true;
+    setTimeout(function(){
+      root.classList.add("apx-splashing-out");
+      setTimeout(function(){ root.classList.remove("apx-splashing","apx-splashing-out"); },380);
+    },Math.max(0,MIN-(Date.now()-start)));
+  }
+  if(document.readyState==="complete") hide(); else addEventListener("load",hide);
+  setTimeout(hide,2500);   /* a slow image never keeps the logo up */
+  /* back/forward cache: never come back to a page still covered */
+  addEventListener("pageshow",function(e){ if(e.persisted){ root.classList.remove("apx-splashing","apx-splashing-out"); } });
+})();
+</script>
 
 <div class="wrap page-enter" id="pageRoot">
   {% block content %}{% endblock %}

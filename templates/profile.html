@@ -281,7 +281,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
     <p>Are you sure you want to securely exit your APEX account?</p>
     <div class="pf-sheet-acts">
       <button type="button" class="pf-btn pf-btn-line" id="pfModalCancel">Cancel</button>
-      <form method="post" action="{% url 'logout' %}">
+      <form method="post" action="{% url 'logout' %}" data-splash>
         {% csrf_token %}
         <button type="submit" class="pf-btn pf-btn-red" id="pfModalOut">Sign Out</button>
       </form>
