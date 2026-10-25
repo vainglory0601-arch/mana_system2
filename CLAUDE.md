@@ -2,6 +2,10 @@
 
 Read this first. It records how the owner wants this project handled.
 
+Brand: **APEX** (renamed from "OFL / Overseas FilipinoLoan"). Logo: `static/img/apex-logo.svg`
+(+ `apex-logo.webp`, `apex-icon-64.png`, `apex-icon-180.png`). Internal names keep the old prefix
+(`ofl_*` localStorage keys, `?ofl=1`, `ofl-theme`, `ofl-vt`, `OFL_SFX`): do not rename them.
+
 ## Working with the owner
 - The owner writes short English. Answer in simple, plain English; show results with
   screenshots (side by side with their mockup when there is one).
@@ -29,7 +33,7 @@ Read this first. It records how the owner wants this project handled.
   No icon fonts and no Tailwind CDN in production; write plain CSS in the template.
 - Same look in light and dark theme: base.html forces dark inputs in dark mode, so override
   with an `#id`-scoped selector.
-- Footer: "Overseas FilipinoLoan • v2.2.1 / © 2026 All rights reserved".
+- Footer: "APEX • v2.2.1 / © 2026 All rights reserved".
 - Money inputs: `inputmode="decimal"`, no `maxlength` (it cuts pasted "PHP 1,500,000" before
   cleaning); clean to digits + one point + 2 decimals, no leading zeros, 9 digits max.
 - Client drafts kept in localStorage must carry the user id (`__uid`) — phones are shared.

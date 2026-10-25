@@ -1261,7 +1261,7 @@ def contract_view(request):
             "status": status,
             "status_label": {"DRAFT": "Draft", "PENDING": "Pending", "REVIEW": "In Review",
                              "APPROVED": "Approved", "PAID": "Paid"}.get(status, status.title()),
-            "ref": f"OFL-{issued:%Y%m%d}-{loan.id:05d}",
+            "ref": f"APEX-{issued:%Y%m%d}-{loan.id:05d}",
             "issued": issued,
             "approved_at": timezone.localtime(loan.approved_at) if loan.approved_at else None,
             "signature_url": signature_url,

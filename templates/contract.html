@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static humanize %}
-{% block title %}Loan Contract — Overseas FilipinoLoan{% endblock %}
+{% block title %}Loan Contract — APEX{% endblock %}
 
 {% block extra_css %}
 {{ block.super }}
@@ -16,7 +16,7 @@ html body select,html body textarea,html body a{
 {% block content %}
 <style>
 /* ════════════════════════════════════════════
-   OFL LOAN CONTRACT — Deep Forest
+   APEX LOAN CONTRACT — Deep Forest
    Same look in light and dark theme; prints as a clean document
 ════════════════════════════════════════════ */
 :root{
@@ -191,8 +191,8 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
       <article class="ct-doc" id="ctDoc" aria-label="Loan agreement contract">
         <div class="ct-lh">
           <div class="ct-brand">
-            <span class="ct-logo"><img src="{% static 'img/logo.webp' %}" alt="OFL logo"></span>
-            <div><b>Overseas Filipino Loan</b><small>Licensed Financial Services Provider</small></div>
+            <span class="ct-logo"><img src="{% static 'img/apex-logo.webp' %}" alt="APEX logo"></span>
+            <div><b>APEX</b><small>Licensed Financial Services Provider</small></div>
           </div>
           <div class="ct-ref"><span>Contract Ref.</span><b id="ctRef">{{ ref }}</b><small>Issued: {{ issued|date:"F j, Y" }}</small></div>
         </div>
@@ -252,7 +252,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
           <div class="ct-sig">
             <div class="ct-sig-pad"></div>
             <div class="ct-sig-line"></div>
-            <b>Authorized Representative</b><span>Company Signatory</span><span>Overseas Filipino Loan</span>
+            <b>Authorized Representative</b><span>Company Signatory</span><span>APEX</span>
           </div>
           <div class="ct-sig">
             <div class="ct-sig-pad">{% if signature_url %}<img src="{{ signature_url }}" alt="Your signature" id="ctSig" onerror="this.remove()">{% endif %}</div>
@@ -297,7 +297,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
       {% endif %}
 
       <footer class="ct-foot">
-        <p><i></i> Overseas FilipinoLoan <span>•</span> <b>v2.2.1</b></p>
+        <p><i></i> APEX <span>•</span> <b>v2.2.1</b></p>
         <p>© 2026 All rights reserved</p>
       </footer>
     </main>

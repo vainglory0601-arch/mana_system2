@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Overseas FilipinoLoan — Loans for Overseas Filipinos{% endblock %}
+{% block title %}APEX — Loans for Overseas Filipinos{% endblock %}
 
 {% block extra_css %}
 {{ block.super }}
@@ -16,7 +16,7 @@ html body select,html body textarea,html body a{
 {% block content %}
 <style>
 /* ════════════════════════════════════════════
-   OFL HOME — Deep Forest
+   APEX HOME — Deep Forest
    Phone first; a wider two-column hero on desktop. Same look in light and dark theme.
 ════════════════════════════════════════════ */
 :root{
@@ -190,7 +190,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 <div class="hm">
   <header class="hm-nav">
     <div class="hm-wrap">
-      <a class="hm-brand" href="{% url 'choose' %}"><img src="{% static 'img/logo.webp' %}" alt="" width="38" height="38"><b>OverseasFilipino<em>Loan</em></b></a>
+      <a class="hm-brand" href="{% url 'choose' %}"><img src="{% static 'img/apex-logo.webp' %}" alt="" width="38" height="38"><b>APEX</b></a>
       <nav class="hm-nav-links" aria-label="Sections">
         <a href="#calc">Calculator</a><a href="#how">How it works</a><a href="#why">Why us</a><a href="#faq">FAQ</a>
       </nav>
@@ -309,7 +309,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 
     <footer class="hm-foot">
       <nav aria-label="Footer"><a href="#calc">Calculator</a><a href="#how">How it works</a><a href="#why">Why us</a><a href="#faq">FAQ</a>{% if not is_auth %}<a href="{% url 'login' %}">Sign In</a>{% endif %}</nav>
-      <p><i></i> Overseas FilipinoLoan <span>•</span> <b>v2.2.1</b></p>
+      <p><i></i> APEX <span>•</span> <b>v2.2.1</b></p>
       <p>© 2026 All rights reserved</p>
     </footer>
   </div>

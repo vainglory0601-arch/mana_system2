@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static humanize %}
-{% block title %}My Wallet — Overseas FilipinoLoan{% endblock %}
+{% block title %}My Wallet — APEX{% endblock %}
 
 {% block extra_css %}
 {{ block.super }}
@@ -16,7 +16,7 @@ html body select,html body textarea,html body a{
 {% block content %}
 <style>
 /* ════════════════════════════════════════════
-   OFL WALLET — Deep Forest
+   APEX WALLET — Deep Forest
    Same look in light and dark theme
 ════════════════════════════════════════════ */
 :root{
@@ -247,7 +247,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
       <!-- ── Balance card ── -->
       <div class="wl-bcard">
         <div class="wl-btop">
-          <div class="wl-brand"><b>OFL</b><span>Overseas Filipino Loan</span></div>
+          <div class="wl-brand"><b>APEX</b><span>Loan Wallet</span></div>
           <span class="wl-chip" aria-hidden="true"></span>
         </div>
         <div>
@@ -263,7 +263,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
           <span data-balance hidden>{{ request.user.balance|default:"0.00" }}</span>
         </div>
         <div class="wl-bfoot">
-          <div><small>Card Holder</small><b>{{ holder|default:"OFL Client" }}</b></div>
+          <div><small>Card Holder</small><b>{{ holder|default:"APEX Client" }}</b></div>
           <div class="r"><small>Currency</small><b>PHP</b></div>
         </div>
       </div>
@@ -339,7 +339,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
       </section>
 
       <footer class="wl-foot">
-        <p><i></i> Overseas FilipinoLoan <span>•</span> <b>v2.2.1</b></p>
+        <p><i></i> APEX <span>•</span> <b>v2.2.1</b></p>
         <p>© 2026 All rights reserved</p>
       </footer>
     </main>
