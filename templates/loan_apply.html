@@ -746,7 +746,7 @@ function updateOffer(){
 if(LOCKED){
   var lockedTerm=terms.getAttribute('data-term')||'';
   pickTerm(byTerm(lockedTerm),true);
-  if(lockedTerm&&!byTerm(lockedTerm)){   /* staff may set 48 or 60 months: no pill, so say it in words */
+  if(lockedTerm&&!byTerm(lockedTerm)){   /* an older loan may have 48 or 60 months: no pill, so say it in words */
     termHidden.value=lockedTerm; $('laTermNote').textContent=lockedTerm+' months'; $('laTermNote').hidden=false;
   }
   [].forEach.call(document.querySelectorAll('#laPurp input'),function(i){ i.parentNode.classList.toggle('is-on',i.checked); });

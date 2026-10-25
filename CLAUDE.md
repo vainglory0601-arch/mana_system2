@@ -36,6 +36,8 @@ Read this first. It records how the owner wants this project handled.
 - Interest is 0.5% per month. One source: `accounts.models.loan_rate()` (admin LoanConfig, else
   0.5%); templates get `{{ loan_rate }}` / `{{ loan_rate_pct }}` from a context processor. Never
   hard-code a rate.
+- Loan terms are 6, 12, 24 or 36 months only (`accounts.models.LOAN_TERMS`). Older loans may
+  still have 48/60 months: show them, but never offer or accept 48/60 for a new or changed term.
 
 ## Client guides / onboarding (see templates/register.html)
 - Glass guide card (`rgba(17,42,31,.85)` + `backdrop-filter: blur(24px)`), step label + dots,

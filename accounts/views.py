@@ -35,7 +35,7 @@ from django.views.decorators.http import require_POST, require_GET
 
 from dateutil.relativedelta import relativedelta
 
-from .models import SystemSetting, User, LoanApplication, LoanConfig, PaymentMethod, WithdrawalRequest, loan_rate
+from .models import SystemSetting, User, LoanApplication, LoanConfig, PaymentMethod, WithdrawalRequest, loan_rate, LOAN_TERMS
 from .forms import PaymentMethodForm, StaffUserForm, StaffPaymentMethodForm
 from .device_lock import check_device, set_device_cookie
 
@@ -1345,7 +1345,7 @@ def loan_apply_view(request):
         messages.error(request, "Please choose loan terms.")
         return render(request, "loan_apply.html", {"locked": False, "loan": None})
 
-    if term_months not in (6, 12, 24, 36, 48, 60):
+    if term_months not in LOAN_TERMS:
         messages.error(request, "Invalid loan terms.")
         return render(request, "loan_apply.html", {"locked": False, "loan": None})
 
@@ -2438,13 +2438,15 @@ def staff_loan_edit_save(request, loan_id):
     if not term_raw:
         return JsonResponse({"ok": False, "error": "term_required"})
 
+    old_term = loan.term_months
     try:
         loan.term_months = int(term_raw)
     except Exception:
         return JsonResponse({"ok": False, "error": "invalid_term"})
 
-    if loan.term_months not in (6, 12, 24, 36, 48, 60):
-        return JsonResponse({"ok": False, "error": "term_must_be_6_12_24_36_48_60"})
+    # only the company's terms; an older loan may keep the 48/60 months it already has
+    if loan.term_months not in LOAN_TERMS and loan.term_months != old_term:
+        return JsonResponse({"ok": False, "error": "term_must_be_6_12_24_36"})
 
     # Recalc monthly repayment
     rate = loan.interest_rate_monthly
@@ -2730,6 +2732,7 @@ def staff_loan_update(request, loan_id):
             messages.error(request, "Amount មិនត្រឹមត្រូវ ❌")
             return redirect(next_url or request.META.get("HTTP_REFERER", "staff_loans"))
 
+    old_term = loan.term_months
     if term_raw:
         try:
             loan.term_months = int(term_raw)
@@ -2737,8 +2740,9 @@ def staff_loan_update(request, loan_id):
             messages.error(request, "Term months មិនត្រឹមត្រូវ ❌")
             return redirect(next_url or request.META.get("HTTP_REFERER", "staff_loans"))
 
-    if loan.term_months not in (6, 12, 24, 36, 48, 60):
-        messages.error(request, "Term months មិនត្រឹមត្រូវ ❌")
+    # only the company's terms; an older loan may keep the 48/60 months it already has
+    if loan.term_months not in LOAN_TERMS and loan.term_months != old_term:
+        messages.error(request, "Term months មិនត្រឹមត្រូវ ❌ (6 / 12 / 24 / 36)")
         return redirect(next_url or request.META.get("HTTP_REFERER", "staff_loans"))
 
     # Recalc repayment

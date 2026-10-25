@@ -135,6 +135,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 
 DEFAULT_RATE_MONTHLY = Decimal("0.005")   # 0.5% per month
+LOAN_TERMS = (6, 12, 24, 36)              # months the company offers
 
 
 def loan_rate():

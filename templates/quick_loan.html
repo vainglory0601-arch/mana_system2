@@ -476,7 +476,7 @@ amountEl.addEventListener('blur',function(){ if(!LOCKED){ minArmed=true; update(
 {% if loan %}
 amountEl.value='{{ loan.amount|default_if_none:""|floatformat:"-2" }}';
 pickTerm(btns.filter(function(b){ return b.getAttribute('data-term')==='{{ loan.term_months|default_if_none:"" }}'; })[0]||null,true);
-termEl.value='{{ loan.term_months|default_if_none:"" }}';   /* staff may set 48 or 60 months: no pill, but the summary still counts it */
+termEl.value='{{ loan.term_months|default_if_none:"" }}';   /* an older loan may have 48 or 60 months: no pill, but the summary still counts it */
 hint.textContent='{% if loan.term_months %}{{ loan.term_months }} months{% else %}Loan term{% endif %}';
 update();
 goBtn.disabled=true;
