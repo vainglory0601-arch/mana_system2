@@ -2052,8 +2052,10 @@ def staff_dashboard(request):
         "total_pending": total_pending,
     }
     return render(request, "staff_dashboard.html", context)
-@login_required
+@staff_member_required
+@require_POST
 def update_reference(request):
+    # staff only: it was open to every signed-in client
     """View សម្រាប់ Staff Update Reference Number"""
     if request.method == 'POST':
         new_ref = request.POST.get('reference_number', '').strip()

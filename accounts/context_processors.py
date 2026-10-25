@@ -14,3 +14,16 @@ def loan_rates(request):
         "loan_rate": SimpleLazyObject(lambda: format(loan_rate().normalize(), "f")),
         "loan_rate_pct": SimpleLazyObject(_rate_pct),
     }
+
+
+def staff_counts(request):
+    """Pending counts for the staff side menu badges. Lazy: only staff pages that show them query."""
+    if not request.path.startswith("/staff/"):
+        return {}
+    from .models import LoanApplication, WithdrawalRequest
+    return {
+        "nav_pending_loans": SimpleLazyObject(
+            lambda: LoanApplication.objects.filter(status__in=["PENDING", "REVIEW"]).count()),
+        "nav_pending_withdrawals": SimpleLazyObject(
+            lambda: WithdrawalRequest.objects.filter(status="processing").count()),
+    }

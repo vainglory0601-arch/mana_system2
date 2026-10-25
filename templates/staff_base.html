@@ -3,9 +3,11 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Admin Management</title>
   {% load static %}
-
+  <title>{% block title %}Staff{% endblock %} — APEX Staff</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'img/apex-logo.svg' %}?v=4">
+  <link rel="icon" type="image/png" sizes="64x64" href="{% static 'img/apex-icon-64.png' %}?v=4">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
   <script>
     (function(){
       try{
@@ -16,2022 +18,308 @@
       }
     })();
   </script>
-
+  {% block legacy_css %}{% include "staff/_legacy_css.html" %}{% endblock %}
   <style>
-
-/* Smooth cross-fade between pages (browsers without support just navigate normally) */
-@view-transition{ navigation: auto; }
-@media (prefers-reduced-motion: reduce){
-  ::view-transition-old(root), ::view-transition-new(root){ animation: none; }
-}
-
-/* ✅ Select text = White */
-select,
-select option{
-  color:#fff !important;
-}
-@font-face {
-  font-family: 'StaffFont';
-  src: url("{% static 'fonts/arialnarrow.ttf' %}") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
-
-.staff-font {
-  font-family: 'StaffFont', Arial, sans-serif !important;
-}
-
-/* ✅ FINAL OVERRIDE: make select text WHITE (WORKS) */
-.dashboard-card select,
-.dashboard-card select option,
-.dashboard-card .status-select,
-.dashboard-card .status-select option{
-  color:#fff !important;
-}
-
-/* keep background dark so white text visible */
-.dashboard-card select,
-.dashboard-card .status-select{
-  background: rgba(0,0,0,.70) !important;
-}
-
-/* Apply to ALL staff pages */
-body, body * {
-  font-family: "Gridova", system-ui, sans-serif !important;
-}
-/* ===============================
-   MODALS
-   =============================== */
-.logout-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.62);z-index:9999;padding:18px 14px;box-sizing:border-box}
-.logout-modal.show{display:flex}
-.logout-box{width:min(420px,92vw);background:rgba(25,25,25,.92);border:1px solid rgba(255,255,255,.14);border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);padding:16px;color:#fff}
-.logout-title{font-weight:950;font-size:16px;margin-bottom:6px}
-.logout-text{font-size:13px;opacity:.9;line-height:1.45;margin-bottom:14px}
-.logout-actions{display:flex;gap:10px;justify-content:flex-end}
-.btn-cancel{height:40px;padding:0 16px;border-radius:999px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;font-weight:900;cursor:pointer}
-.btn-confirm{height:40px;padding:0 16px;border-radius:999px;border:0;font-weight:900;cursor:pointer;background:linear-gradient(90deg,#044a72,#969fac);color:#fff}
-
-/* ✅ Message Modal (ONLY ONE in base) */
-#msgModal{
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.55);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-}
-#msgModal .modal-box{
-  width: min(720px, 94vw);
-  background: rgba(248, 248, 248, 0.979);
-  border-radius: 18px;
-  padding: 16px;
-  box-sizing: border-box;
-  border: 1px solid rgba(255, 255, 255, 0.747);
-  backdrop-filter: blur(18px);
-  box-shadow: 0 20px 60px rgba(0,0,0,.45);
-}
-#msgModal h3{
-  margin: 0 0 12px;
-  font-family: 'Ovelion', system-ui, sans-serif;
-  font-weight: 600;
-  letter-spacing: .04em;
-}
-#msgTextarea{
-  width: 100%;
-  max-width: 100%;
-  min-height: 160px;
-  resize: vertical;
-  padding: 12px 14px;
-  box-sizing: border-box;
-  border-radius: 14px;
-  border: 1px solid rgba(0,0,0,.25);
-  background: rgba(0, 0, 0, 0.856);
-  color: #fff;
-  font-family: 'Ovelion', system-ui, sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  outline: none;
-}
-#msgTextarea:focus{
-  border-color: rgba(0, 0, 0, 0.76);
-  box-shadow: 0 0 0 1px rgba(84, 92, 87, 0.61);
-}
-#msgModal .modal-actions{
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 14px;
-}
-
-/* ===============================
-   FONT
-   =============================== */
-.user-font{
-  font-family: "Ovelion", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif !important;
-  font-weight: 400 !important;
-  letter-spacing: .04em;
-}
-.u-link{ text-decoration:none; font-weight:800; display:inline-block; }
-
-/* ===============================
-   ANIMATIONS
-   =============================== */
-@keyframes slideInRightToLeft {
-  from { transform: translateX(70px); opacity: 0; }
-  to   { transform: translateX(0);    opacity: 1; }
-}
-@keyframes slideInLeftToRight {
-  from { transform: translateX(-70px); opacity: 0; }
-  to   { transform: translateX(0);     opacity: 1; }
-}
-@keyframes slideInTopToBottom{
-  from { transform: translateY(-18px); opacity: 0; }
-  to   { transform: translateY(0);     opacity: 1; }
-}
-.pill.pill-anim-top{ animation: slideInTopToBottom 1200ms ease-out both; will-change: transform, opacity; }
-.card.card-anim{ animation: slideInRightToLeft 1200ms ease-out both; }
-.card.card-anim-left{ animation: slideInLeftToRight 1200ms ease-out both; }
-
-
-/* ===============================
-   THEME
-   =============================== */
+/* ════════════════════════════════════════════
+   APEX STAFF — shell (side menu + top bar) and shared parts
+   Light and dark theme; the side menu is always forest green.
+════════════════════════════════════════════ */
 :root{
-  --bg1:#061a10; --bg2:#02130a;
-  --card:rgba(213, 233, 218, 0.582);
-  --stroke:rgba(255,255,255,.10);
-  --txt:rgba(255,255,255,.98);
-  --muted:rgba(255,255,255,.84);
-  --green:#22c55e;
+  --sx-dark:#0B1C14;--sx-primary:#133224;--sx-green:#1B4332;--sx-green2:#2d6a4f;--sx-sage:#E8F3ED;--sx-accent:#F97316;
+  --sx-bg:#f3f4f6;--sx-card:#ffffff;--sx-ink:#111827;--sx-ink2:#374151;--sx-mut:#6b7280;--sx-mut2:#9ca3af;
+  --sx-line:#e5e7eb;--sx-line2:#f3f4f6;--sx-hover:#f9fafb;--sx-shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px -12px rgba(16,24,40,.12);
+  --sx-ok:#15803D;--sx-ok-bg:#E6F4EA;--sx-warn:#B45309;--sx-warn-bg:#FEF3C7;--sx-bad:#B91C1C;--sx-bad-bg:#FEE2E2;--sx-info:#1d4ed8;--sx-info-bg:#e0ecff;
+  --sx-side:248px;--sx-ease:cubic-bezier(.22,1,.36,1);
+}
+html[data-theme="dark"]{
+  --sx-bg:#0b120e;--sx-card:#111b16;--sx-ink:#f3f4f6;--sx-ink2:#d1d5db;--sx-mut:#9ca3af;--sx-mut2:#6b7280;
+  --sx-line:#22302a;--sx-line2:#18231d;--sx-hover:#16221c;--sx-shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+  --sx-ok:#4ade80;--sx-ok-bg:rgba(74,222,128,.12);--sx-warn:#fbbf24;--sx-warn-bg:rgba(251,191,36,.12);--sx-bad:#f87171;--sx-bad-bg:rgba(248,113,113,.12);--sx-info:#93c5fd;--sx-info-bg:rgba(147,197,253,.12);
+  --sx-sage:rgba(232,243,237,.08);
+}
+html.sx,html.sx body{margin:0;background:var(--sx-bg)!important;}
+html.sx body{min-height:100vh;color:var(--sx-ink);font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;}
+.sx-shell svg,.sx-page svg,.sx-modal svg{display:block;width:auto;height:1em;fill:currentColor;flex-shrink:0;}
+.sx-shell a,.sx-shell button{-webkit-tap-highlight-color:transparent;}
+
+/* ── side menu ── */
+.sx-side{
+  position:fixed;top:0;left:0;bottom:0;z-index:40;width:var(--sx-side);box-sizing:border-box;display:flex;flex-direction:column;
+  padding:20px 14px;overflow-y:auto;background:linear-gradient(to bottom,var(--sx-dark),var(--sx-primary));
+}
+.sx-brand{display:flex;align-items:center;gap:11px;padding:4px 8px 22px;color:#fff!important;text-decoration:none!important;}
+.sx-brand img{width:38px;height:38px;border-radius:11px;box-shadow:0 0 0 1px rgba(255,255,255,.14);}
+.sx-brand b{display:block;font-size:16px;line-height:20px;font-weight:800;letter-spacing:.06em;}
+.sx-brand small{display:block;font-size:11px;line-height:15px;font-weight:600;color:rgba(232,243,237,.6);}
+.sx-nav-label{margin:6px 10px 8px;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(232,243,237,.4);}
+.sx-nav{display:flex;flex-direction:column;gap:2px;}
+.sx-nav a{
+  position:relative;display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;
+  font-size:14px;line-height:20px;font-weight:600;color:rgba(232,243,237,.75)!important;text-decoration:none!important;
+  transition:background-color .15s,color .15s;
+}
+.sx-nav a svg{width:18px;font-size:16px;color:rgba(232,243,237,.55);transition:color .15s;}
+.sx-nav a:hover{background:rgba(255,255,255,.06);color:#fff!important;}
+.sx-nav a.is-on{background:rgba(255,255,255,.1);color:#fff!important;}
+.sx-nav a.is-on svg{color:#FDBA74;}
+.sx-nav a.is-on::before{content:'';position:absolute;left:-14px;top:9px;bottom:9px;width:4px;border-radius:0 4px 4px 0;background:var(--sx-accent);}
+.sx-nav a span{flex:1;min-width:0;}
+.sx-nav a i{min-width:20px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:999px;font-style:normal;font-size:11px;line-height:20px;font-weight:800;text-align:center;color:#fff;background:var(--sx-accent);}
+.sx-side-foot{margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);}
+.sx-me{display:flex;align-items:center;gap:10px;padding:8px 10px 12px;}
+.sx-me span{width:34px;height:34px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--sx-dark);background:#86efac;}
+.sx-me b{display:block;font-size:13px;line-height:18px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.sx-me small{display:block;font-size:11px;line-height:15px;font-weight:600;color:rgba(232,243,237,.55);}
+.sx-side-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.sx-side-btns button{
+  display:flex;align-items:center;justify-content:center;gap:8px;height:40px;border:1px solid rgba(255,255,255,.12);border-radius:12px;cursor:pointer;
+  font:700 12.5px/1 'Plus Jakarta Sans',system-ui,sans-serif;color:rgba(232,243,237,.85);background:rgba(255,255,255,.05);transition:background-color .15s;
+}
+.sx-side-btns button:hover{background:rgba(255,255,255,.1);}
+.sx-side-btns button svg{font-size:13px;}
+.sx-side-btns .sx-moon{display:none;}
+html[data-theme="dark"] .sx-side-btns .sx-sun{display:none;}
+html[data-theme="dark"] .sx-side-btns .sx-moon{display:block;}
+
+/* ── main area ── */
+.sx-main{margin-left:var(--sx-side);min-height:100vh;background:var(--sx-bg);}
+.sx-top{
+  position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;height:68px;padding:0 28px;box-sizing:border-box;
+  background:color-mix(in srgb,var(--sx-bg) 86%,transparent);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--sx-line);
+}
+.sx-burger{display:none;width:40px;height:40px;border:1px solid var(--sx-line);border-radius:12px;background:var(--sx-card);color:var(--sx-ink);cursor:pointer;align-items:center;justify-content:center;font-size:15px;}
+.sx-top-t{flex:1;min-width:0;}
+.sx-top-t h1{margin:0;font-size:19px;line-height:25px;font-weight:800;letter-spacing:-.01em;color:var(--sx-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sx-top-t p{margin:0;font-size:12.5px;line-height:17px;font-weight:500;color:var(--sx-mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.sx-top-date{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;font-size:12.5px;font-weight:700;color:var(--sx-ink2);background:var(--sx-card);border:1px solid var(--sx-line);}
+.sx-top-date svg{font-size:12px;color:var(--sx-mut);}
+.sx-content{padding:24px 28px 40px;}
+.sx-legacy{padding:0;}
+
+/* ── shared parts for redesigned pages ── */
+.sx-page{display:flex;flex-direction:column;gap:20px;max-width:1400px;}
+.sx-card{background:var(--sx-card);border:1px solid var(--sx-line);border-radius:20px;box-shadow:var(--sx-shadow);}
+.sx-card-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px 0;}
+.sx-card-h h2{margin:0;font-size:15px;line-height:21px;font-weight:800;color:var(--sx-ink);}
+.sx-card-h p{margin:2px 0 0;font-size:12px;line-height:17px;font-weight:500;color:var(--sx-mut);}
+.sx-card-b{padding:18px 20px 20px;}
+.sx-chips{display:flex;flex-wrap:wrap;gap:6px;}
+.sx-chip{
+  display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--sx-line);background:var(--sx-card);
+  font-size:12.5px;font-weight:700;color:var(--sx-ink2)!important;text-decoration:none!important;cursor:pointer;transition:background-color .15s,border-color .15s,color .15s;
+}
+.sx-chip:hover{border-color:var(--sx-mut2);}
+.sx-chip.is-on{color:#fff!important;background:var(--sx-green);border-color:var(--sx-green);}
+.sx-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;height:38px;padding:0 14px;border-radius:11px;border:1px solid transparent;cursor:pointer;
+  font:700 13px/1 'Plus Jakarta Sans',system-ui,sans-serif;text-decoration:none!important;white-space:nowrap;transition:background-color .15s,border-color .15s,transform .15s;
+}
+.sx-btn:active{transform:scale(.97);}
+.sx-btn svg{font-size:12px;}
+.sx-btn-green{color:#fff!important;background:var(--sx-green);}
+.sx-btn-green:hover{background:#122e22;}
+.sx-btn-line{color:var(--sx-ink2)!important;background:var(--sx-card);border-color:var(--sx-line);}
+.sx-btn-line:hover{background:var(--sx-hover);}
+.sx-btn-danger{color:#fff!important;background:#dc2626;}
+.sx-btn-danger:hover{background:#b91c1c;}
+.sx-btn-sm{height:32px;padding:0 11px;font-size:12px;border-radius:10px;}
+.sx-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:999px;font-size:11px;line-height:15px;font-weight:800;letter-spacing:.03em;white-space:nowrap;color:var(--sx-mut);background:var(--sx-line2);}
+.sx-badge.ok{color:var(--sx-ok);background:var(--sx-ok-bg);}
+.sx-badge.warn{color:var(--sx-warn);background:var(--sx-warn-bg);}
+.sx-badge.bad{color:var(--sx-bad);background:var(--sx-bad-bg);}
+.sx-badge.info{color:var(--sx-info);background:var(--sx-info-bg);}
+.sx-input{
+  height:40px;padding:0 12px;box-sizing:border-box;border-radius:11px;border:1px solid var(--sx-line)!important;background:var(--sx-card)!important;color:var(--sx-ink)!important;
+  font:500 13.5px 'Plus Jakarta Sans',system-ui,sans-serif;outline:none;transition:border-color .15s,box-shadow .15s;
+}
+.sx-input:focus{border-color:var(--sx-green2)!important;box-shadow:0 0 0 3px rgba(45,106,79,.18);}
+.sx-input::placeholder{color:var(--sx-mut2);}
+
+/* ── modals (logout + shared message) ── */
+.sx-modal{
+  position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(11,28,20,.5);
+  opacity:0;visibility:hidden;transition:opacity .2s,visibility 0s linear .2s;
+}
+.sx-modal.show{opacity:1;visibility:visible;transition:opacity .2s;}
+.sx-modal-box{width:100%;max-width:400px;padding:22px;border-radius:20px;background:var(--sx-card);border:1px solid var(--sx-line);box-shadow:0 24px 48px -12px rgba(0,0,0,.35);transform:translateY(8px) scale(.98);transition:transform .25s var(--sx-ease);}
+.sx-modal.show .sx-modal-box{transform:none;}
+.sx-modal-box h3{margin:0 0 6px;font-size:17px;line-height:23px;font-weight:800;color:var(--sx-ink);}
+.sx-modal-box p{margin:0 0 18px;font-size:13.5px;line-height:20px;font-weight:500;color:var(--sx-mut);}
+.sx-modal-box textarea{display:block;width:100%;min-height:140px;margin:6px 0 16px;padding:12px;box-sizing:border-box;border-radius:12px;border:1px solid var(--sx-line);background:var(--sx-bg);color:var(--sx-ink);font:500 14px/1.5 'Plus Jakarta Sans',system-ui,sans-serif;resize:vertical;outline:none;}
+.sx-modal-acts{display:flex;justify-content:flex-end;gap:8px;}
+.sx-modal-acts form{margin:0;}
+
+/* the old page styles (still loaded on pages that are not redesigned yet) must not reach the shell */
+.sx-side,.sx-side *,.sx-top,.sx-top *,.sx-modal,.sx-modal *,.sx-page,.sx-page *{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif!important;}
+#msgModal.sx-modal{display:flex;background:rgba(11,28,20,.5);}
+#msgModal .sx-modal-box{width:100%;max-width:560px;padding:22px;background:var(--sx-card);border:1px solid var(--sx-line);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:0 24px 48px -12px rgba(0,0,0,.35);}
+#msgModal h3{margin:0 0 6px;letter-spacing:0;font-weight:800;}
+#msgModal #msgTextarea{min-height:140px;margin:6px 0 16px;border-radius:12px;border:1px solid var(--sx-line);background:var(--sx-bg);color:var(--sx-ink);}
+#msgModal .sx-modal-acts{margin-top:0;}
+
+/* ── small screens: the menu slides in ── */
+.sx-dim{position:fixed;inset:0;z-index:35;background:rgba(11,28,20,.5);opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s linear .25s;}
+@media (max-width:980px){
+  .sx-side{transform:translateX(-100%);transition:transform .3s var(--sx-ease);box-shadow:none;}
+  .sx-side.is-open{transform:none;box-shadow:24px 0 48px -12px rgba(0,0,0,.4);}
+  .sx-side.is-open + .sx-dim{opacity:1;visibility:visible;transition:opacity .25s;}
+  .sx-main{margin-left:0;}
+  .sx-burger{display:flex;}
+  .sx-top{padding:0 16px;}
+  .sx-content{padding:18px 16px 32px;}
+  .sx-top-date{display:none;}
+}
+@media (prefers-reduced-motion:reduce){
+  .sx-side,.sx-modal,.sx-modal-box,.sx-dim{transition:none;}
 }
-
-html, body{ height:100%; }
-body{
-  font-family: 'Ovelion', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  background:
-    linear-gradient(rgba(6,26,16,.55), rgba(2,19,10,.75)),
-    url("{% static 'img/staff-bg.webp' %}");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  margin: 0;
-  overflow: hidden;
-  height: 100vh;
-}
-
-.wrap{
-  width: calc(100vw - 20px);
-  margin: 10px auto;
-  padding: 0;
-  box-sizing: border-box;
-  height: calc(100vh - 20px);
-}
-
-/* ===========================
-   TOPBAR_LIGHTNING_ANIMATION
-   =========================== */
-
-   .topbar{
-  border-radius:18px;
-  padding:10px 14px;
-  display:flex; align-items:center; justify-content:space-between;
-  margin-bottom:16px;
-
-  /* ✅ CULTURE MIX (NO ANIMATION) */
-  background: linear-gradient(120deg, #c9a33aaf, #0B2B57 af);
-
-  border:2px solid rgba(201,163,58,.65);
-  box-shadow: 0 0 10px rgba(201,163,58,.18), 0 14px 10px rgba(0,0,0,.18);
-  backdrop-filter: blur(10px);
-}
-
-.topbar .btn{
-  position: relative;
-  z-index: 2;
-  background: rgba(0,0,0,.55);
-  border: 1px solid rgba(0,255,255,.25);
-  box-shadow: 0 0 12px rgba(0,200,255,.25);
-}
-
-@keyframes topbarFlow{
-  0%{ background-position: 0% 50%; }
-  50%{ background-position: 100% 50%; }
-  100%{ background-position: 0% 50%; }
-}
-
-.brand{font-family: 'Ovelion', inherit;font-weight: 400;letter-spacing: .04em;}
-.pill{
-  display:inline-flex; gap:10px; align-items:center;
-  padding:10px 14px; border-radius:14px;
-  background:rgba(0,0,0,.35); border:1px solid var(--stroke);
-  backdrop-filter:blur(14px);
-}
-.btn{
-  display:inline-flex; align-items:center; justify-content:center;
-  gap:10px;
-  padding:10px 14px; border-radius:14px;
-  color:var(--txt); text-decoration:none; font-weight:800;
-  border:1px solid var(--stroke);
-  background:rgba(0,0,0,.45);
-  font-family: 'Ovelion', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight: 500;
-  letter-spacing: .04em;
-}
-.btn:hover{ transform:translateY(-1px); }
-
-.topbar .btn{
-  position: relative;
-  z-index: 2;
-  background: rgba(0,0,0,.55);
-  border: 1px solid rgba(0,255,255,.25);
-  box-shadow: 0 0 12px rgba(0,200,255,.25);
-}
-.card{
-  background:var(--card);
-  border:1px solid var(--stroke);
-  border-radius:20px;
-  box-shadow:0 18px 50px rgba(92, 92, 92, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.801);
-  backdrop-filter:blur(18px);
-  overflow:hidden;
-  min-height: 0;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-/* ✅ LEFT MENU CARD = SAME AS view/base.html */
-.card.side{
-  background: linear-gradient(120deg, #c9a33aaf, #0B2B57 af);
-  border:2px solid rgba(201,163,58,.55);
-  box-shadow: 0 18px 50px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.18);
-}
-.card.side .card-h{
-  border-bottom:1px solid rgba(201,163,58,.55);
-  background: linear-gradient(120deg, rgba(11,43,87,.35), rgba(201,163,58,.10));
-}
-.card.side .menu-item.active{
-  background: linear-gradient(135deg, #0A3D78, #C9A33A);
-  color:#fff;
-  border:1px solid rgba(242,210,122,.75);
-}
-/* ✅ Allow inner card scroll on detail pages */
-.card{ min-height:0; }        /* already ok but keep */
-.content{
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-/* ===== MENU CARD (Vertical Shine) ===== */
-/* ===== MENU CARD (LEFT) -> SAME AS TOPBAR COLOR ===== */
-.card.side .menu-item{
-  background: rgba(0,0,0,.22) !important;
-  border: 1px solid rgba(255,255,255,.14) !important;
-}
-.card.side .menu-item:hover{
-  background: rgba(0,0,0,.30) !important;
-}
-
-
-
-.card.side::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:20px;
-  box-shadow:
-    0 0 18px rgba(0,180,255,.18),
-    inset 0 0 26px rgba(0,150,255,.12);
-  pointer-events:none;
-}
-
-.card.side .card-h,
-.card.side .menu-item{
-  position: relative;
-  z-index: 2;
-}
-
-@keyframes menuFlow{
-  0%{ background-position: 0% 50%; }
-  50%{ background-position: 100% 50%; }
-  100%{ background-position: 0% 50%; }
-}
-
-@keyframes menuLightningMove{
-  0%{ left:-160%; }
-  100%{ left:160%; }
-}
-
-/* ✅ IMPORTANT: allow scroll inside form pages too */
-/* ✅ IMPORTANT: allow scroll inside form pages too (ONLY direct page form, not table forms) */
-.card > form{
-  display:flex;
-  flex-direction:column;
-  min-height:0;
-  height:100%;
-}
-.card > form > .content{
-  flex:1;
-  min-height:0;
-  overflow-y:auto;
-}
-.card-h{
-  padding:16px 18px;
-  display:flex; align-items:center; justify-content:space-between;
-  border-bottom:1px solid rgba(255, 255, 255, 0.856);
-}
-.h1{
-  font-family: 'Ovelion', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight: 600;
-  font-size: 18px;
-  letter-spacing: .04em;
-}
-.muted{ color:var(--muted); font-size:14px; }
-
-.grid{
-  display:grid;
-  gap: 12px;
-  height: 100%;
-  align-items: stretch;
-}
-@media(min-width:900px){
-  .grid{ grid-template-columns: 300px 1fr; }
-}
-/* ✅ IMPORTANT: allow right content to shrink correctly (prevents overlap) */
-.grid > .dashboard-card{
-  min-width: 0;
-}
-
-.dot{
-  width:10px; height:10px; border-radius:999px;
-  background:rgba(34,197,94,.9);
-  box-shadow:0 0 16px rgba(34,197,94,.55);
-}
-
-/* ===== Menu items ===== */
-.menu-item{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-
-  padding:12px 14px; border-radius:14px;
-  text-decoration:none; color:var(--txt);
-  border:1px solid rgba(255,255,255,.08);
-  background:rgba(0,0,0,.22);
-  margin:10px 12px;
-
-  font-family: 'Ovelion', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight: 400;
-  letter-spacing: .02em;
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-}
-.menu-left{ display:flex; align-items:center; gap:12px; }
-.menu-icon{ width:22px; height:22px; object-fit:contain; flex:0 0 22px; }
-.menu-text{ font-weight:800; }
-.menu-arrow{ opacity:.75; }
-
-.menu-item:hover{
-  box-shadow:
-    0 0 0 2px rgba(0, 0, 0, 0.623),
-    0 8px 22px rgba(0,0,0,.32),
-    inset 0 1px 0 rgba(255,255,255,.18);
-  border-color:rgba(34,197,94,.26);
-}
-.menu-item.active{
-  border-color: rgba(255,255,255,.28);
-  background: linear-gradient(135deg, rgb(255, 255, 255), rgba(5, 166, 241, 0.349));
-  box-shadow:
-    0 0 0 2px rgba(0, 0, 0, 0.623),
-    0 0 22px rgba(0, 0, 0, 0.384),
-    inset 0 1px 0 rgba(255,255,255,.22);
-  color:#0b2430;
-}
-.menu-item.active .menu-arrow,
-.menu-item.active .menu-text{ color:#0b2430; }
-
-.menu-item:active{
-  background: rgba(255,255,255,.85);
-  color: #0b2430;
-  border-color: rgba(12, 11, 11, 0.65);
-  box-shadow:
-    inset 0 2px 6px rgba(0,0,0,.22),
-    0 0 0 1px rgba(255,255,255,.35);
-  transform: translateY(1px);
-}
-.menu-item:active .menu-arrow{ opacity:.8; }
-
-/* ===== Main scroll area inside card ===== */
-.content{
-  padding:14px;
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  overflow-x: auto;     /* ✅ changed */
-  padding-bottom: 90px;
-  scroll-padding-bottom: 90px;
-
-  scrollbar-gutter: stable both-edges;
-  padding-right: 18px;
-
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-}
-/* ✅ Staff dashboard only: space on top 15px */
-.content.staffdash{
-  padding-top: 15px;
-}
-/* ✅ Professional scrollbar spacing */
-.content{
-  scrollbar-gutter: stable both-edges; /* Chrome/Edge */
-  padding-right: 18px;                /* space for scrollbar */
-}
-.content{
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-}
-/* Chrome/Edge scrollbar */
-.content::-webkit-scrollbar{ width: 10px; }
-.content::-webkit-scrollbar-track{
-  background: rgba(0,0,0,.15);
-  border-radius: 999px;
-}
-.content::-webkit-scrollbar-thumb{
-  background: rgba(255,255,255,.28);
-  border-radius: 999px;
-}
-.content::-webkit-scrollbar-thumb:hover{
-  background: rgba(255,255,255,.38);
-}
-/* ===== Table baseline (SAFE) ===== */
-table{
-  width:100%;
-  border-collapse:collapse;
-  /* ❌ DO NOT use table-layout: fixed; (it causes overlap on resize) */
-}
-
-thead tr{ border-bottom: 1px solid rgba(255, 255, 255, 0.911); }
-tbody tr{ border-bottom: 1px solid rgba(255, 255, 255, 0.911); }
-
-th,td{
-  padding:10px 10px;
-  border-bottom: 0;
-  font-weight: 400;
-  letter-spacing: .02em;
-}
-
-td{ color: rgba(255, 255, 255, 0.96); }
-th{
-  text-align:left;
-  font-size:12px;
-  letter-spacing:.06em;
-  text-transform:uppercase;
-  color:rgba(255,255,255,.90);
-}
-
-/* ✅ Horizontal scroll wrapper for wide tables */
-.table-wrap{
-  width:100%;
-  overflow-x:auto;
-  overflow-y:hidden;
-  -webkit-overflow-scrolling: touch;
-}
-
-input,select{
-  width:100%; box-sizing:border-box;
-  padding:10px 12px; border-radius:12px;
-  border:1px solid rgba(255,255,255,.12);
-  background:rgba(0, 0, 0, 0.829);
-  color:var(--txt);
-  outline:none;
-}
-
-.row-actions{ display:flex; gap:8px; }
-
-.savebtn{
-  padding: 14px 16px;
-  min-width: 74px;
-  border-radius:12px;
-  font-size: 13px;
-  border:1px solid rgba(255,255,255,.22);
-  background: linear-gradient(135deg, rgba(18, 122, 170, 0.89), rgba(0, 0, 0, 0.911));
-  box-shadow:
-    0 0 0 1px rgba(255,255,255,.12),
-    0 0 22px rgba(34,197,94,.14),
-    inset 0 1px 0 rgba(26, 25, 25, 0.22);
-  color:var(--txt);
-  cursor:pointer;
-  font-family: 'Ovelion', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  font-weight: 600;
-  letter-spacing: .04em;
-}
-.savebtn:active{
-  background: rgba(255,255,255,.85);
-  color: #0b2430;
-  box-shadow:
-    inset 0 2px 6px rgba(0,0,0,.25),
-    0 0 0 1px rgba(255,255,255,.6);
-  transform: translateY(1px);
-}
-.savebtn:focus{
-  outline: none;
-  background: rgba(255,255,255,.78);
-  color: #0b2430;
-}
-
-.pager{ display:flex; gap:10px; align-items:center; justify-content:flex-end; padding:12px 14px; }
-.pager a{ color:var(--txt); text-decoration:none; font-weight:800; opacity:.85; }
-.pager a:hover{ opacity:1; }
-
-/* ===== Status select styling ===== */
-.status-select{ background: rgba(0,0,0,.35); color:#fff; font-weight:600; border: 1px solid rgba(255,255,255,.18); }
-.status-select option.status-active{ background-color:#22c55e; color:#fff; }
-.status-select option.status-danger{ background-color:#ef4444; color:#fff; }
-.status-select:has(option:checked.status-danger){
-  background:#FF2C2C;
-  border-color:#FF2C2C;
-  color:#fff;
-  box-shadow: 0 0 0 2px rgba(255,44,44,.95), inset 0 1px 0 rgba(255,255,255,.25);
-}
-.status-select:has(option:checked.status-active){
-  border-color: rgba(34,197,94,.7);
-  box-shadow: 0 0 0 1px rgba(34,197,94,.35);
-}
-.inline-form{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      flex-wrap: nowrap;
-    }
-    .inline-form select{
-      width:auto !important;
-      min-width: 180px;
-      flex: 1 1 auto;
-    }
-    .inline-form .savebtn{
-      flex: 0 0 auto;
-      white-space: nowrap;
-    }
-/* ===== Staff dashboard colorful cards (paste into staff_base.html <style> ) ===== */
-  /* ===== Staff dashboard layout (4 cards row) ===== */
-.stats-grid{
-  display:grid;
-  gap:14px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-/* Tablet: 2 per row */
-@media (max-width: 1100px){
-  .stats-grid{ grid-template-columns: repeat(2, 1fr); }
-}
-/* Mobile: 1 per row */
-@media (max-width: 560px){
-  .stats-grid{ grid-template-columns: 1fr; }
-}
-
-/* ===== Performance card aligns with Loan Applications right edge ===== */
-/* ===== Performance row: 2 cards (LEFT perf, RIGHT user mini) ===== */
-.perf-wrap{
-  margin-top:14px;
-  display:grid;
-  grid-template-columns: 1fr 1fr;   /* 2 cards side-by-side */
-  gap:14px;
-  align-items: stretch;
-}
-
-/* LEFT card */
-.perf-wrap .perf-card{
-  min-height: 360px;
-  height: auto;
-}
-
-/* RIGHT card */
-.perf-wrap .user-mini-card{
-  min-height: 360px;
-  height: auto;
-
-  border-radius: 22px;
-  padding: 16px;
-
-  /* paper / glass */
-  background: rgba(255,255,255,.12);
-  border: 1px solid rgba(255,255,255,.18);
-  box-shadow:
-    0 18px 50px rgba(0,0,0,.35),
-    inset 0 1px 0 rgba(255,255,255,.45);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-}
-
-/* inside text */
-.user-mini-phone{
-  color: rgba(255,255,255,.96);
-  font-weight: 950;
-}
-
-/* rows */
-.user-mini-body .mini-row{
-  display:flex;
-  justify-content:space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255,255,255,.10);
-}
-.user-mini-body .mini-row span{ opacity:.75; }
-.user-mini-body .mini-row strong{ font-weight: 950; }
-
-/* Responsive: stack */
-@media (max-width: 1100px){
-  .perf-wrap{ grid-template-columns: 1fr; }
-  .perf-wrap .perf-card,
-  .perf-wrap .user-mini-card{
-    min-height: 300px;
-  }
-}
-
-/* Responsive: on tablet/mobile full width */
-@media (max-width:1100px){
-  .perf-wrap .user-mini-card{
-    grid-column: 1 / -1;
-    height: auto;
-    min-height: 260px;
-  }
-  .perf-wrap .perf-card{
-    height: auto;
-    min-height: 360px;
-  }
-}
-.stat-card{
-  border-radius:20px;
-  padding:16px 16px 14px;
-  border:1px solid rgba(255,255,255,.14);
-  box-shadow:0 18px 50px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.35);
-  color:#fff;
-  position:relative;
-  overflow:hidden;
-}
-
-.stat-card::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background: radial-gradient(900px 240px at 10% 10%, rgba(255,255,255,.22), transparent 55%);
-  pointer-events:none;
-}
-
-.stat-top{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:10px;
-}
-
-.stat-title{ font-weight:950; font-size:14px; letter-spacing:.02em; }
-.stat-sub{ font-size:11px; opacity:.85; margin-top:2px; }
-
-.stat-ico{
-  width:34px; height:34px;
-  border-radius:12px;
-  background: rgba(0,0,0,.18);
-  border:1px solid rgba(255,255,255,.18);
-  display:flex; align-items:center; justify-content:center;
-  font-size:16px;
-}
-
-.stat-num{
-  font-size:34px;
-  font-weight:950;
-  margin-top:10px;
-  letter-spacing:.02em;
-}
-
-.stat-btn{
-  margin-top:12px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  padding:10px 14px;
-  border-radius:14px;
-  text-decoration:none;
-  font-weight:900;
-  color:#fff;
-  border:1px solid rgba(255,255,255,.18);
-  background: rgba(0,0,0,.18);
-}
-.stat-btn:hover{ transform: translateY(-1px); }
-.stat-btn:active{ transform: translateY(0); opacity:.92; }
-
-/* Color themes */
-.stat-teal{
-  background: linear-gradient(135deg, rgba(16,185,129,.85), rgba(2,132,199,.75));
-}
-.stat-orange{
-  background: linear-gradient(135deg, rgba(249,115,22,.9), rgba(245,158,11,.75));
-}
-.stat-purple{
-  background: linear-gradient(135deg, rgba(168,85,247,.9), rgba(236,72,153,.75));
-}
-/* ===== Payment Method Bright Glass ===== */
-.stat-dark{
-  background: linear-gradient(
-    135deg,
-    rgba(255,255,255,.75),
-    rgba(220,230,240,.65)
-  );
-
-  border: 1px solid rgba(255,255,255,.6);
-
-  box-shadow:
-    0 0 25px rgba(255,255,255,.35),
-    inset 0 1px 0 rgba(255,255,255,.9);
-
-  color:#0b2430;
-}
-
-/* fix text color inside */
-.stat-dark .stat-title,
-.stat-dark .stat-num{
-  color:#0b2430;
-}
-/* ===== Stat card icon (webp) ===== */
-.stat-ico{
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background: rgba(255,255,255,.18);
-  border: 1px solid rgba(255,255,255,.22);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.25);
-}
-.stat-ico img{
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-  display:block;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,.25));
-}
-
-/* ===== Performance Overview card ===== */
-.perf-card{
-  border-radius: 22px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(0,0,0,.30);
-  box-shadow: 0 18px 50px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.18);
-  padding: 16px;
-}
-
-.perf-head{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom: 12px;
-}
-.perf-title{
-  font-size:18px;
-  font-weight:900;
-  color:#fff;
-}
-.perf-sub{
-  font-size:12px;
-  opacity:.75;
-  color:#eafff1;
-  margin-top:4px;
-}
-
-.perf-bars{
-  display:flex;
-  align-items:flex-end;
-  justify-content:space-between;
-  gap: 18px;                 /* ✅ space រវាង bar */
-  min-height: 300px;
-
-  padding: 10px 22px 60px;   /* ✅ បន្ថែម padding ស្ដាំ/ឆ្វេង + ខាងក្រោម */
-  box-sizing: border-box;
-
-  border-radius:18px;
-  background: rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.10);
-
-  overflow: hidden;          /* ✅ កុំឲ្យអ្វីលានក្រៅ card */
-}
-
-.bar{
-  width:28px;              /* ស្គម */
-  border-radius:12px;
-  display:flex;
-  align-items:flex-end;
-  justify-content:center;
-  position:relative;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.25);
-  flex: 1 1 0;
-  min-width: 0;
-}
-.bar span{
-  position:absolute;
-  bottom: -32px;           /* ✅ ចុះក្រោមបន្តិច */
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 14px;         /* ✅ ធំឡើង (ប្រហែល +3px) */
-  font-weight: 900;
-  opacity: .90;
-  color:#eafff1;
-  white-space: nowrap;
-  padding: 0 6px;
-  max-width: 100%;
-  text-align: center;
-}
-
-.bar i{
-  position:absolute;
-  top: 10px;
-  font-style: normal;
-  font-size: 12px;
-  font-weight: 950;
-  color: rgba(255,255,255,.95);
-  text-shadow: 0 6px 20px rgba(0,0,0,.35);
-}
-
-.bar.teal{ background: linear-gradient(180deg, rgba(0,255,204,.95), rgba(0,110,120,.75)); }
-.bar.orange{ background: linear-gradient(180deg, rgba(255,140,60,.95), rgba(160,70,10,.75)); }
-.bar.purple{ background: linear-gradient(180deg, rgba(255,60,200,.95), rgba(120,40,140,.75)); }
-
-@media (max-width: 980px){
-  .perf-bars{ grid-template-columns: repeat(3, 1fr); height: 220px; }
-}
-/* ===== Perf animations ===== */
-.perf-bars .bar{
-  transform-origin: bottom;
-  animation: barGrow 900ms cubic-bezier(.2,.9,.2,1) both;
-}
-
-.perf-bars .bar:nth-child(1){ animation-delay: 80ms; }
-.perf-bars .bar:nth-child(2){ animation-delay: 160ms; }
-.perf-bars .bar:nth-child(3){ animation-delay: 240ms; }
-.perf-bars .bar:nth-child(4){ animation-delay: 320ms; }
-.perf-bars .bar:nth-child(5){ animation-delay: 400ms; }
-.perf-bars .bar:nth-child(6){ animation-delay: 480ms; }
-
-@keyframes barGrow{
-  from{ transform: scaleY(0.12); filter: saturate(.9); opacity: .75; }
-  to  { transform: scaleY(1);    filter: saturate(1);  opacity: 1; }
-}
-/* ===== Dashboard Search ===== */
-.dash-search{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-.dash-select{
-  height:42px;
-  padding:0 12px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,.18);
-  background:rgba(0,0,0,.38);
-  color:#fff;
-  min-width:150px;
-}
-.dash-input{
-  height:42px;
-  width:240px;
-  padding:0 14px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.18);
-  background:rgba(0,0,0,.40);
-  color:#fff;
-}
-.dash-btn{
-  height:42px;
-  padding:0 18px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.18);
-  background:linear-gradient(135deg,#127aaa,#000);
-  color:#fff;
-  font-weight:900;
-  cursor:pointer;
-}
-
-/* ===== Bright White Titles ===== */
-.brand,
-.h1{
-  color: #ffffff !important;
-  font-weight: 800;
-  letter-spacing: .04em;
-
-  text-shadow:
-    0 0 6px rgba(255,255,255,.6),
-    0 0 14px rgba(0,200,255,.35);
-}
-
-/* Optional – Make subtitle slightly brighter too */
-.muted{
-  color: rgba(255,255,255,.88);
-}
-/* ===== Neon White Glow Titles ===== */
-
-/* Topbar buttons */
-.topbar .btn{
-  color:#ffffff !important;
-  font-weight:800;
-  text-shadow:
-    0 0 6px rgba(255,255,255,.7),
-    0 0 14px rgba(0,200,255,.45);
-}
-
-/* Performance Overview title */
-.perf-title{
-  color:#ffffff !important;
-  font-weight:900;
-  text-shadow:
-    0 0 6px rgba(255,255,255,.7),
-    0 0 14px rgba(0,200,255,.45);
-}
-
-/* Optional – make subtitle slightly glow too */
-.perf-sub{
-  color:rgba(255,255,255,.9);
-}
-
-/* ===== User Mini Detail Card ===== */
-.user-mini-card{
-  border-radius:22px;
-  border:1px solid rgba(255,255,255,.12);
-  background: rgba(0,0,0,.45);
-  box-shadow: 0 18px 50px rgba(0,0,0,.45),
-              inset 0 1px 0 rgba(255,255,255,.15);
-  padding:18px;
-  min-height:260px;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
-  animation: fadeInUser 400ms ease;
-}
-
-@keyframes fadeInUser{
-  from{opacity:0; transform:translateY(20px);}
-  to{opacity:1; transform:translateY(0);}
-}
-
-.user-mini-head{
-  display:flex;
-  align-items:center;
-  gap:14px;
-  margin-bottom:14px;
-}
-
-.user-mini-icon{
-  width:52px;
-  height:52px;
-  border-radius:16px;
-  background:rgba(255,255,255,.15);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.user-mini-icon img{
-  width:28px;
-  height:28px;
-}
-
-.user-mini-phone{
-  font-size:18px;
-  font-weight:900;
-  color:#fff;
-  text-shadow:0 0 10px rgba(0,200,255,.4);
-}
-
-.user-mini-body{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
-.mini-row{
-  display:flex;
-  justify-content:space-between;
-  font-size:14px;
-  color:rgba(255,255,255,.85);
-}
-
-.mini-row strong{
-  color:#ffffff;
-  font-weight:900;
-}
-/* ===== User mini card (right side) ===== */
-.perf-wrap .user-mini-card{
-  grid-column: 3 / span 2;     /* ឲ្យទៅខាងស្តាំ 2 columns */
-  min-height: 360px;
-  border-radius: 22px;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(0,0,0,.30);
-  box-shadow: 0 18px 50px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.18);
-  padding: 16px;
-}
-
-@media (max-width:1100px){
-  .perf-wrap .user-mini-card{ grid-column: 1 / -1; } /* Tablet/mobile => xuốngក្រោម */
-}
-
-.user-mini-head{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom: 14px;
-}
-.user-mini-icon{
-  width:42px;height:42px;
-  border-radius:14px;
-  display:flex;align-items:center;justify-content:center;
-  background: rgba(255,255,255,.10);
-  border: 1px solid rgba(255,255,255,.14);
-}
-.user-mini-icon img{ width:20px;height:20px; }
-.user-mini-phone{
-  font-weight: 950;
-  color: rgba(255,255,255,.95);
-}
-.user-mini-body .mini-row{
-  display:flex;
-  justify-content:space-between;
-  padding: 10px 0;
-  border-bottom: 1px solid rgba(255,255,255,.08);
-}
-.user-mini-body .mini-row span{ opacity:.75; }
-.user-mini-body .mini-row strong{ color: rgba(255,255,255,.95); }
-
-/* Make phone links white (tables/pages) */
-table a{
-  color: rgba(255,255,255,.95) !important;
-  text-decoration: none;
-}
-table a:hover{
-  text-decoration: underline;
-}
-/* ===== WELCOME ANIMATION: play ONCE per session ===== */
-body.no-welcome-anim .pill.pill-anim-top,
-body.no-welcome-anim .card.card-anim,
-body.no-welcome-anim .card.card-anim-left{
-  animation: none !important;
-  opacity: 1 !important;
-  transform: none !important;
-}
-.period-buttons{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-}
-
-.period-btn{
-  padding:10px 22px;
-  min-height:42px;
-
-  border-radius:8px;              /* ⬅ មិនមូលទៀត */
-  border:1px solid rgba(255,255,255,.18);
-
-  background:rgba(255,255,255,.06);
-  color:#fff;
-
-  font-size:14px;                  /* ⬅ ធំជាងមុន */
-  font-weight:800;
-  letter-spacing:.3px;
-
-  cursor:pointer;
-  transition:all .2s ease;
-}
-
-.period-btn:hover{
-  background:rgba(255,255,255,.14);
-  transform:translateY(-1px);
-}
-
-.period-btn.active{
-  background:linear-gradient(90deg,#004182,#0a6ad6);
-  border:1px solid #0a6ad6;
-  box-shadow:0 6px 18px rgba(0,0,0,.45);
-}
-body, body *{
-  font-family: 'Ovelion', sans-serif !important;
-}
-/* ===== Staff responsive fix (PHONE) ===== */
-
-/* allow page scroll on phone (important) */
-body{
-  overflow: auto !important;
-  height: auto !important;
-  min-height: 100vh;
-}
-
-/* wrap height flexible on phone */
-.wrap{
-  height: auto !important;
-  min-height: calc(100vh - 20px);
-}
-
-/* topbar not overlap */
-.topbar{
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.pill{
-  flex-wrap: wrap;
-}
-
-/* grid: stack menu + content on phone */
-@media (max-width: 900px){
-  .grid{
-    grid-template-columns: 1fr !important;   /* 1 column */
-    height: auto !important;
-  }
-
-  .card{
-    height: auto !important;                /* don't force full height */
-    min-height: 0;
-  }
-
-  .content{
-    padding-bottom: 40px;                   /* prevent bottom cut */
-    overflow: visible;                      /* allow normal flow */
-  }
-
-  /* table/forms avoid squeeze */
-  table{ table-layout: auto !important; }
-  input, select, textarea{ width: 100% !important; }
-}
-
-/* very small phones */
-@media (max-width: 560px){
-  .dash-search{ flex-wrap: wrap; }
-  .dash-input{ width: 100% !important; }
-  .dash-select{ width: 100% !important; }
-  .dash-btn{ width: 100% !important; }
-}
-
-/* ✅ FIX: allow scroll anywhere (whole page) */
-html, body{
-  height: auto !important;
-}
-
-body{
-  overflow-y: auto !important;
-  overflow-x: hidden !important;
-}
-
-/* remove forced full-screen height */
-.wrap{
-  height: auto !important;
-  min-height: calc(100vh - 20px) !important;
-}
-
-.grid{
-  height: auto !important;
-}
-
-.card{
-  height: auto !important;
-}
-
-/* stop inner-scroll taking over wheel */
-.content{
-  overflow: visible !important;
-}
-
-thead tr{ border-bottom: 1px solid rgba(255, 255, 255, 0.911); }
-th{ text-align:left; font-size:12px; letter-spacing:.06em; text-transform:uppercase; color:rgba(255,255,255,.90); }
-
-/* ===============================
-   STAFF TABLE HEADER BAR (ALL STAFF PAGES)
-   =============================== */
-
-/* Only tables inside the RIGHT content card */
-.dashboard-card table thead th{
-  background: #004182;              /* culture / brand color */
-  color: #ffffff !important;
-  font-weight: 900;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  border-bottom: 0 !important;
-}
-
-/* remove the old white border under thead */
-.dashboard-card table thead tr{
-  border-bottom: 0 !important;
-}
-
-/* make it look like one clean bar */
-.dashboard-card table thead th:first-child{
-  border-top-left-radius: 10px;
-  border-bottom-left-radius: 10px;
-}
-.dashboard-card table thead th:last-child{
-  border-top-right-radius: 10px;
-  border-bottom-right-radius: 10px;
-}
-
-/* keep header visible when scroll long table */
-.dashboard-card table thead th{
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-/* ===== ONLY change TITLE area inside RIGHT big card ===== */
-:root{ --staff-blue: #004182; }
-
-/* Users (title) */
-.dashboard-card .h1{
-  color: var(--staff-blue) !important;
-  text-shadow: none !important;
-}
-
-/* "Edit status, OTP, messages" (subtitle) */
-.dashboard-card .muted{
-  color: rgba(0, 65, 130, 0.75) !important;
-  text-shadow: none !important;
-}
-/* ==================================================
-   ALL STAFF TABLE BODY TEXT -> BLUE (ALL PAGES)
-   (Only rows data / tbody. Not the header row)
-   ================================================== */
-   :root{
-  --staff-blue: #004182;
-}
-
-/* all text inside table rows */
-.dashboard-card table tbody td,
-.dashboard-card table tbody td a,
-.dashboard-card table tbody td span,
-.dashboard-card table tbody td strong,
-.dashboard-card table tbody td b{
-  color: var(--staff-blue) !important;
-  text-shadow: none !important;
-  font-weight: 700;
-}
-
-/* if some pages use <p> or <div> inside td */
-.dashboard-card table tbody td p,
-.dashboard-card table tbody td div{
-  color: var(--staff-blue) !important;
-}
-
-/* OPTIONAL: make text inside inputs/selects also blue (for pages that use input fields) */
-.dashboard-card table tbody td input,
-.dashboard-card table tbody td select,
-.dashboard-card table tbody td textarea{
-  color: var(--staff-blue) !important;
-}
-/* =========================================
-   RIGHT BIG CARD -> CLEAN WHITE BACKGROUND
-   (ALL STAFF PAGES)
-   ========================================= */
-   .dashboard-card{
-  background: #ffffffe8 !important;
-  border: 1px solid #e5e7eb !important;
-  box-shadow: 0 10px 30px rgba(0,0,0,.08) !important;
-  backdrop-filter: none !important;
-}
-
-/* remove dark glass effect if any */
-.dashboard-card::before,
-.dashboard-card::after{
-  display: none !important;
-}
-.dashboard-card thead tr{
-  background: #004182 !important;
-}
-
-.dashboard-card thead th{
-  color: #ffffff !important;
-}
-
-/* =========================================================
-   STAFF TABLE: REMOVE BLACK BOX INPUTS + ADD VERTICAL LINES
-   (ALL STAFF PAGES inside .dashboard-card)
-   ========================================================= */
-
-/* 1) Make table look clean + allow vertical separators */
-.dashboard-card table{
-  border-collapse: separate !important;
-  border-spacing: 0 !important;
-}
-
-
-
-/* Remove line on first column */
-.dashboard-card table thead th:first-child,
-.dashboard-card table tbody td:first-child{
-  border-left: 0 !important;
-}
-
-/* Optional: keep horizontal row separators light */
-.dashboard-card table tbody tr td{
-  border-bottom: 1px solid rgba(0,0,0,.10) !important;
-}
-
-/* 3) REMOVE the black box backgrounds for inputs/select/textarea inside tables */
-.dashboard-card table tbody td input,
-.dashboard-card table tbody td select,
-.dashboard-card table tbody td textarea{
-  background: transparent !important;   /* remove black box */
-  border: 0 !important;
-  border-bottom: 2px solid rgba(0,0,0,.45) !important; /* underline style */
-  border-radius: 0 !important;
-  box-shadow: none !important;
-
-  padding: 8px 6px !important;
-  color: #004182 !important;            /* keep your blue text */
-  font-weight: 800 !important;
-  outline: none !important;
-}
-
-/* 4) Focus style (clean) */
-.dashboard-card table tbody td input:focus,
-.dashboard-card table tbody td select:focus,
-.dashboard-card table tbody td textarea:focus{
-  border-bottom-color: #004182 !important;
-}
-
-/* 5) Placeholder color */
-.dashboard-card table tbody td input::placeholder,
-.dashboard-card table tbody td textarea::placeholder{
-  color: rgba(0,65,130,.55) !important;
-}
-
-/* 6) If some pages use "status-select" class, force same no-box style */
-.dashboard-card .status-select{
-  background: transparent !important;
-  border: 0 !important;
-  border-bottom: 2px solid rgba(0,0,0,.45) !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  color: #004182 !important;
-}
-
-/* 7) Make sure links in table stay blue too */
-.dashboard-card table tbody td a{
-  color: #004182 !important;
-  text-decoration: none;
-}
-.dashboard-card table tbody td a:hover{
-  text-decoration: underline;
-}
-
-/* ================================================================
-   THEME TOGGLE BUTTON (topbar)
-   ================================================================ */
-.theme-toggle{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  height:42px;
-  padding:0 14px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.22);
-  background: rgba(0,0,0,.55);
-  color:#fff;
-  font-weight:800;
-  cursor:pointer;
-  font-family: inherit;
-  letter-spacing: .04em;
-  text-shadow:
-    0 0 6px rgba(255,255,255,.7),
-    0 0 14px rgba(0,200,255,.45);
-  box-shadow: 0 0 12px rgba(0,200,255,.25);
-}
-.theme-toggle:hover{ transform: translateY(-1px); }
-.theme-toggle .tt-ico{ font-size: 16px; line-height: 1; }
-html[data-theme="dark"] .theme-toggle .tt-sun{ display:inline; }
-html[data-theme="dark"] .theme-toggle .tt-moon{ display:none; }
-html[data-theme="light"] .theme-toggle .tt-sun{ display:none; }
-html[data-theme="light"] .theme-toggle .tt-moon{ display:inline; }
-
-/* ================================================================
-   DARK MODE (whole staff site)
-   ================================================================ */
-html[data-theme="dark"] body{
-  background:
-    linear-gradient(rgba(2,6,14,.85), rgba(0,0,0,.92)),
-    url("{% static 'img/staff-bg.webp' %}") !important;
-  background-size: cover !important;
-  background-position: center !important;
-  background-repeat: no-repeat !important;
-  background-attachment: fixed !important;
-  color:#eaf2ff;
-}
-
-/* Topbar */
-html[data-theme="dark"] .topbar{
-  background: linear-gradient(120deg, rgba(11,43,87,.95), rgba(2,6,14,.95)) !important;
-  border:2px solid rgba(201,163,58,.55) !important;
-  box-shadow: 0 0 18px rgba(0,180,255,.18), 0 14px 14px rgba(0,0,0,.4) !important;
-}
-html[data-theme="dark"] .pill{
-  background: rgba(0,0,0,.55) !important;
-  border:1px solid rgba(255,255,255,.10) !important;
-}
-html[data-theme="dark"] .topbar .btn,
-html[data-theme="dark"] .theme-toggle{
-  background: rgba(0,0,0,.65) !important;
-  border:1px solid rgba(0,200,255,.35) !important;
-}
-
-/* Side menu */
-html[data-theme="dark"] .card.side{
-  background: linear-gradient(160deg, rgba(11,43,87,.85), rgba(2,6,14,.85)) !important;
-  border:2px solid rgba(201,163,58,.45) !important;
-}
-html[data-theme="dark"] .card.side .card-h{
-  background: linear-gradient(120deg, rgba(11,43,87,.55), rgba(0,0,0,.45)) !important;
-  border-bottom:1px solid rgba(201,163,58,.45) !important;
-}
-html[data-theme="dark"] .card.side .menu-item{
-  background: rgba(0,0,0,.45) !important;
-  border:1px solid rgba(255,255,255,.10) !important;
-  color:#eaf2ff !important;
-}
-html[data-theme="dark"] .card.side .menu-item:hover{
-  background: rgba(0,0,0,.65) !important;
-}
-html[data-theme="dark"] .card.side .menu-item.active{
-  background: linear-gradient(135deg, #0A3D78, #C9A33A) !important;
-  color:#fff !important;
-}
-html[data-theme="dark"] .card.side .menu-item.active .menu-text,
-html[data-theme="dark"] .card.side .menu-item.active .menu-arrow{
-  color:#fff !important;
-}
-
-/* RIGHT dashboard card (the white card in light mode) */
-html[data-theme="dark"] .dashboard-card{
-  background: rgba(8,14,28,.92) !important;
-  border: 1px solid rgba(255,255,255,.10) !important;
-  box-shadow: 0 18px 50px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.08) !important;
-  color:#eaf2ff !important;
-}
-html[data-theme="dark"] .dashboard-card .h1{
-  color:#eaf2ff !important;
-  text-shadow:
-    0 0 6px rgba(255,255,255,.5),
-    0 0 14px rgba(0,200,255,.35) !important;
-}
-html[data-theme="dark"] .dashboard-card .muted{
-  color: rgba(234,242,255,.7) !important;
-}
-
-/* Tables: header bar and body text */
-html[data-theme="dark"] .dashboard-card table thead th{
-  background:#0A3D78 !important;
-  color:#fff !important;
-}
-html[data-theme="dark"] .dashboard-card thead tr{
-  background:#0A3D78 !important;
-}
-html[data-theme="dark"] .dashboard-card table tbody td,
-html[data-theme="dark"] .dashboard-card table tbody td a,
-html[data-theme="dark"] .dashboard-card table tbody td span,
-html[data-theme="dark"] .dashboard-card table tbody td strong,
-html[data-theme="dark"] .dashboard-card table tbody td b,
-html[data-theme="dark"] .dashboard-card table tbody td p,
-html[data-theme="dark"] .dashboard-card table tbody td div{
-  color:#eaf2ff !important;
-}
-html[data-theme="dark"] .dashboard-card table tbody tr td{
-  border-bottom: 1px solid rgba(255,255,255,.10) !important;
-}
-
-/* Inputs/selects/textareas inside the dashboard card tables */
-html[data-theme="dark"] .dashboard-card table tbody td input,
-html[data-theme="dark"] .dashboard-card table tbody td select,
-html[data-theme="dark"] .dashboard-card table tbody td textarea{
-  background: transparent !important;
-  border-bottom: 2px solid rgba(255,255,255,.30) !important;
-  color:#eaf2ff !important;
-}
-html[data-theme="dark"] .dashboard-card table tbody td input::placeholder,
-html[data-theme="dark"] .dashboard-card table tbody td textarea::placeholder{
-  color: rgba(234,242,255,.55) !important;
-}
-html[data-theme="dark"] .dashboard-card table tbody td input:focus,
-html[data-theme="dark"] .dashboard-card table tbody td select:focus,
-html[data-theme="dark"] .dashboard-card table tbody td textarea:focus{
-  border-bottom-color:#5fb1ff !important;
-}
-html[data-theme="dark"] .dashboard-card .status-select{
-  color:#eaf2ff !important;
-  border-bottom: 2px solid rgba(255,255,255,.30) !important;
-}
-
-/* General inputs/selects outside tables */
-html[data-theme="dark"] input,
-html[data-theme="dark"] select,
-html[data-theme="dark"] textarea{
-  background: rgba(0,0,0,.55) !important;
-  border:1px solid rgba(255,255,255,.18) !important;
-  color:#eaf2ff !important;
-}
-
-/* Stat cards / perf card */
-html[data-theme="dark"] .perf-card{
-  background: rgba(0,0,0,.55) !important;
-  border:1px solid rgba(255,255,255,.10) !important;
-}
-html[data-theme="dark"] .perf-bars{
-  background: rgba(255,255,255,.04) !important;
-  border:1px solid rgba(255,255,255,.08) !important;
-}
-html[data-theme="dark"] .user-mini-card,
-html[data-theme="dark"] .perf-wrap .user-mini-card{
-  background: rgba(0,0,0,.55) !important;
-  border:1px solid rgba(255,255,255,.10) !important;
-}
-
-/* Bright stat-dark card needs darker treatment in dark mode */
-html[data-theme="dark"] .stat-dark{
-  background: linear-gradient(135deg, rgba(20,30,50,.85), rgba(8,14,28,.85)) !important;
-  border:1px solid rgba(255,255,255,.18) !important;
-  color:#eaf2ff !important;
-}
-html[data-theme="dark"] .stat-dark .stat-title,
-html[data-theme="dark"] .stat-dark .stat-num{
-  color:#eaf2ff !important;
-}
-
-/* Dashboard search */
-html[data-theme="dark"] .dash-input,
-html[data-theme="dark"] .dash-select{
-  background: rgba(0,0,0,.55) !important;
-  border:1px solid rgba(255,255,255,.18) !important;
-  color:#eaf2ff !important;
-}
-html[data-theme="dark"] .dash-btn{
-  background: linear-gradient(135deg,#0A3D78,#000) !important;
-  border:1px solid rgba(255,255,255,.22) !important;
-  color:#fff !important;
-}
-
-/* Period buttons */
-html[data-theme="dark"] .period-btn{
-  background: rgba(255,255,255,.06) !important;
-  border:1px solid rgba(255,255,255,.18) !important;
-  color:#eaf2ff !important;
-}
-html[data-theme="dark"] .period-btn.active{
-  background: linear-gradient(90deg,#0A3D78,#0a6ad6) !important;
-  border:1px solid #0a6ad6 !important;
-}
-
-/* Modals already dark — keep, but ensure msgModal looks dark too */
-html[data-theme="dark"] #msgModal .modal-box{
-  background: rgba(15,20,32,.96) !important;
-  border:1px solid rgba(255,255,255,.10) !important;
-  color:#eaf2ff !important;
-}
-html[data-theme="dark"] #msgModal h3{
-  color:#eaf2ff !important;
-}
-html[data-theme="dark"] #msgTextarea{
-  background: rgba(0,0,0,.65) !important;
-  border:1px solid rgba(255,255,255,.18) !important;
-  color:#eaf2ff !important;
-}
-
-/* Save button accent */
-html[data-theme="dark"] .savebtn{
-  background: linear-gradient(135deg, rgba(10,61,120,.95), rgba(0,0,0,.95)) !important;
-  border:1px solid rgba(255,255,255,.22) !important;
-  color:#fff !important;
-}
-
-/* Scrollbar in dark */
-html[data-theme="dark"] .content::-webkit-scrollbar-track{
-  background: rgba(255,255,255,.04) !important;
-}
-html[data-theme="dark"] .content::-webkit-scrollbar-thumb{
-  background: rgba(255,255,255,.18) !important;
-}
-
-/* ================================================================
-   DARK MODE — beat page-level blue color overrides on every staff page
-   (forces every blue text/link/input inside .dashboard-card to white)
-   ================================================================ */
-
-/* Users page: phone link + balance input */
-html[data-theme="dark"] .dashboard-card .users-table td.phone a.u-link,
-html[data-theme="dark"] .dashboard-card .users-table td.balance-cell,
-html[data-theme="dark"] .dashboard-card .users-table td.balance-cell input.balance-input{
-  color:#ffffff !important;
-}
-
-/* Loans page links/text */
-html[data-theme="dark"] .dashboard-card .loans-table td a,
-html[data-theme="dark"] .dashboard-card .loans-table td,
-html[data-theme="dark"] .dashboard-card .loans-table td input,
-html[data-theme="dark"] .dashboard-card .loans-table td select,
-html[data-theme="dark"] .dashboard-card .loans-table td textarea{
-  color:#ffffff !important;
-}
-
-/* Withdrawals + Payment methods */
-html[data-theme="dark"] .dashboard-card #pmTable td a,
-html[data-theme="dark"] .dashboard-card #pmTable td,
-html[data-theme="dark"] .dashboard-card #pmTable td input,
-html[data-theme="dark"] .dashboard-card #pmTable td select{
-  color:#ffffff !important;
-}
-
-/* Catch-all: any descendant of .dashboard-card whose author CSS forced
-   the blue brand color — flip to white in dark mode */
-html[data-theme="dark"] .dashboard-card td,
-html[data-theme="dark"] .dashboard-card td a,
-html[data-theme="dark"] .dashboard-card td span,
-html[data-theme="dark"] .dashboard-card td strong,
-html[data-theme="dark"] .dashboard-card td b,
-html[data-theme="dark"] .dashboard-card td p,
-html[data-theme="dark"] .dashboard-card td div,
-html[data-theme="dark"] .dashboard-card td input,
-html[data-theme="dark"] .dashboard-card td select,
-html[data-theme="dark"] .dashboard-card td textarea,
-html[data-theme="dark"] .dashboard-card .h1,
-html[data-theme="dark"] .dashboard-card .h2,
-html[data-theme="dark"] .dashboard-card label,
-html[data-theme="dark"] .dashboard-card .muted{
-  color:#ffffff !important;
-}
-html[data-theme="dark"] .dashboard-card .muted{
-  color: rgba(255,255,255,.75) !important;
-}
-
-/* Inline-style elements (style="color:#004182") still override class CSS,
-   but scoping them to the dashboard-card with attribute selector + dark
-   gives us enough specificity */
-html[data-theme="dark"] .dashboard-card [style*="#004182"],
-html[data-theme="dark"] .dashboard-card [style*="#0b3b66"]{
-  color:#ffffff !important;
-}
-
-/* Status-select keep readable on dark */
-html[data-theme="dark"] .dashboard-card .status-select{
-  color:#ffffff !important;
-}
-
-/* Placeholder color in dark */
-html[data-theme="dark"] .dashboard-card td input::placeholder,
-html[data-theme="dark"] .dashboard-card td textarea::placeholder{
-  color: rgba(255,255,255,.55) !important;
-}
-
-/* ================================================================
-   DARK MODE — Loans page #loanTable specific blue text overrides
-   ================================================================ */
-html[data-theme="dark"] .dashboard-card #loanTable td,
-html[data-theme="dark"] .dashboard-card #loanTable td a,
-html[data-theme="dark"] .dashboard-card #loanTable td.col-phone,
-html[data-theme="dark"] .dashboard-card #loanTable td.col-phone a.u-link,
-html[data-theme="dark"] .dashboard-card #loanTable td.col-amount,
-html[data-theme="dark"] .dashboard-card #loanTable td.col-term,
-html[data-theme="dark"] .dashboard-card #loanTable td.col-created{
-  color:#ffffff !important;
-}
-html[data-theme="dark"] .dashboard-card #loanTable tbody tr:hover{
-  background: rgba(255,255,255,.06) !important;
-}
-/* Status select inside #loanTable keeps its colored badge styles —
-   only the default (unstyled / no class) variant gets white text */
-html[data-theme="dark"] .dashboard-card #loanTable td:nth-child(6) select{
-  background:#1e293b !important;
-  color:#ffffff !important;
-}
-html[data-theme="dark"] .dashboard-card #loanTable td:nth-child(6) select.approved{
-  background:#22c55e !important; color:#fff !important;
-}
-html[data-theme="dark"] .dashboard-card #loanTable td:nth-child(6) select.review{
-  background:#facc15 !important; color:#111827 !important;
-}
-
-/* ================================================================
-   DARK MODE — Withdrawals page #withdrawalsTable specific overrides
-   ================================================================ */
-html[data-theme="dark"] .dashboard-card #withdrawalsTable td,
-html[data-theme="dark"] .dashboard-card #withdrawalsTable td a,
-html[data-theme="dark"] .dashboard-card #withdrawalsTable td:nth-child(3),
-html[data-theme="dark"] .dashboard-card #withdrawalsTable td:nth-child(3) a{
-  color:#ffffff !important;
-}
-html[data-theme="dark"] .dashboard-card #withdrawalsTable .cs-score-display{
-  color:#ffffff !important;
-  background: rgba(255,255,255,.06) !important;
-  border:1px solid rgba(255,255,255,.18) !important;
-}
-html[data-theme="dark"] .dashboard-card #withdrawalsTable tbody tr:hover{
-  background: rgba(255,255,255,.06) !important;
-}
-
-/* ================================================================
-   DARK MODE — Users page (.users-table) specific overrides
-   ================================================================ */
-html[data-theme="dark"] .dashboard-card .users-table td,
-html[data-theme="dark"] .dashboard-card .users-table td a,
-html[data-theme="dark"] .dashboard-card .users-table td input,
-html[data-theme="dark"] .dashboard-card .users-table td select{
-  color:#ffffff !important;
-}
-
-/* ================================================================
-   DARK MODE — Payment Methods page (#pmTable) specific overrides
-   ================================================================ */
-html[data-theme="dark"] .dashboard-card #pmTable td,
-html[data-theme="dark"] .dashboard-card #pmTable td a,
-html[data-theme="dark"] .dashboard-card #pmTable td:nth-child(2) a,
-html[data-theme="dark"] .dashboard-card #pmTable td input,
-html[data-theme="dark"] .dashboard-card #pmTable td select{
-  color:#ffffff !important;
-}
-
-/* ================================================================
-   DARK MODE — All modal popups (.modal-card style used in staff pages)
-   ================================================================ */
-html[data-theme="dark"] .modal{
-  background: rgba(0,0,0,.70) !important;
-}
-html[data-theme="dark"] .modal-card{
-  background:#0f172a !important;
-  color:#eaf2ff !important;
-  box-shadow: 0 18px 60px rgba(0,0,0,.65) !important;
-  border:1px solid rgba(255,255,255,.10) !important;
-}
-html[data-theme="dark"] .modal-head{
-  background:#1e293b !important;
-  border-bottom:1px solid rgba(255,255,255,.08) !important;
-}
-html[data-theme="dark"] .modal-title{
-  color:#ffffff !important;
-}
-html[data-theme="dark"] .modal-sub{
-  color: rgba(255,255,255,.75) !important;
-}
-html[data-theme="dark"] .modal-x{
-  background:#334155 !important;
-  color:#fff !important;
-}
-html[data-theme="dark"] .modal-label{
-  color: rgba(255,255,255,.85) !important;
-}
-html[data-theme="dark"] .modal-input{
-  background:#1e293b !important;
-  color:#ffffff !important;
-  border:1px solid rgba(255,255,255,.12) !important;
-}
-html[data-theme="dark"] .modal-input::placeholder{
-  color: rgba(255,255,255,.55) !important;
-}
-html[data-theme="dark"] .modal-save{
-  background:#0a6ad6 !important;
-  color:#fff !important;
-}
-html[data-theme="dark"] .modal-cancel{
-  background:#475569 !important;
-  color:#fff !important;
-  border:0 !important;
-}
-html[data-theme="dark"] .modal-msg{
-  color:#5fb1ff !important;
-}
-
   </style>
+  {% block extra_css %}{% endblock %}
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <div class="pill pill-anim-top">
-        <div class="brand">Control Site / Login By</div>
-        <div class="muted">({{ request.user.phone }})</div>
-      </div>
-      <div class="pill pill-anim-top">
-        <button type="button" class="theme-toggle" id="staffThemeToggle" aria-label="Toggle theme">
-          <span class="tt-ico tt-sun">☀</span>
-          <span class="tt-ico tt-moon">🌙</span>
-          <span class="tt-label"></span>
-        </button>
-        <a class="btn" href="{% url 'staff_dashboard' %}">Dashboard</a>
-        <a class="btn" href="#" id="staffLogoutBtn">Logout</a>
+<script>document.documentElement.classList.add("sx");</script>
+<!-- Icons: Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0) Copyright 2023 Fonticons, Inc. -->
+<div class="sx-shell">
+  <aside class="sx-side" id="sxSide" aria-label="Staff menu">
+    <a class="sx-brand" href="{% url 'staff_dashboard' %}"><img src="{% static 'img/apex-logo.svg' %}" alt="" width="38" height="38"><span><b>APEX</b><small>Staff panel</small></span></a>
+    <p class="sx-nav-label">Menu</p>
+    {% with u=request.resolver_match.url_name %}
+    <nav class="sx-nav">
+      <a href="{% url 'staff_dashboard' %}" class="{% if u == 'staff_dashboard' %}is-on{% endif %}"{% if u == 'staff_dashboard' %} aria-current="page"{% endif %}><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M304 240V16.6c0-9 7-16.6 16-16.6C443.7 0 544 100.3 544 224c0 9-7.6 16-16.6 16H304zM32 272C32 150.7 122.1 50.3 239 34.3c9.2-1.3 17 6.1 17 15.4V288L412.5 444.5c6.7 6.7 6.2 17.7-1.5 23.1C371.8 495.6 323.8 512 272 512C139.5 512 32 404.6 32 272zm526.4 16c9.3 0 16.6 7.8 15.4 17c-7.7 55.9-34.6 105.6-73.9 142.3c-6 5.6-15.4 5.2-21.2-.7L320 288H558.4z"/></svg><span>Overview</span></a>
+      <a href="{% url 'staff_users' %}" class="{% if u == 'staff_users' or u == 'staff_user_detail' %}is-on{% endif %}"{% if u == 'staff_users' %} aria-current="page"{% endif %}><svg viewBox="0 0 640 512" aria-hidden="true"><path d="M144 0a80 80 0 1 1 0 160A80 80 0 1 1 144 0zM512 0a80 80 0 1 1 0 160A80 80 0 1 1 512 0zM0 298.7C0 239.8 47.8 192 106.7 192h42.7c15.9 0 31 3.5 44.6 9.7c-1.3 7.2-1.9 14.7-1.9 22.3c0 38.2 16.8 72.5 43.3 96c-.2 0-.4 0-.7 0H21.3C9.6 320 0 310.4 0 298.7zM405.3 320c-.2 0-.4 0-.7 0c26.6-23.5 43.3-57.8 43.3-96c0-7.6-.7-15-1.9-22.3c13.6-6.3 28.7-9.7 44.6-9.7h42.7C592.2 192 640 239.8 640 298.7c0 11.8-9.6 21.3-21.3 21.3H405.3zM224 224a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zM128 485.3C128 411.7 187.7 352 261.3 352H378.7C452.3 352 512 411.7 512 485.3c0 14.7-11.9 26.7-26.7 26.7H154.7c-14.7 0-26.7-11.9-26.7-26.7z"/></svg><span>Users</span></a>
+      <a href="{% url 'staff_loans' %}" class="{% if u == 'staff_loans' or u == 'staff_loan_detail' %}is-on{% endif %}"{% if u == 'staff_loans' %} aria-current="page"{% endif %}><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM64 80c0-8.8 7.2-16 16-16h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H80c-8.8 0-16-7.2-16-16zm0 64c0-8.8 7.2-16 16-16h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H80c-8.8 0-16-7.2-16-16zm128 72c8.8 0 16 7.2 16 16v17.3c8.5 1.2 16.7 3.1 24.1 5.1c8.5 2.3 13.6 11 11.3 19.6s-11 13.6-19.6 11.3c-11.1-3-22-5.2-32.1-5.3c-8.4-.1-17.4 1.8-23.6 5.5c-5.7 3.4-8.1 7.3-8.1 12.8c0 3.7 1.3 6.5 7.3 10.1c6.9 4.1 16.6 7.1 29.2 10.9l.5 .1 0 0 0 0c11.3 3.4 25.3 7.6 36.3 14.6c12.1 7.6 22.4 19.7 22.7 38.2c.3 19.3-9.6 33.3-22.9 41.6c-7.7 4.8-16.4 7.6-25.1 9.1V440c0 8.8-7.2 16-16 16s-16-7.2-16-16V422.2c-11.2-2.1-21.7-5.7-30.9-8.9l0 0c-2.1-.7-4.2-1.4-6.2-2.1c-8.4-2.8-12.9-11.9-10.1-20.2s11.9-12.9 20.2-10.1c2.5 .8 4.8 1.6 7.1 2.4l0 0 0 0 0 0c13.6 4.6 24.6 8.4 36.3 8.7c9.1 .3 17.9-1.7 23.7-5.3c5.1-3.2 7.9-7.3 7.8-14c-.1-4.6-1.8-7.8-7.7-11.6c-6.8-4.3-16.5-7.4-29-11.2l-1.6-.5 0 0c-11-3.3-24.3-7.3-34.8-13.7c-12-7.2-22.6-18.9-22.7-37.3c-.1-19.4 10.8-32.8 23.8-40.5c7.5-4.4 15.8-7.2 24.1-8.7V232c0-8.8 7.2-16 16-16z"/></svg><span>Loans</span>{% if nav_pending_loans %}<i title="Pending / in review">{{ nav_pending_loans }}</i>{% endif %}</a>
+      <a href="{% url 'staff_withdrawals' %}" class="{% if u == 'staff_withdrawals' %}is-on{% endif %}"{% if u == 'staff_withdrawals' %} aria-current="page"{% endif %}><svg viewBox="0 0 640 512" aria-hidden="true"><path d="M535 41c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l64 64c4.5 4.5 7 10.6 7 17s-2.5 12.5-7 17l-64 64c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l23-23L384 112c-13.3 0-24-10.7-24-24s10.7-24 24-24l174.1 0L535 41zM105 377l-23 23L256 400c13.3 0 24 10.7 24 24s-10.7 24-24 24L81.9 448l23 23c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L7 441c-4.5-4.5-7-10.6-7-17s2.5-12.5 7-17l64-64c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9zM96 64H337.9c-3.7 7.2-5.9 15.3-5.9 24c0 28.7 23.3 52 52 52l117.4 0c-4 17 .6 35.5 13.8 48.8c20.3 20.3 53.2 20.3 73.5 0L608 169.5V384c0 35.3-28.7 64-64 64H302.1c3.7-7.2 5.9-15.3 5.9-24c0-28.7-23.3-52-52-52l-117.4 0c4-17-.6-35.5-13.8-48.8c-20.3-20.3-53.2-20.3-73.5 0L32 342.5V128c0-35.3 28.7-64 64-64zm64 64H96v64c35.3 0 64-28.7 64-64zM544 320c-35.3 0-64 28.7-64 64h64V320zM320 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"/></svg><span>Withdrawals</span>{% if nav_pending_withdrawals %}<i title="Processing">{{ nav_pending_withdrawals }}</i>{% endif %}</a>
+      <a href="{% url 'staff_payment_methods' %}" class="{% if u == 'staff_payment_methods' %}is-on{% endif %}"{% if u == 'staff_payment_methods' %} aria-current="page"{% endif %}><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V192c0-35.3-28.7-64-64-64H80c-8.8 0-16-7.2-16-16s7.2-16 16-16H448c17.7 0 32-14.3 32-32s-14.3-32-32-32H64zM416 272a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"/></svg><span>Payment Methods</span></a>
+    </nav>
+    {% endwith %}
+    <div class="sx-side-foot">
+      <div class="sx-me"><span>{{ request.user.phone|slice:":1"|upper }}</span><div><b>{{ request.user.phone }}</b><small>{% if request.user.is_superuser %}Boss{% else %}Staff{% endif %}</small></div></div>
+      <div class="sx-side-btns">
+        <button type="button" id="staffThemeToggle" aria-label="Switch light / dark theme"><span class="sx-sun"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M223.5 32C100 32 0 132.3 0 256S100 480 223.5 480c60.6 0 115.5-24.2 155.8-63.4c5-4.9 6.3-12.5 3.1-18.7s-10.1-9.7-17-8.5c-9.8 1.7-19.8 2.6-30.1 2.6c-96.9 0-175.5-78.8-175.5-176c0-65.8 36-123.1 89.3-153.3c6.1-3.5 9.2-10.5 7.7-17.3s-7.3-11.9-14.3-12.5c-6.3-.5-12.6-.8-19-.8z"/></svg></span><span class="sx-moon"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M361.5 1.2c5 2.1 8.6 6.6 9.6 11.9L391 121l107.9 19.8c5.3 1 9.8 4.6 11.9 9.6s1.5 10.7-1.6 15.2L446.9 256l62.3 90.3c3.1 4.5 3.7 10.2 1.6 15.2s-6.6 8.6-11.9 9.6L391 391 371.1 498.9c-1 5.3-4.6 9.8-9.6 11.9s-10.7 1.5-15.2-1.6L256 446.9l-90.3 62.3c-4.5 3.1-10.2 3.7-15.2 1.6s-8.6-6.6-9.6-11.9L121 391 13.1 371.1c-5.3-1-9.8-4.6-11.9-9.6s-1.5-10.7 1.6-15.2L65.1 256 2.8 165.7c-3.1-4.5-3.7-10.2-1.6-15.2s6.6-8.6 11.9-9.6L121 121 140.9 13.1c1-5.3 4.6-9.8 9.6-11.9s10.7-1.5 15.2 1.6L256 65.1 346.3 2.8c4.5-3.1 10.2-3.7 15.2-1.6zM160 256a96 96 0 1 1 192 0 96 96 0 1 1 -192 0zm224 0a128 128 0 1 0 -256 0 128 128 0 1 0 256 0z"/></svg></span><span class="tt-label">Dark</span></button>
+        <button type="button" id="staffLogoutBtn"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/></svg>Log out</button>
       </div>
     </div>
+  </aside>
+  <div class="sx-dim" id="sxDim"></div>
 
-    <div class="grid">
-      <!-- LEFT MENU -->
-      <div class="card side card-anim-left">
-        <div class="card-h">
-          <div class="h1">Menu</div>
-          <span class="dot"></span>
-        </div>
-
-        <a href="{% url 'staff_users' %}"
-           class="menu-item {% if request.resolver_match.url_name == 'staff_users' %}active{% endif %}">
-          <span class="menu-left">
-            <img src="{% static 'icons/users.png' %}" class="menu-icon" alt="">
-            <span class="menu-text">Users</span>
-          </span>
-          <span class="menu-arrow">→</span>
-        </a>
-
-        <a href="{% url 'staff_loans' %}"
-           class="menu-item {% if request.resolver_match.url_name == 'staff_loans' %}active{% endif %}">
-          <span class="menu-left">
-            <img src="{% static 'icons/loans.png' %}" class="menu-icon" alt="">
-            <span class="menu-text">Loans</span>
-          </span>
-          <span class="menu-arrow">→</span>
-        </a>
-
-        <a href="{% url 'staff_withdrawals' %}"
-           class="menu-item {% if request.resolver_match.url_name == 'staff_withdrawals' %}active{% endif %}">
-          <span class="menu-left">
-            <img src="{% static 'icons/withdrawals.png' %}" class="menu-icon" alt="">
-            <span class="menu-text">Withdrawals</span>
-          </span>
-          <span class="menu-arrow">→</span>
-        </a>
-
-        <a href="{% url 'staff_payment_methods' %}"
-           class="menu-item {% if request.resolver_match.url_name == 'staff_payment_methods' %}active{% endif %}">
-          <span class="menu-left">
-            <img src="{% static 'icons/payments.png' %}" class="menu-icon" alt="">
-            <span class="menu-text">Payment Methods</span>
-          </span>
-          <span class="menu-arrow">→</span>
-        </a>
-      </div>
-
-      <!-- RIGHT CONTENT -->
-      <div class="card card-anim dashboard-card">
+  <div class="sx-main">
+    <header class="sx-top">
+      <button type="button" class="sx-burger" id="sxBurger" aria-label="Open menu" aria-controls="sxSide" aria-expanded="false"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></button>
+      {% with u=request.resolver_match.url_name %}<div class="sx-top-t"><h1>{% block page_title %}{% if u == 'staff_users' %}Users{% elif u == 'staff_user_detail' %}User details{% elif u == 'staff_loans' %}Loan applications{% elif u == 'staff_loan_detail' %}Loan details{% elif u == 'staff_withdrawals' %}Withdrawals{% elif u == 'staff_payment_methods' %}Payment methods{% else %}Staff{% endif %}{% endblock %}</h1><p>{% block page_sub %}APEX staff panel{% endblock %}</p></div>{% endwith %}
+      <div class="sx-top-date"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 144 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192H400V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192z"/></svg>{% now "D, M j, Y" %}</div>
+    </header>
+    <div class="sx-content">
+      {% block page %}
+      <!-- pages that are not redesigned yet keep their old card -->
+      <div class="card card-anim dashboard-card sx-legacy">
         {% block content %}{% endblock %}
       </div>
+      {% endblock %}
     </div>
   </div>
+</div>
 
-  <!-- ✅ ONE Message Modal (shared for ALL staff pages) -->
-  <div id="msgModal" aria-hidden="true">
-    <div class="modal-box" role="dialog" aria-modal="true" aria-label="Edit Message">
-      <h3 id="msgTitle">Edit message</h3>
-      <textarea id="msgTextarea" placeholder="Type message here..."></textarea>
-      <div class="modal-actions">
-        <button type="button" class="btn" onclick="applyMsg()">OK</button>
-        <button type="button" class="btn" onclick="closeMsgModal()">Cancel</button>
-      </div>
+<!-- ONE message modal (shared by all staff pages: openMsgModal / applyMsg / closeMsgModal) -->
+<div id="msgModal" class="sx-modal" aria-hidden="true">
+  <div class="sx-modal-box" role="dialog" aria-modal="true" aria-labelledby="msgTitle">
+    <h3 id="msgTitle">Edit message</h3>
+    <textarea id="msgTextarea" placeholder="Type message here..."></textarea>
+    <div class="sx-modal-acts">
+      <button type="button" class="sx-btn sx-btn-line" onclick="closeMsgModal()">Cancel</button>
+      <button type="button" class="sx-btn sx-btn-green" onclick="applyMsg()">OK</button>
     </div>
   </div>
+</div>
 
-  <!-- ✅ Staff Logout Confirm Modal -->
-  <div id="staffLogoutModal" class="logout-modal" aria-hidden="true">
-    <div class="logout-box" role="dialog" aria-modal="true" aria-label="Confirm Logout">
-      <div class="logout-title">Confirm Logout</div>
-      <div class="logout-text">Are you sure you want to logout?</div>
-
-      <div class="logout-actions">
-        <button type="button" class="btn-cancel" id="staffLogoutCancel">Cancel</button>
-
-        <form method="post" action="{% url 'staff_logout' %}" style="margin:0;">
-          {% csrf_token %}
-          <button type="submit" class="btn-confirm">Logout</button>
-        </form>
-      </div>
+<!-- Log out confirm -->
+<div id="staffLogoutModal" class="sx-modal" aria-hidden="true">
+  <div class="sx-modal-box" role="dialog" aria-modal="true" aria-labelledby="staffLogoutTitle">
+    <h3 id="staffLogoutTitle">Log out?</h3>
+    <p>You will need your password to come back to the staff panel.</p>
+    <div class="sx-modal-acts">
+      <button type="button" class="sx-btn sx-btn-line" id="staffLogoutCancel">Cancel</button>
+      <form method="post" action="{% url 'staff_logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="sx-btn sx-btn-danger">Log out</button>
+      </form>
     </div>
   </div>
+</div>
 
-  <!-- ✅ Scripts MUST be inside body -->
-  <script>
-    // ============ Staff Logout Modal ============
-    (function(){
-      const btn = document.getElementById("staffLogoutBtn");
-      const modal = document.getElementById("staffLogoutModal");
-      const cancel = document.getElementById("staffLogoutCancel");
-      if(!btn || !modal) return;
+<script>
+(function(){
+  /* ── menu drawer on small screens ── */
+  var side=document.getElementById("sxSide"), burger=document.getElementById("sxBurger"), dim=document.getElementById("sxDim");
+  function setMenu(open){
+    side.classList.toggle("is-open",open); burger.setAttribute("aria-expanded",String(open));
+    if(open){ var a=side.querySelector("a"); if(a) a.focus({preventScroll:true}); } else burger.focus({preventScroll:true});
+  }
+  burger.addEventListener("click",function(){ setMenu(true); });
+  dim.addEventListener("click",function(){ setMenu(false); });
 
-      function openModal(e){
-        if(e) e.preventDefault();
-        modal.classList.add("show");
-        modal.setAttribute("aria-hidden","false");
-      }
-      function closeModal(){
-        modal.classList.remove("show");
-        modal.setAttribute("aria-hidden","true");
-      }
+  /* ── modals ── */
+  function modal(el){
+    return {
+      open:function(){ el.classList.add("show"); el.setAttribute("aria-hidden","false"); },
+      close:function(){ el.classList.remove("show"); el.setAttribute("aria-hidden","true"); },
+      isOpen:function(){ return el.classList.contains("show"); }
+    };
+  }
+  var out=modal(document.getElementById("staffLogoutModal")), msg=modal(document.getElementById("msgModal"));
+  document.getElementById("staffLogoutBtn").addEventListener("click",function(e){ e.preventDefault(); out.open(); setTimeout(function(){ document.getElementById("staffLogoutCancel").focus(); },50); });
+  document.getElementById("staffLogoutCancel").addEventListener("click",out.close);
+  document.getElementById("staffLogoutModal").addEventListener("click",function(e){ if(e.target===this) out.close(); });
+  document.getElementById("msgModal").addEventListener("click",function(e){ if(e.target===this) closeMsgModal(); });
+  document.addEventListener("keydown",function(e){
+    if(e.key!=="Escape") return;
+    if(out.isOpen()) out.close(); else if(msg.isOpen()) closeMsgModal(); else if(side.classList.contains("is-open")) setMenu(false);
+  });
 
-      btn.addEventListener("click", openModal);
-      if(cancel) cancel.addEventListener("click", closeModal);
+  /* ── shared message modal (used by the users / loans pages) ── */
+  window.__msgModalInput=window.__msgModalInput||null;
+  window.openMsgModal=function(input){
+    window.__msgModalInput=input;
+    var ta=document.getElementById("msgTextarea");
+    ta.value=input.value||"";
+    document.getElementById("msgTitle").textContent=(input.dataset.type==="alert")?"Edit ALERT message":"Edit CONGRATULATION message";
+    msg.open(); setTimeout(function(){ ta.focus(); },50);
+  };
+  window.closeMsgModal=function(){ msg.close(); window.__msgModalInput=null; };
+  window.applyMsg=function(){
+    if(!window.__msgModalInput) return;
+    window.__msgModalInput.value=document.getElementById("msgTextarea").value;
+    closeMsgModal();
+  };
 
-      modal.addEventListener("click", (e) => { if(e.target === modal) closeModal(); });
-      document.addEventListener("keydown", (e) => { if(e.key === "Escape") closeModal(); });
-    })();
-
-    // ============ Message Modal (shared) ============
-    window.__msgModalInput = window.__msgModalInput || null;
-
-    function openMsgModal(input){
-      window.__msgModalInput = input;
-
-      const modal = document.getElementById("msgModal");
-      const textarea = document.getElementById("msgTextarea");
-      const title = document.getElementById("msgTitle");
-
-      textarea.value = input.value || "";
-      title.textContent = (input.dataset.type === "alert")
-        ? "Edit ALERT message"
-        : "Edit CONGRATULATION message";
-
-      modal.style.display = "flex";
-      modal.setAttribute("aria-hidden","false");
-      textarea.focus();
-    }
-
-    function closeMsgModal(){
-      const modal = document.getElementById("msgModal");
-      modal.style.display = "none";
-      modal.setAttribute("aria-hidden","true");
-      window.__msgModalInput = null;
-    }
-
-    function applyMsg(){
-      if(!window.__msgModalInput) return;
-      const textarea = document.getElementById("msgTextarea");
-      window.__msgModalInput.value = textarea.value;
-      closeMsgModal();
-    }
-  </script>
-  <script>
-    // ===== Perf counter animation (count-up) =====
-    (function(){
-      function animateCount(el, to, duration){
-        to = Number(to || 0);
-        if(!Number.isFinite(to)) to = 0;
-  
-        const t0 = performance.now();
-  
-        function tick(t){
-          const p = Math.min(1, (t - t0) / duration);
-          const eased = 1 - Math.pow(1 - p, 3); // easeOutCubic
-          const val = Math.round(to * eased);
-          el.textContent = val;
-  
-          if(p < 1) requestAnimationFrame(tick);
-        }
-        requestAnimationFrame(tick);
-      }
-  
-      function runPerfCounters(){
-        const counters = document.querySelectorAll(".perf-card .count[data-value]");
-        counters.forEach((el) => {
-          const target = el.getAttribute("data-value");
-          el.textContent = "0";
-          animateCount(el, target, 900);
-        });
-      }
-  
-      window.addEventListener("load", () => {
-        setTimeout(runPerfCounters, 250);
+  /* ── theme (shared with the client app: ofl-theme) ── */
+  var tbtn=document.getElementById("staffThemeToggle"), label=tbtn.querySelector(".tt-label");
+  function applyLabel(){ label.textContent=(document.documentElement.getAttribute("data-theme")==="dark")?"Light":"Dark"; }
+  applyLabel();
+  tbtn.addEventListener("click",function(){
+    var next=(document.documentElement.getAttribute("data-theme")==="dark")?"light":"dark";
+    document.documentElement.setAttribute("data-theme",next);
+    try{ localStorage.setItem("ofl-theme",next); }catch(e){}
+    applyLabel();
+  });
+})();
+</script>
+<script>
+  // Old pages: count-up numbers in .perf-card (kept for pages that are not redesigned yet)
+  (function(){
+    var els=document.querySelectorAll(".perf-card .count[data-value]");
+    if(!els.length) return;
+    addEventListener("load",function(){
+      els.forEach(function(el){
+        var to=Number(el.getAttribute("data-value"))||0, t0=performance.now();
+        (function tick(t){ var p=Math.min(1,(t-t0)/900); el.textContent=Math.round(to*(1-Math.pow(1-p,3))); if(p<1) requestAnimationFrame(tick); })(t0);
       });
-    })();
-  </script>
-  <script>
-    (function(){
-      // if already played in this tab/session, disable animations
-      if (sessionStorage.getItem("staffWelcomePlayed") === "1"){
-        document.body.classList.add("no-welcome-anim");
-        return;
-      }
-      // first time: allow animations, then mark as played
-      sessionStorage.setItem("staffWelcomePlayed", "1");
-    })();
-  </script>
-
-  <script>
-    // ============ Staff Theme Toggle (Dark / Light) ============
-    (function(){
-      var btn = document.getElementById("staffThemeToggle");
-      if(!btn) return;
-      var label = btn.querySelector(".tt-label");
-
-      function applyLabel(){
-        var t = document.documentElement.getAttribute("data-theme") || "light";
-        if(label) label.textContent = (t === "dark") ? "Light" : "Dark";
-      }
-
-      applyLabel();
-
-      btn.addEventListener("click", function(){
-        var cur = document.documentElement.getAttribute("data-theme") || "light";
-        var next = (cur === "dark") ? "light" : "dark";
-        document.documentElement.setAttribute("data-theme", next);
-        try{ localStorage.setItem("ofl-theme", next); }catch(e){}
-        applyLabel();
-      });
-    })();
-  </script>
-
+    });
+  })();
+  (function(){
+    if(sessionStorage.getItem("staffWelcomePlayed")==="1"){ document.body.classList.add("no-welcome-anim"); return; }
+    sessionStorage.setItem("staffWelcomePlayed","1");
+  })();
+</script>
+{% block extra_js %}{% endblock %}
 </body>
 </html>
