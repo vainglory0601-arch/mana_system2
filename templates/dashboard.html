@@ -89,12 +89,27 @@ html body,html[data-theme] body{
 .db-eye .i-shown,.db-eye.on .i-hidden{display:none;}
 .db-eye.on .i-shown{display:block;}
 
-.db-chart{position:relative;z-index:1;height:80px;margin-bottom:8px;}
-.db-chart svg{width:100%;height:100%;overflow:visible;}
-.db-pt{position:absolute;border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;}
-.db-pt-a{left:40%;top:62.5%;width:9px;height:9px;background:var(--db-dark);border:2px solid var(--db-accent);}
-.db-pt-b{left:100%;top:12.5%;width:10px;height:10px;background:var(--db-accent);box-shadow:0 0 10px 2px rgba(249,115,22,.65);}
-.db-dates{position:relative;z-index:1;display:flex;justify-content:space-between;padding:0 4px;font-size:10px;line-height:15px;font-weight:500;color:rgba(255,255,255,.5);}
+/* next payment ring: counts down to the next due date (repayments are not recorded in the app) */
+.db-pay{
+  position:relative;z-index:1;display:flex;align-items:center;gap:16px;margin-top:4px;padding:14px 16px 14px 14px;border-radius:22px;
+  color:#fff!important;text-decoration:none!important;transition:background-color .15s,transform .15s;
+}
+.db-pay:hover{background-color:rgba(255,255,255,.08);}
+.db-pay:active{transform:scale(.985);}
+.db-ring{position:relative;width:84px;height:84px;flex-shrink:0;}
+.db-ring svg{width:84px;height:84px;}
+.db-ring-bg{fill:none;stroke:rgba(255,255,255,.12);stroke-width:8;}
+.db-ring-fg{fill:none;stroke:var(--db-accent);stroke-width:8;stroke-linecap:round;transform:rotate(-90deg);transform-origin:42px 42px;}
+.db-ring-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1;}
+.db-ring-in b{font-size:22px;font-weight:800;color:#fff;}
+.db-ring-in small{margin-top:4px;font-size:9.5px;font-weight:700;letter-spacing:.02em;color:rgba(232,243,237,.65);}
+.db-ring-in svg{width:auto;height:22px;color:#FDBA74;}
+.db-pay-t{flex:1;min-width:0;}
+.db-pay-t span{display:block;font-size:11px;line-height:15px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#FDBA74;}
+.db-pay-t b{display:block;margin-top:3px;font-size:22px;line-height:28px;font-weight:800;letter-spacing:-.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.db-pay-t b.is-text{font-size:16px;line-height:22px;white-space:normal;}
+.db-pay-t small{display:block;margin-top:2px;font-size:12px;line-height:17px;font-weight:500;color:rgba(232,243,237,.72);}
+.db-pay-go{flex-shrink:0;font-size:12px;color:rgba(255,255,255,.45);}
 
 /* ── Loan account card (solid white over the dark header) ── */
 .db-acct{position:relative;z-index:2;margin-top:-40px;padding:0 20px;}
@@ -134,22 +149,24 @@ html body,html[data-theme] body{
 .db-sec-head a:hover{color:var(--db-accent)!important;}
 .db-panel-card{background:#fff;border:1px solid var(--db-line);border-radius:2rem;box-shadow:var(--db-glass);}
 
-/* activity tabs: the white pill slides under the active tab */
-.db-act{padding:8px;}
-.db-tabs{position:relative;display:flex;margin-bottom:8px;padding:4px;border-radius:1.5rem;background:var(--db-surface);}
-.db-tab-ind{
-  position:absolute;top:4px;bottom:4px;left:4px;width:calc((100% - 8px) / 3);border-radius:12px;background:#fff;
-  box-shadow:0 1px 2px rgba(0,0,0,.05);transform:translateX(calc(100% * var(--i,0)));transition:transform .35s var(--db-ease);
+/* activity: filter chips + one timeline of real events */
+.db-act{padding:14px 12px 6px;}
+.db-filters{display:flex;gap:6px;padding:0 4px 4px;}
+.db-filter{
+  height:34px;padding:0 14px;border-radius:999px;border:1px solid var(--db-line2);background:#fff;cursor:pointer;
+  font-size:12px;font-weight:700;color:var(--db-ink2);transition:background-color .15s,border-color .15s,color .15s,transform .15s;
 }
-.db-tab{
-  position:relative;flex:1;padding:10px 0;border:0;background:none;cursor:pointer;
-  font-size:11px;line-height:16px;font-weight:700;letter-spacing:.025em;text-transform:uppercase;color:var(--db-mut);transition:color .2s;
-}
-.db-tab:hover{color:#4b5563;}
-.db-tab[aria-selected="true"]{color:var(--db-ink);}
-.db-tabpanel[hidden]{display:none;}
-.db-tabpanel.is-in{animation:dbFadeUp .28s var(--db-ease);}
+.db-filter:active{transform:scale(.95);}
+.db-filter[aria-pressed="true"]{color:#fff;background:#1B4332;border-color:#1B4332;}
+.db-filter:focus-visible{outline:2px solid #1B4332;outline-offset:2px;}
+.db-tl{list-style:none;margin:0;padding:0;}
+.db-ev{position:relative;}
+.db-ev[hidden]{display:none;}
+.db-ev.is-in{animation:dbFadeUp .28s var(--db-ease);}
+/* the line joins the icons of the events that are showing */
+.db-ev.has-next::before{content:'';position:absolute;left:33px;top:58px;bottom:-14px;width:2px;border-radius:2px;background:#eef0f2;}
 @keyframes dbFadeUp{from{opacity:0;transform:translateY(6px);}}
+.db-act .db-empty[hidden]{display:none;}
 .db-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 0;text-align:center;}
 .db-empty-ico{width:64px;height:64px;margin-bottom:12px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#f9fafb;color:#d1d5db;font-size:24px;}
 .db-empty p{margin:0;font-size:12px;line-height:16px;font-weight:600;color:var(--db-mut);}
@@ -157,6 +174,7 @@ html body,html[data-theme] body{
 .db-row-ico{width:44px;height:44px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;background:var(--db-sage);color:var(--db-primary);}
 .db-row-ico.is-warn{background:#fff7ed;color:var(--db-accent);}
 .db-row-ico.is-muted{background:#f3f4f6;color:var(--db-mut2);}
+.db-row-ico{position:relative;z-index:1;}
 .db-row-text{flex:1;min-width:0;}
 .db-row-text b{display:block;font-size:13px;line-height:18px;font-weight:700;color:var(--db-ink);}
 .db-row-text span{display:block;font-size:11px;line-height:16px;font-weight:500;color:var(--db-mut2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -419,10 +437,17 @@ html body,html[data-theme] body{
   .db-cats{gap:12px;}
   .db-cat{padding:16px;}
   .db-nav{padding:0 16px;}
+  .db-pay{gap:12px;padding:12px;}
+  .db-ring,.db-ring svg{width:72px;height:72px;}
+  .db-ring-in b{font-size:19px;}
+  .db-pay-t b{font-size:18px;line-height:24px;}
+  .db-pay-t b.is-text{font-size:15px;}
+  .db-pay-go{display:none;}
 }
 @media (prefers-reduced-motion: reduce){
   .db-status::after,.db-gfloat,.db-apply.is-lit::after{animation:none;}
-  .db-guide,.db-tab-ind,.db-swap{transition:none;}
+  .db-guide,.db-swap,.db-pay,.db-filter{transition:none;}
+  .db-ev.is-in{animation:none;}
 }
 </style>
 
@@ -463,25 +488,32 @@ html body,html[data-theme] body{
         </div>
       </div>
 
-      <div class="db-chart" aria-hidden="true">
-        <svg viewBox="0 0 100 40" preserveAspectRatio="none">
-          <defs>
-            <filter id="dbGlow" x="-20%" y="-60%" width="140%" height="220%">
-              <feGaussianBlur stdDeviation="1.5" result="blur"/>
-              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-            <linearGradient id="dbFade" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#F97316" stop-opacity=".4"/>
-              <stop offset="100%" stop-color="#F97316" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-          <path d="M0,35 C15,30 25,20 40,25 C60,32 75,10 100,5 L100,40 L0,40 Z" fill="url(#dbFade)"/>
-          <path d="M0,35 C15,30 25,20 40,25 C60,32 75,10 100,5" fill="none" stroke="#F97316" stroke-width="2.5" stroke-linecap="round" vector-effect="non-scaling-stroke" filter="url(#dbGlow)"/>
-        </svg>
-        <span class="db-pt db-pt-a"></span>
-        <span class="db-pt db-pt-b"></span>
-      </div>
-      <div class="db-dates"><span id="dbDateFrom">{% now "01 M Y" %}</span><span id="dbDateTo">{% now "d M Y" %}</span></div>
+{% if pay.state == "active" %}
+      <a class="db-pay db-glass-dark" id="dbPay" href="{% url 'payment_schedule' %}" aria-label="Next payment ₱{{ pay.monthly|default:0|floatformat:2|intcomma }}, due {{ pay.due|date:'M j, Y' }}. Open payment schedule">
+        <span class="db-ring" aria-hidden="true"><svg viewBox="0 0 84 84"><circle class="db-ring-bg" cx="42" cy="42" r="35"/><circle class="db-ring-fg" cx="42" cy="42" r="35" stroke-dasharray="{{ pay.dash|stringformat:'s' }} 220"/></svg>
+          <span class="db-ring-in">{% if pay.days_left == 0 %}<b>Today</b>{% else %}<b>{{ pay.days_left }}</b><small>day{{ pay.days_left|pluralize }} left</small>{% endif %}</span></span>
+        <span class="db-pay-t"><span>Next payment</span><b>₱{{ pay.monthly|default:0|floatformat:2|intcomma }}</b><small>Due {{ pay.due|date:"M j, Y" }} · {{ pay.n }} of {{ pay.terms }}</small></span>
+        <span class="db-pay-go"><svg viewBox="0 0 320 512" aria-hidden="true"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></span>
+      </a>
+      {% elif pay.state == "done" %}
+      <a class="db-pay db-glass-dark" id="dbPay" href="{% url 'payment_schedule' %}">
+        <span class="db-ring" aria-hidden="true"><svg viewBox="0 0 84 84"><circle class="db-ring-bg" cx="42" cy="42" r="35"/><circle class="db-ring-fg" cx="42" cy="42" r="35" stroke-dasharray="220 220"/></svg><span class="db-ring-in"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg></span></span>
+        <span class="db-pay-t"><span>Payment schedule</span><b class="is-text">All due dates have passed</b><small>{% if pay.last_due %}Last due date: {{ pay.last_due|date:"M j, Y" }}{% endif %}</small></span>
+        <span class="db-pay-go"><svg viewBox="0 0 320 512" aria-hidden="true"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></span>
+      </a>
+      {% elif pay.state == "waiting" %}
+      <a class="db-pay db-glass-dark" id="dbPay" href="{% url 'quick_loan' %}">
+        <span class="db-ring" aria-hidden="true"><svg viewBox="0 0 84 84"><circle class="db-ring-bg" cx="42" cy="42" r="35"/><circle class="db-ring-fg" cx="42" cy="42" r="35" stroke-dasharray="55 220"/></svg><span class="db-ring-in"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/></svg></span></span>
+        <span class="db-pay-t"><span>Waiting for approval</span><b class="is-text">Your due dates appear here once approved</b><small>Tap to see your application</small></span>
+        <span class="db-pay-go"><svg viewBox="0 0 320 512" aria-hidden="true"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></span>
+      </a>
+      {% else %}
+      <a class="db-pay db-glass-dark" id="dbPay" href="{% url 'quick_loan' %}">
+        <span class="db-ring" aria-hidden="true"><svg viewBox="0 0 84 84"><circle class="db-ring-bg" cx="42" cy="42" r="35"/></svg><span class="db-ring-in"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M312 24V34.5c6.4 1.2 12.6 2.7 18.2 4.2c12.8 3.4 20.4 16.6 17 29.4s-16.6 20.4-29.4 17c-10.9-2.9-21.1-4.9-30.2-5c-7.3-.1-14.7 1.7-19.4 4.4c-2.1 1.3-3.1 2.4-3.5 3c-.3 .5-.7 1.2-.7 2.8c0 .3 0 .5 0 .6c.2 .2 .9 1.2 3.3 2.6c5.8 3.5 14.4 6.2 27.4 10.1l.9 .3 0 0c11.1 3.3 25.9 7.8 37.9 15.3c13.7 8.6 26.1 22.9 26.4 44.9c.3 22.5-11.4 38.9-26.7 48.5c-6.7 4.1-13.9 7-21.3 8.8V232c0 13.3-10.7 24-24 24s-24-10.7-24-24V220.6c-9.5-2.3-18.2-5.3-25.6-7.8c-2.1-.7-4.1-1.4-6-2c-12.6-4.2-19.4-17.8-15.2-30.4s17.8-19.4 30.4-15.2c2.6 .9 5 1.7 7.3 2.5c13.6 4.6 23.4 7.9 33.9 8.3c8 .3 15.1-1.6 19.2-4.1c1.9-1.2 2.8-2.2 3.2-2.9c.4-.6 .9-1.8 .8-4.1l0-.2c0-1 0-2.1-4-4.6c-5.7-3.6-14.3-6.4-27.1-10.3l-1.9-.6c-10.8-3.2-25-7.5-36.4-14.4c-13.5-8.1-26.5-22-26.6-44.1c-.1-22.9 12.9-38.6 27.7-47.4c6.4-3.8 13.3-6.4 20.2-8.2V24c0-13.3 10.7-24 24-24s24 10.7 24 24zM568.2 336.3c13.1 17.8 9.3 42.8-8.5 55.9L433.1 485.5c-23.4 17.2-51.6 26.5-80.7 26.5H192 32c-17.7 0-32-14.3-32-32V416c0-17.7 14.3-32 32-32H68.8l44.9-36c22.7-18.2 50.9-28 80-28H272h16 64c17.7 0 32 14.3 32 32s-14.3 32-32 32H288 272c-8.8 0-16 7.2-16 16s7.2 16 16 16H392.6l119.7-88.2c17.8-13.1 42.8-9.3 55.9 8.5zM193.6 384l0 0-.9 0c.3 0 .6 0 .9 0z"/></svg></span></span>
+        <span class="db-pay-t"><span>No loan yet</span><b class="is-text">Apply in minutes</b><small>{{ loan_rate_pct }}% a month · 6 to 36 months</small></span>
+        <span class="db-pay-go"><svg viewBox="0 0 320 512" aria-hidden="true"><path d="M310.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-192 192c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L242.7 256 73.4 86.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l192 192z"/></svg></span>
+      </a>
+      {% endif %}
     </header>
 
     <!-- ── Loan account (solid white card over the header) ── -->
@@ -507,63 +539,31 @@ html body,html[data-theme] body{
           <a href="{% url 'transactions' %}">See All</a>
         </div>
         <div class="db-panel-card db-act">
-          <div class="db-tabs" id="dbTabs" role="tablist" aria-label="Loan activity">
-            <span class="db-tab-ind" aria-hidden="true"></span>
-            <button type="button" class="db-tab" role="tab" id="dbTab0" aria-controls="dbPanel0" aria-selected="true">Recent</button>
-            <button type="button" class="db-tab" role="tab" id="dbTab1" aria-controls="dbPanel1" aria-selected="false" tabindex="-1">Pending</button>
-            <button type="button" class="db-tab" role="tab" id="dbTab2" aria-controls="dbPanel2" aria-selected="false" tabindex="-1">History</button>
+          <div class="db-filters" role="toolbar" aria-label="Show">
+            <button type="button" class="db-filter" data-f="all" aria-pressed="true">All</button>
+            <button type="button" class="db-filter" data-f="loan" aria-pressed="false">Loans</button>
+            <button type="button" class="db-filter" data-f="wd" aria-pressed="false">Withdrawals</button>
           </div>
-
-          <div class="db-tabpanel" id="dbPanel0" role="tabpanel" aria-labelledby="dbTab0">
-            {% if last_loan %}
-            <div class="db-row">
-              <div class="db-row-ico{% if loan_tone == 'warn' %} is-warn{% endif %}"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M512 80c8.8 0 16 7.2 16 16v32H48V96c0-8.8 7.2-16 16-16H512zm16 144V416c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V224H528zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm56 304c-13.3 0-24 10.7-24 24s10.7 24 24 24h48c13.3 0 24-10.7 24-24s-10.7-24-24-24H120zm128 0c-13.3 0-24 10.7-24 24s10.7 24 24 24H360c13.3 0 24-10.7 24-24s-10.7-24-24-24H248z"/></svg></div>
-              <div class="db-row-text">
-                <b>Loan Application</b>
-                <span>{{ last_loan.created_at|date:"M d, Y" }}{% if last_loan.term_months %} · {{ last_loan.term_months }} months{% endif %}</span>
+          <ul class="db-tl" id="dbTl" aria-live="polite">
+            {% for e in events %}
+            <li class="db-ev" data-k="{{ e.kind }}">
+              <div class="db-row">
+                <div class="db-row-ico{% if e.kind == 'wd' %} is-warn{% elif e.icon == 'sent' %} is-muted{% endif %}">{% if e.kind == 'wd' %}<svg viewBox="0 0 640 512" aria-hidden="true"><path d="M535 41c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l64 64c4.5 4.5 7 10.6 7 17s-2.5 12.5-7 17l-64 64c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l23-23L384 112c-13.3 0-24-10.7-24-24s10.7-24 24-24l174.1 0L535 41zM105 377l-23 23L256 400c13.3 0 24 10.7 24 24s-10.7 24-24 24L81.9 448l23 23c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L7 441c-4.5-4.5-7-10.6-7-17s2.5-12.5 7-17l64-64c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9zM96 64H337.9c-3.7 7.2-5.9 15.3-5.9 24c0 28.7 23.3 52 52 52l117.4 0c-4 17 .6 35.5 13.8 48.8c20.3 20.3 53.2 20.3 73.5 0L608 169.5V384c0 35.3-28.7 64-64 64H302.1c3.7-7.2 5.9-15.3 5.9-24c0-28.7-23.3-52-52-52l-117.4 0c4-17-.6-35.5-13.8-48.8c-20.3-20.3-53.2-20.3-73.5 0L32 342.5V128c0-35.3 28.7-64 64-64zm64 64H96v64c35.3 0 64-28.7 64-64zM544 320c-35.3 0-64 28.7-64 64h64V320zM320 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"/></svg>{% elif e.icon == 'ok' %}<svg viewBox="0 0 512 512" aria-hidden="true"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>{% else %}<svg viewBox="0 0 576 512" aria-hidden="true"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V428.7c-2.7 1.1-5.4 2-8.2 2.7l-60.1 15c-3 .7-6 1.2-9 1.4c-.9 .1-1.8 .2-2.7 .2H240c-6.1 0-11.6-3.4-14.3-8.8l-8.8-17.7c-1.7-3.4-5.1-5.5-8.8-5.5s-7.2 2.1-8.8 5.5l-8.8 17.7c-2.9 5.9-9.2 9.4-15.7 8.8s-12.1-5.1-13.9-11.3L144 381l-9.8 32.8c-6.1 20.3-24.8 34.2-46 34.2H80c-8.8 0-16-7.2-16-16s7.2-16 16-16h8.2c7.1 0 13.3-4.6 15.3-11.4l14.9-49.5c3.4-11.3 13.8-19.1 25.6-19.1s22.2 7.8 25.6 19.1l11.6 38.6c7.4-6.2 16.8-9.7 26.8-9.7c15.9 0 30.4 9 37.5 23.2l4.4 8.8h8.9c-3.1-8.8-3.7-18.4-1.4-27.8l15-60.1c2.8-11.3 8.6-21.5 16.8-29.7L384 203.6V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM549.8 139.7c-15.6-15.6-40.9-15.6-56.6 0l-29.4 29.4 71 71 29.4-29.4c15.6-15.6 15.6-40.9 0-56.6l-14.4-14.4zM311.9 321c-4.1 4.1-7 9.2-8.4 14.9l-15 60.1c-1.4 5.5 .2 11.2 4.2 15.2s9.7 5.6 15.2 4.2l60.1-15c5.6-1.4 10.8-4.3 14.9-8.4L512.1 262.7l-71-71L311.9 321z"/></svg>{% endif %}</div>
+                <div class="db-row-text">
+                  <b>{{ e.title }}</b>
+                  <span>{{ e.at|date:"M j, Y" }}{% if e.sub %} · {{ e.sub }}{% endif %}</span>
+                </div>
+                <div class="db-row-end">
+                  <div class="db-row-amt">{% if e.amount %}₱{{ e.amount|floatformat:2|intcomma }}{% else %}—{% endif %}</div>
+                  {% if e.tag %}<span class="db-chip is-{{ e.tone }}">{{ e.tag }}</span>{% endif %}
+                </div>
               </div>
-              <div class="db-row-end">
-                <div class="db-row-amt">{% if last_loan.amount %}₱{{ last_loan.amount|floatformat:2|intcomma }}{% else %}—{% endif %}</div>
-                <span class="db-chip is-{{ loan_tone }}">{{ last_loan.get_status_display }}</span>
-              </div>
-            </div>
-            {% else %}
-            <div class="db-empty"><div class="db-empty-ico"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M384 480h48c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224H144c-11.4 0-21.9 6-27.6 15.9L48 357.1V96c0-8.8 7.2-16 16-16H181.5c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8H416c8.8 0 16 7.2 16 16v32h48V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z"/></svg></div><p>No recent activity yet</p></div>
-            {% endif %}
-          </div>
-
-          <div class="db-tabpanel" id="dbPanel1" role="tabpanel" aria-labelledby="dbTab1" hidden>
-            {% if last_loan and loan_tone == 'warn' %}
-            <div class="db-row">
-              <div class="db-row-ico is-warn"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/></svg></div>
-              <div class="db-row-text">
-                <b>{{ last_loan.get_status_display }}</b>
-                <span>{{ last_loan.created_at|date:"M d, Y" }}{% if last_loan.amount %} · ₱{{ last_loan.amount|floatformat:2|intcomma }}{% endif %}</span>
-              </div>
-              <div class="db-row-end"><span class="db-chip is-warn">Pending</span></div>
-            </div>
-            {% else %}
-            <div class="db-empty"><div class="db-empty-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/></svg></div><p>No pending applications</p></div>
-            {% endif %}
-          </div>
-
-          <div class="db-tabpanel" id="dbPanel2" role="tabpanel" aria-labelledby="dbTab2" hidden>
-            {% if last_loan %}
-            <div class="db-row">
-              <div class="db-row-ico is-muted"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></div>
-              <div class="db-row-text">
-                <b>Loan Application</b>
-                <span>{{ last_loan.created_at|date:"M d, Y" }}</span>
-              </div>
-              <div class="db-row-end">
-                <div class="db-row-amt">{% if last_loan.amount %}₱{{ last_loan.amount|floatformat:2|intcomma }}{% else %}—{% endif %}</div>
-                <span class="db-chip is-{{ loan_tone }}">{{ last_loan.get_status_display }}</span>
-              </div>
-            </div>
-            {% else %}
-            <div class="db-empty"><div class="db-empty-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></div><p>No transaction history</p></div>
-            {% endif %}
-          </div>
+            </li>
+            {% endfor %}
+          </ul>
+          <div class="db-empty" data-for="all"{% if events %} hidden{% endif %}><div class="db-empty-ico"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M384 480h48c11.4 0 21.9-6 27.6-15.9l112-192c5.8-9.9 5.8-22.1 .1-32.1S555.5 224 544 224H144c-11.4 0-21.9 6-27.6 15.9L48 357.1V96c0-8.8 7.2-16 16-16H181.5c4.2 0 8.3 1.7 11.3 4.7l26.5 26.5c21 21 49.5 32.8 79.2 32.8H416c8.8 0 16 7.2 16 16v32h48V160c0-35.3-28.7-64-64-64H298.5c-17 0-33.3-6.7-45.3-18.7L226.7 50.7c-12-12-28.3-18.7-45.3-18.7H64C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H87.7 384z"/></svg></div><p>No activity yet</p></div>
+          <div class="db-empty" data-for="loan" hidden><div class="db-empty-ico"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M64 464c-8.8 0-16-7.2-16-16V64c0-8.8 7.2-16 16-16H224v80c0 17.7 14.3 32 32 32h80V448c0 8.8-7.2 16-16 16H64zM64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V154.5c0-17-6.7-33.3-18.7-45.3L274.7 18.7C262.7 6.7 246.5 0 229.5 0H64zm56 256c-13.3 0-24 10.7-24 24s10.7 24 24 24H264c13.3 0 24-10.7 24-24s-10.7-24-24-24H120zm0 96c-13.3 0-24 10.7-24 24s10.7 24 24 24H264c13.3 0 24-10.7 24-24s-10.7-24-24-24H120z"/></svg></div><p>No loan applications yet</p></div>
+          <div class="db-empty" data-for="wd" hidden><div class="db-empty-ico"><svg viewBox="0 0 640 512" aria-hidden="true"><path d="M535 41c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l64 64c4.5 4.5 7 10.6 7 17s-2.5 12.5-7 17l-64 64c-9.4 9.4-24.6 9.4-33.9 0s-9.4-24.6 0-33.9l23-23L384 112c-13.3 0-24-10.7-24-24s10.7-24 24-24l174.1 0L535 41zM105 377l-23 23L256 400c13.3 0 24 10.7 24 24s-10.7 24-24 24L81.9 448l23 23c9.4 9.4 9.4 24.6 0 33.9s-24.6 9.4-33.9 0L7 441c-4.5-4.5-7-10.6-7-17s2.5-12.5 7-17l64-64c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9zM96 64H337.9c-3.7 7.2-5.9 15.3-5.9 24c0 28.7 23.3 52 52 52l117.4 0c-4 17 .6 35.5 13.8 48.8c20.3 20.3 53.2 20.3 73.5 0L608 169.5V384c0 35.3-28.7 64-64 64H302.1c3.7-7.2 5.9-15.3 5.9-24c0-28.7-23.3-52-52-52l-117.4 0c4-17-.6-35.5-13.8-48.8c-20.3-20.3-53.2-20.3-73.5 0L32 342.5V128c0-35.3 28.7-64 64-64zm64 64H96v64c35.3 0 64-28.7 64-64zM544 320c-35.3 0-64 28.7-64 64h64V320zM320 352a96 96 0 1 0 0-192 96 96 0 1 0 0 192z"/></svg></div><p>No withdrawals yet</p></div>
         </div>
       </section>
 
@@ -574,26 +574,26 @@ html body,html[data-theme] body{
           <a href="{% url 'quick_loan' %}" class="db-cat">
             <div class="db-cat-ico c-sage"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M304 128a80 80 0 1 0 -160 0 80 80 0 1 0 160 0zM96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM49.3 464H398.7c-8.9-63.3-63.3-112-129-112H178.3c-65.7 0-120.1 48.7-129 112zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3z"/></svg></div>
             <h4>Personal</h4>
-            <div class="db-cat-rate"><b>3.5%</b><span>/ mo</span></div>
-            <div class="db-cat-range"><p>₱10K - ₱500K</p><p>6 - 36 months</p></div>
+            <div class="db-cat-rate"><b>{{ loan_rate_pct }}%</b><span>/ mo</span></div>
+            <div class="db-cat-range"><p>₱80K - ₱5M</p><p>6 - 36 months</p></div>
           </a>
           <a href="{% url 'quick_loan' %}" class="db-cat">
             <div class="db-cat-ico c-blue"><svg viewBox="0 0 640 512" aria-hidden="true"><path d="M381 114.9L186.1 41.8c-16.7-6.2-35.2-5.3-51.1 2.7L89.1 67.4C78 73 77.2 88.5 87.6 95.2l146.9 94.5L136 240 77.8 214.1c-8.7-3.9-18.8-3.7-27.3 .6L18.3 230.8c-9.3 4.7-11.8 16.8-5 24.7l73.1 85.3c6.1 7.1 15 11.2 24.3 11.2H248.4c5 0 9.9-1.2 14.3-3.4L535.6 212.2c46.5-23.3 82.5-63.3 100.8-112C645.9 75 627.2 48 600.2 48H542.8c-20.2 0-40.2 4.8-58.2 14L381 114.9zM0 480c0 17.7 14.3 32 32 32H608c17.7 0 32-14.3 32-32s-14.3-32-32-32H32c-17.7 0-32 14.3-32 32z"/></svg></div>
             <h4>OFW</h4>
-            <div class="db-cat-rate"><b>3.0%</b><span>/ mo</span></div>
-            <div class="db-cat-range"><p>₱20K - ₱500K</p><p>Up to 36 months</p></div>
+            <div class="db-cat-rate"><b>{{ loan_rate_pct }}%</b><span>/ mo</span></div>
+            <div class="db-cat-range"><p>₱80K - ₱5M</p><p>6 - 36 months</p></div>
           </a>
           <a href="{% url 'quick_loan' %}" class="db-cat">
             <div class="db-cat-ico c-green"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M0 112.5V422.3c0 18 10.1 35 27 41.3c87 32.5 174 10.3 261-11.9c79.8-20.3 159.6-40.7 239.3-18.9c23 6.3 48.7-9.5 48.7-33.4V89.7c0-18-10.1-35-27-41.3C462 15.9 375 38.1 288 60.3C208.2 80.6 128.4 100.9 48.7 79.1C25.6 72.8 0 88.6 0 112.5zM288 352c-44.2 0-80-43-80-96s35.8-96 80-96s80 43 80 96s-35.8 96-80 96zM64 352c35.3 0 64 28.7 64 64H64V352zm64-208c0 35.3-28.7 64-64 64V144h64zM512 304v64H448c0-35.3 28.7-64 64-64zM448 96h64v64c-35.3 0-64-28.7-64-64z"/></svg></div>
             <h4>Salary</h4>
-            <div class="db-cat-rate"><b>2.5%</b><span>/ mo</span></div>
-            <div class="db-cat-range"><p>₱5K - ₱200K</p><p>3 - 24 months</p></div>
+            <div class="db-cat-rate"><b>{{ loan_rate_pct }}%</b><span>/ mo</span></div>
+            <div class="db-cat-range"><p>₱80K - ₱5M</p><p>6 - 36 months</p></div>
           </a>
           <a href="{% url 'quick_loan' %}" class="db-cat">
             <div class="db-cat-ico c-purple"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M547.6 103.8L490.3 13.1C485.2 5 476.1 0 466.4 0H109.6C99.9 0 90.8 5 85.7 13.1L28.3 103.8c-29.6 46.8-3.4 111.9 51.9 119.4c4 .5 8.1 .8 12.1 .8c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.1 0 49.3-11.4 65.2-29c15.9 17.6 39.1 29 65.2 29c26.2 0 49.3-11.4 65.2-29c16 17.6 39.1 29 65.2 29c4.1 0 8.1-.3 12.1-.8c55.5-7.4 81.8-72.5 52.1-119.4zM499.7 254.9l-.1 0c-5.3 .7-10.7 1.1-16.2 1.1c-12.4 0-24.3-1.9-35.4-5.3V384H128V250.6c-11.2 3.5-23.2 5.4-35.6 5.4c-5.5 0-11-.4-16.3-1.1l-.1 0c-4.1-.6-8.1-1.3-12-2.3V384v64c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V384 252.6c-4 1-8 1.8-12.3 2.3z"/></svg></div>
             <h4>Business</h4>
-            <div class="db-cat-rate"><b>4.0%</b><span>/ mo</span></div>
-            <div class="db-cat-range"><p>₱50K - ₱500K</p><p>12 - 36 months</p></div>
+            <div class="db-cat-rate"><b>{{ loan_rate_pct }}%</b><span>/ mo</span></div>
+            <div class="db-cat-range"><p>₱80K - ₱5M</p><p>6 - 36 months</p></div>
           </a>
         </div>
       </section>
@@ -746,13 +746,6 @@ var SFX=(function(){
 })();
 window.OFL_SFX=SFX;
 
-/* ── Date range in the visitor's own time zone (server already rendered a value) ── */
-(function(){
-  var M=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], n=new Date();
-  function f(d){ return ('0'+d.getDate()).slice(-2)+' '+M[d.getMonth()]+' '+d.getFullYear(); }
-  $('dbDateFrom').textContent=f(new Date(n.getFullYear(),n.getMonth(),1));
-  $('dbDateTo').textContent=f(n);
-})();
 
 /* ── Balance show / hide ── */
 var amt=$('dbAmt'), eye=$('dbEye');
@@ -765,25 +758,20 @@ eye.addEventListener('click',function(){
   SFX.bal();
 });
 
-/* ── Activity tabs ── */
-var tabList=$('dbTabs'), tabs=[$('dbTab0'),$('dbTab1'),$('dbTab2')], panels=[$('dbPanel0'),$('dbPanel1'),$('dbPanel2')];
-function selectTab(i,focus){
-  tabs.forEach(function(t,k){
-    var on=(k===i);
-    t.setAttribute('aria-selected',String(on));
-    t.tabIndex=on?0:-1;
-    if(on){ panels[k].hidden=false; panels[k].classList.remove('is-in'); void panels[k].offsetWidth; panels[k].classList.add('is-in'); }
-    else panels[k].hidden=true;
+/* ── Activity filters: All / Loans / Withdrawals ── */
+var tl=$('dbTl'), evs=[].slice.call(tl.children), filters=[].slice.call(document.querySelectorAll('.db-filter'));
+var empties=[].slice.call(document.querySelectorAll('.db-act .db-empty'));
+function showKind(k,animate){
+  var shown=evs.filter(function(li){ var on=(k==='all'||li.getAttribute('data-k')===k); li.hidden=!on; li.classList.remove('is-in','has-next'); return on; });
+  shown.forEach(function(li,i){
+    if(i<shown.length-1) li.classList.add('has-next');
+    if(animate){ void li.offsetWidth; li.classList.add('is-in'); }
   });
-  tabList.style.setProperty('--i',i);
-  if(focus) tabs[i].focus();
+  empties.forEach(function(e){ e.hidden=!(shown.length===0&&e.getAttribute('data-for')===k); });
+  filters.forEach(function(b){ b.setAttribute('aria-pressed',b.getAttribute('data-f')===k?'true':'false'); });
 }
-tabs.forEach(function(t,i){ t.addEventListener('click',function(){ selectTab(i); }); });
-tabList.addEventListener('keydown',function(e){
-  var i=tabs.indexOf(document.activeElement); if(i<0) return;
-  if(e.key==='ArrowRight'){ e.preventDefault(); selectTab((i+1)%3,true); }
-  else if(e.key==='ArrowLeft'){ e.preventDefault(); selectTab((i+2)%3,true); }
-});
+filters.forEach(function(b){ b.addEventListener('click',function(){ if(b.getAttribute('aria-pressed')!=='true') showKind(b.getAttribute('data-f'),true); }); });
+showKind('all',false);
 
 /* ── Dialog helper: open/close with Escape, backdrop and focus return ── */
 var openDialog=null;

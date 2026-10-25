@@ -323,6 +323,74 @@ _STATUS_WARN = {
 _LOAN_TONE = {"APPROVED": "ok", "PENDING": "warn", "REVIEW": "warn", "REJECTED": "bad"}
 
 
+_RING_C = Decimal("219.91")   # circumference of the dashboard ring (r = 35)
+
+
+def _next_payment(user, last_loan):
+    """What the dashboard ring shows. Same due dates as the payment schedule page: the first is
+    15 days after approval, then one a month. The app does not record repayments, so the ring
+    counts down to the next due date; it never claims a payment was made."""
+    loan = (
+        LoanApplication.objects.filter(user=user, status="APPROVED")
+        .order_by("-approved_at", "-id").first()
+    )
+    if not loan:
+        waiting = bool(last_loan and (last_loan.status or "").upper() in ("PENDING", "REVIEW"))
+        return {"state": "waiting" if waiting else "none"}
+    terms = int(loan.term_months or 0)
+    start = loan.approved_at or loan.created_at or timezone.now()
+    first_due = timezone.localtime(start + timedelta(days=15)).date()
+    today = timezone.localdate()
+    dues = [first_due + relativedelta(months=i) for i in range(terms)]
+    nxt = next((i for i, d in enumerate(dues) if d >= today), None)
+    if nxt is None:
+        return {"state": "done", "last_due": dues[-1] if dues else None}
+    monthly = loan.monthly_repayment
+    if monthly is None and loan.amount and terms:
+        amount = Decimal(str(loan.amount))
+        rate = Decimal(str(loan.interest_rate_monthly)) if loan.interest_rate_monthly is not None else loan_rate()
+        monthly = (amount + amount * rate * terms) / terms
+    prev = dues[nxt - 1] if nxt else timezone.localtime(start).date()
+    span = max((dues[nxt] - prev).days, 1)
+    days_left = (dues[nxt] - today).days
+    frac = min(max(Decimal(span - days_left) / span, Decimal("0.03")), Decimal(1))
+    return {
+        "state": "active", "due": dues[nxt], "n": nxt + 1, "terms": terms, "monthly": monthly,
+        "days_left": days_left, "dash": (frac * _RING_C).quantize(Decimal("0.1")),
+    }
+
+
+_WD_TONE = {"paid": "ok", "rejected": "bad", "withdrawal_fail": "bad"}
+
+
+def _loan_events(user, limit=8):
+    """Real events for the dashboard timeline, newest first: applications, approvals, withdrawals."""
+    events = []
+    for loan in (LoanApplication.objects.filter(user=user).exclude(status="DRAFT")
+                 .only("id", "status", "amount", "term_months", "created_at", "approved_at").order_by("-id")[:limit]):
+        st = (loan.status or "").upper()
+        events.append({
+            "kind": "loan", "icon": "sent", "title": "Loan application", "at": loan.created_at,
+            "sub": f"{loan.term_months} months" if loan.term_months else "", "amount": loan.amount,
+            "tag": loan.get_status_display(), "tone": _LOAN_TONE.get(st, ""),
+        })
+        if loan.approved_at and st in ("APPROVED", "PAID"):
+            events.append({
+                "kind": "loan", "icon": "ok", "title": "Loan approved", "at": loan.approved_at,
+                "sub": "Credited to your balance", "amount": loan.amount, "tag": "", "tone": "ok",
+            })
+    for w in WithdrawalRequest.objects.filter(user=user).order_by("-id")[:limit]:
+        tone = "warn" if w.status not in _WD_TONE else _WD_TONE[w.status]
+        events.append({
+            "kind": "wd", "icon": "wd", "title": "Withdrawal", "at": w.created_at,
+            "sub": "Refunded to your balance" if w.refunded else "", "amount": w.amount,
+            "tag": "Refunded" if w.refunded else w.get_status_display(), "tone": "ok" if w.refunded else tone,
+        })
+    events = [e for e in events if e["at"]]
+    events.sort(key=lambda e: e["at"], reverse=True)
+    return events[:limit]
+
+
 def _dashboard_status(user):
     """(key, label, tone) for the account status badge."""
     key = (getattr(user, "account_status", "") or "ACTIVE").strip().upper()
@@ -380,6 +448,8 @@ def dashboard_view(request):
 
     key, label, tone = _dashboard_status(user)
     raw_label = (getattr(user, "dashboard_status_label", "") or "").strip() or key
+    pay = _next_payment(user, last_loan)
+    events = _loan_events(user)
 
     context = {
         "selfie_url": selfie_url,
@@ -393,6 +463,10 @@ def dashboard_view(request):
         "status_tone": tone,
         "loan_tone": _LOAN_TONE.get(((last_loan.status if last_loan else "") or "").upper(), ""),
         "current_reference": SystemSetting.get_reference_number(),
+        "pay": pay,
+        "events": events,
+        "has_loan_events": any(e["kind"] == "loan" for e in events),
+        "has_wd_events": any(e["kind"] == "wd" for e in events),
     }
     return render(request, "dashboard.html", context)
 
