@@ -40,6 +40,10 @@ Brand: **APEX** (renamed from "OFL / Overseas FilipinoLoan"). Logo: `static/img/
 - Interest is 0.5% per month. One source: `accounts.models.loan_rate()` (admin LoanConfig, else
   0.5%); templates get `{{ loan_rate }}` / `{{ loan_rate_pct }}` from a context processor. Never
   hard-code a rate.
+- Loan amount is ₱50,000 – ₱5,000,000 (was ₱80,000). One source: `accounts.models.loan_limits()`
+  (admin LoanConfig, else `DEFAULT_MIN_AMOUNT` / `DEFAULT_MAX_AMOUNT`); templates use
+  `{{ loan_limits.min }}` / `.max` (numbers for JS), `.min_txt` ("50,000"), `.min_short` ("50K").
+  Never hard-code an amount limit.
 - Loan terms are 6, 12, 24 or 36 months only (`accounts.models.LOAN_TERMS`). Older loans may
   still have 48/60 months: show them, but never offer or accept 48/60 for a new or changed term.
 

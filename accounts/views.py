@@ -35,7 +35,7 @@ from django.views.decorators.http import require_POST, require_GET
 
 from dateutil.relativedelta import relativedelta
 
-from .models import SystemSetting, User, LoanApplication, LoanConfig, PaymentMethod, WithdrawalRequest, loan_rate, LOAN_TERMS
+from .models import SystemSetting, User, LoanApplication, PaymentMethod, WithdrawalRequest, loan_rate, loan_limits, LOAN_TERMS
 from .forms import PaymentMethodForm, StaffUserForm, StaffPaymentMethodForm
 from .device_lock import check_device, set_device_cookie
 
@@ -365,7 +365,7 @@ def _next_payment(user, last_loan):
 _CATEGORIES = [
     ("personal", "Personal", "Medical bills, school fees, home needs", 100000, 12),
     ("ofw", "OFW", "Placement, travel and family back home", 200000, 24),
-    ("salary", "Salary", "Bridge the gap until payday", 80000, 6),
+    ("salary", "Salary", "Bridge the gap until payday", 50000, 6),
     ("business", "Business", "Stock, equipment, a new store", 500000, 36),
 ]
 
@@ -1444,12 +1444,11 @@ def loan_apply_view(request):
         messages.error(request, "Invalid loan terms.")
         return render(request, "loan_apply.html", {"locked": False, "loan": None})
 
-    # Config and rate
-    cfg = LoanConfig.objects.first()
-    if cfg:
-        if amount < Decimal(str(cfg.min_amount)) or amount > Decimal(str(cfg.max_amount)):
-            messages.error(request, f"Loan amount must be between {cfg.min_amount} and {cfg.max_amount}.")
-            return render(request, "loan_apply.html", {"locked": False, "loan": None})
+    # Limits and rate
+    amt_min, amt_max = loan_limits()
+    if amount < amt_min or amount > amt_max:
+        messages.error(request, f"Loan amount must be between ₱{amt_min:,.0f} and ₱{amt_max:,.0f}.")
+        return render(request, "loan_apply.html", {"locked": False, "loan": None})
     rate = loan_rate()
 
     total = amount + (amount * rate * Decimal(term_months))
