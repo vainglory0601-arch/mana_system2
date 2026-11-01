@@ -276,7 +276,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
           <div class="ql-head-ico"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V64c0-35.3-28.7-64-64-64H64zM96 64H288c17.7 0 32 14.3 32 32v32c0 17.7-14.3 32-32 32H96c-17.7 0-32-14.3-32-32V96c0-17.7 14.3-32 32-32zm32 160a32 32 0 1 1 -64 0 32 32 0 1 1 64 0zM96 352a32 32 0 1 1 0-64 32 32 0 1 1 0 64zM64 416c0-17.7 14.3-32 32-32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H96c-17.7 0-32-14.3-32-32zM192 256a32 32 0 1 1 0-64 32 32 0 1 1 0 64zm32 64a32 32 0 1 1 -64 0 32 32 0 1 1 64 0zm64-64a32 32 0 1 1 0-64 32 32 0 1 1 0 64zm32 64a32 32 0 1 1 -64 0 32 32 0 1 1 64 0zM288 448a32 32 0 1 1 0-64 32 32 0 1 1 0 64z"/></svg></div>
           <div>
             <h2>Loan Calculator</h2>
-            <p>Min ₱80,000 · Max ₱5,000,000</p>
+            <p>Min ₱{{ loan_limits.min_txt }} · Max ₱{{ loan_limits.max_txt }}</p>
           </div>
         </div>
 
@@ -406,7 +406,7 @@ var amountEl=$('qAmount'), termEl=$('qTerm'), hint=$('qHint'), terms=$('qTerms')
 var outAmount=$('qSumAmount'), outTerm=$('qSumTerm'), outMonthly=$('qSumMonthly');
 var btns=[].slice.call(document.querySelectorAll('.term-btn')), goBtn=$('goApply'), goTxt=$('goApplyTxt');
 var SMOOTH=(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)?'auto':'smooth';
-var AMT_MIN=80000, AMT_MAX=5000000, RATE={{ loan_rate }}, LOCKED={% if loan %}true{% else %}false{% endif %};
+var AMT_MIN=Number('{{ loan_limits.min }}'), AMT_MAX=Number('{{ loan_limits.max }}'), RATE={{ loan_rate }}, LOCKED={% if loan %}true{% else %}false{% endif %};
 var lastMonthly='';
 
 /* digits and one decimal point (2 decimals at most), like the old number field; no leading zeros,
@@ -442,7 +442,7 @@ function update(){
   /* a submitted loan is shown as it is, never flagged */
   var low=!LOCKED&&amount>0&&amount<AMT_MIN, high=!LOCKED&&amount>AMT_MAX, ok=!low&&!high;
   if(ok) minArmed=false;
-  setAmtError(high?'Maximum loan amount is ₱5,000,000. Please enter a lower amount.':(low&&minArmed?'Minimum loan amount is ₱80,000. Please enter a higher amount.':''));
+  setAmtError(high?'Maximum loan amount is ₱{{ loan_limits.max_txt }}. Please enter a lower amount.':(low&&minArmed?'Minimum loan amount is ₱{{ loan_limits.min_txt }}. Please enter a higher amount.':''));
   outAmount.textContent=amount>0?peso(amount,true):'—';
   outTerm.textContent=term>0?term+' months':'—';
   var monthly='—';
@@ -553,8 +553,8 @@ document.addEventListener('visibilitychange',function(){ if(!document.hidden) po
   var gNext=$('qlGNext'), gNextTxt=$('qlGNextTxt'), gDots=$('qlGDots').children;
   var STEPS=[
     { el:$('qlSp1'), input:amountEl,
-      html:'Type the <b>loan amount</b> you need above — from <b>₱80,000</b> up to <b>₱5,000,000</b>.',
-      check:function(){ var v=Number(amountEl.value); return v>=AMT_MIN&&v<=AMT_MAX?'':'Please enter an amount between ₱80,000 and ₱5,000,000.'; } },
+      html:'Type the <b>loan amount</b> you need above — from <b>₱{{ loan_limits.min_txt }}</b> up to <b>₱{{ loan_limits.max_txt }}</b>.',
+      check:function(){ var v=Number(amountEl.value); return v>=AMT_MIN&&v<=AMT_MAX?'':'Please enter an amount between ₱{{ loan_limits.min_txt }} and ₱{{ loan_limits.max_txt }}.'; } },
     { el:$('qlSp2'),
       html:'Choose your <b>loan term</b> — tap 6, 12, 24 or 36 months.',
       check:function(){ return termEl.value?'':'Please tap a loan term first.'; } },

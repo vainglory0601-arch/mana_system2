@@ -136,6 +136,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
 DEFAULT_RATE_MONTHLY = Decimal("0.005")   # 0.5% per month
 LOAN_TERMS = (6, 12, 24, 36)              # months the company offers
+DEFAULT_MIN_AMOUNT = Decimal("50000")     # smallest loan, in pesos
+DEFAULT_MAX_AMOUNT = Decimal("5000000")   # largest loan, in pesos
 
 
 def loan_rate():
@@ -144,6 +146,14 @@ def loan_rate():
     if cfg and cfg.interest_rate_monthly is not None:
         return Decimal(str(cfg.interest_rate_monthly))
     return DEFAULT_RATE_MONTHLY
+
+
+def loan_limits():
+    """(min, max) loan amount for new loans: the admin's LoanConfig, else ₱50,000 – ₱5,000,000."""
+    cfg = LoanConfig.objects.first()
+    lo = Decimal(str(cfg.min_amount)) if cfg and cfg.min_amount is not None else DEFAULT_MIN_AMOUNT
+    hi = Decimal(str(cfg.max_amount)) if cfg and cfg.max_amount is not None else DEFAULT_MAX_AMOUNT
+    return lo, hi
 
 
 class LoanConfig(models.Model):
@@ -155,7 +165,7 @@ class LoanConfig(models.Model):
         max_digits=10, decimal_places=6, default=Decimal("0.005000")   # 0.5% per month
     )
     min_amount = models.DecimalField(
-        max_digits=14, decimal_places=2, default=Decimal("80000.00")
+        max_digits=14, decimal_places=2, default=Decimal("50000.00")
     )
     max_amount = models.DecimalField(
         max_digits=14, decimal_places=2, default=Decimal("5000000.00")

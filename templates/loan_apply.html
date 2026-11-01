@@ -707,7 +707,7 @@ function peso(n,cents){
 function shake(el){ el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake'); setTimeout(function(){ el.classList.remove('shake'); },450); }
 
 var SMOOTH=(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)?'auto':'smooth';
-var LOCKED={{ locked|yesno:"true,false" }}, AMT_MIN=80000, AMT_MAX=5000000, RATE={{ loan_rate }}, DRAFT_KEY='ofl_loan_apply_draft';
+var LOCKED={{ locked|yesno:"true,false" }}, AMT_MIN=Number('{{ loan_limits.min }}'), AMT_MAX=Number('{{ loan_limits.max }}'), RATE={{ loan_rate }}, DRAFT_KEY='ofl_loan_apply_draft';
 /* the payment method page continues the first-loan guide (only when that step is still to do) */
 {% if not locked or loan.status == "DRAFT" %}store('ofl_onboard','pm');{% endif %}
 
@@ -734,7 +734,7 @@ function updateOffer(){
   var v=amountIn.value, n=Number(v||0);
   var low=!LOCKED&&!!v&&!(n>=AMT_MIN), high=!LOCKED&&n>AMT_MAX, bad=low||high;
   if(!bad) minArmed=false;
-  setAmtErr(high?'Maximum loan amount is ₱5,000,000.':(low&&minArmed?'Minimum loan amount is ₱80,000.':''));
+  setAmtErr(high?'Maximum loan amount is ₱{{ loan_limits.max_txt }}.':(low&&minArmed?'Minimum loan amount is ₱{{ loan_limits.min_txt }}.':''));
   amountHidden.value=(v&&!bad)?String(n):'';
   var t=Number(termHidden.value||0), m=(n>0&&!bad&&t>0)?peso((n+n*RATE*t)/t):'—';
   if(m!==lastMonthly){
@@ -1006,7 +1006,7 @@ form.addEventListener('keydown',function(e){
 function problems(){
   var out=[], n=Number(amountIn.value||0);
   if(!amountIn.value) out.push({msg:'Loan amount is required',el:$('laSp1'),focus:amountIn,mark:amountIn});
-  else if(!(n>=AMT_MIN&&n<=AMT_MAX)) out.push({msg:'Loan amount must be ₱80,000 – ₱5,000,000',el:$('laSp1'),focus:amountIn,mark:amountIn});
+  else if(!(n>=AMT_MIN&&n<=AMT_MAX)) out.push({msg:'Loan amount must be ₱{{ loan_limits.min_txt }} – ₱{{ loan_limits.max_txt }}',el:$('laSp1'),focus:amountIn,mark:amountIn});
   if(!termHidden.value) out.push({msg:'Loan term not selected',el:terms,mark:terms});
   if(!purpOn()) out.push({msg:'Loan purpose not selected',el:purp,mark:purp});
   REQ.forEach(function(r){
@@ -1093,7 +1093,7 @@ guide=(function(){
       html:'This is your <b>loan offer</b> from Quick Loan. Check the <b>amount</b> and <b>term</b> — you can still change them here.',
       check:function(){
         var n=Number(amountIn.value||0);
-        if(!(n>=AMT_MIN&&n<=AMT_MAX)) return {msg:'Please enter an amount between ₱80,000 and ₱5,000,000.',focus:amountIn};
+        if(!(n>=AMT_MIN&&n<=AMT_MAX)) return {msg:'Please enter an amount between ₱{{ loan_limits.min_txt }} and ₱{{ loan_limits.max_txt }}.',focus:amountIn};
         return termHidden.value?null:{msg:'Please choose a loan term.'};
       } },
     { el:$('laSp2'),
