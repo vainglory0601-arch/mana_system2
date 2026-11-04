@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static humanize %}
-{% block title %}My Wallet — APEX{% endblock %}
+{% block title %}My Wallet — BESTLOAN{% endblock %}
 
 {% block extra_css %}
 {{ block.super }}
@@ -16,11 +16,11 @@ html body select,html body textarea,html body a{
 {% block content %}
 <style>
 /* ════════════════════════════════════════════
-   APEX WALLET — Deep Forest
+   BESTLOAN WALLET — Midnight Navy
    Same look in light and dark theme
 ════════════════════════════════════════════ */
 :root{
-  --wl-dark:#0B1C14;--wl-primary:#133224;--wl-green:#1B4332;--wl-green-dk:#122e22;--wl-sage:#E8F3ED;--wl-accent:#F97316;
+  --wl-dark:#040E2B;--wl-primary:#061A4F;--wl-green:#0A2470;--wl-green-dk:#061A4F;--wl-sage:#EAF1FD;--wl-accent:#E9B52A;
   --wl-ink:#111827;--wl-ink2:#374151;--wl-mut:#9ca3af;--wl-mut2:#6b7280;--wl-line:#f3f4f6;--wl-line2:#e5e7eb;
   --wl-float:0 20px 40px -10px rgba(0,0,0,.1);--wl-ease:cubic-bezier(.22,1,.36,1);
 }
@@ -40,7 +40,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 }
 .wl-glow{position:absolute;border-radius:50%;pointer-events:none;}
 .wl-glow-a{top:0;right:0;width:256px;height:256px;background:rgba(255,255,255,.05);filter:blur(64px);transform:translate(33%,-33%);}
-.wl-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(249,115,22,.1);filter:blur(40px);transform:translate(-25%,25%);}
+.wl-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(233,181,42,.1);filter:blur(40px);transform:translate(-25%,25%);}
 .wl-bar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
 .wl-glass-dark{background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);}
 .wl-back{
@@ -50,11 +50,11 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .wl-back:hover{background-color:rgba(255,255,255,.1);}
 .wl-back:active{transform:scale(.94);}
 .wl-badge{display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.04em;color:#fff;}
-.wl-badge svg{font-size:11px;color:#FDBA74;}
+.wl-badge svg{font-size:11px;color:#FCE27A;}
 .wl-hero{position:relative;z-index:1;}
-.wl-eyebrow{margin:0 0 6px;font-size:11px;line-height:16px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#FDBA74;}
+.wl-eyebrow{margin:0 0 6px;font-size:11px;line-height:16px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#FCE27A;}
 .wl-hero h1{margin:0 0 6px;font-size:30px;line-height:36px;font-weight:800;letter-spacing:-.025em;color:#fff;}
-.wl-hero p{margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(232,243,237,.75);}
+.wl-hero p{margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(234,241,253,.75);}
 
 /* ── Main column ── */
 .wl-main{position:relative;z-index:2;margin-top:-104px;padding:0 20px;display:flex;flex-direction:column;gap:20px;}
@@ -72,11 +72,11 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 /* ── Balance card (sits across the header edge) ── */
 .wl-bcard{
   position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;gap:14px;min-height:196px;padding:20px 22px 18px;
-  border-radius:24px;color:#fff;background:linear-gradient(135deg,#24573f 0%,var(--wl-green) 45%,var(--wl-dark) 100%);
-  box-shadow:0 24px 40px -14px rgba(11,28,20,.55),0 2px 8px rgba(0,0,0,.12);
+  border-radius:24px;color:#fff;background:linear-gradient(135deg,#1B48A8 0%,var(--wl-green) 45%,var(--wl-dark) 100%);
+  box-shadow:0 24px 40px -14px rgba(6,21,54,.55),0 2px 8px rgba(0,0,0,.12);
 }
 .wl-bcard::before{content:'';position:absolute;top:-40%;right:-18%;width:240px;height:240px;border-radius:50%;background:rgba(255,255,255,.07);pointer-events:none;}
-.wl-bcard::after{content:'';position:absolute;bottom:-60px;left:-40px;width:180px;height:180px;border-radius:50%;background:rgba(249,115,22,.12);filter:blur(30px);pointer-events:none;}
+.wl-bcard::after{content:'';position:absolute;bottom:-60px;left:-40px;width:180px;height:180px;border-radius:50%;background:rgba(233,181,42,.12);filter:blur(30px);pointer-events:none;}
 .wl-bcard > *{position:relative;z-index:1;}
 .wl-btop{display:flex;align-items:center;justify-content:space-between;}
 .wl-brand{display:flex;align-items:baseline;gap:8px;}
@@ -106,7 +106,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .wl-alert{position:relative;padding:14px 16px 14px 40px;border-radius:18px;font-size:13px;line-height:19px;font-weight:600;background:#fff;border:1px solid var(--wl-line);box-shadow:var(--wl-float);color:var(--wl-ink2);animation:wlIn .3s var(--wl-ease);}
 .wl-alert::before{content:'';position:absolute;left:17px;top:20px;width:9px;height:9px;border-radius:50%;background:currentColor;}
 .wl-alert.status-danger{color:#991b1b;background:#fef2f2;border-color:#fecaca;}
-.wl-alert.status-warn{color:#9a3412;background:#fff7ed;border-color:#fed7aa;}
+.wl-alert.status-warn{color:#7A4E05;background:#FFF8E1;border-color:#F7E3A1;}
 .wl-alert.status-success{color:#166534;background:#f0fdf4;border-color:#bbf7d0;}
 
 /* ── Withdraw form (#wlForm beats base.html's dark-theme input overrides) ── */
@@ -114,7 +114,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .wl-label-row{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin:0 0 8px;padding-left:4px;}
 .wl-label{display:block;margin:0;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--wl-green);}
 .wl-max{padding:4px 10px;border:0;border-radius:999px;cursor:pointer;font-size:11px;line-height:15px;font-weight:700;color:var(--wl-green);background:var(--wl-sage);transition:background-color .15s,transform .15s;}
-.wl-max:hover{background:#d7eadf;}
+.wl-max:hover{background:#D3E2FA;}
 .wl-max:active{transform:scale(.95);}
 .wl-field{position:relative;}
 .wl-ico{position:absolute;left:16px;top:50%;transform:translateY(-50%);display:flex;font-size:15px;color:var(--wl-mut);pointer-events:none;transition:color .15s;}
@@ -136,10 +136,10 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .wl-err.on{display:block;animation:wlIn .25s var(--wl-ease);}
 .wl-cta{
   position:relative;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;margin-top:20px;padding:17px;border:0;border-radius:999px;cursor:pointer;
-  font-size:15.5px;line-height:22px;font-weight:700;color:#fff!important;background:var(--wl-accent);
-  box-shadow:0 10px 15px -3px rgba(249,115,22,.3),0 4px 6px -4px rgba(249,115,22,.3);transition:background-color .15s,transform .15s,opacity .2s;
+  font-size:15.5px;line-height:22px;font-weight:700;color:#0A2470!important;background:var(--wl-accent);
+  box-shadow:0 10px 15px -3px rgba(233,181,42,.3),0 4px 6px -4px rgba(233,181,42,.3);transition:background-color .15s,transform .15s,opacity .2s;
 }
-.wl-cta:hover{background:#ea580c;}
+.wl-cta:hover{background:#C98D12;}
 .wl-cta:active{transform:scale(.98);}
 .wl-cta svg{font-size:14px;}
 .wl-cta:disabled{cursor:not-allowed;background:#d1d5db;box-shadow:none;transform:none;}
@@ -193,8 +193,8 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .wl-row-txt{flex:1;min-width:0;}
 .wl-row-txt b{display:block;font-size:14px;line-height:20px;font-weight:700;color:var(--wl-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .wl-row-txt small{display:block;font-size:11.5px;line-height:16px;font-weight:500;color:var(--wl-mut2);}
-.wl-pill{flex-shrink:0;max-width:44%;padding:4px 10px;border-radius:999px;font-size:10px;line-height:15px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#fff7ed;color:#c2410c;}
-.wl-pill.is-ok{background:#E6F4EA;color:#15803D;}
+.wl-pill{flex-shrink:0;max-width:44%;padding:4px 10px;border-radius:999px;font-size:10px;line-height:15px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:#FFF8E1;color:#9C6508;}
+.wl-pill.is-ok{background:#E6EEFB;color:#15803D;}
 .wl-pill.is-bad{background:#FEE2E2;color:#B91C1C;}
 .wl-empty{display:flex;flex-direction:column;align-items:center;gap:10px;padding:18px 0 6px;text-align:center;font-size:13px;line-height:18px;font-weight:600;color:var(--wl-mut2);}
 .wl-empty span{width:52px;height:52px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--wl-green);background:var(--wl-sage);}
@@ -204,7 +204,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .wl-foot p{margin:0;}
 .wl-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
 .wl-foot i{width:6px;height:6px;border-radius:50%;background:var(--wl-primary);}
-.wl-foot b{font-weight:700;color:var(--wl-accent);}
+.wl-foot b{font-weight:700;color:#9C6508;}
 
 @media (min-width:640px){
   .wl{padding:32px 0;}
@@ -247,7 +247,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
       <!-- ── Balance card ── -->
       <div class="wl-bcard">
         <div class="wl-btop">
-          <div class="wl-brand"><b>APEX</b><span>Loan Wallet</span></div>
+          <div class="wl-brand"><b>BESTLOAN</b><span>Loan Wallet</span></div>
           <span class="wl-chip" aria-hidden="true"></span>
         </div>
         <div>
@@ -263,7 +263,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
           <span data-balance hidden>{{ request.user.balance|default:"0.00" }}</span>
         </div>
         <div class="wl-bfoot">
-          <div><small>Card Holder</small><b>{{ holder|default:"APEX Client" }}</b></div>
+          <div><small>Card Holder</small><b>{{ holder|default:"BESTLOAN Client" }}</b></div>
           <div class="r"><small>Currency</small><b>PHP</b></div>
         </div>
       </div>
@@ -339,7 +339,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
       </section>
 
       <footer class="wl-foot">
-        <p><i></i> APEX <span>•</span> <b>v2.2.1</b></p>
+        <p><i></i> BESTLOAN <span>•</span> <b>v2.2.1</b></p>
         <p>© 2026 All rights reserved</p>
       </footer>
     </main>

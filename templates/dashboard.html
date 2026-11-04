@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static humanize %}
-{% block title %}Dashboard — APEX{% endblock %}
+{% block title %}Dashboard — BESTLOAN{% endblock %}
 {% block nav %}{% endblock %}
 
 {% block extra_css %}
@@ -17,11 +17,11 @@ html body select,html body textarea,html body a{
 {% block content %}
 <style>
 /* ════════════════════════════════════════════
-   APEX DASHBOARD — Deep Forest · Floating Nav
+   BESTLOAN DASHBOARD — Midnight Navy · Floating Nav
    Same look in light and dark theme
 ════════════════════════════════════════════ */
 :root{
-  --db-dark:#0B1C14;--db-primary:#133224;--db-sage:#E8F3ED;--db-accent:#F97316;--db-surface:#FAFAFA;
+  --db-dark:#040E2B;--db-primary:#061A4F;--db-sage:#EAF1FD;--db-accent:#E9B52A;--db-surface:#FAFAFA;
   --db-ink:#111827;--db-ink2:#374151;--db-mut:#9ca3af;--db-mut2:#6b7280;--db-line:#f3f4f6;--db-line2:#e5e7eb;
   --db-glass:0 8px 32px 0 rgba(0,0,0,.05);--db-float:0 20px 40px -10px rgba(0,0,0,.1);
   --db-ease:cubic-bezier(.22,1,.36,1);
@@ -53,7 +53,7 @@ html body,html[data-theme] body{
 }
 .db-glow{position:absolute;border-radius:50%;pointer-events:none;}
 .db-glow-a{top:0;right:0;width:256px;height:256px;background:rgba(255,255,255,.05);filter:blur(64px);transform:translate(33%,-33%);}
-.db-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(249,115,22,.1);filter:blur(40px);transform:translate(-25%,25%);}
+.db-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(233,181,42,.1);filter:blur(40px);transform:translate(-25%,25%);}
 .db-bar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:32px;}
 .db-hello{min-width:0;}
 .db-hello p{margin:0 0 2px;font-size:12px;line-height:16px;font-weight:500;letter-spacing:.025em;color:rgba(255,255,255,.6);}
@@ -102,13 +102,13 @@ html body,html[data-theme] body{
 .db-ring-fg{fill:none;stroke:var(--db-accent);stroke-width:8;stroke-linecap:round;transform:rotate(-90deg);transform-origin:42px 42px;}
 .db-ring-in{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;line-height:1;}
 .db-ring-in b{font-size:22px;font-weight:800;color:#fff;}
-.db-ring-in small{margin-top:4px;font-size:9.5px;font-weight:700;letter-spacing:.02em;color:rgba(232,243,237,.65);}
-.db-ring-in svg{width:auto;height:22px;color:#FDBA74;}
+.db-ring-in small{margin-top:4px;font-size:9.5px;font-weight:700;letter-spacing:.02em;color:rgba(234,241,253,.65);}
+.db-ring-in svg{width:auto;height:22px;color:#FCE27A;}
 .db-pay-t{flex:1;min-width:0;}
-.db-pay-t span{display:block;font-size:11px;line-height:15px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#FDBA74;}
+.db-pay-t span{display:block;font-size:11px;line-height:15px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#FCE27A;}
 .db-pay-t b{display:block;margin-top:3px;font-size:22px;line-height:28px;font-weight:800;letter-spacing:-.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .db-pay-t b.is-text{font-size:16px;line-height:22px;white-space:normal;}
-.db-pay-t small{display:block;margin-top:2px;font-size:12px;line-height:17px;font-weight:500;color:rgba(232,243,237,.72);}
+.db-pay-t small{display:block;margin-top:2px;font-size:12px;line-height:17px;font-weight:500;color:rgba(234,241,253,.72);}
 .db-pay-go{flex-shrink:0;font-size:12px;color:rgba(255,255,255,.45);}
 
 /* ── Loan account card (solid white over the dark header) ── */
@@ -128,7 +128,7 @@ html body,html[data-theme] body{
 .db-acct-who h3{margin:0;font-size:14px;line-height:20px;font-weight:700;color:var(--db-ink);}
 .db-acct-who p{margin:2px 0 0;font-size:11px;line-height:16px;font-weight:500;color:var(--db-mut2);}
 .db-status{
-  --st-bg:#E6F4EA;--st-line:#CDE9D6;--st-ink:#15803D;--st-dot:#22C55E;
+  --st-bg:#E6EEFB;--st-line:#CFDDF7;--st-ink:#15803D;--st-dot:#22C55E;
   position:relative;flex-shrink:0;max-width:52%;display:flex;align-items:center;gap:8px;padding:6px 12px 6px 28px;
   border-radius:999px;background:var(--st-bg);border:1px solid var(--st-line);box-shadow:0 1px 2px rgba(0,0,0,.05);
   font-size:10px;line-height:15px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--st-ink);
@@ -139,14 +139,14 @@ html body,html[data-theme] body{
 .db-status::before,.db-status::after{content:'';position:absolute;left:12px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--st-dot);}
 .db-status::after{animation:dbPing 1s cubic-bezier(0,0,.2,1) infinite;}
 @keyframes dbPing{75%,100%{transform:scale(2);opacity:0;}}
-.db-acct-card.is-lit{box-shadow:var(--db-float),0 0 0 3px rgba(249,115,22,.55);}
+.db-acct-card.is-lit{box-shadow:var(--db-float),0 0 0 3px rgba(233,181,42,.55);}
 
 /* ── Sections ── */
 .db-main{padding:0 20px;margin-top:32px;display:flex;flex-direction:column;gap:32px;}
 .db-sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
 .db-sec-head h3{margin:0;font-size:14px;line-height:20px;font-weight:700;color:var(--db-ink);}
 .db-sec-head a{margin:-10px -8px;padding:10px 8px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--db-primary)!important;text-decoration:none!important;transition:color .15s;}
-.db-sec-head a:hover{color:var(--db-accent)!important;}
+.db-sec-head a:hover{color:#9C6508!important;}
 .db-panel-card{background:#fff;border:1px solid var(--db-line);border-radius:2rem;box-shadow:var(--db-glass);}
 
 /* activity: filter chips + one timeline of real events */
@@ -157,8 +157,8 @@ html body,html[data-theme] body{
   font-size:12px;font-weight:700;color:var(--db-ink2);transition:background-color .15s,border-color .15s,color .15s,transform .15s;
 }
 .db-filter:active{transform:scale(.95);}
-.db-filter[aria-pressed="true"]{color:#fff;background:#1B4332;border-color:#1B4332;}
-.db-filter:focus-visible{outline:2px solid #1B4332;outline-offset:2px;}
+.db-filter[aria-pressed="true"]{color:#fff;background:#0A2470;border-color:#0A2470;}
+.db-filter:focus-visible{outline:2px solid #0A2470;outline-offset:2px;}
 .db-tl{list-style:none;margin:0;padding:0;}
 .db-ev{position:relative;}
 .db-ev[hidden]{display:none;}
@@ -172,7 +172,7 @@ html body,html[data-theme] body{
 .db-empty p{margin:0;font-size:12px;line-height:16px;font-weight:600;color:var(--db-mut);}
 .db-row{display:flex;align-items:center;gap:12px;padding:14px 12px;}
 .db-row-ico{width:44px;height:44px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:17px;background:var(--db-sage);color:var(--db-primary);}
-.db-row-ico.is-warn{background:#fff7ed;color:var(--db-accent);}
+.db-row-ico.is-warn{background:#FFF8E1;color:#9C6508;}
 .db-row-ico.is-muted{background:#f3f4f6;color:var(--db-mut2);}
 .db-row-ico{position:relative;z-index:1;}
 .db-row-text{flex:1;min-width:0;}
@@ -181,8 +181,8 @@ html body,html[data-theme] body{
 .db-row-end{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
 .db-row-amt{font-size:14px;line-height:20px;font-weight:800;color:var(--db-ink);white-space:nowrap;}
 .db-chip{padding:2px 8px;border-radius:999px;font-size:9.5px;line-height:14px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:#f3f4f6;color:var(--db-mut2);}
-.db-chip.is-ok{background:#E6F4EA;color:#15803D;}
-.db-chip.is-warn{background:#fff7ed;color:#c2410c;}
+.db-chip.is-ok{background:#E6EEFB;color:#15803D;}
+.db-chip.is-warn{background:#FFF8E1;color:#9C6508;}
 .db-chip.is-bad{background:#FEE2E2;color:#B91C1C;}
 
 /* loan categories: swipe row of cards, each with a worked example that opens Quick Loan pre-filled */
@@ -192,13 +192,13 @@ html body,html[data-theme] body{
 }
 .db-cats::-webkit-scrollbar{display:none;}
 .db-cat{
-  --c1:#1B4332;--c2:#2d6a4f;--tint:#E8F3ED;
+  --c1:#0A2470;--c2:#0B2A86;--tint:#EAF1FD;
   position:relative;flex:0 0 78%;max-width:300px;scroll-snap-align:start;overflow:hidden;
   display:flex;flex-direction:column;padding:18px;border-radius:1.75rem;background:#fff;border:1px solid var(--db-line);box-shadow:var(--db-glass);
   text-decoration:none!important;color:inherit!important;transition:transform .15s,box-shadow .2s;
 }
 .db-cat.k-ofw{--c1:#0f4c5c;--c2:#1b7a8c;--tint:#e6f4f6;}
-.db-cat.k-salary{--c1:#9a3412;--c2:#F97316;--tint:#fff1e6;}
+.db-cat.k-salary{--c1:#7A4E05;--c2:#E9B52A;--tint:#FFF6DB;}
 .db-cat.k-business{--c1:#3b2f63;--c2:#6b5ca5;--tint:#efecf8;}
 @media (hover:hover){ .db-cat:hover{box-shadow:var(--db-float);} }
 .db-cat:active{transform:scale(.98);}
@@ -249,7 +249,7 @@ html body,html[data-theme] body{
 .db-fx-out{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .db-fx-out.is-empty{color:#d1d5db;}
 .db-fx-note{position:relative;min-height:16px;margin:0 0 20px;padding:0 4px;font-size:11px;line-height:16px;font-weight:500;color:var(--db-mut);text-align:right;}
-.db-fx-note.is-error{color:#c2410c;}
+.db-fx-note.is-error{color:#9C6508;}
 .db-btn{
   width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;border:0;border-radius:12px;cursor:pointer;
   font-size:14px;line-height:20px;font-weight:700;color:#fff;background:var(--db-primary);
@@ -267,7 +267,7 @@ html body,html[data-theme] body{
 .db-foot p{margin:0;}
 .db-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
 .db-foot-dot{width:6px;height:6px;border-radius:50%;background:var(--db-primary);}
-.db-foot b{font-weight:700;color:var(--db-accent);}
+.db-foot b{font-weight:700;color:#9C6508;}
 .db-foot a{color:var(--db-primary)!important;font-weight:700;text-decoration:none!important;}
 
 /* ── Floating pill navigation ── */
@@ -292,14 +292,14 @@ html body,html[data-theme] body{
 .db-apply-wrap{position:relative;top:-28px;}
 .db-apply{
   position:relative;width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;
-  color:#fff!important;background:linear-gradient(to top right,var(--db-accent),#ff9843);border:4px solid rgba(255,255,255,.8);
-  box-shadow:0 0 20px rgba(249,115,22,.4);transition:transform .15s;
+  color:#0A2470!important;background:linear-gradient(to top right,var(--db-accent),#FCE27A);border:4px solid rgba(255,255,255,.8);
+  box-shadow:0 0 20px rgba(233,181,42,.4);transition:transform .15s;
 }
 @media (hover:hover){ .db-apply:hover{transform:scale(1.05);} }
 .db-apply:active{transform:scale(.95);}
 .db-apply::after{
   content:'';position:absolute;inset:-9px;border-radius:50%;border:2px solid var(--db-accent);
-  box-shadow:0 0 18px rgba(249,115,22,.5);opacity:0;pointer-events:none;
+  box-shadow:0 0 18px rgba(233,181,42,.5);opacity:0;pointer-events:none;
 }
 .db-apply.is-lit::after{animation:dbLit 1.8s ease-in-out infinite;}
 @keyframes dbLit{0%,100%{opacity:0;}50%{opacity:1;}}
@@ -307,7 +307,7 @@ html body,html[data-theme] body{
 /* ── Currency picker sheet ── */
 .db-sheet{
   position:fixed;inset:0;z-index:9990;display:flex;align-items:flex-end;justify-content:center;
-  background:rgba(11,28,20,.5);
+  background:rgba(6,21,54,.5);
   opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s linear .25s;
 }
 .db-sheet.is-open{opacity:1;visibility:visible;transition:opacity .25s;}
@@ -342,7 +342,7 @@ html body,html[data-theme] body{
   opacity:0;visibility:hidden;transition:opacity .3s,visibility 0s linear .3s;
 }
 .db-drawer.is-open{opacity:1;visibility:visible;transition:opacity .3s;}
-.db-drawer-bd{position:absolute;inset:0;background:rgba(11,28,20,.5);touch-action:none;}
+.db-drawer-bd{position:absolute;inset:0;background:rgba(6,21,54,.5);touch-action:none;}
 .db-drawer-frame{position:relative;width:100%;max-width:420px;height:100%;overflow:hidden;pointer-events:none;}
 .db-drawer-panel{
   position:absolute;top:0;right:0;bottom:0;width:min(300px,84%);display:flex;flex-direction:column;
@@ -372,7 +372,7 @@ html body,html[data-theme] body{
 /* ── Welcome card + glass guide (same family as the register guide) ── */
 .db-welcome{
   position:fixed;inset:0;z-index:9980;display:flex;align-items:center;justify-content:center;padding:24px;
-  background:rgba(11,28,20,.62);
+  background:rgba(6,21,54,.62);
   opacity:0;visibility:hidden;transition:opacity .35s,visibility 0s linear .35s;
 }
 .db-welcome.is-open{opacity:1;visibility:visible;transition:opacity .35s;}
@@ -381,8 +381,8 @@ html body,html[data-theme] body{
 .db-welcome.is-open .db-gbody{transform:none;}
 .db-welcome .db-ghead{justify-content:center;}
 .db-welcome-ico{
-  width:60px;height:60px;margin:0 auto 14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;
-  background:linear-gradient(to bottom right,#F97316,#d95d0b);border:1px solid rgba(255,255,255,.25);box-shadow:0 8px 24px rgba(249,115,22,.4);
+  width:60px;height:60px;margin:0 auto 14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;color:#0A2470;
+  background:linear-gradient(to bottom right,#E9B52A,#C98D12);border:1px solid rgba(255,255,255,.25);box-shadow:0 8px 24px rgba(233,181,42,.4);
 }
 .db-welcome h2{margin:0 0 8px;font-size:19px;line-height:26px;font-weight:800;color:#fff;}
 .db-welcome .db-gtext{text-align:center;}
@@ -394,14 +394,14 @@ html body,html[data-theme] body{
 @keyframes dbFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
 .db-gbody{
   position:relative;overflow:hidden;padding:16px;border-radius:16px;
-  background:rgba(17,42,31,.85);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+  background:rgba(6,26,79,.85);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
   border:1px solid rgba(255,255,255,.2);box-shadow:0 15px 35px rgba(0,0,0,.25);
 }
 .db-guide .db-gbody,.db-guide .db-garrow{opacity:0;transition:opacity .3s ease;}
 .db-guide.is-on .db-gbody,.db-guide.is-on .db-garrow{opacity:1;}
 .db-garrow{
   position:absolute;left:var(--ax,50%);width:14px;height:14px;margin-left:-7px;top:-6px;
-  background:rgba(17,42,31,.85);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
+  background:rgba(6,26,79,.85);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);
   border:1px solid rgba(255,255,255,.2);border-right:0;border-bottom:0;clip-path:polygon(0 0,100% 0,0 100%);transform:rotate(45deg);
 }
 .db-guide.is-above .db-garrow{top:auto;bottom:-6px;transform:rotate(225deg);}
@@ -409,14 +409,14 @@ html body,html[data-theme] body{
 .db-ghead{position:relative;display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.1);}
 .db-gwho{display:flex;align-items:center;gap:10px;}
 .db-gava{
-  width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;
-  background:linear-gradient(to bottom right,#F97316,#d95d0b);border:1px solid rgba(255,255,255,.2);
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#0A2470;
+  background:linear-gradient(to bottom right,#E9B52A,#C98D12);border:1px solid rgba(255,255,255,.2);
 }
 .db-gstep{font-size:10px;line-height:15px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;}
 .db-gdots{display:flex;gap:6px;}
 .db-gdots i{width:6px;height:6px;border-radius:999px;background:rgba(255,255,255,.3);transition:width .3s,background-color .3s;}
-.db-gdots i.done{background:rgba(249,115,22,.75);}
-.db-gdots i.on{width:14px;background:var(--db-accent);box-shadow:0 0 8px rgba(249,115,22,.6);}
+.db-gdots i.done{background:rgba(233,181,42,.75);}
+.db-gdots i.on{width:14px;background:var(--db-accent);box-shadow:0 0 8px rgba(233,181,42,.6);}
 .db-gtext{position:relative;margin:0 0 16px;font-size:13px;line-height:1.625;color:rgba(255,255,255,.9);transition:opacity .15s;}
 .db-gtext b{font-weight:700;color:#fff;}
 .db-gacts{position:relative;display:flex;align-items:center;gap:12px;}
@@ -428,8 +428,8 @@ html body,html[data-theme] body{
 .db-gskip:active,.db-gnext:active{transform:scale(.98);}
 .db-gnext svg{font-size:10px;}
 .db-bal.is-lit::after{
-  content:'';position:absolute;inset:-10px -12px;border-radius:20px;border:2px solid rgba(249,115,22,.75);
-  box-shadow:0 0 18px rgba(249,115,22,.35);pointer-events:none;
+  content:'';position:absolute;inset:-10px -12px;border-radius:20px;border:2px solid rgba(233,181,42,.75);
+  box-shadow:0 0 18px rgba(233,181,42,.35);pointer-events:none;
 }
 
 /* desktop: centred rounded app */
@@ -471,7 +471,7 @@ html body,html[data-theme] body{
       <div class="db-bar">
         <div class="db-hello">
           <p>Welcome back,</p>
-          <h1>{% if last_loan and last_loan.full_name %}{{ last_loan.full_name|truncatechars:24 }}{% else %}APEX Client{% endif %}</h1>
+          <h1>{% if last_loan and last_loan.full_name %}{{ last_loan.full_name|truncatechars:24 }}{% else %}BESTLOAN Client{% endif %}</h1>
         </div>
         <div class="db-actions">
           <a href="{% url 'notifications' %}" class="db-iconbtn db-glass-dark" aria-label="Notifications{% if notif_count %} ({{ notif_count }} unread){% endif %}">
@@ -531,7 +531,7 @@ html body,html[data-theme] body{
           <div class="db-acct-ico"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M512 80c8.8 0 16 7.2 16 16v32H48V96c0-8.8 7.2-16 16-16H512zm16 144V416c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V224H528zM64 32C28.7 32 0 60.7 0 96V416c0 35.3 28.7 64 64 64H512c35.3 0 64-28.7 64-64V96c0-35.3-28.7-64-64-64H64zm56 304c-13.3 0-24 10.7-24 24s10.7 24 24 24h48c13.3 0 24-10.7 24-24s-10.7-24-24-24H120zm128 0c-13.3 0-24 10.7-24 24s10.7 24 24 24H360c13.3 0 24-10.7 24-24s-10.7-24-24-24H248z"/></svg></div>
           <div>
             <h3>Loan Account</h3>
-            <p>Your APEX account details</p>
+            <p>Your BESTLOAN account details</p>
           </div>
         </div>
         <div class="db-status status-{{ status_tone }}" title="{{ status_display }}">{{ status_display }}</div>
@@ -628,7 +628,7 @@ html body,html[data-theme] body{
       </section>
 
       <footer class="db-foot">
-        <p><span class="db-foot-dot"></span> APEX <span>•</span> <b>v2.2.1</b></p>
+        <p><span class="db-foot-dot"></span> BESTLOAN <span>•</span> <b>v2.2.1</b></p>
         <p>© 2026 All rights reserved · <a href="{% url 'contact' %}">Support</a></p>
       </footer>
     </main>
@@ -707,7 +707,7 @@ html body,html[data-theme] body{
       <div class="db-gdots"><i class="on"></i><i></i><i></i><i></i></div>
     </div>
     <div class="db-welcome-ico"><svg viewBox="0 0 576 512" aria-hidden="true"><path d="M312 24V34.5c6.4 1.2 12.6 2.7 18.2 4.2c12.8 3.4 20.4 16.6 17 29.4s-16.6 20.4-29.4 17c-10.9-2.9-21.1-4.9-30.2-5c-7.3-.1-14.7 1.7-19.4 4.4c-2.1 1.3-3.1 2.4-3.5 3c-.3 .5-.7 1.2-.7 2.8c0 .3 0 .5 0 .6c.2 .2 .9 1.2 3.3 2.6c5.8 3.5 14.4 6.2 27.4 10.1l.9 .3 0 0c11.1 3.3 25.9 7.8 37.9 15.3c13.7 8.6 26.1 22.9 26.4 44.9c.3 22.5-11.4 38.9-26.7 48.5c-6.7 4.1-13.9 7-21.3 8.8V232c0 13.3-10.7 24-24 24s-24-10.7-24-24V220.6c-9.5-2.3-18.2-5.3-25.6-7.8c-2.1-.7-4.1-1.4-6-2c-12.6-4.2-19.4-17.8-15.2-30.4s17.8-19.4 30.4-15.2c2.6 .9 5 1.7 7.3 2.5c13.6 4.6 23.4 7.9 33.9 8.3c8 .3 15.1-1.6 19.2-4.1c1.9-1.2 2.8-2.2 3.2-2.9c.4-.6 .9-1.8 .8-4.1l0-.2c0-1 0-2.1-4-4.6c-5.7-3.6-14.3-6.4-27.1-10.3l-1.9-.6c-10.8-3.2-25-7.5-36.4-14.4c-13.5-8.1-26.5-22-26.6-44.1c-.1-22.9 12.9-38.6 27.7-47.4c6.4-3.8 13.3-6.4 20.2-8.2V24c0-13.3 10.7-24 24-24s24 10.7 24 24zM568.2 336.3c13.1 17.8 9.3 42.8-8.5 55.9L433.1 485.5c-23.4 17.2-51.6 26.5-80.7 26.5H192 32c-17.7 0-32-14.3-32-32V416c0-17.7 14.3-32 32-32H68.8l44.9-36c22.7-18.2 50.9-28 80-28H272h16 64c17.7 0 32 14.3 32 32s-14.3 32-32 32H288 272c-8.8 0-16 7.2-16 16s7.2 16 16 16H392.6l119.7-88.2c17.8-13.1 42.8-9.3 55.9 8.5zM193.6 384l0 0-.9 0c.3 0 .6 0 .9 0z"/></svg></div>
-    <h2 id="dbWelcomeTitle">Welcome to APEX!</h2>
+    <h2 id="dbWelcomeTitle">Welcome to BESTLOAN!</h2>
     <p class="db-gtext">Your account is set up and ready. Let us show you how to apply for your first loan — it only takes a few minutes.</p>
     <div class="db-gacts">
       <button type="button" class="db-gskip" data-guide="skip">Skip tour</button>

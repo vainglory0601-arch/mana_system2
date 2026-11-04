@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static humanize %}
-{% block title %}My Profile — APEX{% endblock %}
+{% block title %}My Profile — BESTLOAN{% endblock %}
 
 {% block extra_css %}
 {{ block.super }}
@@ -16,11 +16,11 @@ html body select,html body textarea,html body a{
 {% block content %}
 <style>
 /* ════════════════════════════════════════════
-   APEX PROFILE — Deep Forest
+   BESTLOAN PROFILE — Midnight Navy
    Same look in light and dark theme
 ════════════════════════════════════════════ */
 :root{
-  --pf-dark:#0B1C14;--pf-primary:#133224;--pf-green:#1B4332;--pf-green-dk:#122e22;--pf-sage:#E8F3ED;--pf-accent:#F97316;
+  --pf-dark:#040E2B;--pf-primary:#061A4F;--pf-green:#0A2470;--pf-green-dk:#061A4F;--pf-sage:#EAF1FD;--pf-accent:#E9B52A;
   --pf-ink:#111827;--pf-ink2:#374151;--pf-mut:#9ca3af;--pf-mut2:#6b7280;--pf-line:#f3f4f6;--pf-line2:#e5e7eb;
   --pf-float:0 20px 40px -10px rgba(0,0,0,.1);--pf-ease:cubic-bezier(.22,1,.36,1);
 }
@@ -39,7 +39,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 }
 .pf-glow{position:absolute;border-radius:50%;pointer-events:none;}
 .pf-glow-a{top:0;right:0;width:256px;height:256px;background:rgba(255,255,255,.05);filter:blur(64px);transform:translate(33%,-33%);}
-.pf-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(249,115,22,.1);filter:blur(40px);transform:translate(-25%,25%);}
+.pf-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(233,181,42,.1);filter:blur(40px);transform:translate(-25%,25%);}
 .pf-bar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
 .pf-glass-dark{background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);}
 .pf-back{
@@ -48,31 +48,31 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 }
 .pf-back:hover{background-color:rgba(255,255,255,.1);}
 .pf-back:active{transform:scale(.94);}
-.pf-bar-title{font-size:13px;line-height:18px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#FDBA74;}
+.pf-bar-title{font-size:13px;line-height:18px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#FCE27A;}
 .pf-bar span:last-child{width:44px;}
 
 .pf-avatar{position:relative;z-index:1;width:104px;height:104px;margin:0 auto 14px;}
-.pf-ring{width:100%;height:100%;padding:4px;border-radius:50%;background:linear-gradient(135deg,#FDBA74,var(--pf-accent) 45%,rgba(255,255,255,.25));box-shadow:0 12px 30px -8px rgba(0,0,0,.45);}
+.pf-ring{width:100%;height:100%;padding:4px;border-radius:50%;background:linear-gradient(135deg,#FCE27A,var(--pf-accent) 45%,rgba(255,255,255,.25));box-shadow:0 12px 30px -8px rgba(0,0,0,.45);}
 .pf-photo{position:relative;width:100%;height:100%;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:40px;color:rgba(255,255,255,.75);background:var(--pf-green);border:3px solid var(--pf-primary);}
 .pf-photo img{width:100%;height:100%;object-fit:cover;display:block;}
-.pf-busy{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(11,28,20,.55);opacity:0;visibility:hidden;transition:opacity .2s,visibility 0s linear .2s;}
+.pf-busy{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(6,21,54,.55);opacity:0;visibility:hidden;transition:opacity .2s,visibility 0s linear .2s;}
 .pf-avatar.is-busy .pf-busy{opacity:1;visibility:visible;transition:opacity .2s;}
 .pf-spin{width:26px;height:26px;border-radius:50%;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;}
 .pf-avatar.is-busy .pf-spin{animation:pfSpin .7s linear infinite;}
 @keyframes pfSpin{to{transform:rotate(360deg);}}
 .pf-cam{
   position:absolute;right:0;bottom:2px;width:36px;height:36px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;
-  font-size:14px;color:#fff;background:var(--pf-accent);border:3px solid var(--pf-primary);box-shadow:0 6px 14px -4px rgba(249,115,22,.6);transition:transform .15s,background-color .15s;
+  font-size:14px;color:#0A2470;background:var(--pf-accent);border:3px solid var(--pf-primary);box-shadow:0 6px 14px -4px rgba(233,181,42,.6);transition:transform .15s,background-color .15s;
 }
-.pf-cam:hover{background:#ea580c;}
+.pf-cam:hover{background:#C98D12;}
 .pf-cam:active{transform:scale(.92);}
 .pf-cam:focus-within{box-shadow:0 0 0 3px rgba(253,186,116,.6);}
 .pf-file{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
 .pf-who{position:relative;z-index:1;}
 .pf-who h1{margin:0 0 4px;font-size:22px;line-height:28px;font-weight:800;letter-spacing:-.02em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.pf-who p{margin:0 0 12px;font-size:13px;line-height:18px;font-weight:600;letter-spacing:.04em;color:rgba(232,243,237,.7);}
+.pf-who p{margin:0 0 12px;font-size:13px;line-height:18px;font-weight:600;letter-spacing:.04em;color:rgba(234,241,253,.7);}
 .pf-status{
-  --st-bg:#E6F4EA;--st-line:#CDE9D6;--st-ink:#15803D;--st-dot:#22C55E;
+  --st-bg:#E6EEFB;--st-line:#CFDDF7;--st-ink:#15803D;--st-dot:#22C55E;
   position:relative;display:inline-flex;align-items:center;max-width:100%;padding:6px 12px 6px 28px;border-radius:999px;
   background:var(--st-bg);border:1px solid var(--st-line);font-size:10.5px;line-height:15px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--st-ink);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
@@ -104,7 +104,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .pf-alert{position:relative;padding:14px 16px 14px 40px;border-radius:18px;font-size:13px;line-height:19px;font-weight:600;border:1px solid;box-shadow:var(--pf-float);}
 .pf-alert::before{content:'';position:absolute;left:17px;top:20px;width:9px;height:9px;border-radius:50%;background:currentColor;}
 .pf-alert.is-danger{color:#991b1b;background:#fef2f2;border-color:#fecaca;}
-.pf-alert.is-warn{color:#9a3412;background:#fff7ed;border-color:#fed7aa;}
+.pf-alert.is-warn{color:#7A4E05;background:#FFF8E1;border-color:#F7E3A1;}
 .pf-alert.is-success{color:#166534;background:#f0fdf4;border-color:#bbf7d0;}
 
 .pf-sec h2{margin:0 0 12px;padding-left:4px;font-size:12px;line-height:16px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--pf-mut2);}
@@ -117,7 +117,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 @media (hover:hover){ .pf-tile:hover{transform:translateY(-3px);box-shadow:0 16px 28px -12px rgba(0,0,0,.18);} }
 .pf-tile:active{transform:scale(.97);}
 .pf-tile-ico{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--pf-green);background:var(--pf-sage);}
-.pf-tile.is-accent .pf-tile-ico{color:var(--pf-accent);background:#fff7ed;}
+.pf-tile.is-accent .pf-tile-ico{color:#9C6508;background:#FFF8E1;}
 .pf-tile-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;}
 .pf-tile-foot b{font-size:13.5px;line-height:18px;font-weight:700;}
 .pf-tile-foot svg{font-size:11px;color:var(--pf-mut);transition:transform .2s;}
@@ -139,10 +139,10 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .pf-foot p{margin:0;}
 .pf-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
 .pf-foot i{width:6px;height:6px;border-radius:50%;background:var(--pf-primary);}
-.pf-foot b{font-weight:700;color:var(--pf-accent);}
+.pf-foot b{font-weight:700;color:#9C6508;}
 
 /* ── Sign out sheet (plain dim, no full-screen blur) ── */
-.pf-sheet{position:fixed;inset:0;z-index:10001;display:flex;align-items:flex-end;justify-content:center;background:rgba(11,28,20,.55);opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s linear .25s;}
+.pf-sheet{position:fixed;inset:0;z-index:10001;display:flex;align-items:flex-end;justify-content:center;background:rgba(6,21,54,.55);opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s linear .25s;}
 .pf-sheet.is-open{opacity:1;visibility:visible;transition:opacity .25s;}
 .pf-sheet-box{width:100%;max-width:420px;padding:10px 22px calc(24px + env(safe-area-inset-bottom,0px));border-radius:28px 28px 0 0;background:#fff;text-align:center;transform:translateY(100%);transition:transform .32s var(--pf-ease);}
 .pf-sheet.is-open .pf-sheet-box{transform:none;}
@@ -204,7 +204,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
       </form>
 
       <div class="pf-who">
-        <h1>{{ full_name|default:"APEX Client" }}</h1>
+        <h1>{{ full_name|default:"BESTLOAN Client" }}</h1>
         <p>{{ request.user.phone }}</p>
         <span class="pf-status status-{{ status_tone }}" title="{{ status_display }}">{{ status_display }}</span>
       </div>
@@ -265,7 +265,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
       </section>
 
       <footer class="pf-foot">
-        <p><i></i> APEX <span>•</span> <b>v2.2.1</b></p>
+        <p><i></i> BESTLOAN <span>•</span> <b>v2.2.1</b></p>
         <p>© 2026 All rights reserved</p>
       </footer>
     </main>
@@ -278,7 +278,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
     <div class="pf-handle"></div>
     <div class="pf-sheet-ico"><svg viewBox="0 0 512 512" aria-hidden="true"><path d="M377.9 105.9L500.7 228.7c7.2 7.2 11.3 17.1 11.3 27.3s-4.1 20.1-11.3 27.3L377.9 406.1c-6.4 6.4-15 9.9-24 9.9c-18.7 0-33.9-15.2-33.9-33.9l0-62.1-128 0c-17.7 0-32-14.3-32-32l0-64c0-17.7 14.3-32 32-32l128 0 0-62.1c0-18.7 15.2-33.9 33.9-33.9c9 0 17.6 3.6 24 9.9zM160 96L96 96c-17.7 0-32 14.3-32 32l0 256c0 17.7 14.3 32 32 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-64 0c-53 0-96-43-96-96L0 128C0 75 43 32 96 32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/></svg></div>
     <h3 id="pfModalTitle">Sign Out</h3>
-    <p>Are you sure you want to securely exit your APEX account?</p>
+    <p>Are you sure you want to securely exit your BESTLOAN account?</p>
     <div class="pf-sheet-acts">
       <button type="button" class="pf-btn pf-btn-line" id="pfModalCancel">Cancel</button>
       <form method="post" action="{% url 'logout' %}" data-splash>

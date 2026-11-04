@@ -2,9 +2,14 @@
 
 Read this first. It records how the owner wants this project handled.
 
-Brand: **APEX** (renamed from "OFL / Overseas FilipinoLoan"). Logo: `static/img/apex-logo.svg`
-(+ `apex-logo.webp`, `apex-icon-64.png`, `apex-icon-180.png`). Internal names keep the old prefix
-(`ofl_*` localStorage keys, `?ofl=1`, `ofl-theme`, `ofl-vt`, `OFL_SFX`): do not rename them.
+Brand: **BESTLOAN** (owner's company; brand history OFL → APEX → BESTLOAN, 2026-11-04). The owner supplied the
+logo as SVG: `static/img/bestloan-logo.svg` (full colour, for white backgrounds), `bestloan-logo-white.svg` (same with
+white text, for dark headers), `bestloan-icon.svg` (globe + bars only), `bestloan-tile.svg` (globe on a white rounded
+square: header tiles, splash, favicon, Jazzmin admin logo), `bestloan-icon-64.png` / `-180.png` and `static/favicon.ico`.
+Short name **BESTLOAN** in headers, titles and footers. The full legal name, the SEC number and the legal documents
+come from the owner: put them in exactly as written on the documents, never guess them. Old `apex-*` image files are
+unused. Internal names keep the old prefix (`ofl_*` localStorage keys, `?ofl=1`, `ofl-theme`, `ofl-vt`, `OFL_SFX`,
+`apx-*` classes): do not rename them. Contract reference is `BL-YYYYMMDD-00001`.
 
 ## Working with the owner
 - The owner writes short English. Answer in simple, plain English; show results with
@@ -19,9 +24,13 @@ Brand: **APEX** (renamed from "OFL / Overseas FilipinoLoan"). Logo: `static/img/
   fix the mockup's own glitches (say which ones you fixed).
 
 ## Client UI design system (login, register, dashboard, …)
-- Forest green. Header gradient `#133224 → #1B4332 → #0F281C` (dashboard: `#0B1C14 → #133224`).
-  Primary `#1B4332` (hover `#122e22`), sage `#E8F3ED`, accent orange `#F97316`,
-  text `#374151` / headings `#111827`, muted `#9ca3af`, lines `#e5e7eb` / `#f3f4f6`,
+- **Midnight navy + gold** (owner's pick B, colours from the logo; recolour only, layouts unchanged). Header gradient
+  `#061A4F → #0A2470 → #050F33` (dashboard: `#040E2B → #061A4F`). Primary `#0A2470` (hover `#061A4F`), tint `#EAF1FD`,
+  accent gold `#E9B52A` (hover `#C98D12`, light gold on dark headers `#FCE27A`). Text on a gold background is navy
+  `#0A2470`, never white; gold *text* on white is dark gold `#9C6508` (bright gold is unreadable there).
+  The CSS variables keep their old names (`--xx-green`, `--xx-sage`, `--xx-accent`) with the new values.
+  Green stays only where it means success (approved, paid, active). Was: forest green `#1B4332` + orange `#F97316`.
+- Text `#374151` / headings `#111827`, muted `#9ca3af`, lines `#e5e7eb` / `#f3f4f6`,
   page background `#f9fafb` / `#f3f4f6`.
 - Fonts: Inter on login/register; the dashboard mockup uses Plus Jakarta Sans.
 - Phone-first app shell (max-width 400–420px). On desktop show a centred rounded card —

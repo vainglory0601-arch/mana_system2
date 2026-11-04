@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static humanize %}
-{% block title %}Loan Contract — APEX{% endblock %}
+{% block title %}Loan Contract — BESTLOAN{% endblock %}
 
 {% block extra_css %}
 {{ block.super }}
@@ -16,11 +16,11 @@ html body select,html body textarea,html body a{
 {% block content %}
 <style>
 /* ════════════════════════════════════════════
-   APEX LOAN CONTRACT — Deep Forest
+   BESTLOAN LOAN CONTRACT — Midnight Navy
    Same look in light and dark theme; prints as a clean document
 ════════════════════════════════════════════ */
 :root{
-  --ct-dark:#0B1C14;--ct-primary:#133224;--ct-green:#1B4332;--ct-sage:#E8F3ED;--ct-accent:#F97316;
+  --ct-dark:#040E2B;--ct-primary:#061A4F;--ct-green:#0A2470;--ct-sage:#EAF1FD;--ct-accent:#E9B52A;
   --ct-ink:#111827;--ct-ink2:#374151;--ct-mut:#9ca3af;--ct-mut2:#6b7280;--ct-line:#f3f4f6;--ct-line2:#e5e7eb;
   --ct-float:0 20px 40px -10px rgba(0,0,0,.1);
 }
@@ -38,7 +38,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 }
 .ct-glow{position:absolute;border-radius:50%;pointer-events:none;}
 .ct-glow-a{top:0;right:0;width:256px;height:256px;background:rgba(255,255,255,.05);filter:blur(64px);transform:translate(33%,-33%);}
-.ct-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(249,115,22,.1);filter:blur(40px);transform:translate(-25%,25%);}
+.ct-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(233,181,42,.1);filter:blur(40px);transform:translate(-25%,25%);}
 .ct-bar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
 .ct-glass-dark{background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);}
 .ct-back{
@@ -48,11 +48,11 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .ct-back:hover{background-color:rgba(255,255,255,.1);}
 .ct-back:active{transform:scale(.94);}
 .ct-badge{display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.04em;color:#fff;}
-.ct-badge svg{font-size:11px;color:#FDBA74;}
+.ct-badge svg{font-size:11px;color:#FCE27A;}
 .ct-hero{position:relative;z-index:1;}
-.ct-eyebrow{margin:0 0 6px;font-size:11px;line-height:16px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#FDBA74;}
+.ct-eyebrow{margin:0 0 6px;font-size:11px;line-height:16px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#FCE27A;}
 .ct-hero h1{margin:0 0 6px;font-size:30px;line-height:36px;font-weight:800;letter-spacing:-.025em;color:#fff;}
-.ct-hero p{margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(232,243,237,.75);}
+.ct-hero p{margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(234,241,253,.75);}
 
 .ct-main{position:relative;z-index:2;margin-top:-88px;padding:0 20px;display:flex;flex-direction:column;gap:20px;}
 .ct-doc{position:relative;padding:22px;border-radius:2rem;background:#fff;border:1px solid var(--ct-line);box-shadow:var(--ct-float);}
@@ -75,7 +75,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .ct-title p{margin:2px 0 0;font-size:12px;line-height:17px;font-weight:500;color:var(--ct-mut2);}
 .ct-status{display:inline-flex;align-items:center;gap:6px;margin:10px 0 4px;padding:5px 12px;border-radius:999px;font-size:11px;line-height:15px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;}
 .ct-status svg{font-size:11px;}
-.ct-status.s-APPROVED,.ct-status.s-PAID{color:#2d6a4f;background:var(--ct-sage);}
+.ct-status.s-APPROVED,.ct-status.s-PAID{color:#0B2A86;background:var(--ct-sage);}
 .ct-status.s-PENDING,.ct-status.s-REVIEW{color:#b45309;background:#fffbeb;}
 .ct-status.s-DRAFT{color:var(--ct-mut2);background:var(--ct-line);}
 
@@ -114,7 +114,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .ct-stamps{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
 .ct-stamp{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:999px;font-size:11px;line-height:15px;font-weight:700;color:var(--ct-mut2);background:var(--ct-line);}
 .ct-stamp svg{font-size:11px;}
-.ct-stamp.is-ok{color:#2d6a4f;background:var(--ct-sage);}
+.ct-stamp.is-ok{color:#0B2A86;background:var(--ct-sage);}
 
 .ct-docfoot{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-top:16px;padding-top:14px;border-top:1px solid var(--ct-line);font-size:11px;line-height:16px;font-weight:600;color:var(--ct-mut2);}
 .ct-conf{display:flex;align-items:center;gap:8px;}
@@ -128,10 +128,10 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .ct-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 18px;border:0;border-radius:999px;cursor:pointer;font-size:14px;line-height:20px;font-weight:700;text-decoration:none!important;transition:background-color .15s,transform .15s;}
 .ct-btn:active{transform:scale(.97);}
 .ct-btn svg{font-size:12px;}
-.ct-btn-green{color:#fff!important;background:var(--ct-green);box-shadow:0 10px 15px -3px rgba(27,67,50,.25);}
-.ct-btn-green:hover{background:#122e22;}
+.ct-btn-green{color:#fff!important;background:var(--ct-green);box-shadow:0 10px 15px -3px rgba(11,42,134,.25);}
+.ct-btn-green:hover{background:#061A4F;}
 .ct-btn-line{color:var(--ct-green)!important;background:transparent;border:2px solid var(--ct-green);padding:11px 16px;}
-.ct-btn-line:hover{background:rgba(232,243,237,.5);}
+.ct-btn-line:hover{background:rgba(234,241,253,.5);}
 .ct-acts{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .ct-acts .ct-wide{grid-column:1 / -1;}
 
@@ -139,7 +139,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .ct-foot p{margin:0;}
 .ct-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
 .ct-foot i{width:6px;height:6px;border-radius:50%;background:var(--ct-primary);}
-.ct-foot b{font-weight:700;color:var(--ct-accent);}
+.ct-foot b{font-weight:700;color:#9C6508;}
 
 @media (min-width:640px){
   .ct{padding:32px 0;}
@@ -191,8 +191,8 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
       <article class="ct-doc" id="ctDoc" aria-label="Loan agreement contract">
         <div class="ct-lh">
           <div class="ct-brand">
-            <span class="ct-logo"><img src="{% static 'img/apex-logo.webp' %}" alt="APEX logo"></span>
-            <div><b>APEX</b><small>Licensed Financial Services Provider</small></div>
+            <span class="ct-logo"><img src="{% static 'img/bestloan-tile.svg' %}" alt="BESTLOAN logo"></span>
+            <div><b>BESTLOAN</b><small>Licensed Financial Services Provider</small></div>
           </div>
           <div class="ct-ref"><span>Contract Ref.</span><b id="ctRef">{{ ref }}</b><small>Issued: {{ issued|date:"F j, Y" }}</small></div>
         </div>
@@ -252,7 +252,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
           <div class="ct-sig">
             <div class="ct-sig-pad"></div>
             <div class="ct-sig-line"></div>
-            <b>Authorized Representative</b><span>Company Signatory</span><span>APEX</span>
+            <b>Authorized Representative</b><span>Company Signatory</span><span>BESTLOAN</span>
           </div>
           <div class="ct-sig">
             <div class="ct-sig-pad">{% if signature_url %}<img src="{{ signature_url }}" alt="Your signature" id="ctSig" onerror="this.remove()">{% endif %}</div>
@@ -297,7 +297,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
       {% endif %}
 
       <footer class="ct-foot">
-        <p><i></i> APEX <span>•</span> <b>v2.2.1</b></p>
+        <p><i></i> BESTLOAN <span>•</span> <b>v2.2.1</b></p>
         <p>© 2026 All rights reserved</p>
       </footer>
     </main>

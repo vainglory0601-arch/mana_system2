@@ -243,11 +243,15 @@ LOGGING = {
 }
 
 JAZZMIN_SETTINGS = {
-    "site_title": "Loan Admin",
-    "site_header": "Loan Admin",
-    "site_brand": "Loan Admin",
+    "site_title": "BESTLOAN Admin",
+    "site_header": "BESTLOAN",
+    "site_brand": "BESTLOAN",
+    "site_logo": "img/bestloan-tile.svg",
+    "login_logo": "img/bestloan-tile.svg",
+    "login_logo_dark": "img/bestloan-tile.svg",
+    "site_icon": "img/bestloan-icon-64.png",
     "welcome_sign": "Welcome",
-    "copyright": "Loan",
+    "copyright": "BESTLOAN",
     "show_sidebar": True,
     "navigation_expanded": True,
     "theme": "darkly",
