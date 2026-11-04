@@ -42,7 +42,7 @@ unused. Internal names keep the old prefix (`ofl_*` localStorage keys, `?ofl=1`,
   No icon fonts and no Tailwind CDN in production; write plain CSS in the template.
 - Same look in light and dark theme: base.html forces dark inputs in dark mode, so override
   with an `#id`-scoped selector.
-- Footer: "APEX • v2.2.1 / © 2026 All rights reserved".
+- Footer: "BESTLOAN • v2.2.1 / © 2026 All rights reserved".
 - Money inputs: `inputmode="decimal"`, no `maxlength` (it cuts pasted "PHP 1,500,000" before
   cleaning); clean to digits + one point + 2 decimals, no leading zeros, 9 digits max.
 - Client drafts kept in localStorage must carry the user id (`__uid`) — phones are shared.
@@ -57,7 +57,7 @@ unused. Internal names keep the old prefix (`ofl_*` localStorage keys, `?ofl=1`,
   still have 48/60 months: show them, but never offer or accept 48/60 for a new or changed term.
 
 ## Client guides / onboarding (see templates/register.html)
-- Glass guide card (`rgba(17,42,31,.85)` + `backdrop-filter: blur(24px)`), step label + dots,
+- Glass guide card (`rgba(6,26,79,.85)` + `backdrop-filter: blur(24px)`), step label + dots,
   "Skip guide" / "Next".
 - The guide **must never drift away from its target**: put it inside the content and move it
   with `transform` relative to its container. Never `position: fixed` with coordinates
@@ -81,7 +81,7 @@ unused. Internal names keep the old prefix (`ofl_*` localStorage keys, `?ofl=1`,
   slide in / slide out; older browsers get a short fade). No JavaScript click interception and
   no artificial navigation delay.
 - Owner-requested logo splash (base.html, `.apx-splash`): links/forms with `data-splash` (home Apply
-  Now / Sign In / My account, login form, log out) set a flag; the NEXT page opens behind the APEX
+  Now / Sign In / My account, login form, log out) set a flag; the NEXT page opens behind the BESTLOAN
   logo, which fades out once it has loaded (min 0.8 s, max 2.5 s). The click is never delayed,
   a POST response (form error) shows no splash, and the slide transition is skipped for it.
 - **Never leave a `transform` on `#pageRoot`** — it makes `position: fixed` children scroll
@@ -91,7 +91,7 @@ unused. Internal names keep the old prefix (`ofl_*` localStorage keys, `?ofl=1`,
   opacity instead.
 - Closed overlays: `visibility: hidden` as well as `opacity: 0`, so their blur costs nothing.
 - No full-screen `backdrop-filter` on overlays (menus, sheets, modals): it drops frames while
-  they fade. Use a plain dim (`rgba(11,28,20,.5)`); keep blur for small elements (nav, guide).
+  they fade. Use a plain dim (`rgba(6,21,54,.5)`); keep blur for small elements (nav, guide).
 - Respect `prefers-reduced-motion`.
   (also shakes, sheet slides and smooth scrolling: `behavior: SMOOTH` that is `'auto'` there).
 - Do not show a "minimum amount" error from the first digit: it grows the card and makes the
