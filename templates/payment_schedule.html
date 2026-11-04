@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static humanize %}
-{% block title %}Payment Schedule — APEX{% endblock %}
+{% block title %}Payment Schedule — Loan Portal{% endblock %}
 
 {% block extra_css %}
 {{ block.super }}
@@ -16,11 +16,11 @@ html body select,html body textarea,html body a{
 {% block content %}
 <style>
 /* ════════════════════════════════════════════
-   APEX PAYMENT SCHEDULE — Deep Forest
+   Loan Portal PAYMENT SCHEDULE — Midnight Navy
    Same look in light and dark theme
 ════════════════════════════════════════════ */
 :root{
-  --ps-dark:#0B1C14;--ps-primary:#133224;--ps-green:#1B4332;--ps-sage:#E8F3ED;--ps-accent:#F97316;
+  --ps-dark:#040E2B;--ps-primary:#061A4F;--ps-green:#0A2470;--ps-sage:#EAF1FD;--ps-accent:#E9B52A;
   --ps-ink:#111827;--ps-ink2:#374151;--ps-mut:#9ca3af;--ps-mut2:#6b7280;--ps-line:#f3f4f6;--ps-line2:#e5e7eb;
   --ps-float:0 20px 40px -10px rgba(0,0,0,.1);--ps-ease:cubic-bezier(.22,1,.36,1);
 }
@@ -38,7 +38,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 }
 .ps-glow{position:absolute;border-radius:50%;pointer-events:none;}
 .ps-glow-a{top:0;right:0;width:256px;height:256px;background:rgba(255,255,255,.05);filter:blur(64px);transform:translate(33%,-33%);}
-.ps-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(249,115,22,.1);filter:blur(40px);transform:translate(-25%,25%);}
+.ps-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(233,181,42,.1);filter:blur(40px);transform:translate(-25%,25%);}
 .ps-bar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
 .ps-glass-dark{background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);}
 .ps-back{
@@ -48,11 +48,11 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .ps-back:hover{background-color:rgba(255,255,255,.1);}
 .ps-back:active{transform:scale(.94);}
 .ps-badge{display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.04em;color:#fff;}
-.ps-badge svg{font-size:11px;color:#FDBA74;}
+.ps-badge svg{font-size:11px;color:#FCE27A;}
 .ps-hero{position:relative;z-index:1;}
-.ps-eyebrow{margin:0 0 6px;font-size:11px;line-height:16px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#FDBA74;}
+.ps-eyebrow{margin:0 0 6px;font-size:11px;line-height:16px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#FCE27A;}
 .ps-hero h1{margin:0 0 6px;font-size:30px;line-height:36px;font-weight:800;letter-spacing:-.025em;color:#fff;}
-.ps-hero p{margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(232,243,237,.75);}
+.ps-hero p{margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(234,241,253,.75);}
 
 .ps-main{position:relative;z-index:2;margin-top:-88px;padding:0 20px;display:flex;flex-direction:column;gap:20px;}
 .ps-card{position:relative;padding:22px;border-radius:2rem;background:#fff;border:1px solid var(--ps-line);box-shadow:var(--ps-float);}
@@ -63,7 +63,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .ps-stat{padding:10px 8px;border-radius:14px;text-align:center;background:#f9fafb;border:1px solid var(--ps-line);}
 .ps-stat span{display:block;font-size:10px;line-height:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ps-mut2);}
 .ps-stat b{display:block;margin-top:2px;font-size:14px;line-height:20px;font-weight:800;color:var(--ps-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.ps-stat.is-main{background:var(--ps-sage);border-color:#d7eadf;}
+.ps-stat.is-main{background:var(--ps-sage);border-color:#D3E2FA;}
 .ps-stat.is-main span,.ps-stat.is-main b{color:var(--ps-green);}
 .ps-total{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;padding:12px 14px;border-radius:14px;border:1px dashed var(--ps-line2);font-size:12.5px;line-height:18px;font-weight:600;color:var(--ps-mut2);}
 .ps-total b{font-size:14px;font-weight:800;color:var(--ps-ink);}
@@ -84,29 +84,31 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .ps-tag{display:inline-block;margin-top:3px;padding:2px 8px;border-radius:999px;font-size:9.5px;line-height:14px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--ps-mut2);background:#f3f4f6;}
 .ps-row.is-past .ps-num{color:var(--ps-mut);background:#f3f4f6;}
 .ps-row.is-past .ps-row-txt b,.ps-row.is-past .ps-row-end b{color:var(--ps-mut2);}
-.ps-row.is-next{margin:4px -12px;padding:12px;border-radius:18px;background:#fff7ed;border:1px solid #fed7aa;}
+.ps-row.is-next{margin:4px -12px;padding:12px;border-radius:18px;background:#FFF8E1;border:1px solid #F7E3A1;}
 .ps-row.is-next::before{left:31px;}
-.ps-row.is-next .ps-num{color:#fff;background:var(--ps-accent);box-shadow:0 6px 14px -4px rgba(249,115,22,.55);}
-.ps-row.is-next .ps-tag{color:#fff;background:var(--ps-accent);}
+.ps-row.is-next .ps-num{color:#0A2470;background:var(--ps-accent);box-shadow:0 6px 14px -4px rgba(233,181,42,.55);}
+.ps-row.is-next .ps-tag{color:#0A2470;background:var(--ps-accent);}
 
 .ps-empty{display:flex;flex-direction:column;align-items:center;text-align:center;padding:12px 4px 4px;}
+/* base.html paints .ps-empty as a dark card in dark mode: keep it plain */
+html[data-theme] .ps-empty{background:none!important;border:0!important;box-shadow:none!important;}
 .ps-empty span{width:64px;height:64px;margin-bottom:16px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--ps-green);background:var(--ps-sage);}
 .ps-empty h2{margin:0 0 6px;font-size:17px;line-height:24px;font-weight:700;color:var(--ps-ink);}
 .ps-empty p{margin:0 0 20px;font-size:13px;line-height:20px;font-weight:500;color:var(--ps-mut2);}
 .ps-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:999px;font-size:14px;line-height:20px;font-weight:700;text-decoration:none!important;transition:background-color .15s,transform .15s;}
 .ps-btn:active{transform:scale(.97);}
 .ps-btn svg{font-size:12px;}
-.ps-btn-green{color:#fff!important;background:var(--ps-green);box-shadow:0 10px 15px -3px rgba(27,67,50,.25);}
-.ps-btn-green:hover{background:#122e22;}
+.ps-btn-green{color:#fff!important;background:var(--ps-green);box-shadow:0 10px 15px -3px rgba(11,42,134,.25);}
+.ps-btn-green:hover{background:#061A4F;}
 .ps-btn-line{color:var(--ps-green)!important;border:2px solid var(--ps-green);padding:11px 20px;}
-.ps-btn-line:hover{background:rgba(232,243,237,.5);}
+.ps-btn-line:hover{background:rgba(234,241,253,.5);}
 .ps-acts{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 
 .ps-foot{padding-top:4px;text-align:center;font-size:12px;line-height:16px;font-weight:500;color:var(--ps-mut);}
 .ps-foot p{margin:0;}
 .ps-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
 .ps-foot i{width:6px;height:6px;border-radius:50%;background:var(--ps-primary);}
-.ps-foot b{font-weight:700;color:var(--ps-accent);}
+.ps-foot b{font-weight:700;color:#9C6508;}
 
 @media (min-width:640px){
   .ps{padding:32px 0;}
@@ -183,7 +185,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
       </div>
 
       <footer class="ps-foot">
-        <p><i></i> APEX <span>•</span> <b>v2.2.1</b></p>
+        <p><i></i> Loan Portal <span>•</span> <b>v2.2.1</b></p>
         <p>© 2026 All rights reserved</p>
       </footer>
     </main>

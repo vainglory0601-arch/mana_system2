@@ -3,10 +3,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>{% block title %}APEX{% endblock %}</title>
-<link rel="icon" type="image/svg+xml" href="{% static 'img/apex-logo.svg' %}?v=4">
-<link rel="icon" type="image/png" sizes="64x64" href="{% static 'img/apex-icon-64.png' %}?v=4">
-<link rel="apple-touch-icon" href="{% static 'img/apex-icon-180.png' %}?v=4">
+<title>{% block title %}Loan Portal{% endblock %}</title>
+<link rel="icon" type="image/svg+xml" href="{% static 'img/brand-tile.svg' %}?v=5">
+<link rel="icon" type="image/png" sizes="64x64" href="{% static 'img/brand-icon-64.png' %}?v=5">
+<link rel="apple-touch-icon" href="{% static 'img/brand-icon-180.png' %}?v=5">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 
 <!-- Global font: Lato (used site-wide for consistent professional look) -->
@@ -43,7 +43,7 @@
     }
   })();
 
-  /* APEX logo splash: Apply Now / My account / Sign In / log in / log out mark the next page
+  /* Loan Portal logo splash: Apply Now / My account / Sign In / log in / log out mark the next page
      (data-splash). The click is never delayed: the NEXT page opens behind the logo, which fades
      away once it is ready. A form that comes back with an error (a POST response) shows no splash. */
   (function(){
@@ -92,10 +92,10 @@
   })();
 </script>
 <style>
-  /* APEX logo splash (see the script above): hidden unless html.apx-splashing */
+  /* Loan Portal logo splash (see the script above): hidden unless html.apx-splashing */
   .apx-splash{
     position:fixed;inset:0;z-index:2147483000;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;
-    background:linear-gradient(to bottom,#0B1C14,#133224);
+    background:linear-gradient(to bottom,#040E2B,#061A4F);
   }
   html.apx-splashing .apx-splash{display:flex;}
   html.apx-splashing-out .apx-splash{opacity:0;transition:opacity .35s ease;}
@@ -117,8 +117,8 @@
 {% block extra_css %}
 <style>
 :root{
-  --g1:#4a7a1e;
-  --g2:#7CB342;
+  --g1:#0A2470;
+  --g2:#1E6FE0;
 }
 @font-face{
   font-family: "Ovelion";
@@ -672,7 +672,7 @@ h1,h2,h3{ margin:0 0 10px; }
 }
 .btn:active{ transform: scale(.98); }
 .btn-primary{
-  background: linear-gradient(90deg, #4a7a1e, #7CB342d0);
+  background: linear-gradient(90deg, #0A2470, #7CB342d0);
   color:#fff;
 }
 .btn-ghost{
@@ -803,7 +803,7 @@ html, body{
 .cardx{
   background: rgba(255,255,255,0.93) !important;
   border: none !important;
-  border-top: 3px solid #7CB342 !important;
+  border-top: 3px solid #1E6FE0 !important;
   border-radius: 18px !important;
   color: #1a1a1a !important;
   backdrop-filter: none !important;
@@ -816,7 +816,7 @@ html, body{
 </head>
 
 <body data-auth="{{ request.user.is_authenticated|yesno:'true,false' }}">
-<div class="apx-splash" aria-hidden="true"><img src="{% static 'img/apex-logo.svg' %}" alt="" width="92" height="92"><b>APEX</b></div>
+<div class="apx-splash" aria-hidden="true"><img src="{% static 'img/brand-tile.svg' %}" alt="" width="92" height="92"><b>Loan Portal</b></div>
 <script>
 (function(){
   var root=document.documentElement;

@@ -4,9 +4,9 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   {% load static %}
-  <title>{% block title %}Staff{% endblock %} — APEX Staff</title>
-  <link rel="icon" type="image/svg+xml" href="{% static 'img/apex-logo.svg' %}?v=4">
-  <link rel="icon" type="image/png" sizes="64x64" href="{% static 'img/apex-icon-64.png' %}?v=4">
+  <title>{% block title %}Staff{% endblock %} — Loan Portal Staff</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'img/brand-tile.svg' %}?v=5">
+  <link rel="icon" type="image/png" sizes="64x64" href="{% static 'img/brand-icon-64.png' %}?v=5">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
   <script>
     (function(){
@@ -21,21 +21,21 @@
   {% block legacy_css %}{% include "staff/_legacy_css.html" %}{% endblock %}
   <style>
 /* ════════════════════════════════════════════
-   APEX STAFF — shell (side menu + top bar) and shared parts
-   Light and dark theme; the side menu is always forest green.
+   Loan Portal STAFF — shell (side menu + top bar) and shared parts
+   Light and dark theme; the side menu is always midnight navy.
 ════════════════════════════════════════════ */
 :root{
-  --sx-dark:#0B1C14;--sx-primary:#133224;--sx-green:#1B4332;--sx-green2:#2d6a4f;--sx-sage:#E8F3ED;--sx-accent:#F97316;
+  --sx-dark:#040E2B;--sx-primary:#061A4F;--sx-green:#0A2470;--sx-green2:#0B2A86;--sx-sage:#EAF1FD;--sx-accent:#E9B52A;
   --sx-bg:#f3f4f6;--sx-card:#ffffff;--sx-ink:#111827;--sx-ink2:#374151;--sx-mut:#6b7280;--sx-mut2:#9ca3af;
   --sx-line:#e5e7eb;--sx-line2:#f3f4f6;--sx-hover:#f9fafb;--sx-shadow:0 1px 2px rgba(16,24,40,.04),0 8px 24px -12px rgba(16,24,40,.12);
   --sx-ok:#15803D;--sx-ok-bg:#E6F4EA;--sx-warn:#B45309;--sx-warn-bg:#FEF3C7;--sx-bad:#B91C1C;--sx-bad-bg:#FEE2E2;--sx-info:#1d4ed8;--sx-info-bg:#e0ecff;
   --sx-side:248px;--sx-ease:cubic-bezier(.22,1,.36,1);
 }
 html[data-theme="dark"]{
-  --sx-bg:#0b120e;--sx-card:#111b16;--sx-ink:#f3f4f6;--sx-ink2:#d1d5db;--sx-mut:#9ca3af;--sx-mut2:#6b7280;
-  --sx-line:#22302a;--sx-line2:#18231d;--sx-hover:#16221c;--sx-shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
+  --sx-bg:#070B16;--sx-card:#0E1630;--sx-ink:#f3f4f6;--sx-ink2:#d1d5db;--sx-mut:#9ca3af;--sx-mut2:#6b7280;
+  --sx-line:#1E2A44;--sx-line2:#141E36;--sx-hover:#141E36;--sx-shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -12px rgba(0,0,0,.5);
   --sx-ok:#4ade80;--sx-ok-bg:rgba(74,222,128,.12);--sx-warn:#fbbf24;--sx-warn-bg:rgba(251,191,36,.12);--sx-bad:#f87171;--sx-bad-bg:rgba(248,113,113,.12);--sx-info:#93c5fd;--sx-info-bg:rgba(147,197,253,.12);
-  --sx-sage:rgba(232,243,237,.08);
+  --sx-sage:rgba(234,241,253,.08);
 }
 html.sx,html.sx body{margin:0;background:var(--sx-bg)!important;}
 html.sx body{min-height:100vh;color:var(--sx-ink);font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;-webkit-font-smoothing:antialiased;}
@@ -50,30 +50,30 @@ html.sx body{min-height:100vh;color:var(--sx-ink);font-family:'Plus Jakarta Sans
 .sx-brand{display:flex;align-items:center;gap:11px;padding:4px 8px 22px;color:#fff!important;text-decoration:none!important;}
 .sx-brand img{width:38px;height:38px;border-radius:11px;box-shadow:0 0 0 1px rgba(255,255,255,.14);}
 .sx-brand b{display:block;font-size:16px;line-height:20px;font-weight:800;letter-spacing:.06em;}
-.sx-brand small{display:block;font-size:11px;line-height:15px;font-weight:600;color:rgba(232,243,237,.6);}
-.sx-nav-label{margin:6px 10px 8px;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(232,243,237,.4);}
+.sx-brand small{display:block;font-size:11px;line-height:15px;font-weight:600;color:rgba(234,241,253,.6);}
+.sx-nav-label{margin:6px 10px 8px;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(234,241,253,.4);}
 .sx-nav{display:flex;flex-direction:column;gap:2px;}
 .sx-nav a{
   position:relative;display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:12px;
-  font-size:14px;line-height:20px;font-weight:600;color:rgba(232,243,237,.75)!important;text-decoration:none!important;
+  font-size:14px;line-height:20px;font-weight:600;color:rgba(234,241,253,.75)!important;text-decoration:none!important;
   transition:background-color .15s,color .15s;
 }
-.sx-nav a svg{width:18px;font-size:16px;color:rgba(232,243,237,.55);transition:color .15s;}
+.sx-nav a svg{width:18px;font-size:16px;color:rgba(234,241,253,.55);transition:color .15s;}
 .sx-nav a:hover{background:rgba(255,255,255,.06);color:#fff!important;}
 .sx-nav a.is-on{background:rgba(255,255,255,.1);color:#fff!important;}
-.sx-nav a.is-on svg{color:#FDBA74;}
+.sx-nav a.is-on svg{color:#FCE27A;}
 .sx-nav a.is-on::before{content:'';position:absolute;left:-14px;top:9px;bottom:9px;width:4px;border-radius:0 4px 4px 0;background:var(--sx-accent);}
 .sx-nav a span{flex:1;min-width:0;}
-.sx-nav a i{min-width:20px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:999px;font-style:normal;font-size:11px;line-height:20px;font-weight:800;text-align:center;color:#fff;background:var(--sx-accent);}
+.sx-nav a i{min-width:20px;height:20px;padding:0 6px;box-sizing:border-box;border-radius:999px;font-style:normal;font-size:11px;line-height:20px;font-weight:800;text-align:center;color:#0A2470;background:var(--sx-accent);}
 .sx-side-foot{margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);}
 .sx-me{display:flex;align-items:center;gap:10px;padding:8px 10px 12px;}
 .sx-me span{width:34px;height:34px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:var(--sx-dark);background:#86efac;}
 .sx-me b{display:block;font-size:13px;line-height:18px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.sx-me small{display:block;font-size:11px;line-height:15px;font-weight:600;color:rgba(232,243,237,.55);}
+.sx-me small{display:block;font-size:11px;line-height:15px;font-weight:600;color:rgba(234,241,253,.55);}
 .sx-side-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .sx-side-btns button{
   display:flex;align-items:center;justify-content:center;gap:8px;height:40px;border:1px solid rgba(255,255,255,.12);border-radius:12px;cursor:pointer;
-  font:700 12.5px/1 'Plus Jakarta Sans',system-ui,sans-serif;color:rgba(232,243,237,.85);background:rgba(255,255,255,.05);transition:background-color .15s;
+  font:700 12.5px/1 'Plus Jakarta Sans',system-ui,sans-serif;color:rgba(234,241,253,.85);background:rgba(255,255,255,.05);transition:background-color .15s;
 }
 .sx-side-btns button:hover{background:rgba(255,255,255,.1);}
 .sx-side-btns button svg{font-size:13px;}
@@ -117,7 +117,7 @@ html[data-theme="dark"] .sx-side-btns .sx-moon{display:block;}
 .sx-btn:active{transform:scale(.97);}
 .sx-btn svg{font-size:12px;}
 .sx-btn-green{color:#fff!important;background:var(--sx-green);}
-.sx-btn-green:hover{background:#122e22;}
+.sx-btn-green:hover{background:#061A4F;}
 .sx-btn-line{color:var(--sx-ink2)!important;background:var(--sx-card);border-color:var(--sx-line);}
 .sx-btn-line:hover{background:var(--sx-hover);}
 .sx-btn-danger{color:#fff!important;background:#dc2626;}
@@ -132,12 +132,12 @@ html[data-theme="dark"] .sx-side-btns .sx-moon{display:block;}
   height:40px;padding:0 12px;box-sizing:border-box;border-radius:11px;border:1px solid var(--sx-line)!important;background:var(--sx-card)!important;color:var(--sx-ink)!important;
   font:500 13.5px 'Plus Jakarta Sans',system-ui,sans-serif;outline:none;transition:border-color .15s,box-shadow .15s;
 }
-.sx-input:focus{border-color:var(--sx-green2)!important;box-shadow:0 0 0 3px rgba(45,106,79,.18);}
+.sx-input:focus{border-color:var(--sx-green2)!important;box-shadow:0 0 0 3px rgba(30,111,224,.18);}
 .sx-input::placeholder{color:var(--sx-mut2);}
 
 /* ── modals (logout + shared message) ── */
 .sx-modal{
-  position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(11,28,20,.5);
+  position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(6,21,54,.5);
   opacity:0;visibility:hidden;transition:opacity .2s,visibility 0s linear .2s;
 }
 .sx-modal.show{opacity:1;visibility:visible;transition:opacity .2s;}
@@ -151,14 +151,14 @@ html[data-theme="dark"] .sx-side-btns .sx-moon{display:block;}
 
 /* the old page styles (still loaded on pages that are not redesigned yet) must not reach the shell */
 .sx-side,.sx-side *,.sx-top,.sx-top *,.sx-modal,.sx-modal *,.sx-page,.sx-page *{font-family:'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif!important;}
-#msgModal.sx-modal{display:flex;background:rgba(11,28,20,.5);}
+#msgModal.sx-modal{display:flex;background:rgba(6,21,54,.5);}
 #msgModal .sx-modal-box{width:100%;max-width:560px;padding:22px;background:var(--sx-card);border:1px solid var(--sx-line);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:0 24px 48px -12px rgba(0,0,0,.35);}
 #msgModal h3{margin:0 0 6px;letter-spacing:0;font-weight:800;}
 #msgModal #msgTextarea{min-height:140px;margin:6px 0 16px;border-radius:12px;border:1px solid var(--sx-line);background:var(--sx-bg);color:var(--sx-ink);}
 #msgModal .sx-modal-acts{margin-top:0;}
 
 /* ── small screens: the menu slides in ── */
-.sx-dim{position:fixed;inset:0;z-index:35;background:rgba(11,28,20,.5);opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s linear .25s;}
+.sx-dim{position:fixed;inset:0;z-index:35;background:rgba(6,21,54,.5);opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s linear .25s;}
 @media (max-width:980px){
   .sx-side{transform:translateX(-100%);transition:transform .3s var(--sx-ease);box-shadow:none;}
   .sx-side.is-open{transform:none;box-shadow:24px 0 48px -12px rgba(0,0,0,.4);}
@@ -181,7 +181,7 @@ html[data-theme="dark"] .sx-side-btns .sx-moon{display:block;}
 <!-- Icons: Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0) Copyright 2023 Fonticons, Inc. -->
 <div class="sx-shell">
   <aside class="sx-side" id="sxSide" aria-label="Staff menu">
-    <a class="sx-brand" href="{% url 'staff_dashboard' %}"><img src="{% static 'img/apex-logo.svg' %}" alt="" width="38" height="38"><span><b>APEX</b><small>Staff panel</small></span></a>
+    <a class="sx-brand" href="{% url 'staff_dashboard' %}"><img src="{% static 'img/brand-tile.svg' %}" alt="" width="38" height="38"><span><b>Loan Portal</b><small>Staff panel</small></span></a>
     <p class="sx-nav-label">Menu</p>
     {% with u=request.resolver_match.url_name %}
     <nav class="sx-nav">
@@ -205,7 +205,7 @@ html[data-theme="dark"] .sx-side-btns .sx-moon{display:block;}
   <div class="sx-main">
     <header class="sx-top">
       <button type="button" class="sx-burger" id="sxBurger" aria-label="Open menu" aria-controls="sxSide" aria-expanded="false"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></button>
-      {% with u=request.resolver_match.url_name %}<div class="sx-top-t"><h1>{% block page_title %}{% if u == 'staff_users' %}Users{% elif u == 'staff_user_detail' %}User details{% elif u == 'staff_loans' %}Loan applications{% elif u == 'staff_loan_detail' %}Loan details{% elif u == 'staff_withdrawals' %}Withdrawals{% elif u == 'staff_payment_methods' %}Payment methods{% else %}Staff{% endif %}{% endblock %}</h1><p>{% block page_sub %}APEX staff panel{% endblock %}</p></div>{% endwith %}
+      {% with u=request.resolver_match.url_name %}<div class="sx-top-t"><h1>{% block page_title %}{% if u == 'staff_users' %}Users{% elif u == 'staff_user_detail' %}User details{% elif u == 'staff_loans' %}Loan applications{% elif u == 'staff_loan_detail' %}Loan details{% elif u == 'staff_withdrawals' %}Withdrawals{% elif u == 'staff_payment_methods' %}Payment methods{% else %}Staff{% endif %}{% endblock %}</h1><p>{% block page_sub %}Loan Portal staff panel{% endblock %}</p></div>{% endwith %}
       <div class="sx-top-date"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 144 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192H400V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192z"/></svg>{% now "D, M j, Y" %}</div>
     </header>
     <div class="sx-content">

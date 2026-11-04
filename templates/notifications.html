@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Notifications — APEX{% endblock %}
+{% block title %}Notifications — Loan Portal{% endblock %}
 
 {% block extra_css %}
 {{ block.super }}
@@ -16,11 +16,11 @@ html body select,html body textarea,html body a{
 {% block content %}
 <style>
 /* ════════════════════════════════════════════
-   APEX NOTIFICATIONS — Deep Forest
+   Loan Portal NOTIFICATIONS — Midnight Navy
    Same look in light and dark theme
 ════════════════════════════════════════════ */
 :root{
-  --nf-dark:#0B1C14;--nf-primary:#133224;--nf-green:#1B4332;--nf-sage:#E8F3ED;--nf-accent:#F97316;
+  --nf-dark:#040E2B;--nf-primary:#061A4F;--nf-green:#0A2470;--nf-sage:#EAF1FD;--nf-accent:#E9B52A;
   --nf-ink:#111827;--nf-ink2:#374151;--nf-mut:#9ca3af;--nf-mut2:#6b7280;--nf-line:#f3f4f6;--nf-line2:#e5e7eb;
   --nf-float:0 20px 40px -10px rgba(0,0,0,.1);--nf-ease:cubic-bezier(.22,1,.36,1);
 }
@@ -39,7 +39,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 }
 .nf-glow{position:absolute;border-radius:50%;pointer-events:none;}
 .nf-glow-a{top:0;right:0;width:256px;height:256px;background:rgba(255,255,255,.05);filter:blur(64px);transform:translate(33%,-33%);}
-.nf-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(249,115,22,.1);filter:blur(40px);transform:translate(-25%,25%);}
+.nf-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(233,181,42,.1);filter:blur(40px);transform:translate(-25%,25%);}
 .nf-bar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
 .nf-glass-dark{background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);}
 .nf-back{
@@ -48,15 +48,15 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 }
 .nf-back:hover{background-color:rgba(255,255,255,.1);}
 .nf-back:active{transform:scale(.94);}
-.nf-bar-title{font-size:13px;line-height:18px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#FDBA74;}
+.nf-bar-title{font-size:13px;line-height:18px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#FCE27A;}
 .nf-bar span:last-child{width:44px;}
 .nf-bell{position:relative;z-index:1;width:76px;height:76px;margin:6px auto 16px;}
-.nf-bell-ico{position:relative;z-index:1;width:100%;height:100%;border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:30px;color:#fff;background:linear-gradient(135deg,var(--nf-accent),#c2410c);box-shadow:0 14px 28px -10px rgba(249,115,22,.7);}
+.nf-bell-ico{position:relative;z-index:1;width:100%;height:100%;border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:30px;color:#0A2470;background:linear-gradient(135deg,var(--nf-accent),#9C6508);box-shadow:0 14px 28px -10px rgba(233,181,42,.7);}
 .nf-bell.has-new .nf-bell-ico svg{animation:nfRing 1.4s ease-in-out 2 .5s;transform-origin:50% 10%;}
 @keyframes nfRing{0%,100%{transform:rotate(0)}15%{transform:rotate(14deg)}30%{transform:rotate(-12deg)}45%{transform:rotate(8deg)}60%{transform:rotate(-5deg)}75%{transform:rotate(2deg)}}
 .nf-bell-dot{position:absolute;z-index:2;top:-4px;right:-4px;min-width:24px;height:24px;padding:0 6px;border-radius:999px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;background:#dc2626;border:3px solid var(--nf-primary);}
 .nf-top h1{position:relative;z-index:1;margin:0 0 6px;font-size:28px;line-height:34px;font-weight:800;letter-spacing:-.025em;color:#fff;}
-.nf-top p{position:relative;z-index:1;margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(232,243,237,.75);}
+.nf-top p{position:relative;z-index:1;margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(234,241,253,.75);}
 .nf-pill{position:relative;z-index:1;display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:6px 14px;border-radius:999px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.04em;color:#fff;}
 .nf-pill i{width:7px;height:7px;border-radius:50%;background:#4ade80;}
 .nf-pill.is-new i{background:#f87171;}
@@ -68,7 +68,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 @keyframes nfIn{from{opacity:0;transform:translateY(10px);}}
 .nf-card::before{content:'';position:absolute;left:0;top:22px;bottom:22px;width:4px;border-radius:0 4px 4px 0;background:var(--tone);}
 .nf-card.is-success{--tone:#16a34a;--tone-bg:#E6F4EA;--tone-ink:#15803D;}
-.nf-card.is-alert{--tone:var(--nf-accent);--tone-bg:#fff7ed;--tone-ink:#c2410c;}
+.nf-card.is-alert{--tone:var(--nf-accent);--tone-bg:#FFF8E1;--tone-ink:#9C6508;}
 .nf-head{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
 .nf-ico{width:40px;height:40px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--tone-ink);background:var(--tone-bg);}
 .nf-head div{flex:1;min-width:0;}
@@ -83,8 +83,8 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .nf-empty span{width:64px;height:64px;margin-bottom:16px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--nf-green);background:var(--nf-sage);}
 .nf-empty h2{margin:0 0 6px;font-size:17px;line-height:24px;font-weight:700;color:var(--nf-ink);}
 .nf-empty p{margin:0 0 20px;font-size:13px;line-height:20px;font-weight:500;color:var(--nf-mut2);}
-.nf-btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:999px;font-size:14px;line-height:20px;font-weight:700;color:#fff!important;background:var(--nf-green);text-decoration:none!important;box-shadow:0 10px 15px -3px rgba(27,67,50,.25);transition:background-color .15s,transform .15s;}
-.nf-btn:hover{background:#122e22;}
+.nf-btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:999px;font-size:14px;line-height:20px;font-weight:700;color:#fff!important;background:var(--nf-green);text-decoration:none!important;box-shadow:0 10px 15px -3px rgba(11,42,134,.25);transition:background-color .15s,transform .15s;}
+.nf-btn:hover{background:#061A4F;}
 .nf-btn:active{transform:scale(.97);}
 .nf-btn svg{font-size:12px;}
 
@@ -92,7 +92,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .nf-foot p{margin:0;}
 .nf-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
 .nf-foot i{width:6px;height:6px;border-radius:50%;background:var(--nf-primary);}
-.nf-foot b{font-weight:700;color:var(--nf-accent);}
+.nf-foot b{font-weight:700;color:#9C6508;}
 
 @media (min-width:640px){
   .nf{padding:32px 0;}
@@ -161,7 +161,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
       {% endfor %}
 
       <footer class="nf-foot">
-        <p><i></i> APEX <span>•</span> <b>v2.2.1</b></p>
+        <p><i></i> Loan Portal <span>•</span> <b>v2.2.1</b></p>
         <p>© 2026 All rights reserved</p>
       </footer>
     </main>

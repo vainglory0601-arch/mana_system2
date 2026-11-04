@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Login — APEX{% endblock %}
+{% block title %}Login — Loan Portal{% endblock %}
 {% load static %}
 {% block nav %}{% endblock %}
 
@@ -17,12 +17,12 @@ html body select,html body textarea,html body a{
 {% block content %}
 <style>
 /* ════════════════════════════════════════════
-   APEX LOGIN — Forest Green · Wallet & Card
+   Loan Portal LOGIN — Midnight Navy · Wallet & Card
    Same look in light and dark theme
 ════════════════════════════════════════════ */
 :root{
-  --lp-green:#1B4332;--lp-green-dk:#122e22;--lp-green-lt:#E8F3ED;
-  --lp-accent:#F97316;
+  --lp-green:#0A2470;--lp-green-dk:#061A4F;--lp-green-lt:#EAF1FD;
+  --lp-accent:#E9B52A;
   --lp-ink:#374151;--lp-mut:#9ca3af;--lp-line:#e5e7eb;--lp-line-lt:#f3f4f6;
 }
 #pageRoot.wrap{max-width:100%!important;width:100%!important;padding:0!important;display:block!important;}
@@ -45,17 +45,17 @@ html body,html[data-theme] body{
 .lp-hero{
   position:relative;flex-shrink:0;overflow:hidden;text-align:center;
   padding:40px 24px 144px;border-radius:0 0 2.5rem 2.5rem;
-  background:linear-gradient(to bottom,#133224,#1B4332,#0F281C);
+  background:linear-gradient(to bottom,#061A4F,#0A2470,#050F33);
   box-shadow:inset 0 2px 4px rgba(0,0,0,.05);
 }
 .lp-glow{position:absolute;border-radius:50%;filter:blur(64px);pointer-events:none;}
-.lp-glow-a{top:0;left:-20%;width:288px;height:288px;background:rgba(45,90,68,.2);}
+.lp-glow-a{top:0;left:-20%;width:288px;height:288px;background:rgba(30,111,224,.2);}
 .lp-glow-b{bottom:-10%;right:-10%;width:256px;height:256px;background:rgba(0,0,0,.4);}
 
 /* wallet + card illustration */
 .lp-wallet{position:relative;width:192px;height:176px;margin:0 auto 16px;filter:drop-shadow(0 25px 25px rgba(0,0,0,.15));}
 .lp-w-back,.lp-w-card,.lp-w-front{position:absolute;border-radius:12px;}
-.lp-w-back{bottom:24px;left:24px;width:144px;height:96px;background:#0a1f14;transform:rotate(-8deg);box-shadow:inset 0 2px 4px rgba(0,0,0,.05);}
+.lp-w-back{bottom:24px;left:24px;width:144px;height:96px;background:#061536;transform:rotate(-8deg);box-shadow:inset 0 2px 4px rgba(0,0,0,.05);}
 .lp-w-card{
   bottom:40px;left:40px;width:112px;height:160px;overflow:hidden;transform:rotate(-15deg);
   background:linear-gradient(to bottom left,#d1d5db,#6b7280);border:1px solid rgba(255,255,255,.3);
@@ -78,7 +78,7 @@ html body,html[data-theme] body{
 .lp-w-logo span:last-child{background:rgba(229,231,235,.5);}
 .lp-w-front{
   bottom:16px;left:16px;width:160px;height:112px;transform:rotate(-8deg);
-  background:linear-gradient(to bottom right,#1f4d39,#123123);
+  background:linear-gradient(to bottom right,#163E96,#0D2466);
   border-top:1px solid rgba(255,255,255,.1);border-left:1px solid rgba(255,255,255,.1);
   box-shadow:0 20px 40px rgba(0,0,0,.5);
 }
@@ -87,7 +87,7 @@ html body,html[data-theme] body{
   position:absolute;top:0;right:24px;z-index:1;width:28px;height:56px;padding-bottom:8px;
   display:flex;align-items:flex-end;justify-content:center;
   transform:translateY(-4px);border-radius:0 0 8px 8px;
-  background:linear-gradient(to bottom,#183d2d,#0f281d);
+  background:linear-gradient(to bottom,#102E7A,#0A2470);
   border:1px solid rgba(255,255,255,.1);border-top:0;
   box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -4px rgba(0,0,0,.1);
 }
@@ -97,7 +97,7 @@ html body,html[data-theme] body{
 }
 
 .lp-title{position:relative;z-index:1;margin:0 0 8px;font-size:30px;line-height:36px;font-weight:700;letter-spacing:-.025em;color:#fff;}
-.lp-sub{position:relative;z-index:1;margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(232,243,237,.8);}
+.lp-sub{position:relative;z-index:1;margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(234,241,253,.8);}
 
 /* ── Form card ── */
 .lp-main{position:relative;z-index:1;flex:1;margin-top:-96px;padding:0 20px;}
@@ -167,7 +167,7 @@ html body,html[data-theme] body{
   padding:0;border:0;background:none;cursor:pointer;
   font-size:14px;line-height:20px;font-weight:600;color:var(--lp-green);transition:color .15s;
 }
-.lp-forgot button:hover{color:rgba(27,67,50,.8);}
+.lp-forgot button:hover{color:rgba(11,42,134,.8);}
 
 /* buttons */
 .lp-btn,.lp-reg{
@@ -178,7 +178,7 @@ html body,html[data-theme] body{
 }
 .lp-btn{
   padding:16px;border:0;color:#fff;background:var(--lp-green);
-  box-shadow:0 10px 15px -3px rgba(27,67,50,.25),0 4px 6px -4px rgba(27,67,50,.25);
+  box-shadow:0 10px 15px -3px rgba(11,42,134,.25),0 4px 6px -4px rgba(11,42,134,.25);
 }
 .lp-btn:hover{background:var(--lp-green-dk);}
 .lp-btn:disabled{opacity:.85;cursor:wait;}
@@ -186,7 +186,7 @@ html body,html[data-theme] body{
   padding:14px;border:2px solid var(--lp-green);background:transparent;
   color:var(--lp-green)!important;text-decoration:none!important;
 }
-.lp-reg:hover{background:rgba(232,243,237,.3);}
+.lp-reg:hover{background:rgba(234,241,253,.3);}
 .lp-btn:active,.lp-reg:active{transform:scale(.98);}
 .lp-btn svg,.lp-reg svg{height:14px;}
 
@@ -200,13 +200,13 @@ html body,html[data-theme] body{
 .lp-foot p{margin:0;}
 .lp-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
 .lp-dot{width:6px;height:6px;border-radius:50%;background:var(--lp-green);}
-.lp-ver{font-weight:700;color:var(--lp-accent);}
+.lp-ver{font-weight:700;color:#9C6508;}
 
 /* ── Forgot Password Modal ── */
 .fp-overlay{
   position:fixed;inset:0;z-index:9999;padding:20px;
   display:none;align-items:center;justify-content:center;
-  background:rgba(15,40,28,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  background:rgba(6,21,54,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
 }
 .fp-overlay.open{display:flex;}
 .fp-modal{
@@ -217,7 +217,7 @@ html body,html[data-theme] body{
 @keyframes fpPop{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:none}}
 .fp-top{
   position:relative;padding:32px 24px 28px;text-align:center;
-  background:linear-gradient(to bottom,#133224,#1B4332,#0F281C);
+  background:linear-gradient(to bottom,#061A4F,#0A2470,#050F33);
 }
 .fp-x{
   position:absolute;top:14px;right:14px;width:30px;height:30px;
@@ -233,7 +233,7 @@ html body,html[data-theme] body{
 }
 .fp-ico svg{display:block;width:auto;height:26px;fill:currentColor;}
 .fp-title{margin:0 0 4px;font-size:18px;line-height:24px;font-weight:700;color:#fff;}
-.fp-sub{margin:0;font-size:13px;line-height:18px;font-weight:500;color:rgba(232,243,237,.8);}
+.fp-sub{margin:0;font-size:13px;line-height:18px;font-weight:500;color:rgba(234,241,253,.8);}
 .fp-body{padding:24px;text-align:center;}
 .fp-body p{margin:0 0 18px;font-size:14px;line-height:1.65;color:var(--lp-ink);}
 .fp-body p strong{color:var(--lp-green);}
@@ -338,7 +338,7 @@ html body,html[data-theme] body{
 
     <!-- ── Footer ── -->
     <div class="lp-foot">
-      <p><span class="lp-dot"></span> APEX <span>•</span> <span class="lp-ver">v2.2.1</span></p>
+      <p><span class="lp-dot"></span> Loan Portal <span>•</span> <span class="lp-ver">v2.2.1</span></p>
       <p>© 2026 All rights reserved</p>
     </div>
   </div>
@@ -359,7 +359,7 @@ html body,html[data-theme] body{
       <p>Please contact our <strong>customer service</strong> to reset your login password. Our team will assist you right away.</p>
       <div class="fp-tag">
         <svg viewBox="0 0 512 512"><path d="M347.1 24.6c7.7-18.6 28-28.5 47.4-23.2l88 24C499.9 30.2 512 46 512 64c0 247.4-200.6 448-448 448c-18 0-33.8-12.1-38.6-29.5l-24-88c-5.3-19.4 4.6-39.7 23.2-47.4l96-40c16.3-6.8 35.2-2.1 46.3 11.6L207.3 368c70.4-33.3 127.4-90.3 160.7-160.7L318.7 167c-13.7-11.2-18.4-30-11.6-46.3l40-96z"/></svg>
-        APEX Customer Service
+        Loan Portal Customer Service
       </div>
       <button type="button" class="lp-btn" onclick="closeForgot()">
         <svg viewBox="0 0 448 512"><path d="M438.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L160 338.7 393.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/></svg>

@@ -243,11 +243,15 @@ LOGGING = {
 }
 
 JAZZMIN_SETTINGS = {
-    "site_title": "Loan Admin",
-    "site_header": "Loan Admin",
-    "site_brand": "Loan Admin",
+    "site_title": "Loan Portal Admin",
+    "site_header": "Loan Portal",
+    "site_brand": "Loan Portal",
+    "site_logo": "img/brand-tile.svg",
+    "login_logo": "img/brand-tile.svg",
+    "login_logo_dark": "img/brand-tile.svg",
+    "site_icon": "img/brand-icon-64.png",
     "welcome_sign": "Welcome",
-    "copyright": "Loan",
+    "copyright": "Loan Portal",
     "show_sidebar": True,
     "navigation_expanded": True,
     "theme": "darkly",

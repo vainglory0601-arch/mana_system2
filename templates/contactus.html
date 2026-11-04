@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Contact Us — APEX{% endblock %}
+{% block title %}Contact Us — Loan Portal{% endblock %}
 
 {% block extra_css %}
 {{ block.super }}
@@ -16,11 +16,11 @@ html body select,html body textarea,html body a{
 {% block content %}
 <style>
 /* ════════════════════════════════════════════
-   APEX CONTACT US — Deep Forest
+   Loan Portal CONTACT US — Midnight Navy
    Same look in light and dark theme
 ════════════════════════════════════════════ */
 :root{
-  --cu-dark:#0B1C14;--cu-primary:#133224;--cu-green:#1B4332;--cu-sage:#E8F3ED;--cu-accent:#F97316;
+  --cu-dark:#040E2B;--cu-primary:#061A4F;--cu-green:#0A2470;--cu-sage:#EAF1FD;--cu-accent:#E9B52A;
   --cu-ink:#111827;--cu-ink2:#374151;--cu-mut:#9ca3af;--cu-mut2:#6b7280;--cu-line:#f3f4f6;--cu-line2:#e5e7eb;
   --cu-red:#dc2626;--cu-float:0 20px 40px -10px rgba(0,0,0,.1);--cu-ease:cubic-bezier(.22,1,.36,1);
 }
@@ -38,7 +38,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 }
 .cu-glow{position:absolute;border-radius:50%;pointer-events:none;}
 .cu-glow-a{top:0;right:0;width:256px;height:256px;background:rgba(255,255,255,.05);filter:blur(64px);transform:translate(33%,-33%);}
-.cu-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(249,115,22,.1);filter:blur(40px);transform:translate(-25%,25%);}
+.cu-glow-b{bottom:0;left:0;width:192px;height:192px;background:rgba(233,181,42,.1);filter:blur(40px);transform:translate(-25%,25%);}
 .cu-bar{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;}
 .cu-glass-dark{background:rgba(255,255,255,.05);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.1);}
 .cu-back{
@@ -48,11 +48,11 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .cu-back:hover{background-color:rgba(255,255,255,.1);}
 .cu-back:active{transform:scale(.94);}
 .cu-badge{display:flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;font-size:11px;line-height:16px;font-weight:700;letter-spacing:.04em;color:#fff;}
-.cu-badge svg{font-size:11px;color:#FDBA74;}
+.cu-badge svg{font-size:11px;color:#FCE27A;}
 .cu-hero{position:relative;z-index:1;}
-.cu-eyebrow{margin:0 0 6px;font-size:11px;line-height:16px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#FDBA74;}
+.cu-eyebrow{margin:0 0 6px;font-size:11px;line-height:16px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#FCE27A;}
 .cu-hero h1{margin:0 0 6px;font-size:30px;line-height:36px;font-weight:800;letter-spacing:-.025em;color:#fff;}
-.cu-hero p{margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(232,243,237,.75);}
+.cu-hero p{margin:0;font-size:14px;line-height:20px;font-weight:500;color:rgba(234,241,253,.75);}
 .cu-chans{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
 .cu-chan{display:flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;font-size:11.5px;line-height:16px;font-weight:700;color:rgba(255,255,255,.9);}
 .cu-chan svg{font-size:11px;color:#86efac;}
@@ -102,11 +102,11 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .cu-submit{
   display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:56px;margin-top:22px;border:0;border-radius:16px;
   font-size:15px;font-weight:700;letter-spacing:.02em;color:#fff;background:var(--cu-green);cursor:pointer;
-  box-shadow:0 10px 15px -3px rgba(27,67,50,.25);transition:background-color .15s,transform .15s;
+  box-shadow:0 10px 15px -3px rgba(11,42,134,.25);transition:background-color .15s,transform .15s;
 }
-.cu-submit:hover{background:#122e22;}
+.cu-submit:hover{background:#061A4F;}
 .cu-submit:active{transform:scale(.98);}
-.cu-submit:disabled{cursor:default;transform:none;background:#2d5a45;}
+.cu-submit:disabled{cursor:default;transform:none;background:#23468F;}
 .cu-submit svg{font-size:15px;}
 .cu-spin{display:none;width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:cuSpin .8s linear infinite;}
 .cu-submit.is-busy .cu-spin{display:block;}
@@ -117,7 +117,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 
 /* ── sent ── */
 .cu-done{display:flex;flex-direction:column;align-items:center;text-align:center;padding:8px 4px 4px;}
-.cu-done-ico{width:72px;height:72px;margin-bottom:18px;border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:30px;color:#fff;background:var(--cu-green);box-shadow:0 12px 24px -8px rgba(27,67,50,.45);animation:cuPop .5s var(--cu-ease) .1s both;}
+.cu-done-ico{width:72px;height:72px;margin-bottom:18px;border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:30px;color:#fff;background:var(--cu-green);box-shadow:0 12px 24px -8px rgba(11,42,134,.45);animation:cuPop .5s var(--cu-ease) .1s both;}
 @keyframes cuPop{from{opacity:0;transform:scale(.6);}to{opacity:1;transform:none;}}
 .cu-done h2{margin:0 0 6px;font-size:20px;line-height:28px;font-weight:800;color:var(--cu-ink);}
 .cu-done p{margin:0 0 16px;font-size:13.5px;line-height:21px;font-weight:500;color:var(--cu-mut2);}
@@ -139,22 +139,22 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
 .cu-msg-txt b{display:block;font-size:14px;line-height:20px;font-weight:700;color:var(--cu-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cu-msg-txt small{display:block;font-size:11.5px;line-height:16px;font-weight:500;color:var(--cu-mut2);}
 .cu-tag{flex-shrink:0;padding:3px 9px;border-radius:999px;font-size:10px;line-height:14px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--cu-mut2);background:#f3f4f6;}
-.cu-tag.is-seen{color:#2d6a4f;background:var(--cu-sage);}
+.cu-tag.is-seen{color:#0B2A86;background:var(--cu-sage);}
 
 .cu-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:999px;font-size:14px;line-height:20px;font-weight:700;text-decoration:none!important;transition:background-color .15s,transform .15s;}
 .cu-btn:active{transform:scale(.97);}
 .cu-btn svg{font-size:12px;}
-.cu-btn-green{color:#fff!important;background:var(--cu-green);box-shadow:0 10px 15px -3px rgba(27,67,50,.25);}
-.cu-btn-green:hover{background:#122e22;}
+.cu-btn-green{color:#fff!important;background:var(--cu-green);box-shadow:0 10px 15px -3px rgba(11,42,134,.25);}
+.cu-btn-green:hover{background:#061A4F;}
 .cu-btn-line{color:var(--cu-green)!important;border:2px solid var(--cu-green);padding:11px 20px;}
-.cu-btn-line:hover{background:rgba(232,243,237,.5);}
+.cu-btn-line:hover{background:rgba(234,241,253,.5);}
 .cu-acts{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 
 .cu-foot{padding-top:4px;text-align:center;font-size:12px;line-height:16px;font-weight:500;color:var(--cu-mut);}
 .cu-foot p{margin:0;}
 .cu-foot p:first-child{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:4px;}
 .cu-foot i{width:6px;height:6px;border-radius:50%;background:var(--cu-primary);}
-.cu-foot b{font-weight:700;color:var(--cu-accent);}
+.cu-foot b{font-weight:700;color:#9C6508;}
 
 @media (min-width:640px){
   .cu{padding:32px 0;}
@@ -291,7 +291,7 @@ html body,html[data-theme] body{padding-bottom:0!important;overflow-x:hidden!imp
       </div>
 
       <footer class="cu-foot">
-        <p><i></i> APEX <span>•</span> <b>v2.2.1</b></p>
+        <p><i></i> Loan Portal <span>•</span> <b>v2.2.1</b></p>
         <p>© 2026 All rights reserved</p>
       </footer>
     </main>
