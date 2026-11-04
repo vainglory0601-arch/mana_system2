@@ -2,14 +2,14 @@
 
 Read this first. It records how the owner wants this project handled.
 
-Brand: **BESTLOAN** (owner's company; brand history OFL → APEX → BESTLOAN, 2026-11-04). The owner supplied the
-logo as SVG: `static/img/bestloan-logo.svg` (full colour, for white backgrounds), `bestloan-logo-white.svg` (same with
-white text, for dark headers), `bestloan-icon.svg` (globe + bars only), `bestloan-tile.svg` (globe on a white rounded
-square: header tiles, splash, favicon, Jazzmin admin logo), `bestloan-icon-64.png` / `-180.png` and `static/favicon.ico`.
-Short name **BESTLOAN** in headers, titles and footers. The full legal name, the SEC number and the legal documents
-come from the owner: put them in exactly as written on the documents, never guess them. Old `apex-*` image files are
-unused. Internal names keep the old prefix (`ofl_*` localStorage keys, `?ofl=1`, `ofl-theme`, `ofl-vt`, `OFL_SFX`,
-`apx-*` classes): do not rename them. Contract reference is `BL-YYYYMMDD-00001`.
+Brand: neutral placeholder **Loan Portal** (2026-11-04; history OFL → APEX → Loan Portal). Logo `static/img/brand-tile.svg`
+(navy rounded square with a gold peso sign) + `brand-icon-64.png` / `brand-icon-180.png` and `static/favicon.ico`; the
+Jazzmin admin uses the same tile. The owner asked for the BESTLOAN brand with SEC / NPC / BIR / ISO documents, but those
+documents did not hold up (wrong law years, "Two Thousand Sex", ISO 9001:2016, an unrelated company's SEC number), so the
+BESTLOAN name, logo and registration details were taken out. **Never put a company name, licence, SEC / CA number,
+"registered / regulated" banner or founding date on the site unless the company appears with it on the SEC's own list of
+financing / lending companies.** Internal names keep the old prefix (`ofl_*` localStorage keys, `?ofl=1`, `ofl-theme`,
+`ofl-vt`, `OFL_SFX`, `apx-*` classes): do not rename them. Contract reference is `LP-YYYYMMDD-00001`.
 
 ## Working with the owner
 - The owner writes short English. Answer in simple, plain English; show results with
@@ -42,7 +42,7 @@ unused. Internal names keep the old prefix (`ofl_*` localStorage keys, `?ofl=1`,
   No icon fonts and no Tailwind CDN in production; write plain CSS in the template.
 - Same look in light and dark theme: base.html forces dark inputs in dark mode, so override
   with an `#id`-scoped selector.
-- Footer: "BESTLOAN • v2.2.1 / © 2026 All rights reserved".
+- Footer: "Loan Portal • v2.2.1 / © 2026 All rights reserved".
 - Money inputs: `inputmode="decimal"`, no `maxlength` (it cuts pasted "PHP 1,500,000" before
   cleaning); clean to digits + one point + 2 decimals, no leading zeros, 9 digits max.
 - Client drafts kept in localStorage must carry the user id (`__uid`) — phones are shared.
@@ -81,7 +81,7 @@ unused. Internal names keep the old prefix (`ofl_*` localStorage keys, `?ofl=1`,
   slide in / slide out; older browsers get a short fade). No JavaScript click interception and
   no artificial navigation delay.
 - Owner-requested logo splash (base.html, `.apx-splash`): links/forms with `data-splash` (home Apply
-  Now / Sign In / My account, login form, log out) set a flag; the NEXT page opens behind the BESTLOAN
+  Now / Sign In / My account, login form, log out) set a flag; the NEXT page opens behind the Loan Portal
   logo, which fades out once it has loaded (min 0.8 s, max 2.5 s). The click is never delayed,
   a POST response (form error) shows no splash, and the slide transition is skipped for it.
 - **Never leave a `transform` on `#pageRoot`** — it makes `position: fixed` children scroll

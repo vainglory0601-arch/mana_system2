@@ -4,9 +4,9 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
   {% load static %}
-  <title>{% block title %}Staff{% endblock %} — BESTLOAN Staff</title>
-  <link rel="icon" type="image/svg+xml" href="{% static 'img/bestloan-tile.svg' %}?v=5">
-  <link rel="icon" type="image/png" sizes="64x64" href="{% static 'img/bestloan-icon-64.png' %}?v=5">
+  <title>{% block title %}Staff{% endblock %} — Loan Portal Staff</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'img/brand-tile.svg' %}?v=5">
+  <link rel="icon" type="image/png" sizes="64x64" href="{% static 'img/brand-icon-64.png' %}?v=5">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
   <script>
     (function(){
@@ -21,7 +21,7 @@
   {% block legacy_css %}{% include "staff/_legacy_css.html" %}{% endblock %}
   <style>
 /* ════════════════════════════════════════════
-   BESTLOAN STAFF — shell (side menu + top bar) and shared parts
+   Loan Portal STAFF — shell (side menu + top bar) and shared parts
    Light and dark theme; the side menu is always midnight navy.
 ════════════════════════════════════════════ */
 :root{
@@ -181,7 +181,7 @@ html[data-theme="dark"] .sx-side-btns .sx-moon{display:block;}
 <!-- Icons: Font Awesome Free 6.4.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0) Copyright 2023 Fonticons, Inc. -->
 <div class="sx-shell">
   <aside class="sx-side" id="sxSide" aria-label="Staff menu">
-    <a class="sx-brand" href="{% url 'staff_dashboard' %}"><img src="{% static 'img/bestloan-tile.svg' %}" alt="" width="38" height="38"><span><b>BESTLOAN</b><small>Staff panel</small></span></a>
+    <a class="sx-brand" href="{% url 'staff_dashboard' %}"><img src="{% static 'img/brand-tile.svg' %}" alt="" width="38" height="38"><span><b>Loan Portal</b><small>Staff panel</small></span></a>
     <p class="sx-nav-label">Menu</p>
     {% with u=request.resolver_match.url_name %}
     <nav class="sx-nav">
@@ -205,7 +205,7 @@ html[data-theme="dark"] .sx-side-btns .sx-moon{display:block;}
   <div class="sx-main">
     <header class="sx-top">
       <button type="button" class="sx-burger" id="sxBurger" aria-label="Open menu" aria-controls="sxSide" aria-expanded="false"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></button>
-      {% with u=request.resolver_match.url_name %}<div class="sx-top-t"><h1>{% block page_title %}{% if u == 'staff_users' %}Users{% elif u == 'staff_user_detail' %}User details{% elif u == 'staff_loans' %}Loan applications{% elif u == 'staff_loan_detail' %}Loan details{% elif u == 'staff_withdrawals' %}Withdrawals{% elif u == 'staff_payment_methods' %}Payment methods{% else %}Staff{% endif %}{% endblock %}</h1><p>{% block page_sub %}BESTLOAN staff panel{% endblock %}</p></div>{% endwith %}
+      {% with u=request.resolver_match.url_name %}<div class="sx-top-t"><h1>{% block page_title %}{% if u == 'staff_users' %}Users{% elif u == 'staff_user_detail' %}User details{% elif u == 'staff_loans' %}Loan applications{% elif u == 'staff_loan_detail' %}Loan details{% elif u == 'staff_withdrawals' %}Withdrawals{% elif u == 'staff_payment_methods' %}Payment methods{% else %}Staff{% endif %}{% endblock %}</h1><p>{% block page_sub %}Loan Portal staff panel{% endblock %}</p></div>{% endwith %}
       <div class="sx-top-date"><svg viewBox="0 0 448 512" aria-hidden="true"><path d="M152 24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H64C28.7 64 0 92.7 0 128v16 48V448c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V192 144 128c0-35.3-28.7-64-64-64H344V24c0-13.3-10.7-24-24-24s-24 10.7-24 24V64H152V24zM48 192H400V448c0 8.8-7.2 16-16 16H64c-8.8 0-16-7.2-16-16V192z"/></svg>{% now "D, M j, Y" %}</div>
     </header>
     <div class="sx-content">
