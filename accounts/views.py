@@ -35,7 +35,8 @@ from django.views.decorators.http import require_POST, require_GET
 
 from dateutil.relativedelta import relativedelta
 
-from .models import SystemSetting, User, LoanApplication, PaymentMethod, WithdrawalRequest, loan_rate, loan_limits, LOAN_TERMS
+from .models import SystemSetting, User, LoanApplication, PaymentMethod, WithdrawalRequest, loan_rate, loan_rate_for, loan_limits, LOAN_TERMS
+from .context_processors import rate_ctx
 from .forms import PaymentMethodForm, StaffUserForm, StaffPaymentMethodForm
 from .device_lock import check_device, set_device_cookie
 
@@ -135,8 +136,28 @@ def view_required(u):
 # ======================
 # PUBLIC VIEWS
 # ======================
+def _peso_txt(n):
+    """150000 -> "150,000", 13250.5 -> "13,250.50" (cents only when there are some)."""
+    s = f"{n:,.2f}"
+    return s[:-3] if s.endswith(".00") else s
+
+
 def choose_view(request):
-    return render(request, "choose.html", {"is_auth": request.user.is_authenticated})
+    # FAQ example "₱150,000 over 12 months", worked out with the current rate and limits,
+    # the same way the loan pages do (monthly rounded to cents)
+    lo, hi = loan_limits()
+    amount, months = min(max(Decimal("150000"), lo), hi), 12
+    interest = amount * loan_rate() * months
+    example = {
+        "amount": _peso_txt(amount), "months": months,
+        "interest": _peso_txt(interest), "total": _peso_txt(amount + interest),
+        "monthly": _peso_txt(((amount + interest) / months).quantize(Decimal("0.01"))),
+        # the calculator's first figures, before its script runs (always with cents)
+        "monthly_c": f"{((amount + interest) / months).quantize(Decimal('0.01')):,.2f}",
+        "total_c": f"{amount + interest:,.2f}",
+        "pct": format((loan_rate() * months * 100).normalize(), "f"),   # interest share, "3.6"
+    }
+    return render(request, "choose.html", {"is_auth": request.user.is_authenticated, "example": example})
 
 
 def login_view(request):
@@ -761,7 +782,9 @@ def quick_loan_view(request):
         .first()
     )
     done = request.GET.get("done") == "1"
-    return render(request, "quick_loan.html", {"loan": loan, "done": done})
+    # an existing loan is shown at its own (contracted) rate
+    ctx = {"loan": loan, "done": done, **(rate_ctx(loan_rate_for(loan)) if loan else {})}
+    return render(request, "quick_loan.html", ctx)
 
 
 @login_required(login_url="login")
@@ -1314,8 +1337,7 @@ def loan_status_api(request):
 
 @login_required(login_url="login")
 def contract_view(request):
-    """Loan contract, at the loan's own monthly rate (0.5%; snapshots saved at the old 0.05%
-    fallback were corrected by migration 0053), else the current rate."""
+    """Loan contract, at the loan's own saved monthly rate, else the current rate."""
     loan = (
         LoanApplication.objects
         .filter(user=request.user)
@@ -1376,7 +1398,8 @@ def loan_apply_view(request):
     )
 
     if request.method != "POST":
-        return render(request, "loan_apply.html", {"locked": existing is not None, "loan": existing})
+        return render(request, "loan_apply.html", {"locked": existing is not None, "loan": existing,
+                                                   **(rate_ctx(loan_rate_for(existing)) if existing else {})})
 
     if existing:
         return redirect(reverse("payment_method"))

@@ -46,9 +46,11 @@ financing / lending companies.** Internal names keep the old prefix (`ofl_*` loc
 - Money inputs: `inputmode="decimal"`, no `maxlength` (it cuts pasted "PHP 1,500,000" before
   cleaning); clean to digits + one point + 2 decimals, no leading zeros, 9 digits max.
 - Client drafts kept in localStorage must carry the user id (`__uid`) — phones are shared.
-- Interest is 0.5% per month. One source: `accounts.models.loan_rate()` (admin LoanConfig, else
-  0.5%); templates get `{{ loan_rate }}` / `{{ loan_rate_pct }}` from a context processor. Never
-  hard-code a rate.
+- Interest is 0.3% per month (lowered from 0.5% in Nov 2026, migration 0055). One source:
+  `accounts.models.loan_rate()` (admin LoanConfig, else 0.3%); templates get `{{ loan_rate }}` /
+  `{{ loan_rate_pct }}` from a context processor. Pages for an existing loan (quick loan, apply,
+  contract, schedule) use that loan's saved rate (`loan_rate_for`), so approved 0.5% loans keep
+  showing 0.5%. Never hard-code a rate (the home FAQ example is computed in `choose_view`).
 - Loan amount is ₱50,000 – ₱5,000,000 (was ₱80,000). One source: `accounts.models.loan_limits()`
   (admin LoanConfig, else `DEFAULT_MIN_AMOUNT` / `DEFAULT_MAX_AMOUNT`); templates use
   `{{ loan_limits.min }}` / `.max` (numbers for JS), `.min_txt` ("50,000"), `.min_short` ("50K").
