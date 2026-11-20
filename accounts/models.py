@@ -134,18 +134,26 @@ class User(AbstractBaseUser, PermissionsMixin):
         super().save(*args, **kwargs)
 
 
-DEFAULT_RATE_MONTHLY = Decimal("0.005")   # 0.5% per month
+DEFAULT_RATE_MONTHLY = Decimal("0.003")   # 0.3% per month (was 0.5% until Nov 2026)
 LOAN_TERMS = (6, 12, 24, 36)              # months the company offers
 DEFAULT_MIN_AMOUNT = Decimal("50000")     # smallest loan, in pesos
 DEFAULT_MAX_AMOUNT = Decimal("5000000")   # largest loan, in pesos
 
 
 def loan_rate():
-    """Monthly interest rate for new loans: the admin's LoanConfig, else 0.5%."""
+    """Monthly interest rate for new loans: the admin's LoanConfig, else 0.3%."""
     cfg = LoanConfig.objects.first()
     if cfg and cfg.interest_rate_monthly is not None:
         return Decimal(str(cfg.interest_rate_monthly))
     return DEFAULT_RATE_MONTHLY
+
+
+def loan_rate_for(loan):
+    """The rate an existing loan is priced at: its own saved rate (an approved loan keeps the
+    rate it was contracted at), else the current rate."""
+    if loan is not None and getattr(loan, "interest_rate_monthly", None) is not None:
+        return Decimal(str(loan.interest_rate_monthly))
+    return loan_rate()
 
 
 def loan_limits():
@@ -162,7 +170,7 @@ class LoanConfig(models.Model):
     Keep only 1 row in DB.
     """
     interest_rate_monthly = models.DecimalField(
-        max_digits=10, decimal_places=6, default=Decimal("0.005000")   # 0.5% per month
+        max_digits=10, decimal_places=6, default=Decimal("0.003000")   # 0.3% per month
     )
     min_amount = models.DecimalField(
         max_digits=14, decimal_places=2, default=Decimal("50000.00")
